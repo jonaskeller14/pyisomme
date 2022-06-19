@@ -177,7 +177,7 @@ class Channel:
         if isinstance(other, Channel):
             assert self.unit == other.unit
             time_array = np.unique(self.data.index.to_list() + other.data.index.to_list())
-            new_data = self.get_data(time_array) + other.get_data(time_array)
+            new_data = self.get_data(time_array) - other.get_data(time_array)
             new_data = pd.DataFrame({"Time": time_array, "??": new_data}).set_index("Time")
             return Channel("????????????????", new_data, self.unit)
         else:
@@ -188,7 +188,7 @@ class Channel:
         if isinstance(other, Channel):
             assert self.unit == other.unit
             time_array = np.unique(self.data.index.to_list() + other.data.index.to_list())
-            new_data = self.get_data(time_array) + other.get_data(time_array)
+            new_data = self.get_data(time_array) * other.get_data(time_array)
             new_data = pd.DataFrame({"Time": time_array, "??": new_data}).set_index("Time")
             return Channel("????????????????", new_data, self.unit)
         else:
@@ -199,12 +199,16 @@ class Channel:
         if isinstance(other, Channel):
             assert self.unit == other.unit
             time_array = np.unique(self.data.index.to_list() + other.data.index.to_list())
-            new_data = self.get_data(time_array) + other.get_data(time_array)
+            new_data = self.get_data(time_array) / other.get_data(time_array)
             new_data = pd.DataFrame({"Time": time_array, "??": new_data}).set_index("Time")
             return Channel("????????????????", new_data, self.unit)
         else:
             new_data = self.data / other
             return Channel(self.code, new_data, self.unit, self.info)
+
+    def __pow__(self, power, modulo=None):
+        new_data = self.data**power
+        return Channel(self.code, new_data, self.unit, self.info)
 
 
 def is_possible_channel_code(code:str) -> bool:
