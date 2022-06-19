@@ -8,6 +8,8 @@ from pathlib import Path
 import xml.etree.ElementTree as ET
 from scipy.interpolate import interp1d
 from scipy.integrate import quad
+from scipy.misc import derivative
+import copy
 
 
 class Channel:
@@ -148,6 +150,29 @@ class Channel:
             if label in self.info:
                 return self.info[label]
         return None
+
+    def differentiate(self):
+        """
+        # TODO
+        :return:
+        """
+        new_data = copy.deepcopy(self.data)
+        new_data.iloc[:, 0] = np.zeros(len(new_data))
+        new_data.iloc[:, 0] = [derivative(self.get_data, t, dx=1e-3) for t in self.data.index]
+        new_data.iloc[0, 0] = new_data.iloc[1, 0]
+        new_data.iloc[-1, 0] = new_data.iloc[-2, 0]
+        return Channel("????????????????", new_data, unit=None, info=None)
+
+    def integrate(self):
+        """
+        # TODO
+        :return:
+        """
+        t1 = self.data.index[0]
+        new_data = copy.deepcopy(self.data)
+        new_data.iloc[:, 0] = np.zeros(len(new_data))
+        new_data.iloc[:, 0] = [quad(self.get_data, t1, t2)[0] for t2 in self.data.index]
+        return Channel("????????????????", new_data, unit=None, info=None)
 
     # Operator methods
     # TOOD: soll ich das nicht weglassen?
