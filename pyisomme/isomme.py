@@ -70,7 +70,6 @@ class Isomme:
         def read_from_folder(path:Path):
             if len(list(path.glob("**/*.mme"))) > 1:
                 logging.warning("Multiple .mme files found. First will be used, others ignored.")
-                print("sdfsdf")
             read_from_mme(Path(list(path.glob("**/*.mme"))[0]))
 
         def read_from_zip(path:Path):
