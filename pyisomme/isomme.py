@@ -27,7 +27,6 @@ class Isomme:
         self.channel_info = {} if channel_info is None else channel_info
 
     def read(self, path:str, *channel_code_patterns):
-        #TODO: only read channels matching channel_code_pattern
         """
         path must reference...
         - a zip which contains .mme-file
@@ -54,10 +53,19 @@ class Isomme:
             # 001
             self.channels = []  # in case channel exist trough constructor
             for key in fnmatch.filter(self.channel_info.keys(), "Name of channel *"):
-                xxx = key.replace("Name of channel", "").replace(" ", "")
-                if xxx.isdigit() and len(glob(str(Path(chn_filepath).parent.joinpath(f"*.{xxx}")))) >= 1:
-                    with open(glob(str(Path(chn_filepath).parent.joinpath(f"*.{xxx}")))[0], "r") as xxx_file:
-                        self.channels.append(parse_xxx(xxx_file, self.test_number))
+                code = self.channel_info[key].split()[0].split("/")[0]
+                if len(channel_code_patterns) == 0:
+                    skip = False
+                else:
+                    skip = True
+                    for channel_code_pattern in channel_code_patterns:
+                        if fnmatch.fnmatch(code, channel_code_pattern):
+                            skip = False
+                if not skip:
+                    xxx = key.replace("Name of channel", "").replace(" ", "")
+                    if xxx.isdigit() and len(glob(str(Path(chn_filepath).parent.joinpath(f"*.{xxx}")))) >= 1:
+                        with open(glob(str(Path(chn_filepath).parent.joinpath(f"*.{xxx}")))[0], "r") as xxx_file:
+                            self.channels.append(parse_xxx(xxx_file, self.test_number))
 
         def read_from_folder(path:Path):
             if len(list(path.glob("**/*.mme"))) > 1:
@@ -87,10 +95,19 @@ class Isomme:
             # 001
             self.channels = []  # in case channel exist trough constructor
             for key in fnmatch.filter(self.channel_info.keys(), "Name of channel *"):
-                xxx = key.replace("Name of channel", "").replace(" ", "")
-                if xxx.isdigit() and len(fnmatch.filter(archive.namelist(), str(Path(chn_filepath).parent.joinpath(f"*.{xxx}")))) >= 1:
-                    with archive.open(fnmatch.filter(archive.namelist(), str(Path(chn_filepath).parent.joinpath(f"*.{xxx}")))[0], "r") as xxx_file:
-                        self.channels.append(parse_xxx(xxx_file, self.test_number))
+                code = self.channel_info[key].split()[0].split("/")[0]
+                if len(channel_code_patterns) == 0:
+                    skip = False
+                else:
+                    skip = True
+                    for channel_code_pattern in channel_code_patterns:
+                        if fnmatch.fnmatch(code, channel_code_pattern):
+                            skip = False
+                if not skip:
+                    xxx = key.replace("Name of channel", "").replace(" ", "")
+                    if xxx.isdigit() and len(fnmatch.filter(archive.namelist(), str(Path(chn_filepath).parent.joinpath(f"*.{xxx}")))) >= 1:
+                        with archive.open(fnmatch.filter(archive.namelist(), str(Path(chn_filepath).parent.joinpath(f"*.{xxx}")))[0], "r") as xxx_file:
+                            self.channels.append(parse_xxx(xxx_file, self.test_number))
 
         path = Path(path)
         if path.suffix == ".mme":
