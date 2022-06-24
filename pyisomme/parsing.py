@@ -69,7 +69,7 @@ def parse_xxx(xxx_file, test_number="data"):
     except KeyError:
         unit = None
     # data
-    array = np.array(lines[start_data_idx:]).astype(float)
+    array = np.array(lines[start_data_idx:])
     # TODO: Explicit
     # Implicit
     if "Time of first sample" in info and "Sampling interval" in info:
@@ -79,6 +79,7 @@ def parse_xxx(xxx_file, test_number="data"):
     else:
         logging.error(f"'Time of first sample' and 'Sampling interval' missing in channel information of {code}")
         data = pd.DataFrame({test_number: array})
+    data[test_number] = data[test_number].astype(float)
     return Channel(code, data, unit=unit, info=info)
 
 

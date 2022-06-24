@@ -1,8 +1,10 @@
+import os
 from pathlib import Path
 import fnmatch
 from glob import glob
 import zipfile
 import logging
+import shutil
 
 import pyisomme.channel
 from pyisomme.parsing import parse_mme, parse_chn, parse_xxx
@@ -121,10 +123,74 @@ class Isomme:
         logging.info(f"Reading '{path}' done. Number of channel: {len(self.channels)}")
         return self
 
-    def write(self, path):
-        # folder or zip
-        # create files and second step is zip
-        # TODO
+    def write(self, path, *channel_code_patterns):
+        """
+        #TODO
+        :param path:
+        :return:
+        """
+        def write_info(file, name_value_dict):
+            """
+            Pattern:
+            <NAME>    :<VALUE>
+            :param file:
+            :param name_value_dict:
+            :return:
+            """
+            for name, value in name_value_dict.items():
+                if len(name) > 29:
+                    logging.warning(f"Variable-Name '{name}' too long. It will be shorten to '{name[:29]}'")
+                    name = name[:29]
+                space = " "*(29 - len(name))
+                file.write(f"{name}{space}:{value}\n")
+            return file
+
+        # Main
+        path = Path(path)
+        if path.suffix == ".mme":
+            assert path.stem == self.test_number
+            os.makedirs(path.parent, exist_ok=True)
+            # MME
+            with open(path, "w") as mme_file:
+                write_info(mme_file, self.test_info)
+
+            # Channel-Folder
+            os.makedirs(path.parent.joinpath("Channel"), exist_ok=True)
+
+            # Update Channel Info
+            for name in list(self.channel_info.keys()):
+                if "Name of channel" in name:
+                    del self.channel_info[name]
+            self.channel_info["Number of channels"] = len(self.channels)
+
+            # 001 - iterate over channels
+            for channel_idx, channel in enumerate(self.channels):
+                self.channel_info[f"Name of channel {(channel_idx+1):03}"] = channel.code + (f' / {channel.info["Name of the channel"]}' if "Name of the channel" in channel.info else "")
+                with open(path.parent.joinpath("Channel", f"{self.test_number}.{(channel_idx+1):03}"), "w") as xxx_file:
+                    channel.info["Channel code"] = channel.code
+                    # TODO: Time interval etc. anpassen anhand channel.data
+                    xxx_file = write_info(xxx_file, channel.info)
+                    xxx_file.write(channel.data.to_string(header=False, index=False).replace(" ", ""))
+
+            # TODO: channel files with higher idx than written
+
+            # CHN
+            with open(path.parent.joinpath("Channel", f"{self.test_number}.chn"), "w") as chn_file:
+                write_info(chn_file, self.channel_info)
+
+        elif path.is_dir and path.suffix not in (".zip",):
+            self.write(path.joinpath(f"{self.test_number}.mme"))
+        elif path.suffix in (".zip",):
+            # 1. write by folder
+            folder_path = path.parent.joinpath(self.test_number)  # foldername="<test_number>"
+            self.write(folder_path)
+
+            # # 2. zip folder
+            shutil.make_archive(str(path.parent.joinpath(path.stem)), 'zip', str(folder_path))
+
+            # # 3. remove unzipped folder
+            shutil.rmtree(folder_path)
+
         return self
 
     def extend(self, other):
