@@ -331,7 +331,7 @@ def create_sample(code="SAMPLE??????????", t_range:tuple=(0,0.01,1000), y_range:
     return Channel(code, data, unit)
 
 
-def norm(c1, c2, c3=0):
+def channel_norm(c1, c2, c3=0):
     """
     Takes 2 or 3 Channels and calculates the norm or resultant component.
     :param c1: X-Channel
@@ -340,7 +340,8 @@ def norm(c1, c2, c3=0):
     :return: Resultant Channel
     """
     new_channel = (c1**2 + c2**2 + c3**2)**(1/2)
-    new_channel.code[14] = "R"
+    new_channel.info = c1.info
+    new_channel.code = c1.code[:14] + "R" + c1.code[15]
     return new_channel
 
 

@@ -8,7 +8,7 @@ import shutil
 
 import pyisomme.channel
 from pyisomme.parsing import parse_mme, parse_chn, parse_xxx
-from pyisomme.channel import create_sample
+from pyisomme.channel import create_sample, channel_norm
 
 # logging.basicConfig(
 #     filename="pyisomme.py.log",
@@ -211,6 +211,7 @@ class Isomme:
 
     def get_channel(self, *channel_code_patterns:str, filter:bool=True):
         """
+        # TODO: not support "*" wildcard. always code 16 chars
         Get channel by channel code patter. Wildcards such as '?' or '*' are supported.
         First match will be returned, although multiple matches exist.
         :param channel_code_patterns:
@@ -223,7 +224,15 @@ class Isomme:
                     return channel
                 if filter and channel_code_pattern[-1] in "ABCD" and fnmatch.fnmatch(channel.code, channel_code_pattern[:-1] + "?"):
                     return channel.cfc(channel_code_pattern[-1])
-
+            if channel_code_pattern[14] == "R":
+                channel_code_pattern = channel_code_pattern[:14] + "X" + channel_code_pattern[15]
+                x_channel = self.get_channel(channel_code_pattern)
+                channel_code_pattern = channel_code_pattern[:14] + "Y" + channel_code_pattern[15]
+                y_channel = self.get_channel(channel_code_pattern)
+                channel_code_pattern = channel_code_pattern[:14] + "Z" + channel_code_pattern[15]
+                z_channel = self.get_channel(channel_code_pattern)
+                if x_channel is not None and y_channel is not None and z_channel is not None:
+                    return channel_norm(x_channel, y_channel, z_channel)
 
     def get_channels(self, *channel_code_patterns:str, filter:bool=True):
         """
@@ -244,3 +253,12 @@ class Isomme:
     def add_sample_channel(self, code="SAMPLE??????????", t_range:tuple=(0,0.01,1000), y_range:tuple=(0,10), mode:str="sin", unit=None):
         self.channels.append(create_sample(code, t_range, y_range, mode, unit))
         return self
+
+    def print_channel_list(self):
+        """
+        # TODO: create channel list as df mit channel info attribute in columns -> return df?? refactor weil
+        :return:
+        """
+        print(f"{self.test_number} - Channel List:")
+        for idx, channel in enumerate(self.channels):
+            print(f"\t{(idx+1):03}\t{channel.code}")
