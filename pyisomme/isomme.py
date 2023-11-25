@@ -229,7 +229,7 @@ class Isomme:
         self.channels += other.channels
 
     def __eq__(self, other):
-        return self.test_number == other.test_numer
+        return self.test_number == other.test_number
 
     def __ne__(self, other):
         return not __eq__(self, other)
