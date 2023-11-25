@@ -118,8 +118,7 @@ class Isomme:
         elif path.suffix in (".zip",):
             read_from_zip(path)
         else:
-            logging.error("File not .zip or .mme or Folder not containing .mme file.")
-            return self
+            raise FileNotFoundError("File not .zip or .mme or Folder not containing .mme file.")
         logging.info(f"Reading '{path}' done. Number of channel: {len(self.channels)}")
         return self
 
