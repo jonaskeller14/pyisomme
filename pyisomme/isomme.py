@@ -253,48 +253,81 @@ class Isomme:
     def __ne__(self, other):
         return not __eq__(self, other)
 
-    def get_channel(self, *channel_code_patterns:str, filter:bool=True):
+    def __str__(self):
+        return self.test_number
+
+    def __len__(self):
+        return len(self.channels)
+
+    def __getitem__(self, index):
+        if isinstance(index, str):
+            return self.get_channels(index)
+        elif isinstance(index, int) or isinstance(index, slice):
+            return self.channels[index]
+
+    def __contains__(self, item):
+        return item in self.channels
+
+    def __iter__(self):
+        for channel in self.channels:
+            yield channel
+
+    def get_channel(self, *channel_code_patterns: str, filter: bool = True, calculate: bool = True) -> Channel:
         """
-        # TODO: not support "*" wildcard. always code 16 chars
-        Get channel by channel code patter. Wildcards such as '?' or '*' are supported.
-        First match will be returned, although multiple matches exist.
+        Get channel by channel code pattern.
+        First match will be returned, although multiple matches may exist.
+        If channel does not exist, it will be created through filtering and calculations if possible.
         :param channel_code_patterns:
-        :param filter:
-        :return: Channel
+        :param filter: create channel by filtering if channel does not exist yet
+        :param calculate: create channel by calculation if channel does not exist yet
+        :return: Channel object or None
         """
         for channel_code_pattern in channel_code_patterns:
+            # 1. Channel does exist already
             for channel in self.channels:
                 if fnmatch.fnmatch(channel.code, channel_code_pattern):
                     return channel
-                if filter and channel_code_pattern[-1] in "ABCD" and fnmatch.fnmatch(channel.code, channel_code_pattern[:-1] + "?"):
-                    return channel.cfc(channel_code_pattern[-1])
-            if channel_code_pattern[14] == "R":
-                channel_code_pattern = channel_code_pattern[:14] + "X" + channel_code_pattern[15]
-                x_channel = self.get_channel(channel_code_pattern)
-                channel_code_pattern = channel_code_pattern[:14] + "Y" + channel_code_pattern[15]
-                y_channel = self.get_channel(channel_code_pattern)
-                channel_code_pattern = channel_code_pattern[:14] + "Z" + channel_code_pattern[15]
-                z_channel = self.get_channel(channel_code_pattern)
-                if x_channel is not None and y_channel is not None and z_channel is not None:
-                    return channel_norm(x_channel, y_channel, z_channel)
+            # 2. Filter Channel
+            if filter and fnmatch.fnmatch(channel_code_pattern, "*[ABCD]"):
+                for channel in self.channels:
+                    if fnmatch.fnmatch(channel.code, channel_code_pattern[:-1] + "?"):
+                        return channel.cfc(channel_code_pattern[-1])
+            # 3. Calculate Channel
+            if calculate:
+                # Resultant Channel
+                if fnmatch.fnmatch(channel_code_pattern, "??????????????R?"):
+                    xyz_channel = [self.get_channel(channel_code_pattern[:14] + xyz + channel_code_pattern[15]) for xyz in "XYZ"]
+                    if None not in xyz_channel:
+                        return calculate_resultant(*xyz_channel)
+                # HIC
+                if fnmatch.fnmatch(channel_code_pattern, "??HICR??????????"):
+                    head_channel = self.get_channel(f"{channel_code_pattern[:2]}HEAD??????ACR?")
+                    if head_channel is not None:
+                        return calculate_hic(head_channel)
+                # TODO a3ms
+            # TODO: 4. Differentiate
+        return None
 
-    def get_channels(self, *channel_code_patterns:str, filter:bool=True):
+    def get_channels(self, *channel_code_patterns:str) -> list:
         """
-        Get all channels by channel code patter. Wildcards such as '?' or '*' are supported.
+        Get all channels by channel code patter. All Wildcards are supported.
         A list of all matching channels will be returned.
+        Filtering and Calculations are not supported yet. See 'get_channel()' instead.
         :param channel_code_patterns:
         :return: list of Channels
         """
-        #TODO: filter
         channel_list = []
         for channel_code_pattern in channel_code_patterns:
+            # 1. Channel does exist already
             for channel in self.channels:
                 if fnmatch.fnmatch(channel.code, channel_code_pattern):
                     channel_list.append(channel)
-
+            # TODO: 2. Filter Channel
+            # TODO: 3. Calculate Channel
+            # TODO: 4. Differentiate
         return channel_list
 
-    def add_sample_channel(self, code="SAMPLE??????????", t_range:tuple=(0,0.01,1000), y_range:tuple=(0,10), mode:str="sin", unit=None):
+    def add_sample_channel(self, code="SAMPLE??????????", t_range: tuple = (0, 0.01, 1000), y_range: tuple = (0, 10), mode: str = "sin", unit=None):
         self.channels.append(create_sample(code, t_range, y_range, mode, unit))
         return self
 
