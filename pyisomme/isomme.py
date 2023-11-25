@@ -28,6 +28,32 @@ class Isomme:
         self.channels = [] if channels is None else channels
         self.channel_info = {} if channel_info is None else channel_info
 
+    def get_test_info(self, *labels):
+        """
+        Get test info by giving one or multiple label(s) to identify information.
+        Regex patterns possible.
+        :param labels: key to find information in dict
+        :return: first match or None
+        """
+        for label in labels:
+            for key in self.test_info:
+                if re.match(label, key):
+                    return self.test_info[key]
+        return None
+
+    def get_channel_info(self, *labels):
+        """
+        Get channel info by giving one or multiple label(s) to identify information.
+        Regex pattern possible.
+        :param labels: key to find information in dict
+        :return: first match or None
+        """
+        for label in labels:
+            for key in self.channel_info:
+                if re.match(label, key):
+                    return self.channel_info[key]
+        return None
+
     def read(self, path:str, *channel_code_patterns):
         """
         path must reference...
@@ -255,8 +281,8 @@ class Isomme:
 
     def print_channel_list(self):
         """
-        # TODO: create channel list as df mit channel info attribute in columns -> return df?? refactor weil
-        :return:
+        Print all channel codes to console.
+        :return: None
         """
         print(f"{self.test_number} - Channel List:")
         for idx, channel in enumerate(self.channels):
