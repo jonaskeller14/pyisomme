@@ -142,13 +142,15 @@ class Channel:
 
     def get_info(self, *labels):
         """
-        #TODO
-        :param labels:
-        :return:
+        Get channel info by giving one or multiple label(s) to identify information.
+        Regex or fnmatch patterns possible.
+        :param labels: key to find information in dict
+        :return: first match or None
         """
         for label in labels:
-            if label in self.info:
-                return self.info[label]
+            for key in self.info:
+                if re.match(label, key) or fnmatch(key, label):
+                    return self.info[key]
         return None
 
     def differentiate(self):

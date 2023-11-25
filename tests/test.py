@@ -31,9 +31,25 @@ class TestIsomme(unittest.TestCase):
         pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "v14084ISO.zip"))
         pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "v14531ISO.zip"))
 
+    def test_get_test_info(self):
+        isomme = pyisomme.Isomme(test_info={"Laboratory test ref. number": "98/7707"})
+        assert isomme.get_test_info("Laboratory test ref. number") == isomme.get_test_info("[XL]abo?atory * ref. number")
+        assert isomme.get_test_info("Laboratory test ref. number") == isomme.get_test_info("[XL]abo.atory .* ref. number")
+
+    def test_get_channel_info(self):
+        isomme = pyisomme.Isomme(channel_info={"Laboratory test ref. number": "98/7707"})
+        assert isomme.get_test_info("Laboratory test ref. number") == isomme.get_test_info("[XL]abo?atory * ref. number")
+        assert isomme.get_test_info("Laboratory test ref. number") == isomme.get_test_info("[XL]abo.atory .* ref. number")
+
 
 class TestChannel(unittest.TestCase):
-    pass
+    def test_init(self):
+        pyisomme.Channel(code="11HEAD0000H3ACXP", data=None)
+
+    def test_get_info(self):
+        channel = pyisomme.Channel(code="11HEAD0000H3ACXP", data=None, info={"Time of first sample": -0.030399999})
+        assert channel.get_info("Time of first sample") == channel.get_info("[XT]ime * f?rst sample")
+        assert channel.get_info("Time of first sample") == channel.get_info("[XT]ime .* f.rst sample")
 
 
 class TestCalculate(unittest.TestCase):

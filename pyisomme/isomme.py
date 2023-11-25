@@ -25,26 +25,26 @@ class Isomme:
     def get_test_info(self, *labels):
         """
         Get test info by giving one or multiple label(s) to identify information.
-        Regex patterns possible.
+        Regex or fnmatch patterns possible.
         :param labels: key to find information in dict
         :return: first match or None
         """
         for label in labels:
             for key in self.test_info:
-                if re.match(label, key):
+                if re.match(label, key) or fnmatch.fnmatch(key, label):
                     return self.test_info[key]
         return None
 
     def get_channel_info(self, *labels):
         """
         Get channel info by giving one or multiple label(s) to identify information.
-        Regex pattern possible.
+        Regex or fnmmatch pattern possible.
         :param labels: key to find information in dict
         :return: first match or None
         """
         for label in labels:
             for key in self.channel_info:
-                if re.match(label, key):
+                if re.match(label, key) or fnmatch.fnmatch(key, label):
                     return self.channel_info[key]
         return None
 
