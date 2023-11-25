@@ -5,16 +5,10 @@ from glob import glob
 import zipfile
 import logging
 import shutil
-
-import pyisomme.channel
 from pyisomme.parsing import parse_mme, parse_chn, parse_xxx
-from pyisomme.channel import create_sample, channel_norm
+from pyisomme.channel import create_sample
+from pyisomme.calculate import *
 
-# logging.basicConfig(
-#     filename="pyisomme.py.log",
-#     level="INFO",
-#     filemode='w',
-# )
 logging.getLogger().addHandler(logging.StreamHandler())
 
 
@@ -190,7 +184,7 @@ class Isomme:
 
             # 001 - iterate over channels
             for channel_idx, channel in enumerate(self.channels):
-                self.channel_info[f"Name of channel {(channel_idx+1):03}"] = channel.code + (f' / {channel.info["Name of the channel"]}' if "Name of the channel" in channel.info else "")
+                self.channel_info[f"Name of channel {(channel_idx+1):03}"] = channel.code + (f' / {channel.get_info("Name of the channel")}' if channel.get_info("Name of the channel") is not None else "")
                 with open(path.parent.joinpath("Channel", f"{self.test_number}.{(channel_idx+1):03}"), "w") as xxx_file:
                     channel.info["Channel code"] = channel.code
                     # TODO: Time interval etc. anpassen anhand channel.data
@@ -218,15 +212,40 @@ class Isomme:
 
         return self
 
-    def extend(self, other):
+    def extend(self, *others):
         """
-        Extend Isomme
-        #TODO: test info -> change test_number ??
-        :param other:
-        :return:
+        Extend channel list with channels of other Isomme-object, with a single Channel-object or a list/tuple of Channel-objects.
+        Test- and Channel-Info of other Isomme-object will be ignored.
+        :param others: Isomme-Object or Channel-object or list/tuple of Channel-objects
+        :return: self
         """
-        # Extend channel list
-        self.channels += other.channels
+        for other in others:
+            if isinstance(other, Isomme):
+                self.channels += other.channels
+            elif isinstance(other, Channel):
+                self.channels.append(other)
+            elif isinstance(other, (list, tuple)):
+                for other_item in other:
+                    self.extend(other_item)
+            else:
+                raise NotImplementedError(f"Could not extend Isomme with type {type(other)}")
+        return self
+
+    def delete_duplicates(self, filterclass_duplicates=False):
+        """
+        Delete channel duplicates (same channel code). The last added one will be deleted first.
+        :param filterclass_duplicates: # TODO
+        :return: self
+        """
+        code_list = [channel.code for channel in self.channels]
+        for idx in reversed(range(len(code_list))):
+            code = code_list[idx]
+            if code_list.count(code) > 1:
+                self.channels.pop(idx)
+                code_list.pop(idx)
+        if filterclass_duplicates:
+            pass  # TODO
+        return self
 
     def __eq__(self, other):
         return self.test_number == other.test_number
