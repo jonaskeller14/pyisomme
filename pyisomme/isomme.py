@@ -144,8 +144,9 @@ class Isomme:
 
     def write(self, path, *channel_code_patterns):
         """
-        #TODO
-        :param path:
+        Write ISO-MME data to files.
+        :param path: output path where to save the ISO-MME data (.mme, folder or .zip)
+        :param channel_code_patterns: (optional) only export specific channels identified by code-pattern
         :return:
         """
         def write_info(file, name_value_dict):
@@ -198,11 +199,11 @@ class Isomme:
                 write_info(chn_file, self.channel_info)
 
         elif path.is_dir and path.suffix not in (".zip",):
-            self.write(path.joinpath(f"{self.test_number}.mme"))
+            self.write(path.joinpath(f"{self.test_number}.mme"), *channel_code_patterns)
         elif path.suffix in (".zip",):
             # 1. write by folder
             folder_path = path.parent.joinpath(self.test_number)  # foldername="<test_number>"
-            self.write(folder_path)
+            self.write(folder_path, *channel_code_patterns)
 
             # # 2. zip folder
             shutil.make_archive(str(path.parent.joinpath(path.stem)), 'zip', str(folder_path))
@@ -231,10 +232,10 @@ class Isomme:
                 raise NotImplementedError(f"Could not extend Isomme with type {type(other)}")
         return self
 
-    def delete_duplicates(self, filterclass_duplicates=False):
+    def delete_duplicates(self, filterclass_duplicates: bool = False):
         """
         Delete channel duplicates (same channel code). The last added one will be deleted first.
-        :param filterclass_duplicates: # TODO
+        :param filterclass_duplicates: Delete redundant channels and only keep channels with the least amount of filtering applied
         :return: self
         """
         code_list = [channel.code for channel in self.channels]
