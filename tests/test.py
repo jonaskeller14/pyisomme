@@ -52,6 +52,14 @@ class TestChannel(unittest.TestCase):
         assert channel.get_info("Time of first sample") == channel.get_info("[XT]ime .* f.rst sample")
 
 
+class TestLimits(unittest.TestCase):
+    def test_get_limits(self):
+        limits = pyisomme.Limits(limits=[pyisomme.Limit(code_patterns=["11NECKUP????FOX?"], points=((0,500),), name="sdfsdf", color="yellow", linestyle="--"),
+                                         pyisomme.Limit(code_patterns=["11NECKUP.*FOX[AB]"], points=((0,500),), name="sdfsdf", color="yellow", linestyle="--"),
+                                         pyisomme.Limit(code_patterns=["11NECKUP????FOY?"], points=((0,750),(100,0)), name="da", color="red", linestyle="-"), ])
+        assert len(limits.get_limits("11NECKUP00H3FOXA")) == 2
+
+
 class TestCalculate(unittest.TestCase):
     pass
 

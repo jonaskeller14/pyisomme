@@ -31,8 +31,13 @@ class Isomme:
         """
         for label in labels:
             for key in self.test_info:
-                if re.match(label, key) or fnmatch.fnmatch(key, label):
+                if fnmatch.fnmatch(key, label):
                     return self.test_info[key]
+                try:
+                    if re.match(label, key):
+                        return self.test_info[key]
+                except re.error:
+                    continue
         return None
 
     def get_channel_info(self, *labels):
@@ -44,8 +49,13 @@ class Isomme:
         """
         for label in labels:
             for key in self.channel_info:
-                if re.match(label, key) or fnmatch.fnmatch(key, label):
+                if fnmatch.fnmatch(key, label):
                     return self.channel_info[key]
+                try:
+                    if re.match(label, key):
+                        return self.channel_info[key]
+                except re.error:
+                    continue
         return None
 
     def read(self, path:str, *channel_code_patterns):
@@ -89,12 +99,12 @@ class Isomme:
                         with open(glob(str(Path(chn_filepath).parent.joinpath(f"*.{xxx}")))[0], "r") as xxx_file:
                             self.channels.append(parse_xxx(xxx_file, self.test_number))
 
-        def read_from_folder(path:Path):
+        def read_from_folder(path: Path):
             if len(list(path.glob("**/*.mme"))) > 1:
                 logging.warning("Multiple .mme files found. First will be used, others ignored.")
             read_from_mme(Path(list(path.glob("**/*.mme"))[0]))
 
-        def read_from_zip(path:Path):
+        def read_from_zip(path: Path):
             archive = zipfile.ZipFile(path, "r")
             # MME
             for filepath in archive.namelist():

@@ -28,6 +28,9 @@ class Channel:
     def __str__(self):
         return self.code
 
+    def __repr__(self):
+        return f"Channel(code={self.code})"
+
     def set_code(self, new_code):
         if not is_possible_channel_code(new_code):
             logging.warning(f"'{new_code}' not a valid channel code")
@@ -175,8 +178,13 @@ class Channel:
         """
         for label in labels:
             for key in self.info:
-                if re.match(label, key) or fnmatch(key, label):
+                if fnmatch(key, label):
                     return self.info[key]
+                try:
+                    if re.match(label, key):
+                        return self.info[key]
+                except re.error:
+                    continue
         return None
 
     def differentiate(self):
@@ -211,7 +219,9 @@ class Channel:
 
     # Operator methods
     def __eq__(self, other):
-        return self.data == other.data
+        if isinstance(other, Channel):
+            return self.data == other.data
+        return False
 
     def __ne__(self, other):
         return not __eq__(self, other)
