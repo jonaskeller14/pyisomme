@@ -1,6 +1,7 @@
 import unittest
 import sys
 import os
+import matplotlib.pyplot as plt
 sys.path.append(os.path.join(__file__, "..", ".."))
 import pyisomme
 
@@ -54,14 +55,50 @@ class TestChannel(unittest.TestCase):
 
 class TestLimits(unittest.TestCase):
     def test_get_limits(self):
-        limits = pyisomme.Limits(limits=[pyisomme.Limit(code_patterns=["11NECKUP????FOX?"], points=((0,500),), name="sdfsdf", color="yellow", linestyle="--"),
-                                         pyisomme.Limit(code_patterns=["11NECKUP.*FOX[AB]"], points=((0,500),), name="sdfsdf", color="yellow", linestyle="--"),
-                                         pyisomme.Limit(code_patterns=["11NECKUP????FOY?"], points=((0,750),(100,0)), name="da", color="red", linestyle="-"), ])
+        limits = pyisomme.Limits(limits=[pyisomme.Limit(code_patterns=["11NECKUP????FOX?"], func=lambda x: 500, name="sdfsdf", color="yellow", linestyle="--"),
+                                         pyisomme.Limit(code_patterns=["11NECKUP.*FOX[AB]"], func=lambda x: 500, name="sdfsdf", color="yellow", linestyle="--"),
+                                         pyisomme.Limit(code_patterns=["11NECKUP????FOY?"], func=lambda x: 750 - 7.5*x, name="da", color="red", linestyle="-"), ])
         assert len(limits.get_limits("11NECKUP00H3FOXA")) == 2
 
 
 class TestCalculate(unittest.TestCase):
     pass
+
+
+class TestPlotting(unittest.TestCase):
+    v1 = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "11391"), "11NECKUP????FO??", "11TIBI*FO*")
+    v2 = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "14084"), "11NECKUP????FO??", "11TIBI*FO*")
+    v3 = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "14065"), "11NECKUP????FO??", "11TIBI*FO*")
+
+    def test_plot_1(self):
+        pyisomme.plot_1(
+            [self.v1, self.v2, self.v3],
+            "11NECKUP????FOX?",
+            limits=pyisomme.Limits(limits=[ pyisomme.Limit(["11NECKUP????FOX?"], func=lambda x: 560, color="green", name="Good", upper=True),
+                                            pyisomme.Limit(["11NECKUP????FOX?"], func=lambda x: 700, color="yellow", name="Acceptable", upper=True),
+                                            pyisomme.Limit(["11NECKUP????FOX?"], func=lambda x: 840, color="orange", name="Marginal", upper=True),
+                                            pyisomme.Limit(["11NECKUP????FOX?"], func=lambda x: 840, color="red", name="Poor", lower=True),]))
+        plt.savefig(os.path.join(__file__, "..", "out", "TestPlotting_test_plot_1_1.jpg"))
+
+    def test_plot_1_xyzr(self):
+        pyisomme.plot_1_xyzr(
+            [self.v1, self.v2, self.v3],
+            "11NECKUP????FO??",
+            limits=pyisomme.Limits(limits=[ pyisomme.Limit(["11NECKUP????FOX?"], func=lambda x: 560, color="green", name="Good", upper=True),
+                                            pyisomme.Limit(["11NECKUP????FOX?"], func=lambda x: 700, color="yellow", name="Acceptable", upper=True),
+                                            pyisomme.Limit(["11NECKUP????FOX?"], func=lambda x: 840, color="orange", name="Marginal", upper=True),
+                                            pyisomme.Limit(["11NECKUP????FOX?"], func=lambda x: 840, color="red", name="Poor", lower=True),]))
+        plt.savefig(os.path.join(__file__, "..", "out", "TestPlotting_test_plot_1_xyzr_1.jpg"))
+
+    def test_plot_4x1_xyzr(self):
+        pyisomme.plot_4x1_xyzr(
+            [self.v1, self.v2, self.v3],
+            "11NECKUP????FO??",
+            limits=pyisomme.Limits(limits=[ pyisomme.Limit(["11NECKUP????FOX?"], func=lambda x: 560, color="green", name="Good", upper=True),
+                                            pyisomme.Limit(["11NECKUP????FOX?"], func=lambda x: 700, color="yellow", name="Acceptable", upper=True),
+                                            pyisomme.Limit(["11NECKUP????FOX?"], func=lambda x: 840, color="orange", name="Marginal", upper=True),
+                                            pyisomme.Limit(["11NECKUP????FOX?"], func=lambda x: 840, color="red", name="Poor", lower=True),]))
+        plt.savefig(os.path.join(__file__, "..", "out", "TestPlotting_test_plot_4x1_xyzr_1.jpg"))
 
 
 if __name__ == '__main__':
