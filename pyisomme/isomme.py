@@ -1,15 +1,18 @@
+from pyisomme.parsing import parse_mme, parse_chn, parse_xxx
+from pyisomme.channel import create_sample, Code
+from pyisomme.calculate import *
+from pyisomme.utils import debug_logging
+
+from tqdm import tqdm
+from tqdm.contrib.logging import logging_redirect_tqdm
 import os
+import re
 from pathlib import Path
 import fnmatch
 from glob import glob
 import zipfile
 import logging
 import shutil
-from pyisomme.parsing import parse_mme, parse_chn, parse_xxx
-from pyisomme.channel import create_sample
-from pyisomme.calculate import *
-
-logging.getLogger().addHandler(logging.StreamHandler())
 
 
 class Isomme:
@@ -58,7 +61,7 @@ class Isomme:
                     continue
         return None
 
-    def read(self, path:str, *channel_code_patterns):
+    def read(self, path: str, *channel_code_patterns):
         """
         path must reference...
         - a zip which contains .mme-file
@@ -67,7 +70,7 @@ class Isomme:
         :param path:
         :return:
         """
-        def read_from_mme(path:Path):
+        def read_from_mme(path: Path):
             # MME
             self.test_number = path.stem
             with open(path, "r") as mme_file:
@@ -84,20 +87,21 @@ class Isomme:
                     self.channel_info = parse_chn(chn_file)
             # 001
             self.channels = []  # in case channel exist trough constructor
-            for key in fnmatch.filter(self.channel_info.keys(), "Name of channel *"):
-                code = self.channel_info[key].split()[0].split("/")[0]
-                if len(channel_code_patterns) == 0:
-                    skip = False
-                else:
-                    skip = True
-                    for channel_code_pattern in channel_code_patterns:
-                        if fnmatch.fnmatch(code, channel_code_pattern):
-                            skip = False
-                if not skip:
-                    xxx = key.replace("Name of channel", "").replace(" ", "")
-                    if xxx.isdigit() and len(glob(str(Path(chn_filepath).parent.joinpath(f"*.{xxx}")))) >= 1:
-                        with open(glob(str(Path(chn_filepath).parent.joinpath(f"*.{xxx}")))[0], "r") as xxx_file:
-                            self.channels.append(parse_xxx(xxx_file, self.test_number))
+            with logging_redirect_tqdm():
+                for key in tqdm(fnmatch.filter(self.channel_info.keys(), "Name of channel *"), desc=f"Read Channel of {self.test_number}"):
+                    code = self.channel_info[key].split()[0].split("/")[0]
+                    if len(channel_code_patterns) == 0:
+                        skip = False
+                    else:
+                        skip = True
+                        for channel_code_pattern in channel_code_patterns:
+                            if fnmatch.fnmatch(code, channel_code_pattern):
+                                skip = False
+                    if not skip:
+                        xxx = key.replace("Name of channel", "").replace(" ", "")
+                        if xxx.isdigit() and len(glob(str(Path(chn_filepath).parent.joinpath(f"*.{xxx}")))) >= 1:
+                            with open(glob(str(Path(chn_filepath).parent.joinpath(f"*.{xxx}")))[0], "r", encoding="utf-8") as xxx_file:
+                                self.channels.append(parse_xxx(xxx_file, self.test_number))
 
         def read_from_folder(path: Path):
             if len(list(path.glob("**/*.mme"))) > 1:
@@ -125,20 +129,21 @@ class Isomme:
                     break
             # 001
             self.channels = []  # in case channel exist trough constructor
-            for key in fnmatch.filter(self.channel_info.keys(), "Name of channel *"):
-                code = self.channel_info[key].split()[0].split("/")[0]
-                if len(channel_code_patterns) == 0:
-                    skip = False
-                else:
-                    skip = True
-                    for channel_code_pattern in channel_code_patterns:
-                        if fnmatch.fnmatch(code, channel_code_pattern):
-                            skip = False
-                if not skip:
-                    xxx = key.replace("Name of channel", "").replace(" ", "")
-                    if xxx.isdigit() and len(fnmatch.filter(archive.namelist(), str(Path(chn_filepath).parent.joinpath(f"*.{xxx}")))) >= 1:
-                        with archive.open(fnmatch.filter(archive.namelist(), str(Path(chn_filepath).parent.joinpath(f"*.{xxx}")))[0], "r") as xxx_file:
-                            self.channels.append(parse_xxx(xxx_file, self.test_number))
+            with logging_redirect_tqdm():
+                for key in tqdm(fnmatch.filter(self.channel_info.keys(), "Name of channel *"), desc=f"Read Channel of {self.test_number}"):
+                    code = self.channel_info[key].split()[0].split("/")[0]
+                    if len(channel_code_patterns) == 0:
+                        skip = False
+                    else:
+                        skip = True
+                        for channel_code_pattern in channel_code_patterns:
+                            if fnmatch.fnmatch(code, channel_code_pattern):
+                                skip = False
+                    if not skip:
+                        xxx = key.replace("Name of channel", "").replace(" ", "")
+                        if xxx.isdigit() and len(fnmatch.filter(archive.namelist(), str(Path(chn_filepath).parent.joinpath(f"*.{xxx}")))) >= 1:
+                            with archive.open(fnmatch.filter(archive.namelist(), str(Path(chn_filepath).parent.joinpath(f"*.{xxx}")))[0], "r") as xxx_file:
+                                self.channels.append(parse_xxx(xxx_file, self.test_number))
 
         path = Path(path)
         if path.suffix == ".mme":
@@ -198,7 +203,6 @@ class Isomme:
                 self.channel_info[f"Name of channel {(channel_idx+1):03}"] = channel.code + (f' / {channel.get_info("Name of the channel")}' if channel.get_info("Name of the channel") is not None else "")
                 with open(path.parent.joinpath("Channel", f"{self.test_number}.{(channel_idx+1):03}"), "w") as xxx_file:
                     channel.info["Channel code"] = channel.code
-                    # TODO: Time interval etc. anpassen anhand channel.data
                     xxx_file = write_info(xxx_file, channel.info)
                     xxx_file.write(channel.data.to_string(header=False, index=False).replace(" ", ""))
 
@@ -264,6 +268,9 @@ class Isomme:
     def __ne__(self, other):
         return not __eq__(self, other)
 
+    def __repr__(self):
+        return f"Isomme({self.test_number})"
+
     def __str__(self):
         return self.test_number
 
@@ -283,43 +290,134 @@ class Isomme:
         for channel in self.channels:
             yield channel
 
-    def get_channel(self, *channel_code_patterns: str, filter: bool = True, calculate: bool = True) -> Channel:
+    def __hash__(self):
+        return hash(self.test_number)
+
+    @debug_logging
+    def get_channel(self, *code_patterns: str, filter: bool = True, calculate: bool = True, differentiate=True, integrate=True) -> Channel:
         """
         Get channel by channel code pattern.
         First match will be returned, although multiple matches may exist.
         If channel does not exist, it will be created through filtering and calculations if possible.
-        :param channel_code_patterns:
+        :param code_patterns:
         :param filter: create channel by filtering if channel does not exist yet
         :param calculate: create channel by calculation if channel does not exist yet
         :return: Channel object or None
         """
-        for channel_code_pattern in channel_code_patterns:
+        for code_pattern in code_patterns:
             # 1. Channel does exist already
             for channel in self.channels:
-                if fnmatch.fnmatch(channel.code, channel_code_pattern):
+                if fnmatch.fnmatch(channel.code, code_pattern):
                     return channel
             # 2. Filter Channel
-            if filter and fnmatch.fnmatch(channel_code_pattern, "*[ABCD]"):
+            if filter and fnmatch.fnmatch(code_pattern, "*[ABCD]"):
                 for channel in self.channels:
-                    if fnmatch.fnmatch(channel.code, channel_code_pattern[:-1] + "?"):
-                        return channel.cfc(channel_code_pattern[-1])
+                    if fnmatch.fnmatch(channel.code, code_pattern[:-1] + "?"):
+                        return channel.cfc(filter_class=code_pattern[-1])
             # 3. Calculate Channel
             if calculate:
+                try:
+                    code_pattern = Code(code_pattern)
+                except AssertionError:
+                    continue
+
                 # Resultant Channel
-                if fnmatch.fnmatch(channel_code_pattern, "??????????????R?"):
-                    xyz_channel = [self.get_channel(channel_code_pattern[:14] + xyz + channel_code_pattern[15]) for xyz in "XYZ"]
-                    if None not in xyz_channel:
-                        return calculate_resultant(*xyz_channel)
+                if code_pattern.direction == "R" and code_pattern.filter_class != "X":
+                    channel_xyz = [self.get_channel(code_pattern.set(direction=direction)) for direction in "XYZ"]
+                    if None not in channel_xyz:
+                        return calculate_resultant(*channel_xyz)
+                    channel_123 = [self.get_channel(code_pattern.set(direction=direction)) for direction in "123"]
+                    if None not in channel_123:
+                        return calculate_resultant(*channel_123)
+
+                # BrIC
+                if code_pattern.main_location == "BRIC" and code_pattern.filter_class == "X":
+                    channel_head_av_xyz = [self.get_channel(code_pattern.set(main_location="HEAD", physical_dimension="AV", direction=direction, filter_class="D")) for direction in "XYZ"]
+                    if None not in channel_head_av_xyz:
+                        return calculate_bric(*channel_head_av_xyz)
+
                 # HIC
-                if fnmatch.fnmatch(channel_code_pattern, "??HICR??????????"):
-                    head_channel = self.get_channel(f"{channel_code_pattern[:2]}HEAD??????ACR?")
+                if code_pattern.main_location == "HICR" and code_pattern.filter_class == "X":
+                    head_channel = self.get_channel(code_pattern.set(main_location="HEAD",
+                                                                     fine_location_1="??",
+                                                                     fine_location_2="00",
+                                                                     filter_class="A"))
                     if head_channel is not None:
-                        return calculate_hic(head_channel)
-                # TODO a3ms
-            # TODO: 4. Differentiate
+                        return calculate_hic(head_channel, max_delta_t=int(code_pattern.fine_location_2))
+
+                # xms
+                if fnmatch.fnmatch(code_pattern.fine_location_2, "[0-9][CS]") and code_pattern.filter_class == "X":
+                    channel = self.get_channel(code_pattern.set(fine_location_2="00",
+                                                                filter_class="?"))
+                    if channel is not None:
+                        return calculate_xms(channel, min_delta_t=int(code_pattern.fine_location_2[0]), method=code_pattern.fine_location_2[1])
+
+                # Damage
+                if code_pattern.fine_location_1 == "DA" and code_pattern.fine_location_2 == "MA":
+                    if code_pattern.filter_class == "X":
+                        channel_xyz = [self.get_channel(code_pattern.set(fine_location_1="00", fine_location_2="00", direction=direction, filter_class="A")) for direction in "XYZ"]
+                        if None not in channel_xyz:
+                            if code_pattern.direction == "X":
+                                return calculate_damage(*channel_xyz)[4]
+                            if code_pattern.direction == "Y":
+                                return calculate_damage(*channel_xyz)[5]
+                            if code_pattern.direction == "Z":
+                                return calculate_damage(*channel_xyz)[6]
+                            if code_pattern.direction == "R":
+                                return calculate_damage(*channel_xyz)[7]
+                    else:
+                        channel_xyz = [self.get_channel(code_pattern.set(fine_location_1="00", fine_location_2="00", direction=direction, filter_class=code_pattern.filter_class)) for direction in "XYZ"]
+                        if None not in channel_xyz:
+                            if code_pattern.direction == "X":
+                                return calculate_damage(*channel_xyz)[0]
+                            if code_pattern.direction == "Y":
+                                return calculate_damage(*channel_xyz)[1]
+                            if code_pattern.direction == "Z":
+                                return calculate_damage(*channel_xyz)[2]
+                            if code_pattern.direction == "R":
+                                return calculate_damage(*channel_xyz)[3]
+
+                # VC
+                if code_pattern.main_location == "VCCR" and code_pattern.filter_class == "X":
+                    channel = self.get_channel(code_pattern.set(main_location="CHST",
+                                                                filter_class="C",
+                                                                physical_dimension="DS"))
+                    if channel is not None:
+                        return calculate_chest_vc(channel)
+
+                # OLC
+                if code_pattern.fine_location_1 == "0O" and code_pattern.fine_location_2 == "LC" and code_pattern.physical_dimension == "VE":
+                    tmp = code_pattern.set(fine_location_1="??", fine_location_2="??")
+                    if code_pattern.filter_class == "X":
+                        tmp = code_pattern.set(filter_class="A")
+                    channel = self.get_channel(tmp)
+
+                    if channel is not None:
+                        olc, olc_visual = calculate_olc(channel)
+                        if code_pattern.filter_class == "X":
+                            return olc
+                        else:
+                            return olc_visual
+
+            # 4. Differentiate
+            if differentiate:
+                try:
+                    return self.get_channel(code_pattern.integrate(), calculate=calculate, integrate=False).differentiate()  # TODO: Alle rekursiven aufruge von get_channel argumente mitgeben, wenn calcualte False auch nicht auf integrierte anwenden
+                except (AttributeError, NotImplementedError) as error:
+                    logging.debug(error)
+
+            # 5. Integrate
+            if integrate:
+                try:
+                    return self.get_channel(code_pattern.differentiate(), calculate=calculate, differentiate=False).integrate()
+                except (AttributeError, NotImplementedError) as error:
+                    logging.debug(error)
+
+            logging.info(f"No channel found for pattern: '{code_pattern}'")
         return None
 
-    def get_channels(self, *channel_code_patterns:str) -> list:
+    @debug_logging
+    def get_channels(self, *channel_code_patterns: str) -> list:
         """
         Get all channels by channel code patter. All Wildcards are supported.
         A list of all matching channels will be returned.
