@@ -40,7 +40,6 @@ def parse_chn(chn_file) -> dict:
 
 
 def parse_xxx(xxx_file, test_number="data"):
-    # TODO -> read als funktion von Channel
     lines = xxx_file.readlines()
     info = {}
     start_data_idx = 0
@@ -59,15 +58,10 @@ def parse_xxx(xxx_file, test_number="data"):
             break
         if value is not None and key not in info:
             info[key] = value
-    try:
-        code = info["Channel code"]
-    except KeyError:
-        logging.warning("Channel code if missing {}")
-        code = None
-    try:
-        unit = info["Unit"]
-    except KeyError:
-        unit = None
+
+    code = info.get("Channel code")
+    unit = info.get("Unit")
+
     # data
     array = np.array(lines[start_data_idx:])
     # TODO: Explicit
@@ -83,7 +77,7 @@ def parse_xxx(xxx_file, test_number="data"):
     return Channel(code, data, unit=unit, info=info)
 
 
-def get_value(text:str):
+def get_value(text: str):
     """
     Converts a string into suitable datatype.
     - None
