@@ -17,10 +17,13 @@ def parse_mme(mme_file) -> dict:
     test_info = {}
     for line in lines:
         try:
-            line = line.strip().decode('utf-8')
+            try:
+                line = line.strip().decode("iso-8859-1")
+            except UnicodeDecodeError:
+                line = line.strip().decode('utf-8')
         except AttributeError:
             line = line.strip()
-        if line.strip == "":
+        if line.strip() == "":
             continue
         if len(line.split()) == 2:
             key = line.split()[0].strip()
@@ -45,10 +48,13 @@ def parse_xxx(xxx_file, test_number="data"):
     start_data_idx = 0
     for idx, line in enumerate(lines):
         try:
-            line = line.strip().decode('utf-8')
+            try:
+                line = line.strip().decode("iso-8859-1")
+            except UnicodeDecodeError:
+                line = line.strip().decode('utf-8')
         except AttributeError:
             line = line.strip()
-        if line.strip == "":
+        if line.strip() == "":
             continue
         if len(line.split(":", 1)) >= 2:
             key = line.split(":", 1)[0].strip()
