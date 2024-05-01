@@ -291,7 +291,7 @@ class Channel:
                 output_values[i] = a0 * inp0 + a1 * inp1 + a2 * inp2 + b1 * out1 + b2 * out2
 
             # final
-            data = self.data
+            data = copy.deepcopy(self.data)
             data.iloc[:, 0] = output_values
 
             info = self.info
