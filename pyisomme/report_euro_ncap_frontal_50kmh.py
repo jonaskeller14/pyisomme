@@ -5,7 +5,6 @@ from pyisomme.criterion import Criterion
 from pyisomme.page import *
 
 from astropy.constants import g0
-from pptx.dml.color import RGBColor
 
 
 class EuroNCAP_Frontal_50kmh(Report):
@@ -703,7 +702,8 @@ class EuroNCAP_Frontal_50kmh(Report):
 
         def __init__(self, report):
             super().__init__(report)
-            self.codes = {isomme: [f"1{report.p_driver[isomme]}CHST000???DSXC", f"1{report.p_driver[isomme]}VCCR000???VEXX"] for isomme in self.report.isomme_list}
+            self.codes = {isomme: [f"1{report.p_driver[isomme]}CHST000???DSXC",
+                                   f"1{report.p_driver[isomme]}VCCR000???VEXX"] for isomme in self.report.isomme_list}
 
     class Page_Driver_Femur_Axial_Force(Page_Plot_nxn):
         name: str = "Driver Femur Axial Force"
@@ -714,7 +714,8 @@ class EuroNCAP_Frontal_50kmh(Report):
 
         def __init__(self, report):
             super().__init__(report)
-            self.codes = {isomme: [f"1{self.report.p_driver[isomme]}FEMRLE00??FOZB", f"1{self.report.p_driver[isomme]}FEMRRI00??FOZB"] for isomme in self.report.isomme_list}
+            self.codes = {isomme: [f"1{self.report.p_driver[isomme]}FEMRLE00??FOZB",
+                                   f"1{self.report.p_driver[isomme]}FEMRRI00??FOZB"] for isomme in self.report.isomme_list}
 
     class Page_Front_Passenger_Result_Table(Page_Result_Table):
         name: str = "Front Passenger Result Table"
@@ -834,4 +835,5 @@ class EuroNCAP_Frontal_50kmh(Report):
 
         def __init__(self, report):
             super().__init__(report)
-            self.codes = {isomme: [f"1{self.report.p_rear_passenger[isomme]}FEMRLE00??FOZB", f"1{self.report.p_rear_passenger[isomme]}FEMRRI00??FOZB"] for isomme in self.report.isomme_list}
+            self.codes = {isomme: [f"1{self.report.p_rear_passenger[isomme]}FEMRLE00??FOZB",
+                                   f"1{self.report.p_rear_passenger[isomme]}FEMRRI00??FOZB"] for isomme in self.report.isomme_list}

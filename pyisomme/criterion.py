@@ -17,7 +17,7 @@ class Criterion:
         self.rating = np.nan
         self.limits = Limits(name=report.name, limit_list=[])
 
-    def extend_limit_list(self, limit_list:list):
+    def extend_limit_list(self, limit_list: list):
         self.limits.limit_list.extend(limit_list)
         self.report.limits[self.isomme].limit_list.extend(limit_list)
 

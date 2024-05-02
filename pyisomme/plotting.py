@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from pyisomme.limits import Limits, limit_list_unique, limit_list_sort
 
 import copy

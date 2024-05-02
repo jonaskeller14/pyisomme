@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from pyisomme.unit import Unit
 
 import re
@@ -178,7 +180,9 @@ class Channel:
         elif isinstance(new_unit, str):
             if new_unit == "g" and self.code.physical_dimension == "AC":
                 new_unit = g0
-
+        if new_unit is None:
+            logging.warning("None is not a valid unit. Set unit to 1.")
+            new_unit = "1"
         self.unit = Unit(new_unit)
         return self
 
@@ -456,7 +460,7 @@ class Channel:
         return Channel(self.code, new_data, self.unit, self.info).set_info({"Calculation History": "abs(x)"}, replace=False)
 
 
-def create_sample(code: str = "SAMPLE??????????", t_range: tuple = (0, 0.01, 1000), y_range: tuple = (0, 10), mode: str = "sin", unit: str | Unit = None):
+def create_sample(code: str = "SAMPLE??????????", t_range: tuple = (0, 0.01, 1000), y_range: tuple = (0, 10), mode: str = "sin", unit: str | Unit = "1"):
     """
     Create a sample Channel object for testing purposes.
     :param code: channel code (str)

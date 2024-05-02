@@ -1,9 +1,9 @@
+from pyisomme.channel import Channel
+
 import logging
 from datetime import datetime
 import numpy as np
 import pandas as pd
-
-from pyisomme.channel import Channel
 
 
 def parse_mme(mme_file) -> dict:
@@ -23,18 +23,26 @@ def parse_mme(mme_file) -> dict:
                 line = line.strip().decode('utf-8')
         except AttributeError:
             line = line.strip()
-        if line.strip() == "":
+
+        if line == "":
             continue
+
+        # Extract variable name and value
         if len(line.split()) == 2:
-            key = line.split()[0].strip()
+            name = line.split()[0].strip()
             value = get_value(line.split()[1].strip())
         elif len(line.split(":", 1)) >= 2:
-            key = line.split(":", 1)[0].strip()
+            name = line.split(":", 1)[0].strip()
             value = get_value(line.split(":", 1)[1].strip())
         else:
-            continue # TODO: automatic, aber auch feste zuschreiben des data type durch xml file: -> <Descriptor name="Data format edition number" Mandatory="YES" Type="datetime"/>
-        if value is not None and key not in test_info:
-            test_info[key] = value
+            logging.error(f"Could not parse malformed line: '{line}'")
+            continue
+
+        # Add to dict
+        if name not in test_info:
+            test_info[name] = value
+        else:
+            logging.error(f"NotImplementedError: Multiple Variables with the same name found: '{name}'")
     return test_info
 
 
@@ -54,16 +62,21 @@ def parse_xxx(xxx_file, test_number="data"):
                 line = line.strip().decode('utf-8')
         except AttributeError:
             line = line.strip()
-        if line.strip() == "":
+
+        if line == "":
             continue
         if len(line.split(":", 1)) >= 2:
-            key = line.split(":", 1)[0].strip()
+            name = line.split(":", 1)[0].strip()
             value = get_value(line.split(":", 1)[1].strip())
         else:
             start_data_idx = idx
             break
-        if value is not None and key not in info:
-            info[key] = value
+
+        # Add to dict
+        if name not in info:
+            info[name] = value
+        else:
+            logging.error(f"NotImplementedError: Multiple Variables with the same name found: '{name}'")
 
     code = info.get("Channel code")
     unit = info.get("Unit")

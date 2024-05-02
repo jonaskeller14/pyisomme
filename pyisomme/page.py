@@ -129,4 +129,3 @@ class Page_OLC(Page_Plot_nxn):
     def __init__(self, report):
         super().__init__(report)
         self.codes = {isomme: ["14BPIL??????VEXA", "14BPIL0OLC??VEXA"] for isomme in self.report.isomme_list}
-

@@ -52,8 +52,10 @@ class Limits:
     def __repr__(self):
         return f"Limits({self.name})"
 
+
 def limit_list_sort(limit_list: list):
     return sorted(limit_list, key=lambda limit: (limit.func(0), 0 if limit.upper and limit.lower else -1 if limit.upper else 1 if limit.lower else 0))
+
 
 def limit_list_unique(limit_list: list, x, x_unit, y_unit):
     filtered_limit_list = []

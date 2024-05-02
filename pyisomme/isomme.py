@@ -196,7 +196,7 @@ class Isomme:
             for name in list(self.channel_info.keys()):
                 if "Name of channel" in name:
                     del self.channel_info[name]
-            self.channel_info["Number of channels"] = len(self.channels)
+            self.channel_info["Number of channels"] = len(self.channels)  # FIXME channel_code_patterns
 
             # 001 - iterate over channels
             for channel_idx, channel in enumerate(self.channels):

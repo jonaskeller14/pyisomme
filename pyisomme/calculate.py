@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from pyisomme.channel import Channel, time_intersect
 from pyisomme.unit import Unit
 from pyisomme.utils import debug_logging
@@ -335,7 +337,7 @@ def calculate_chest_vc(channel: Channel | None, scaling_factor: float = None, de
     if channel is None:
         return None
 
-    channel = copy.deepcopy(channel).convert_unit("m")  # TODO: überall deepcopy?
+    channel = copy.deepcopy(channel).convert_unit("m")
 
     if scaling_factor is None or defo_constant is None:
         if dummy is None:
