@@ -1,0 +1,3 @@
+[submodule "ISO18571"]
+	path = ISO18571
+	url = https://openvt.eu/validation-metrics/ISO18571.git
