@@ -76,8 +76,12 @@ class Isomme:
         def read_from_mme(path: Path):
             # MME
             self.test_number = path.stem
-            with open(path, "r") as mme_file:
-                self.test_info = parse_mme(mme_file)
+            try:
+                with open(path, "r", encoding="utf-8") as mme_file:
+                    self.test_info = parse_mme(mme_file.read())
+            except UnicodeDecodeError:
+                with open(path, "r", encoding="iso-8859-1") as mme_file:
+                    self.test_info = parse_mme(mme_file.read())
             # CHN
             chn_files = glob(str(path.parent.joinpath("**", "*.chn")), recursive=True)
             if len(chn_files) == 0:
@@ -86,8 +90,12 @@ class Isomme:
                 if len(chn_files) > 1:
                     logger.warning("Multiple .chn files found. First will be used, others ignored.")
                 chn_filepath = chn_files[0]
-                with open(chn_files[0], "r") as chn_file:
-                    self.channel_info = parse_chn(chn_file)
+                try:
+                    with open(chn_filepath, "r", encoding="utf-8") as chn_file:
+                        self.channel_info = parse_chn(chn_file.read())
+                except UnicodeDecodeError:
+                    with open(chn_filepath, "r", encoding="iso-8859-1") as chn_file:
+                        self.channel_info = parse_chn(chn_file.read())
             # 001
             self.channels = []  # in case channel exist trough constructor
             with logging_redirect_tqdm():
@@ -103,8 +111,13 @@ class Isomme:
                     if not skip:
                         xxx = key.replace("Name of channel", "").replace(" ", "")
                         if xxx.isdigit() and len(glob(str(Path(chn_filepath).parent.joinpath(f"*.{xxx}")))) >= 1:
-                            with open(glob(str(Path(chn_filepath).parent.joinpath(f"*.{xxx}")))[0], "r", encoding="utf-8") as xxx_file:
-                                self.channels.append(parse_xxx(xxx_file, self.test_number))
+                            xxx_path = glob(str(Path(chn_filepath).parent.joinpath(f"*.{xxx}")))[0]
+                            try:
+                                with open(xxx_path, "r", encoding="utf-8") as xxx_file:
+                                    self.channels.append(parse_xxx(xxx_file.read(), self.test_number))
+                            except UnicodeDecodeError:
+                                with open(xxx_path, "r", encoding="iso-8859-1") as xxx_file:
+                                    self.channels.append(parse_xxx(xxx_file.read(), self.test_number))
 
         def read_from_folder(path: Path):
             if len(list(path.glob("**/*.mme"))) > 1:
@@ -118,7 +131,11 @@ class Isomme:
                 if fnmatch.fnmatch(filepath, "*.mme"):
                     self.test_number = Path(filepath).stem
                     with archive.open(filepath, "r") as mme_file:
-                        self.test_info = parse_mme(mme_file)
+                        mme_content = mme_file.read()
+                        try:
+                            self.test_info = parse_mme(mme_content.decode("utf-8"))
+                        except UnicodeDecodeError:
+                            self.test_info = parse_mme(mme_content.decode("iso-8859-1"))
                     break
             if self.test_number is None:
                 logger.error("No .mme file found.")
@@ -128,7 +145,11 @@ class Isomme:
                 if fnmatch.fnmatch(filepath, "*.chn"):
                     chn_filepath = filepath
                     with archive.open(filepath, "r") as chn_file:
-                        self.channel_info = parse_chn(chn_file)
+                        chn_content = chn_file.read()
+                        try:
+                            self.channel_info = parse_chn(chn_content.decode("utf-8"))
+                        except UnicodeDecodeError:
+                            self.channel_info = parse_chn(chn_content.decode("iso-8859-1"))
                     break
             # 001
             self.channels = []  # in case channel exist trough constructor
@@ -146,7 +167,11 @@ class Isomme:
                         xxx = key.replace("Name of channel", "").replace(" ", "")
                         if xxx.isdigit() and len(fnmatch.filter(archive.namelist(), str(Path(chn_filepath).parent.joinpath(f"*.{xxx}")))) >= 1:
                             with archive.open(fnmatch.filter(archive.namelist(), str(Path(chn_filepath).parent.joinpath(f"*.{xxx}")))[0], "r") as xxx_file:
-                                self.channels.append(parse_xxx(xxx_file, self.test_number))
+                                xxx_content = xxx_file.read()
+                                try:
+                                    self.channels.append(parse_xxx(xxx_content.decode("utf-8"), self.test_number))
+                                except UnicodeDecodeError:
+                                    self.channels.append(parse_xxx(xxx_content.decode("iso-8859-1"), self.test_number))
 
         path = Path(path)
         if path.suffix == ".mme":

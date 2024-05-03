@@ -9,23 +9,11 @@ import pandas as pd
 logger = logging.getLogger(__name__)
 
 
-def parse_mme(mme_file) -> dict:
-    """
-    # TODO: nicht von leerem ausgehen sondern ergänzen -> self -> methode in class reinziehen
-    # TODO: Comment können mehrfach vorkommen -> list default empty
-    :param mme_file:
-    :return:
-    """
-    lines = mme_file.readlines()
+def parse_mme(text: str) -> dict:
+    lines = text.splitlines()
     test_info = {}
     for line in lines:
-        try:
-            try:
-                line = line.strip().decode("iso-8859-1")
-            except UnicodeDecodeError:
-                line = line.strip().decode('utf-8')
-        except AttributeError:
-            line = line.strip()
+        line = line.strip()
 
         if line == "":
             continue
@@ -49,22 +37,16 @@ def parse_mme(mme_file) -> dict:
     return test_info
 
 
-def parse_chn(chn_file) -> dict:
-    return parse_mme(chn_file)
+def parse_chn(text: str) -> dict:
+    return parse_mme(text)
 
 
-def parse_xxx(xxx_file, test_number="data"):
-    lines = xxx_file.readlines()
+def parse_xxx(text: str, test_number="data"):
+    lines = text.splitlines()
     info = {}
     start_data_idx = 0
     for idx, line in enumerate(lines):
-        try:
-            try:
-                line = line.strip().decode("iso-8859-1")
-            except UnicodeDecodeError:
-                line = line.strip().decode('utf-8')
-        except AttributeError:
-            line = line.strip()
+        line = line.strip()
 
         if line == "":
             continue

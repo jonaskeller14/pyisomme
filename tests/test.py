@@ -21,6 +21,96 @@ class TestUnit(unittest.TestCase):
         pyisomme.Unit("")
 
 
+class TestParsing(unittest.TestCase):
+    def test_utf_8(self):
+        iso = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "tests", "utf-8"))
+        print(iso.test_info)
+        print(iso.channel_info)
+        print(iso.channels)
+        print(iso.channels[0].info)
+        assert len(iso.test_info) != 0
+        assert len(iso.channel_info) != 0
+        assert len(iso.channels) != 0
+        assert len(iso.channels[0].info) != 0
+
+    def test_ascii(self):
+        iso = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "tests", "ascii"))
+        print(iso.test_info)
+        print(iso.channel_info)
+        print(iso.channels)
+        print(iso.channels[0].info)
+        assert len(iso.test_info) != 0
+        assert len(iso.channel_info) != 0
+        assert len(iso.channels) != 0
+        assert len(iso.channels[0].info) != 0
+
+    def test_windows_1252(self):
+        iso = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "tests", "windows-1252"))
+        print(iso.test_info)
+        print(iso.channel_info)
+        print(iso.channels)
+        print(iso.channels[0].info)
+        assert len(iso.test_info) != 0
+        assert len(iso.channel_info) != 0
+        assert len(iso.channels) != 0
+        assert len(iso.channels[0].info) != 0
+
+    def test_iso_8859_1(self):
+        iso = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "tests", "iso-8859-1"))
+        print(iso.test_info)
+        print(iso.channel_info)
+        print(iso.channels)
+        print(iso.channels[0].info)
+        assert len(iso.test_info) != 0
+        assert len(iso.channel_info) != 0
+        assert len(iso.channels) != 0
+        assert len(iso.channels[0].info) != 0
+
+    def test_utf_8_zip(self):
+        iso = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "tests", "utf-8.zip"))
+        print(iso.test_info)
+        print(iso.channel_info)
+        print(iso.channels)
+        print(iso.channels[0].info)
+        assert len(iso.test_info) != 0
+        assert len(iso.channel_info) != 0
+        assert len(iso.channels) != 0
+        assert len(iso.channels[0].info) != 0
+
+    def test_ascii_zip(self):
+        iso = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "tests", "ascii.zip"))
+        print(iso.test_info)
+        print(iso.channel_info)
+        print(iso.channels)
+        print(iso.channels[0].info)
+        assert len(iso.test_info) != 0
+        assert len(iso.channel_info) != 0
+        assert len(iso.channels) != 0
+        assert len(iso.channels[0].info) != 0
+
+    def test_windows_1252_zip(self):
+        iso = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "tests", "windows-1252.zip"))
+        print(iso.test_info)
+        print(iso.channel_info)
+        print(iso.channels)
+        print(iso.channels[0].info)
+        assert len(iso.test_info) != 0
+        assert len(iso.channel_info) != 0
+        assert len(iso.channels) != 0
+        assert len(iso.channels[0].info) != 0
+
+    def test_iso_8859_1_zip(self):
+        iso = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "tests", "iso-8859-1.zip"))
+        print(iso.test_info)
+        print(iso.channel_info)
+        print(iso.channels)
+        print(iso.channels[0].info)
+        assert len(iso.test_info) != 0
+        assert len(iso.channel_info) != 0
+        assert len(iso.channels) != 0
+        assert len(iso.channels[0].info) != 0
+
+
 class TestIsomme(unittest.TestCase):
     def test_init(self):
         pyisomme.Isomme()
