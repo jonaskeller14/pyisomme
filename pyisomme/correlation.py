@@ -3,6 +3,7 @@ from pyisomme.channel import Channel, time_intersect
 import numpy as np
 import logging
 
+
 logger = logging.getLogger(__name__)
 
 

@@ -7,6 +7,9 @@ import logging
 import numpy as np
 
 
+logger = logging.getLogger(__name__)
+
+
 class Limits:
     name: str
     limit_list: list
@@ -98,7 +101,7 @@ class Limit:
             if self.x_unit is not None:
                 x = x * Unit(x_unit).to(Unit(self.x_unit))
             else:
-                logging.warning(f"Could not convert unit of {self}. Attribute x_unit missing.")
+                logger.warning(f"Could not convert unit of {self}. Attribute x_unit missing.")
 
         # Calculate data
         y = self.func(x)
@@ -108,7 +111,7 @@ class Limit:
             if self.y_unit is not None:
                 y *= Unit(self.y_unit).to(Unit(y_unit))
             else:
-                logging.warning(f"Could not convert unit of {self}. Attribute y_unit missing.")
+                logger.warning(f"Could not convert unit of {self}. Attribute y_unit missing.")
         return y
 
     def __repr__(self):

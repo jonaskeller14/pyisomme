@@ -5,6 +5,10 @@ from pyisomme.criterion import Criterion
 from pyisomme.page import *
 
 from astropy.constants import g0
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 class EuroNCAP_Frontal_50kmh(Report):
@@ -73,11 +77,11 @@ class EuroNCAP_Frontal_50kmh(Report):
             self.criterion_DoorOpeningDuringImpact = self.Criterion_DoorOpeningDuringImpact(report, isomme)
 
         def calculation(self):
-            logging.info("Calculate Driver")
+            logger.info("Calculate Driver")
             self.criterion_driver.calculate()
-            logging.info("Calculate Front Passenger")
+            logger.info("Calculate Front Passenger")
             self.criterion_front_passenger.calculate()
-            logging.info("Calculate Rear Passenger")
+            logger.info("Calculate Rear Passenger")
             self.criterion_rear_passenger.calculate()
 
             self.rating = np.nanmean([
@@ -141,7 +145,7 @@ class EuroNCAP_Frontal_50kmh(Report):
                 def calculation(self):
                     if (self.report.p_driver[self.isomme] == self.p and self.report.steering_wheel_airbag_exists[self.isomme]) or self.report.p_front_passenger[self.isomme] == self.p:
                         if np.max(np.abs(self.isomme.get_channel(f"1{self.p}HEAD??00??ACRA").get_data(unit="m/s^2"))) / 9.81 > 80:
-                            logging.info(f"Hard Head contact assumed for p={self.p} in {self.isomme}")
+                            logger.info(f"Hard Head contact assumed for p={self.p} in {self.isomme}")
                             self.hard_contact = True
 
                         if self.hard_contact:
@@ -625,6 +629,7 @@ class EuroNCAP_Frontal_50kmh(Report):
                         self.rating = -4 if self.submarining else 0
 
         class Criterion_DoorOpeningDuringImpact(Criterion):
+            name: str = "Door Opening During Impact"
             door_opening_during_impact: bool = False
 
             def calculation(self):

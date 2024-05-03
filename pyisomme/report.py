@@ -8,6 +8,9 @@ import time
 import logging
 
 
+logger = logging.getLogger(__name__)
+
+
 class Report:
     name: str = None
     title: str = None
@@ -33,7 +36,7 @@ class Report:
     def calculate(self):
         with logging_redirect_tqdm():
             for isomme in tqdm(self.isomme_list, desc="Calculate Report"):
-                logging.info(f"Calculate Criteria for {isomme}")
+                logger.info(f"Calculate Criteria for {isomme}")
                 self.criterion_master[isomme].calculate()
         return self
 
@@ -60,7 +63,7 @@ class Report:
 
         with logging_redirect_tqdm():
             for page_number, page in enumerate(tqdm(self.pages, desc="Construct Pages")):
-                logging.info(f"{page_number}:{page.name}")
+                logger.info(f"{page_number}:{page.name}")
                 page.__init__(self)  # update. report could be changed since init
                 page.construct(presentation)
 
@@ -69,6 +72,6 @@ class Report:
                 presentation.save(path)
                 break
             except Exception as e:
-                logging.critical(e)
+                logger.critical(e)
                 time.sleep(1)
-        logging.info(f"pptx successfully exported: {path}")
+        logger.info(f"pptx successfully exported: {path}")

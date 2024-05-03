@@ -5,6 +5,9 @@ import numpy as np
 import logging
 
 
+logger = logging.getLogger(__name__)
+
+
 class Criterion:
     name: str = None
     limits: Limits = None
@@ -25,7 +28,7 @@ class Criterion:
         try:
             self.calculation()
         except Exception as error_message:
-            logging.error(f"{self}:{error_message}")
+            logger.error(f"{self}:{error_message}")
 
     def calculation(self):
         pass

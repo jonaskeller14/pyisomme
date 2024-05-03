@@ -15,6 +15,9 @@ import logging
 import shutil
 
 
+logger = logging.getLogger(__name__)
+
+
 class Isomme:
     def __init__(self, test_number=None, test_info=None, channels=None, channel_info=None):
         """
@@ -78,10 +81,10 @@ class Isomme:
             # CHN
             chn_files = glob(str(path.parent.joinpath("**", "*.chn")), recursive=True)
             if len(chn_files) == 0:
-                logging.warning("No .chn file found.")
+                logger.warning("No .chn file found.")
             else:
                 if len(chn_files) > 1:
-                    logging.warning("Multiple .chn files found. First will be used, others ignored.")
+                    logger.warning("Multiple .chn files found. First will be used, others ignored.")
                 chn_filepath = chn_files[0]
                 with open(chn_files[0], "r") as chn_file:
                     self.channel_info = parse_chn(chn_file)
@@ -105,7 +108,7 @@ class Isomme:
 
         def read_from_folder(path: Path):
             if len(list(path.glob("**/*.mme"))) > 1:
-                logging.warning("Multiple .mme files found. First will be used, others ignored.")
+                logger.warning("Multiple .mme files found. First will be used, others ignored.")
             read_from_mme(Path(list(path.glob("**/*.mme"))[0]))
 
         def read_from_zip(path: Path):
@@ -118,7 +121,7 @@ class Isomme:
                         self.test_info = parse_mme(mme_file)
                     break
             if self.test_number is None:
-                logging.error("No .mme file found.")
+                logger.error("No .mme file found.")
                 self.test_number = path.stem
             # CHN
             for filepath in archive.namelist():
@@ -154,7 +157,7 @@ class Isomme:
             read_from_zip(path)
         else:
             raise FileNotFoundError("File not .zip or .mme or Folder not containing .mme file.")
-        logging.info(f"Reading '{path}' done. Number of channel: {len(self.channels)}")
+        logger.info(f"Reading '{path}' done. Number of channel: {len(self.channels)}")
         return self
 
     def write(self, path, *channel_code_patterns):
@@ -174,7 +177,7 @@ class Isomme:
             """
             for name, value in name_value_dict.items():
                 if len(name) > 29:
-                    logging.warning(f"Variable-Name '{name}' too long. It will be shorten to '{name[:29]}'")
+                    logger.warning(f"Variable-Name '{name}' too long. It will be shorten to '{name[:29]}'")
                     name = name[:29]
                 space = " "*(29 - len(name))
                 file.write(f"{name}{space}:{value}\n")
@@ -293,7 +296,7 @@ class Isomme:
     def __hash__(self):
         return hash(self.test_number)
 
-    @debug_logging
+    @debug_logging(__name__)
     def get_channel(self, *code_patterns: str, filter: bool = True, calculate: bool = True, differentiate=True, integrate=True) -> Channel:
         """
         Get channel by channel code pattern.
@@ -404,19 +407,19 @@ class Isomme:
                 try:
                     return self.get_channel(code_pattern.integrate(), calculate=calculate, integrate=False).differentiate()  # TODO: Alle rekursiven aufruge von get_channel argumente mitgeben, wenn calcualte False auch nicht auf integrierte anwenden
                 except (AttributeError, NotImplementedError) as error:
-                    logging.debug(error)
+                    logger.debug(error)
 
             # 5. Integrate
             if integrate:
                 try:
                     return self.get_channel(code_pattern.differentiate(), calculate=calculate, differentiate=False).integrate()
                 except (AttributeError, NotImplementedError) as error:
-                    logging.debug(error)
+                    logger.debug(error)
 
-            logging.info(f"No channel found for pattern: '{code_pattern}'")
+            logger.info(f"No channel found for pattern: '{code_pattern}'")
         return None
 
-    @debug_logging
+    @debug_logging(__name__)
     def get_channels(self, *channel_code_patterns: str) -> list:
         """
         Get all channels by channel code patter. All Wildcards are supported.

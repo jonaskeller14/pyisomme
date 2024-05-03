@@ -9,6 +9,9 @@ import numpy as np
 import logging
 
 
+logger = logging.getLogger(__name__)
+
+
 class Plot:
     colors = mcolors.TABLEAU_COLORS.values()
     linestyles = ("-", "--", "-.", ":")
@@ -165,7 +168,7 @@ class Plot_Line(Plot):
 
                 # Prevent double fill (because transparency)
                 elif idx >= 1 and limit_list[idx - 1].lower:
-                    logging.debug(f"Preventing double fill: {limit} and {limit_list[idx - 1]}")
+                    logger.debug(f"Preventing double fill: {limit} and {limit_list[idx - 1]}")
 
                 # Default upper case
                 else:
@@ -207,7 +210,7 @@ class Plot_Line(Plot):
             if limit.name is None:
                 continue
             if not ylim[0] <= limit.get_data(x0, x_unit=x_unit, y_unit=y_unit) <= ylim[1]:
-                logging.warning(f"Label of {limit} not visible.")
+                logger.warning(f"Label of {limit} not visible.")
                 continue
             ax.text(x0, limit.get_data(x0, x_unit=x_unit, y_unit=y_unit), limit.name, color="black", bbox={"facecolor": limit.color, "edgecolor": "black", "linewidth": 1}, verticalalignment="top" if limit.upper else "bottom" if limit.lower else "center")
 

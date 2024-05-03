@@ -1,7 +1,3 @@
-import logging
-logging.getLogger().addHandler(logging.StreamHandler())
-logging.getLogger().setLevel(logging.INFO)
-
 from pyisomme.isomme import *
 from pyisomme.channel import *
 from pyisomme.correlation import Correlation_ISO18571

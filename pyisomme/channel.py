@@ -15,6 +15,9 @@ from astropy.constants import g0
 from astropy.units import CompositeUnit
 
 
+logger = logging.getLogger(__name__)
+
+
 class Code(str):
     def __init__(self, code):
         assert len(code) == 16
@@ -68,7 +71,7 @@ class Code(str):
                     info[element.get("name")] = channel.get("description")
                     break
             if element.get("name") not in info:
-                logging.warning(f"'{element.get('name')}' of '{self}' not valid.")
+                logger.warning(f"'{element.get('name')}' of '{self}' not valid.")
         return info
 
     def get_default_unit(self) -> Unit | None:
@@ -129,7 +132,7 @@ class Code(str):
         :return: True if code contains valid parts and is as a whole valid
         """
         if len(self) != 16:
-            logging.error("Code length not 16 characters.")
+            logger.error("Code length not 16 characters.")
             return False
 
         root = ET.parse(Path(__file__).parent.joinpath("channel_codes.xml")).getroot()
@@ -138,8 +141,9 @@ class Code(str):
             for channel in element.findall(".//Channel"):
                 if fnmatch(self, channel.get("code")):
                     match = True
+                    break
             if not match:
-                logging.debug(element.tag)
+                logger.debug(f"{element.get('name')} of '{self}' not valid.")
                 return False
         return True
 
@@ -165,7 +169,7 @@ class Channel:
     def set_code(self, new_code: str | Code):
         self.code = Code(new_code)
         if not self.code.is_valid():
-            logging.warning(f"'{self.code}' not a valid channel code")
+            logger.warning(f"'{self.code}' not a valid channel code")
         return self
 
     def set_unit(self, new_unit: None | str | Unit):
@@ -181,7 +185,7 @@ class Channel:
             if new_unit == "g" and self.code.physical_dimension == "AC":
                 new_unit = g0
         if new_unit is None:
-            logging.warning("None is not a valid unit. Set unit to 1.")
+            logger.warning("None is not a valid unit. Set unit to 1.")
             new_unit = "1"
         self.unit = Unit(new_unit)
         return self
@@ -330,7 +334,7 @@ class Channel:
                 value_array = (value_array * old_unit).to(unit).to_value()
             else:
                 print(type(old_unit))
-                logging.error("Could not determine old unit. No conversion will be performed.")
+                logger.error("Could not determine old unit. No conversion will be performed.")
 
         if t is None:
             return value_array
