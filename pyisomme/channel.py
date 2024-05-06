@@ -166,8 +166,11 @@ class Channel:
     def __repr__(self):
         return f"Channel(code={self.code})"
 
-    def set_code(self, new_code: str | Code):
-        self.code = Code(new_code)
+    def set_code(self, new_code: str | Code = None, **code_components):
+        if new_code is None:
+            assert self.code is not None
+            new_code = self.code
+        self.code = Code(new_code).set(**code_components)
         if not self.code.is_valid():
             logger.warning(f"'{self.code}' not a valid channel code")
         return self

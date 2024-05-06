@@ -13,6 +13,7 @@ from glob import glob
 import zipfile
 import logging
 import shutil
+import pandas as pd
 
 
 logger = logging.getLogger(__name__)
@@ -412,6 +413,71 @@ class Isomme:
                                                                 physical_dimension="DS"))
                     if channel is not None:
                         return calculate_chest_vc(channel)
+
+                # THOR Dummy Chest/Abdomen Displacement (Minimum of individual IR-TRACC displacment)
+                # page 31: https://www.humaneticsgroup.com/sites/default/files/2020-11/thor-50m_3d_ir-tracc_um-rev_c.pdf
+                if code_pattern.main_location == "CHST" and code_pattern.fine_location_1 == "00" and code_pattern.fine_location_2 == "00" and code_pattern.fine_location_3 in ("TH", "T3") and code_pattern.physical_dimension == "DS":
+                    channels = [self.get_channel(code_pattern.set(fine_location_1=fine_location_1, fine_location_2=fine_location_2)) for fine_location_1, fine_location_2 in (("LE","UP"), ("RI","UP"), ("LE","LO"), ("RI","LO"))]
+                    if None not in channels:
+                        time = time_intersect(channels)
+                        values = np.min([channel.get_data(t=time, unit=channels[0].unit) for channel in channels], axis=0)
+                        return Channel(code=code_pattern,
+                                       data=pd.DataFrame(values, index=time),
+                                       unit=channels[0].unit)
+                if code_pattern.main_location == "ABDO" and code_pattern.fine_location_1 == "00" and code_pattern.fine_location_2 == "00" and code_pattern.fine_location_3 in ("TH", "T3") and code_pattern.physical_dimension == "DS":
+                    channels = [self.get_channel(code_pattern.set(fine_location_1=fine_location_1, fine_location_2=fine_location_2)) for fine_location_1, fine_location_2 in (("LE","00"), ("RI","00"))]
+                    if None not in channels:
+                        time = time_intersect(*channels)
+                        values = np.min([channel.get_data(t=time, unit=channels[0].unit) for channel in channels], axis=0)
+                        return Channel(code=code_pattern,
+                                       data=pd.DataFrame(values, index=time),
+                                       unit=channels[0].unit)
+
+                # THOR Dummy Chest/Abdomen IR-TRACC Displacement
+                # page 31: https://www.humaneticsgroup.com/sites/default/files/2020-11/thor-50m_3d_ir-tracc_um-rev_c.pdf
+                if ((code_pattern.main_location == "CHST" and code_pattern.fine_location_1 in ("LE", "RI") and code_pattern.fine_location_2 in ("UP", "LO")) or (code_pattern.main_location == "ABDO" and code_pattern.fine_location_1 in ("LE", "RI") and code_pattern.fine_location_2 == "00")) and code_pattern.fine_location_3 in ("TH", "T3"):
+                    if code_pattern.physical_dimension == "DC":
+                        delta = 15.65 if code_pattern.fine_location_2 == "UP" else -15.65 if code_pattern.fine_location_2 == "LO" else 0  # [mm]
+                        if code_pattern.direction == "X":
+                            channel_dc0 = self.get_channel(code_pattern.set(physical_dimension="DC", direction="0"))
+                            channel_any = self.get_channel(code_pattern.set(physical_dimension="AN", direction="Y"))
+                            channel_anz = self.get_channel(code_pattern.set(physical_dimension="AN", direction="Z"))
+                            if channel_dc0 is not None and channel_any is not None and channel_anz is not None:
+                                time = time_intersect(channel_dc0, channel_any, channel_anz)
+                                values = delta * np.sin((channel_any).get_data(t=time, unit="rad")) + channel_dc0.get_data(t=time, unit="mm") * np.cos(channel_any.get_data(t=time, unit="rad")) * np.cos(channel_anz.get_data(t=time, unit="rad"))
+                                return Channel(code=code_pattern, data=pd.DataFrame(values, index=time), unit="mm")
+                        if code_pattern.direction == "Y":
+                            channel_dc0 = self.get_channel(code_pattern.set(physical_dimension="DC", direction="0"))
+                            channel_anz = self.get_channel(code_pattern.set(physical_dimension="AN", direction="Z"))
+                            if channel_dc0 is not None and channel_anz is not None:
+                                time = time_intersect(channel_dc0, channel_anz)
+                                values = channel_dc0.get_data(t=time, unit="mm") * np.sin(channel_anz.get_data(t=time, unit="rad"))
+                                return Channel(code=code_pattern, data=pd.DataFrame(values, index=time), unit="mm")
+                        if code_pattern.direction == "Z":
+                            channel_dc0 = self.get_channel(code_pattern.set(physical_dimension="DC", direction="0"))
+                            channel_any = self.get_channel(code_pattern.set(physical_dimension="AN", direction="Y"))
+                            channel_anz = self.get_channel(code_pattern.set(physical_dimension="AN", direction="Z"))
+                            if channel_dc0 is not None and channel_any is not None and channel_anz is not None:
+                                time = time_intersect(channel_dc0, channel_any, channel_anz)
+                                values = delta * np.cos((channel_any).get_data(t=time, unit="rad")) - channel_dc0.get_data(t=time, unit="mm") * np.sin(channel_any.get_data(t=time, unit="rad")) * np.cos(channel_anz.get_data(t=time, unit="rad"))
+                                return Channel(code=code_pattern, data=pd.DataFrame(values, index=time), unit="mm")
+                    if code_pattern.physical_dimension == "DS":
+                        if code_pattern.direction == "0":
+                            channel_dc0 = self.get_channel(code_pattern.set(physical_dimension="DC"))
+                            if channel_dc0 is not None:
+                                channel_ds0 = (channel_dc0 - channel_dc0.get_data(t=0)).set_code(physical_dimension="DS")
+                        if code_pattern.direction == "X":
+                            channel_dcx = self.get_channel(code_pattern.set(physical_dimension="DC", direction="X"))
+                            if channel_dcx is not None:
+                                return (channel_dcx - channel_dcx.get_data(t=0)).set_code(physical_dimension="DS")
+                        if code_pattern.direction == "Y":
+                            channel_dcy = self.get_channel(code_pattern.set(physical_dimension="DC", direction="Y"))
+                            if channel_dcy is not None:
+                                return (channel_dcy - channel_dcy.get_data(t=0)).set_code(physical_dimension="DS")
+                        if code_pattern.direction == "Z":
+                            channel_dcz = self.get_channel(code_pattern.set(physical_dimension="DC", direction="Z"))
+                            if channel_dcz is not None:
+                                return (channel_dcz - channel_dcz.get_data(t=0)).set_code(physical_dimension="DS")
 
                 # OLC
                 if code_pattern.fine_location_1 == "0O" and code_pattern.fine_location_2 == "LC" and code_pattern.physical_dimension == "VE":
