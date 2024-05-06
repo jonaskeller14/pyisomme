@@ -343,13 +343,12 @@ class Isomme:
                 for channel in self.channels:
                     if fnmatch.fnmatch(channel.code, code_pattern[:-1] + "?"):
                         return channel.cfc(filter_class=code_pattern[-1])
+            try:
+                code_pattern = Code(code_pattern)
+            except AssertionError:
+                continue
             # 3. Calculate Channel
             if calculate:
-                try:
-                    code_pattern = Code(code_pattern)
-                except AssertionError:
-                    continue
-
                 # Resultant Channel
                 if code_pattern.direction == "R" and code_pattern.filter_class != "X":
                     channel_xyz = [self.get_channel(code_pattern.set(direction=direction)) for direction in "XYZ"]
@@ -496,14 +495,14 @@ class Isomme:
             # 4. Differentiate
             if differentiate:
                 try:
-                    return self.get_channel(code_pattern.integrate(), calculate=calculate, integrate=False).differentiate()  # TODO: Alle rekursiven aufruge von get_channel argumente mitgeben, wenn calcualte False auch nicht auf integrierte anwenden
+                    return self.get_channel(code_pattern.integrate(), filter=filter, calculate=calculate, integrate=False).differentiate()
                 except (AttributeError, NotImplementedError) as error:
                     logger.debug(error)
 
             # 5. Integrate
             if integrate:
                 try:
-                    return self.get_channel(code_pattern.differentiate(), calculate=calculate, differentiate=False).integrate()
+                    return self.get_channel(code_pattern.differentiate(), filter=filter, calculate=calculate, differentiate=False).integrate()
                 except (AttributeError, NotImplementedError) as error:
                     logger.debug(error)
 
@@ -511,23 +510,56 @@ class Isomme:
         return None
 
     @debug_logging(logger)
-    def get_channels(self, *channel_code_patterns: str) -> list:
+    def get_channels(self, *code_patterns: str, filter: bool = True, calculate: bool = True, differentiate: bool = True, integrate: bool = True) -> list:
         """
         Get all channels by channel code patter. All Wildcards are supported.
         A list of all matching channels will be returned.
         Filtering and Calculations are not supported yet. See 'get_channel()' instead.
-        :param channel_code_patterns:
+        :param code_patterns:
+        :param filter:
+        :param calculate:
+        :param differentiate:
+        :param integrate:
         :return: list of Channels
         """
         channel_list = []
-        for channel_code_pattern in channel_code_patterns:
+        for code_pattern in code_patterns:
             # 1. Channel does exist already
             for channel in self.channels:
-                if fnmatch.fnmatch(channel.code, channel_code_pattern):
+                if fnmatch.fnmatch(channel.code, code_pattern):
                     channel_list.append(channel)
-            # TODO: 2. Filter Channel
-            # TODO: 3. Calculate Channel
-            # TODO: 4. Differentiate
+            # 2. Filter Channel
+            if filter:
+                for channel in self.channels:
+                    if channel not in channel_list and fnmatch.fnmatch(channel.code, code_pattern[:-1] + "?"):
+                        channel_list.append(channel.cfc(filter_class=code_pattern[-1]))
+
+            try:
+                code_pattern = Code(code_pattern)
+            except AssertionError:
+                continue
+            # 3. Calculate Channel
+            if calculate:
+                channel = self.get_channel(code_pattern)
+                if channel is not None:
+                    channel_list.append(channel)
+
+            # 4. Differentiate
+            if differentiate:
+                for channel in self.get_channels(code_pattern.integrate(), filter=filter, calculate=calculate, integrate=False):
+                    try:
+                        channel_list.append(channel.differentiate())
+                    except (AttributeError, NotImplementedError) as error:
+                        logger.debug(error)
+                        continue
+
+            # 5. Integrate
+            if integrate:
+                for channel in self.get_channels(code_pattern.differentiate(), filter=filter, calculate=calculate, differentiate=False):
+                    try:
+                        channel_list.append(channel.integrate())
+                    except (AttributeError, NotImplementedError) as error:
+                        logger.debug(error)
         return channel_list
 
     def add_sample_channel(self, code="SAMPLE??????????", t_range: tuple = (0, 0.01, 1000), y_range: tuple = (0, 10), mode: str = "sin", unit=None):
@@ -542,3 +574,11 @@ class Isomme:
         print(f"{self.test_number} - Channel List:")
         for idx, channel in enumerate(self.channels):
             print(f"\t{(idx+1):03}\t{channel.code}")
+
+
+def read(*paths) -> list:
+    iso_list = []
+    for path in paths:
+        for p in glob(path, recursive=True):
+            iso_list.append(Isomme().read(p))
+    return iso_list
