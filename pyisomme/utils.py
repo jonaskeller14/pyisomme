@@ -4,12 +4,12 @@ import logging
 intend = "\t"
 
 
-def debug_logging(name_or_func):
+def debug_logging(logger_or_func):
     def decorator(func):
         def wrapper(*args, **kwargs):
             global intend
 
-            logger = logging.getLogger(name_or_func if not callable(name_or_func) else __name__)
+            logger = logging.getLogger(__name__) if callable(logger_or_func) else logger_or_func
 
             args_repr = [repr(arg) for arg in args]
             kwargs_repr = [f"{key}={value!r}" for key, value in kwargs.items()]
@@ -24,4 +24,4 @@ def debug_logging(name_or_func):
 
             return result
         return wrapper
-    return decorator(name_or_func) if callable(name_or_func) else decorator
+    return decorator(logger_or_func) if callable(logger_or_func) else decorator

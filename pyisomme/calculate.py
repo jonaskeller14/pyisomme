@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 #TODO Check ISO REd E --> check if all required info exists in result channels (subsets ...)
 
 
-@debug_logging(__name__)
+@debug_logging(logger)
 def calculate_resultant(c1: Channel | None,
                         c2: Channel | None,
                         c3: Channel | None = 0) -> Channel | None:
@@ -37,7 +37,7 @@ def calculate_resultant(c1: Channel | None,
     return new_channel
 
 
-@debug_logging(__name__)
+@debug_logging(logger)
 def calculate_hic(channel: Channel, max_delta_t) -> Channel | None:
     """
     Computes head injury criterion (HIC)
@@ -93,7 +93,7 @@ def calculate_hic(channel: Channel, max_delta_t) -> Channel | None:
         })
 
 
-@debug_logging(__name__)
+@debug_logging(logger)
 def calculate_xms(channel: Channel, min_delta_t: float = 3, method: str = "S") -> Channel | None:
     """
     # TODO
@@ -163,7 +163,7 @@ def calculate_xms(channel: Channel, min_delta_t: float = 3, method: str = "S") -
     return Channel(new_code, data=pd.DataFrame([res]), unit=channel.unit, info=new_info)
 
 
-@debug_logging(__name__)
+@debug_logging(logger)
 def calculate_bric(c_av_x: Channel | None,
                    c_av_y: Channel | None,
                    c_av_z: Channel | None,
@@ -230,7 +230,7 @@ def calculate_bric(c_av_x: Channel | None,
     )
 
 
-@debug_logging(__name__)
+@debug_logging(logger)
 def calculate_damage(c_aa_x: Channel | None,
                      c_aa_y: Channel | None,
                      c_aa_z: Channel | None) -> tuple | None:
@@ -319,12 +319,12 @@ def calculate_damage(c_aa_x: Channel | None,
     return damage_x, damage_y, damage_z, damage_r, damage_x_max, damage_y_max, damage_z_max, damage_r_max
 
 
-@debug_logging(__name__)
+@debug_logging(logger)
 def calculate_neck_nij() -> tuple:
     pass
 
 
-@debug_logging(__name__)
+@debug_logging(logger)
 def calculate_chest_vc(channel: Channel | None, scaling_factor: float = None, defo_constant: float = None, dummy: str = None):
     """
     References:
@@ -403,7 +403,7 @@ def calculate_chest_vc(channel: Channel | None, scaling_factor: float = None, de
     return Channel(code=new_code, unit=new_unit, data=new_data, info=new_info)
 
 
-@debug_logging(__name__)
+@debug_logging(logger)
 def calculate_olc(c_v: Channel | None,
                   free_flight_phase_displacement: float = 0.065,
                   restraining_phase_displacement: float = 0.235) -> tuple | None:

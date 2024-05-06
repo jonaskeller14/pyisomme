@@ -322,7 +322,7 @@ class Isomme:
     def __hash__(self):
         return hash(self.test_number)
 
-    @debug_logging(__name__)
+    @debug_logging(logger)
     def get_channel(self, *code_patterns: str, filter: bool = True, calculate: bool = True, differentiate=True, integrate=True) -> Channel:
         """
         Get channel by channel code pattern.
@@ -510,7 +510,7 @@ class Isomme:
             logger.info(f"No channel found for pattern: '{code_pattern}'")
         return None
 
-    @debug_logging(__name__)
+    @debug_logging(logger)
     def get_channels(self, *channel_code_patterns: str) -> list:
         """
         Get all channels by channel code patter. All Wildcards are supported.
