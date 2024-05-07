@@ -418,7 +418,7 @@ class Isomme:
                 if code_pattern.main_location == "CHST" and code_pattern.fine_location_1 == "00" and code_pattern.fine_location_2 == "00" and code_pattern.fine_location_3 in ("TH", "T3") and code_pattern.physical_dimension == "DS":
                     channels = [self.get_channel(code_pattern.set(fine_location_1=fine_location_1, fine_location_2=fine_location_2)) for fine_location_1, fine_location_2 in (("LE","UP"), ("RI","UP"), ("LE","LO"), ("RI","LO"))]
                     if None not in channels:
-                        time = time_intersect(channels)
+                        time = time_intersect(*channels)
                         values = np.min([channel.get_data(t=time, unit=channels[0].unit) for channel in channels], axis=0)
                         return Channel(code=code_pattern,
                                        data=pd.DataFrame(values, index=time),

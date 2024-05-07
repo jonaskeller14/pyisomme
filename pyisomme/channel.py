@@ -495,7 +495,7 @@ def create_sample(code: str = "SAMPLE??????????", t_range: tuple = (0, 0.01, 100
     return Channel(code, data, unit)
 
 
-def time_intersect(*channels):
+def time_intersect(*channels: Channel) -> np.ndarray:
     """
     Returns intersection of time-array of given channels.
     :param channels: Channel objects
