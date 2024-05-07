@@ -99,7 +99,7 @@ def get_value(text: str):
     :param text:
     :return:
     """
-    text = text[1:] if text[0] == ":" else text
+    text = text[1:] if len(text) > 0 and text[0] == ":" else text
     # None
     if text.upper() in ("NOVALUE", "NONE") or text.strip() == "":
         return None
