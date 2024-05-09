@@ -413,6 +413,14 @@ class Isomme:
                     if channel is not None:
                         return calculate_chest_vc(channel)
 
+                # Tibia Index
+                if code_pattern.main_location == "TIIN" and code_pattern.physical_dimension == "00" and code_pattern.direction == "0":
+                    channel_MOX = self.get_channel(code_pattern.set(main_location="TIBI", physical_dimension="MO", direction="X"))
+                    channel_MOY = self.get_channel(code_pattern.set(main_location="TIBI", physical_dimension="MO", direction="Y"))
+                    channel_FOZ = self.get_channel(code_pattern.set(main_location="TIBI", physical_dimension="FO", direction="Z"))
+                    if None not in [channel_MOX, channel_MOY, channel_FOZ]:
+                        return calculate_tibia_index(channel_MOX, channel_MOY, channel_FOZ)
+
                 # THOR Dummy Chest/Abdomen Displacement (Minimum of individual IR-TRACC displacment)
                 # page 31: https://www.humaneticsgroup.com/sites/default/files/2020-11/thor-50m_3d_ir-tracc_um-rev_c.pdf
                 if code_pattern.main_location == "CHST" and code_pattern.fine_location_1 == "00" and code_pattern.fine_location_2 == "00" and code_pattern.fine_location_3 in ("TH", "T3") and code_pattern.physical_dimension == "DS":

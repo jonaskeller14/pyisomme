@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 @debug_logging(logger)
 def calculate_resultant(c1: Channel | None,
-                        c2: Channel | None,
+                        c2: Channel | None = 0,
                         c3: Channel | None = 0) -> Channel | None:
     """
     Takes 2 or 3 Channels and calculates the 2nd norm or resultant component.
@@ -344,7 +344,7 @@ def calculate_chest_vc(channel: Channel | None, scaling_factor: float = None, de
     if scaling_factor is None or defo_constant is None:
         if dummy is None:
             dummy = channel.code.fine_location_3
-        assert dummy in ("BS", "E2", "ER", "H3", "HF", "HM", "S2", "WF", "WS", "Y6", "Y7", "YA"), f"Dummy not supported by {calculate_chest_vc.__name__}"
+        assert dummy in ("BS", "E2", "ER", "H3", "HF", "HM", "S2", "WF", "WS", "Y6", "Y7", "YA"), f"Dummy {dummy} not supported by {calculate_chest_vc.__name__}"
 
         if scaling_factor is None:
             scaling_factor = {
@@ -401,6 +401,46 @@ def calculate_chest_vc(channel: Channel | None, scaling_factor: float = None, de
         ".Deformation constant": defo_constant})
 
     return Channel(code=new_code, unit=new_unit, data=new_data, info=new_info)
+
+
+def calculate_tibia_index(channel_MOX: Channel | None,
+                          channel_MOY: Channel | None,
+                          channel_FOZ: Channel | None,
+                          ) -> Channel | None:
+    """
+    References: references/Euro-NCAP/tb-021-data-acquisition-and-injury-calculation-v402.pdf
+    :param channel_MOX:
+    :param channel_MOY:
+    :param channel_FOZ:
+    :return:
+    """
+    if None in (channel_MOX, channel_MOY, channel_FOZ):
+        return None
+
+    dummy = channel_MOX.code.fine_location_3
+    assert dummy in ("H3", "HF", "TH", "T3"), f"Dummy {dummy} not supported by {calculate_tibia_index.__name__}"
+    assert channel_MOX.code.fine_location_3 == channel_MOY.code.fine_location_3 == channel_FOZ.code.fine_location_3, f"Channel with different dummy found."
+    assert channel_MOX.code.test_object == channel_MOY.code.test_object == channel_FOZ.code.test_object, f"Channel with different test_objects found."
+    assert channel_MOX.code.position == channel_MOY.code.position == channel_FOZ.code.position, f"Channel with different positions found."
+
+    channel_m_r = calculate_resultant(channel_MOX, channel_MOY)
+    m_r_c = 225 if dummy in ("H3", "TH", "T3") else 115  # [Nm]
+    f_z_c = 35.9 if dummy in ("H3", "TH", "T3") else 22.9  # [kN]
+
+    time = time_intersect(channel_m_r, channel_FOZ)
+
+    t_i = np.abs(channel_m_r.get_data(t=time, unit="Nm") / m_r_c) + np.abs(channel_FOZ.get_data(t=time, unit="kN") / f_z_c)
+
+    return Channel(
+        code=channel_MOX.code.set(main_location="TIIN", physical_dimension="00", direction="0"),
+        data=pd.DataFrame(t_i, index=time),
+        unit="1",
+        info={
+            "Channel 001": channel_MOX.code,
+            "Channel 002": channel_MOY.code,
+            "Channel 003": channel_FOZ.code,
+        }
+    )
 
 
 @debug_logging(logger)

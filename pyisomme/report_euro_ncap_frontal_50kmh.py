@@ -283,7 +283,7 @@ class EuroNCAP_Frontal_50kmh(Report):
 
                 class Criterion_ExceedingForwardExcursionLine(Criterion):
                     name = "Modifier for Exceeding forward excursion line"
-                    forward_excursion: float = 0.0 # in mm
+                    forward_excursion: float = 0.0  # in mm
                     simulation_contact_seat_H3: bool = False
                     simulation_hic_15_H3: float = 0.0
 

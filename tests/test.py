@@ -176,7 +176,16 @@ class TestLimits(unittest.TestCase):
 
 
 class TestCalculate(unittest.TestCase):
-    pass
+    v1 = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "11391"), "??TIBI*")
+
+    def test_calculate_tibia_index(self):
+        # Repair wring data
+        for channel in self.v1.channels:
+            if channel.code.main_location == "TIBI" and channel.code.fine_location_3 == "00":
+                channel.code.fine_location_3 = "H3"
+
+        assert self.v1.get_channel("?1TIINLEUP??000B") is not None
+        assert self.v1.get_channel("?3TIINRILO??000B") is not None
 
 
 class TestReport(unittest.TestCase):

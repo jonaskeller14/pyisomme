@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from pyisomme.limits import Limits, limit_list_unique, limit_list_sort
+from pyisomme.report import Report
+from pyisomme.criterion import Criterion
 
 import copy
 import matplotlib.pyplot as plt
