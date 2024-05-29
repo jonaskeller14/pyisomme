@@ -1,3 +1,4 @@
 references/**/*.pdf
 data/nhtsa
 tests/out
+*/**/__pycache__
