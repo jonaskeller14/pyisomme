@@ -1,5 +1,5 @@
-from pyisomme.criterion import Criterion
-from pyisomme.page import *
+from pyisomme.report.page import *
+from pyisomme.report.criterion import Criterion
 
 from pptx import Presentation
 from tqdm import tqdm

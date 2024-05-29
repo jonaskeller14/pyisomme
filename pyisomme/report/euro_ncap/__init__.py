@@ -1,0 +1,2 @@
+from pyisomme.report.euro_ncap.frontal_50kmh import EuroNCAP_Frontal_50kmh
+# from pyisomme.report.euro_ncap.frontal_mpdb import EuroNCAP_Frontal_MPDB
