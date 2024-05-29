@@ -1,97 +1,37 @@
-from pyisomme.unit import Unit
+from __future__ import annotations
 
+import copy
 import fnmatch
 import re
 from collections.abc import Iterable
 import logging
 import numpy as np
 
+from pyisomme import Channel, Code
+from pyisomme.unit import Unit
+
 
 logger = logging.getLogger(__name__)
 
 
-class Limits:
-    name: str
-    limit_list: list
-
-    def __init__(self, name: str = None, limit_list: list = None):
-        self.name = name
-        self.limit_list = [] if limit_list is None else limit_list
-
-    def get_limits(self, *codes) -> list:
-        """
-        Returns list of limits matching given code.
-        :param code: Channel code (pattern not allowed)
-        :return:
-        """
-        output = []
-        for limit in self.limit_list:
-            for code in codes:
-                if code is None:
-                    continue
-                for code_pattern in limit.code_patterns:
-                    if fnmatch.fnmatch(code, code_pattern):
-                        output.append(limit)
-                    try:
-                        if re.match(code_pattern, code):
-                            output.append(limit)
-                    except re.error:
-                        continue
-        return output
-
-    def get_limit_color(self, y, y_unit, x, x_unit):
-        if np.isnan(y):
-            return None
-
-        limit_list = sorted(self.limit_list, key=lambda limit: (limit.func(0), 0 if limit.upper and limit.lower else -1 if limit.upper else 1 if limit.lower else 0))
-        for limit in limit_list:
-            limit_y = limit.get_data(x, x_unit=x_unit, y_unit=y_unit)
-            if limit.upper and limit_y > y:
-                return limit.color
-            if limit.lower and limit_y <= y:
-                return limit.color
-        return None
-
-    def __repr__(self):
-        return f"Limits({self.name})"
-
-
-def limit_list_sort(limit_list: list):
-    return sorted(limit_list, key=lambda limit: (limit.func(0), 0 if limit.upper and limit.lower else -1 if limit.upper else 1 if limit.lower else 0))
-
-
-def limit_list_unique(limit_list: list, x, x_unit, y_unit):
-    filtered_limit_list = []
-    for limit in limit_list:
-        add = True
-        for filtered_limit in filtered_limit_list:
-            # Same data?
-            if not np.all(limit.get_data(x, x_unit=x_unit, y_unit=y_unit) == filtered_limit.get_data(x, x_unit=x_unit, y_unit=y_unit)):
-                continue
-
-            # Both upper or both lower?
-            if limit.upper != filtered_limit.upper and limit.lower != filtered_limit.lower:
-                continue
-
-            if limit.name != filtered_limit.name:
-                raise ValueError("Multiple limits with same data but different names")
-
-            add = False
-        if add:
-            filtered_limit_list.append(limit)
-
-    return filtered_limit_list
-
-
 class Limit:
-    def __init__(self, code_patterns: list, func, color="black", linestyle="-", name: str = None, lower: bool = None, upper: bool = None, x_unit="s", y_unit=None):
-        self.code_patterns = code_patterns
-        self.color = color
+    name: str
+    value: float
+    color: str
+
+    def __init__(self, code_patterns: list, func, color: str = None, linestyle: str = "-", name: str = None, value: float = None, lower: bool = None, upper: bool = None, x_unit="s", y_unit=None):
+        self.code_patterns: list = code_patterns
+        self.func = lambda x: float(func(x)) if not isinstance(x, Iterable) else np.array([func(x_i) for x_i in x], dtype=float)  # if x is scalar --> return scalar, if is array --> return array
+
+        if color is not None:
+            self.color = color
         self.linestyle = linestyle
-        self.name = name
+        if name is not None:
+            self.name = name
+        if value is not None:
+            self.value = value
         self.lower = lower
         self.upper = upper
-        self.func = lambda x: float(func(x)) if not isinstance(x, Iterable) else np.array([func(x_i) for x_i in x], dtype=float)  # if x is scalar --> return scalar, if is array --> return array
         self.x_unit = x_unit
         self.y_unit = y_unit
 
@@ -119,3 +59,133 @@ class Limit:
 
     def __eq__(self, other):
         return id(self) == id(other)
+
+
+class Limits:
+    name: str
+    limit_list: list
+
+    def __init__(self, name: str = None, limit_list: list = None):
+        self.name = name
+        self.limit_list = [] if limit_list is None else limit_list
+
+    def get_limits(self, *codes: Code | str) -> list:
+        """
+        Returns list of limits matching given code.
+        :param code: Channel code (pattern not allowed)
+        :return:
+        """
+        output = []
+        for limit in self.limit_list:
+            for code in codes:
+                if code is None:
+                    continue
+                for code_pattern in limit.code_patterns:
+                    if fnmatch.fnmatch(code, code_pattern):
+                        output.append(limit)
+                    try:
+                        if re.match(code_pattern, code):
+                            output.append(limit)
+                    except re.error:
+                        continue
+        return output
+
+    def get_limit_colors(self, channel: Channel) -> list:
+        limits = limit_list_sort(self.get_limits(channel.code))
+        assert None not in [limit.value for limit in limits], "All limits must have a value defined."
+        assert None not in [limit.color for limit in limits], "All limits must have a color defined."
+
+        channel_time = channel.data.index
+        channel_values = channel.data.values
+
+        limit_colors = []
+        for channel_time, channel_value in zip(channel_time, channel_values):
+            for limit in limits:
+                if limit.upper and channel_value < limit.get_data(channel_time, x_unit="s", y_unit=channel.unit):
+                    limit_colors.append(limit.color)
+                    break
+                if limit.lower and channel_value >= limit.get_data(channel_time, x_unit="s", y_unit=channel.unit):
+                    limit_colors.append(limit.color)
+                    break
+        return limit_colors
+
+    def get_limit_values(self, channel: Channel, interpolate=True) -> list:
+        limits = limit_list_sort(self.get_limits(channel.code))
+        assert None not in [limit.value for limit in limits], "All limits must have a value defined."
+
+        channel_time = channel.data.index
+        channel_values = channel.data.values
+
+        if interpolate:
+            limit_values = []
+            for channel_time, channel_value in zip(channel_time, channel_values):
+                limit_values.append(np.interp(channel_value, [limit.get_data(channel_time, x_unit="s", y_unit=channel.unit) for limit in limits], [limit.value for limit in limits]))
+        else:
+            limit_values = []
+            for channel_time, channel_value in zip(channel_time, channel_values):
+                for limit in limits:
+                    if limit.upper and channel_value < limit.get_data(channel_time, x_unit="s", y_unit=channel.unit):
+                        limit_values.append(limit.value)
+                        break
+                    if limit.lower and channel_value >= limit.get_data(channel_time, x_unit="s", y_unit=channel.unit):
+                        limit_values.append(limit.value)
+                        break
+        return limit_values
+
+    def get_limit_max_value(self, channel: Channel, interpolate=True) -> float:
+        return np.max(self.get_limit_values(channel, interpolate))
+
+    def get_limit_min_value(self, channel: Channel, interpolate=True) -> float:
+        return np.min(self.get_limit_values(channel, interpolate))
+
+    def get_limit_min_color(self, channel: Channel):
+        limit_values = self.get_limit_values(channel, interpolate=False)
+        limit_colors = self.get_limit_colors(channel)
+        return limit_colors[np.argmin(limit_values)]
+
+    def get_limit_max_color(self, channel: Channel):
+        limit_values = self.get_limit_values(channel, interpolate=False)
+        limit_colors = self.get_limit_colors(channel)
+        return limit_colors[np.argmax(limit_values)]
+
+    def add_sym_limits(self):
+        for limit in self.limit_list:
+            new_limit = copy.deepcopy(limit)
+            new_limit.upper = True if limit.lower else None
+            new_limit.lower = True if limit.upper else None
+            new_limit.func = lambda x: -1 * new_limit.func(x)
+
+            self.limit_list.append(new_limit)
+
+    def __repr__(self):
+        return f"Limits({self.name})"
+
+
+def limit_list_sort(limit_list: list[Limit], sym=False) -> list:
+    return sorted(limit_list, key=lambda limit: (limit.func(0) if not sym else np.abs(limit.func(0)), 0 if limit.upper and limit.lower else -1 if limit.upper else 1 if limit.lower else 0))
+
+
+def limit_list_unique(limit_list: list[Limit], x, x_unit, y_unit) -> list:
+    filtered_limit_list = []
+    for limit in limit_list:
+        add = True
+        for filtered_limit in filtered_limit_list:
+            # Same data?
+            if not np.all(limit.get_data(x, x_unit=x_unit, y_unit=y_unit) == filtered_limit.get_data(x, x_unit=x_unit, y_unit=y_unit)):
+                continue
+
+            # Both upper or both lower?
+            if limit.upper != filtered_limit.upper and limit.lower != filtered_limit.lower:
+                continue
+
+            if limit.name != filtered_limit.name:
+                raise ValueError("Multiple limits with same data but different names")
+
+            add = False
+        if add:
+            filtered_limit_list.append(limit)
+
+    return filtered_limit_list
+
+
+
