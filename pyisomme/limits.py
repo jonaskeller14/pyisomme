@@ -60,6 +60,9 @@ class Limit:
     def __eq__(self, other):
         return id(self) == id(other)
 
+    def __hash__(self):
+        return id(self)
+
 
 class Limits:
     name: str
@@ -113,21 +116,23 @@ class Limits:
         limits = limit_list_sort(self.get_limits(channel.code))
         assert None not in [limit.value for limit in limits], "All limits must have a value defined."
 
-        channel_time = channel.data.index
+        channel_times = channel.data.index
         channel_values = channel.data.values
 
         if interpolate:
             limit_values = []
-            for channel_time, channel_value in zip(channel_time, channel_values):
-                limit_values.append(np.interp(channel_value, [limit.get_data(channel_time, x_unit="s", y_unit=channel.unit) for limit in limits], [limit.value for limit in limits]))
+            limit_data = {limit: limit.get_data(channel_times, x_unit="s", y_unit=channel.unit) for limit in limits}
+            for idx, (channel_time, channel_value) in enumerate(zip(channel_times, channel_values)):
+                limit_values.append(np.interp(channel_value, [limit_data[limit][idx] for limit in limits], [limit.value for limit in limits]))
         else:
             limit_values = []
-            for channel_time, channel_value in zip(channel_time, channel_values):
-                for limit in limits:
-                    if limit.upper and channel_value < limit.get_data(channel_time, x_unit="s", y_unit=channel.unit):
+            limit_data = {limit: limit.get_data(channel_times, x_unit="s", y_unit=channel.unit) for limit in limits}
+            for idx, (channel_time, channel_value) in enumerate(zip(channel_times, channel_values)):
+                for limit, data in limit_data.items():
+                    if limit.upper and channel_value < data[idx]:
                         limit_values.append(limit.value)
                         break
-                    if limit.lower and channel_value >= limit.get_data(channel_time, x_unit="s", y_unit=channel.unit):
+                    if limit.lower and channel_value >= data[idx]:
                         limit_values.append(limit.value)
                         break
         return limit_values
