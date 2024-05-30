@@ -180,7 +180,7 @@ def limit_list_unique(limit_list: list[Limit], x, x_unit, y_unit) -> list:
                 continue
 
             # Both upper or both lower?
-            if limit.upper != filtered_limit.upper and limit.lower != filtered_limit.lower:
+            if limit.upper != filtered_limit.upper or limit.lower != filtered_limit.lower:
                 continue
 
             if limit.name != filtered_limit.name:
