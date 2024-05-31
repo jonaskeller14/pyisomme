@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from pyisomme.parsing import parse_mme, parse_chn, parse_xxx
 from pyisomme.channel import create_sample, Code
 from pyisomme.calculate import *
@@ -323,7 +325,7 @@ class Isomme:
         return hash(self.test_number)
 
     @debug_logging(logger)
-    def get_channel(self, *code_patterns: str, filter: bool = True, calculate: bool = True, differentiate=True, integrate=True) -> Channel:
+    def get_channel(self, *code_patterns: str, filter: bool = True, calculate: bool = True, differentiate=True, integrate=True) -> Channel | None:
         """
         Get channel by channel code pattern.
         First match will be returned, although multiple matches may exist.
@@ -413,6 +415,32 @@ class Isomme:
                     if channel is not None:
                         return calculate_chest_vc(channel)
 
+                # Acetabulum Compression (Minimum of left and right)
+                if code_pattern.main_location == "ACTB" and code_pattern.fine_location_1 == "00":
+                    channel_left = self.get_channel(code_pattern.set(fine_location_1="LE"))
+                    channel_right = self.get_channel(code_pattern.set(fine_location_1="RE"))
+                    if channel_left is not None and channel_right is not None:
+                        time = time_intersect(channel_left, channel_right)
+                        values = np.min([
+                            channel_left.get_data(t=time),
+                            channel_right.get_data(t=time, unit=channel_left.unit)], axis=0)
+                        return Channel(code=channel_left.code.set(fine_location_1="00"),
+                                       data=pd.DataFrame(values, index=time),
+                                       unit=channel_left.unit)
+
+                # Knee Slider Compression (Minimum of left and right)
+                if code_pattern.main_location == "KNSL" and code_pattern.fine_location_1 == "00":
+                    channel_left = self.get_channel(code_pattern.set(fine_location_1="LE"))
+                    channel_right = self.get_channel(code_pattern.set(fine_location_1="RE"))
+                    if channel_left is not None and channel_right is not None:
+                        time = time_intersect(channel_left, channel_right)
+                        values = np.min([
+                            channel_left.get_data(t=time),
+                            channel_right.get_data(t=time, unit=channel_left.unit)], axis=0)
+                        return Channel(code=channel_left.code.set(fine_location_1="00"),
+                                       data=pd.DataFrame(values, index=time),
+                                       unit=channel_left.unit)
+
                 # Tibia Index
                 if code_pattern.main_location == "TIIN" and code_pattern.physical_dimension == "00" and code_pattern.direction == "0":
                     channel_MOX = self.get_channel(code_pattern.set(main_location="TIBI", physical_dimension="MO", direction="X"))
@@ -486,6 +514,36 @@ class Isomme:
                             if channel_dcz is not None:
                                 return (channel_dcz - channel_dcz.get_data(t=0)).set_code(physical_dimension="DS")
 
+                # WorldSid Dummy Chest/Abdomen Displacement (Minimum of individual IR-TRACC displacment)
+                if code_pattern.main_location in ("TRRI", "ABRI") and code_pattern.fine_location_2 == "00" and code_pattern.fine_location_3 == "WS" and code_pattern.physical_dimension == "DS":
+                    channel_01 = self.get_channel(code_pattern.set(fine_location_2="01"))
+                    channel_02 = self.get_channel(code_pattern.set(fine_location_2="02"))
+                    channel_03 = self.get_channel(code_pattern.set(fine_location_2="03"))
+                    if None not in (channel_01, channel_02, channel_03):
+                        time = time_intersect(channel_01, channel_02, channel_03)
+                        values = np.min([channel.get_data(t=time, unit=channel_01.unit) for channel in (channel_01, channel_02, channel_03)], axis=0)
+                        return Channel(code=code_pattern,
+                                       data=pd.DataFrame(values, index=time),
+                                       unit=channel_01.unit)
+
+                # WorldSid Dummy Rib IR-TRACC Lateral Length and Absolute/Lateral Displacement
+                if code_pattern.main_location in ("TRRI", "ABRI") and code_pattern.fine_location_3 == "WS":
+                    if code_pattern.physical_dimension == "DC" and code_pattern.direction == "Y":
+                        channel_dc0 = self.get_channel(code_pattern.set(physical_dimension="DC", direction="0"))
+                        channel_anz = self.get_channel(code_pattern.set(physical_dimension="AN", direction="Z"))
+                        if None not in (channel_dc0, channel_anz):
+                            time_array = time_intersect(channel_dc0, channel_anz)
+                            return Channel(
+                                code=channel_dc0.code.set(physical_dimension="DS"),
+                                data=pd.DataFrame(channel_dc0.get_data(t=time_array) * np.sin(channel_anz.get_data(t=time_array, unit="rad")), index=time_array),
+                                unit=channel_dc0.unit,
+                                info=channel_dc0.info
+                            )
+                    if code_pattern.physical_dimension == "DS":
+                        channel_dc = self.get_channel(code_pattern.set(physical_dimension="DC"))
+                        if channel_dc is not None:
+                            return (channel_dc - channel_dc.get_data(t=0)).set_code(physical_dimension="DS")
+
                 # OLC
                 if code_pattern.fine_location_1 == "0O" and code_pattern.fine_location_2 == "LC" and code_pattern.physical_dimension == "VE":
                     tmp = code_pattern.set(fine_location_1="??", fine_location_2="??")
@@ -539,7 +597,9 @@ class Isomme:
             # 2. Filter Channel
             if filter:
                 for channel in self.channels:
-                    if channel not in channel_list and fnmatch.fnmatch(channel.code, code_pattern[:-1] + "?"):
+                    if channel in channel_list:
+                        continue
+                    if fnmatch.fnmatch(channel.code, code_pattern[:-1] + "?"):
                         channel_list.append(channel.cfc(filter_class=code_pattern[-1]))
 
             try:
