@@ -4,6 +4,5 @@ from pyisomme.correlation import Correlation_ISO18571
 from pyisomme.plotting import *
 from pyisomme.unit import *
 from pyisomme.limits import *
-from pyisomme.report import *
 
-from pyisomme.report_euro_ncap_frontal_50kmh import EuroNCAP_Frontal_50kmh
+import pyisomme.report
