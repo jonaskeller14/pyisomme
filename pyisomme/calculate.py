@@ -60,7 +60,7 @@ def calculate_hic(channel: Channel, max_delta_t) -> Channel | None:
     channel = channel.convert_unit(g0)
 
     max_delta_t *= 1e-3
-    time_array = channel.data.index
+    time_array = np.array(channel.data.index)
     res = 0
     res_t1 = None
     res_t2 = None
@@ -81,9 +81,11 @@ def calculate_hic(channel: Channel, max_delta_t) -> Channel | None:
         # Integral can be negative -> extrema can occur for smaller timespan
         for idx_1, t1 in enumerate(time_array[:-1]):
             upper_limit_idx = (t1 + max_delta_t <= time_array).argmax()
-            for t2 in time_array[idx_1+1:upper_limit_idx]:
-                idx_2 = time_array.index(t2)
+            for idx2_offset, t2 in enumerate(time_array[idx_1+1:upper_limit_idx]):
+                idx_2 = idx_1 + 1 + idx2_offset
                 a_int = np.trapz(channel.get_data(time_array[idx_1:idx_2+1]), time_array[idx_1:idx_2+1])
+                if a_int < 0:
+                    continue
                 new_res = (t2 - t1) * (1 / (t2 - t1) * a_int) ** 2.5
                 if new_res > res:
                     res = new_res
@@ -99,7 +101,7 @@ def calculate_hic(channel: Channel, max_delta_t) -> Channel | None:
         data=pd.DataFrame([res]),
         unit=None,
         info={
-            "Name of the channel": f"HIC VALUE {max_delta_t:.0f}",
+            "Name of the channel": f"HIC VALUE {max_delta_t * 1e3:.0f}",
             "Data source": "Calculation",
             "Number of samples": 1,
             ".Start time": res_t1,
