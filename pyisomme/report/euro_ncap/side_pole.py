@@ -19,16 +19,14 @@ logger = logging.getLogger(__name__)
 #   - Add tests
 
 class EuroNCAP_Side_Pole(Report):
-    """
-    Protocol Version 9.3 (05.12.2023)
-
-    References:
-        - references/Euro-NCAP/euro-ncap-assessment-protocol-aop-v93.pdf
-    """
     name = "Euro NCAP | Pole Side Impact at 32 km/h"
+    protocol = "9.3"
+    protocols = {
+        "9.3": "Version 9.3 (05.12.2023) [references/Euro-NCAP/euro-ncap-assessment-protocol-aop-v93.pdf]"
+    }
 
-    def __init__(self, isomme_list, title: str = "Report"):
-        super().__init__(isomme_list, title)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
         self.pages = [
             Page_Cover(self),

@@ -16,9 +16,13 @@ logger = logging.getLogger(__name__)
 
 class EuroNCAP_Frontal_50kmh(Report):
     name = "Euro NCAP | Frontal-Impact against Rigid Wall with 100 % Overlap at 50 km/h"
+    protocol = "9.3"
+    protocols = {
+        "9.3": "Version 9.3 (05.12.2023) [references/Euro-NCAP/euro-ncap-assessment-protocol-aop-v93.pdf]"
+    }
 
-    def __init__(self, isomme_list, title: str = "Report"):
-        super().__init__(isomme_list, title)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
         self.pages = [
             Page_Cover(self),

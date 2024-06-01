@@ -18,10 +18,16 @@ class Report:
     limits: dict = None
     criterion_master: dict = None
     pages: list
+    protocol: str
+    protocols: dict = {}
 
-    def __init__(self, isomme_list: list, title: str = None):
+    def __init__(self, isomme_list: list, title: str = "Report", protocol: str = None):
         self.isomme_list = isomme_list
         self.title = title
+
+        if protocol is not None:
+            assert protocol in self.protocols.keys(), f"Protocol {protocol} not available. Available protocols: {list(self.protocols.keys())}"
+            self.protocol = protocol
 
         self.limits = {isomme: Limits(name=self.name, limit_list=[]) for isomme in isomme_list}
 
@@ -29,7 +35,7 @@ class Report:
         for isomme in isomme_list:
             self.criterion_master[isomme] = self.Criterion_Master(self, isomme)
 
-        self.pages = [  # FIXME, nicht hier definieren
+        self.pages = [
             Page_Cover(self),
         ]
 
