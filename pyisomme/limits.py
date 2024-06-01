@@ -21,6 +21,10 @@ class Limit:
 
     def __init__(self, code_patterns: list, func, color: str = None, linestyle: str = "-", name: str = None, value: float = None, lower: bool = None, upper: bool = None, x_unit="s", y_unit=None):
         self.code_patterns: list = code_patterns
+
+        if isinstance(func, int) or isinstance(func, float):
+            func = lambda x: func
+        assert func.__code__.co_argcount == 1
         self.func = lambda x: float(func(x)) if not isinstance(x, Iterable) else np.array([func(x_i) for x_i in x], dtype=float)  # if x is scalar --> return scalar, if is array --> return array
 
         if color is not None:
