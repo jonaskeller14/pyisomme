@@ -1,12 +1,14 @@
-from pyisomme.calculate import *
+from pyisomme.calculate import calculate_hic, calculate_xms, calculate_chest_vc
+from pyisomme.unit import Unit
 from pyisomme.limits import Limit
-from pyisomme.report.page import Page_Cover, Page_OLC, Page_Result_Table, Page_Plot_nxn
+from pyisomme.report.page import Page_Cover, Page_OLC, Page_Result_Table, Page_Plot_nxn, Page
 from pyisomme.report.report import Report
 from pyisomme.report.criterion import Criterion
-from pyisomme.report.euro_ncap.limits import Limit_4Points, Limit_3Points, Limit_2Points, Limit_1Points, Limit_0Points, Limit_Capping
+from pyisomme.report.euro_ncap.limits import Limit_G, Limit_P, Limit_C, Limit_M, Limit_A, Limit_W
 
 from astropy.constants import g0
 import logging
+import numpy as np
 
 
 logger = logging.getLogger(__name__)
@@ -163,12 +165,12 @@ class EuroNCAP_Frontal_50kmh(Report):
                         self.p = p
 
                         self.extend_limit_list([
-                            Limit_4Points([f"?{self.p}HICR0015??00RX"], func=lambda x: 500, y_unit=1, upper=True),
-                            Limit_3Points([f"?{self.p}HICR0015??00RX"], func=lambda x: 550, y_unit=1, upper=True),
-                            Limit_2Points([f"?{self.p}HICR0015??00RX"], func=lambda x: 600, y_unit=1, upper=True),
-                            Limit_1Points([f"?{self.p}HICR0015??00RX"], func=lambda x: 650, y_unit=1, upper=True),
-                            Limit_0Points([f"?{self.p}HICR0015??00RX"], func=lambda x: 700, y_unit=1, upper=True),
-                            Limit_Capping([f"?{self.p}HICR0015??00RX"], func=lambda x: 700, y_unit=1, lower=True),
+                            Limit_G([f"?{self.p}HICR0015??00RX"], func=lambda x: 500.000, y_unit=1, upper=True),
+                            Limit_A([f"?{self.p}HICR0015??00RX"], func=lambda x: 500.000, y_unit=1, lower=True),
+                            Limit_M([f"?{self.p}HICR0015??00RX"], func=lambda x: 566.667, y_unit=1, lower=True),
+                            Limit_W([f"?{self.p}HICR0015??00RX"], func=lambda x: 633.333, y_unit=1, lower=True),
+                            Limit_P([f"?{self.p}HICR0015??00RX"], func=lambda x: 700.000, y_unit=1),
+                            Limit_C([f"?{self.p}HICR0015??00RX"], func=lambda x: 700.000, y_unit=1, lower=True),
                         ])
 
                     def calculation(self):
@@ -185,12 +187,12 @@ class EuroNCAP_Frontal_50kmh(Report):
                         self.p = p
 
                         self.extend_limit_list([
-                            Limit_4Points([f"?{self.p}HEAD003C??ACRA"], func=lambda x: 72, y_unit=Unit(g0), upper=True),
-                            Limit_3Points([f"?{self.p}HEAD003C??ACRA"], func=lambda x: 74, y_unit=Unit(g0), upper=True),
-                            Limit_2Points([f"?{self.p}HEAD003C??ACRA"], func=lambda x: 76, y_unit=Unit(g0), upper=True),
-                            Limit_1Points([f"?{self.p}HEAD003C??ACRA"], func=lambda x: 78, y_unit=Unit(g0), upper=True),
-                            Limit_0Points([f"?{self.p}HEAD003C??ACRA"], func=lambda x: 80, y_unit=Unit(g0), upper=True),
-                            Limit_Capping([f"?{self.p}HEAD003C??ACRA"], func=lambda x: 80, y_unit=Unit(g0), lower=True),
+                            Limit_G([f"?{self.p}HEAD003C??ACRA"], func=lambda x: 72.000, y_unit=Unit(g0), upper=True),
+                            Limit_A([f"?{self.p}HEAD003C??ACRA"], func=lambda x: 72.000, y_unit=Unit(g0), lower=True),
+                            Limit_M([f"?{self.p}HEAD003C??ACRA"], func=lambda x: 74.667, y_unit=Unit(g0), lower=True),
+                            Limit_W([f"?{self.p}HEAD003C??ACRA"], func=lambda x: 77.333, y_unit=Unit(g0), lower=True),
+                            Limit_P([f"?{self.p}HEAD003C??ACRA"], func=lambda x: 80.000, y_unit=Unit(g0)),
+                            Limit_C([f"?{self.p}HEAD003C??ACRA"], func=lambda x: 80.000, y_unit=Unit(g0), lower=True),
                         ])
 
                     def calculation(self):
@@ -304,12 +306,12 @@ class EuroNCAP_Frontal_50kmh(Report):
                         self.p = p
 
                         self.extend_limit_list([
-                            Limit_4Points([f"?{self.p}NECKUP00??MOY?"], func=lambda x: -36.00, y_unit="Nm", lower=True),
-                            Limit_3Points([f"?{self.p}NECKUP00??MOY?"], func=lambda x: -39.25, y_unit="Nm", lower=True),
-                            Limit_2Points([f"?{self.p}NECKUP00??MOY?"], func=lambda x: -42.50, y_unit="Nm", lower=True),
-                            Limit_1Points([f"?{self.p}NECKUP00??MOY?"], func=lambda x: -45.75, y_unit="Nm", lower=True),
-                            Limit_0Points([f"?{self.p}NECKUP00??MOY?"], func=lambda x: -49.00, y_unit="Nm", lower=True, upper=True),
-                            Limit_Capping([f"?{self.p}NECKUP00??MOYB"], func=lambda x: -57.00, y_unit="Nm", upper=True)
+                            Limit_G([f"?{self.p}NECKUP00??MOY?"], func=lambda x: -36.000, y_unit="Nm", lower=True),
+                            Limit_A([f"?{self.p}NECKUP00??MOY?"], func=lambda x: -36.000, y_unit="Nm", upper=True),
+                            Limit_M([f"?{self.p}NECKUP00??MOY?"], func=lambda x: -40.333, y_unit="Nm", upper=True),
+                            Limit_W([f"?{self.p}NECKUP00??MOY?"], func=lambda x: -44.667, y_unit="Nm", upper=True),
+                            Limit_P([f"?{self.p}NECKUP00??MOY?"], func=lambda x: -49.000, y_unit="Nm", upper=True),
+                            Limit_C([f"?{self.p}NECKUP00??MOY?"], func=lambda x: -57.000, y_unit="Nm", upper=True)
                         ])
 
                     def calculation(self):
@@ -326,12 +328,12 @@ class EuroNCAP_Frontal_50kmh(Report):
                         self.p = p
 
                         self.extend_limit_list([
-                            Limit_4Points([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: 1.70, y_unit="kN", upper=True),
-                            Limit_3Points([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: 1.93, y_unit="kN", upper=True),
-                            Limit_2Points([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: 2.16, y_unit="kN", upper=True),
-                            Limit_1Points([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: 2.39, y_unit="kN", upper=True),
-                            Limit_0Points([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: 2.62, y_unit="kN", upper=True, lower=True),
-                            Limit_Capping([f"?{self.p}NECKUP00??FOZA"], func=lambda x: 2.90, y_unit="kN", lower=True),
+                            Limit_G([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: 1.700, y_unit="kN", upper=True),
+                            Limit_A([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: 1.700, y_unit="kN", lower=True),
+                            Limit_M([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: 2.007, y_unit="kN", lower=True),
+                            Limit_W([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: 2.313, y_unit="kN", lower=True),
+                            Limit_P([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: 2.620, y_unit="kN", lower=True),
+                            Limit_C([f"?{self.p}NECKUP00??FOZA"], func=lambda x: 2.900, y_unit="kN", lower=True),
                         ])
 
                     def calculation(self):
@@ -348,20 +350,20 @@ class EuroNCAP_Frontal_50kmh(Report):
                         self.p = p
 
                         self.extend_limit_list([
-                            Limit_4Points([f"?{self.p}NECKUP00??FOX?"], func=lambda x: 1.2000, y_unit="kN", upper=True),
-                            Limit_3Points([f"?{self.p}NECKUP00??FOX?"], func=lambda x: 1.3875, y_unit="kN", upper=True),
-                            Limit_2Points([f"?{self.p}NECKUP00??FOX?"], func=lambda x: 1.5750, y_unit="kN", upper=True),
-                            Limit_1Points([f"?{self.p}NECKUP00??FOX?"], func=lambda x: 1.7625, y_unit="kN", upper=True),
-                            Limit_0Points([f"?{self.p}NECKUP00??FOX?"], func=lambda x: 1.9500, y_unit="kN", upper=True, lower=True),
+                            Limit_G([f"?{self.p}NECKUP00??FOX?"], func=lambda x: 1.20, y_unit="kN", upper=True),
+                            Limit_A([f"?{self.p}NECKUP00??FOX?"], func=lambda x: 1.20, y_unit="kN", lower=True),
+                            Limit_M([f"?{self.p}NECKUP00??FOX?"], func=lambda x: 1.45, y_unit="kN", lower=True),
+                            Limit_W([f"?{self.p}NECKUP00??FOX?"], func=lambda x: 1.70, y_unit="kN", lower=True),
+                            Limit_P([f"?{self.p}NECKUP00??FOX?"], func=lambda x: 1.95, y_unit="kN", lower=True),
 
-                            Limit_4Points([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -1.2000, y_unit="kN", lower=True),
-                            Limit_3Points([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -1.3875, y_unit="kN", lower=True),
-                            Limit_2Points([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -1.5750, y_unit="kN", lower=True),
-                            Limit_1Points([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -1.7625, y_unit="kN", lower=True),
-                            Limit_0Points([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -1.9500, y_unit="kN", lower=True, upper=True),
+                            Limit_G([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -1.20, y_unit="kN", lower=True),
+                            Limit_A([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -1.20, y_unit="kN", upper=True),
+                            Limit_M([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -1.45, y_unit="kN", upper=True),
+                            Limit_W([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -1.70, y_unit="kN", upper=True),
+                            Limit_P([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -1.95, y_unit="kN", upper=True),
 
-                            Limit_Capping([f"?{self.p}NECKUP00??FOX?"], func=lambda x: 2.7000, y_unit="kN", lower=True),
-                            Limit_Capping([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -2.7000, y_unit="kN", upper=True)
+                            Limit_C([f"?{self.p}NECKUP00??FOX?"], func=lambda x: 2.70, y_unit="kN", lower=True),
+                            Limit_C([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -2.70, y_unit="kN", upper=True)
                         ])
 
                     def calculation(self):
@@ -404,19 +406,18 @@ class EuroNCAP_Frontal_50kmh(Report):
                         self.p = p
 
                         self.extend_limit_list([
-                            Limit_Capping([f"?{self.p}CHST000[03]??DSX?"], func=lambda x: -34, y_unit="mm", upper=True),
-                            Limit_0Points([f"?{self.p}CHST000[03]??DSX?"], func=lambda x: -34, y_unit="mm", lower=True),
-                            Limit_1Points([f"?{self.p}CHST000[03]??DSX?"], func=lambda x: -30, y_unit="mm", lower=True),
-                            Limit_2Points([f"?{self.p}CHST000[03]??DSX?"], func=lambda x: -26, y_unit="mm", lower=True),
-                            Limit_3Points([f"?{self.p}CHST000[03]??DSX?"], func=lambda x: -22, y_unit="mm", lower=True),
-                            Limit_4Points([f"?{self.p}CHST000[03]??DSX?"], func=lambda x: -18, y_unit="mm", lower=True),
+                            Limit_C([f"?{self.p}CHST000[03]??DSX?"], func=lambda x: -34.000, y_unit="mm", upper=True),
+                            Limit_P([f"?{self.p}CHST000[03]??DSX?"], func=lambda x: -34.000, y_unit="mm"),
+                            Limit_W([f"?{self.p}CHST000[03]??DSX?"], func=lambda x: -28.667, y_unit="mm", upper=True),
+                            Limit_M([f"?{self.p}CHST000[03]??DSX?"], func=lambda x: -23.333, y_unit="mm", upper=True),
+                            Limit_A([f"?{self.p}CHST000[03]??DSX?"], func=lambda x: -18.000, y_unit="mm", upper=True),
+                            Limit_G([f"?{self.p}CHST000[03]??DSX?"], func=lambda x: -18.000, y_unit="mm", lower=True),
                         ])
 
                     def calculation(self):
                         self.channel = self.isomme.get_channel(f"?{self.p}CHST0003??DSXC", f"?{self.p}CHST0000??DSXC").convert_unit("mm")
                         self.value = np.min(self.channel.get_data())
                         self.rating = self.limits.get_limit_min_value(self.channel, interpolate=True)
-                        self.color = self.limits.get_limit_min_color(self.channel)
 
                 class Criterion_Chest_VC(Criterion):
                     name = "Chest VC"
@@ -427,21 +428,20 @@ class EuroNCAP_Frontal_50kmh(Report):
                         self.p = p
 
                         self.extend_limit_list([
-                            Limit_4Points([f"?{self.p}VCCR0000??VEX?"], func=lambda x: 0.500, y_unit="m/s", upper=True),
-                            Limit_3Points([f"?{self.p}VCCR0000??VEX?"], func=lambda x: 0.625, y_unit="m/s", upper=True),
-                            Limit_2Points([f"?{self.p}VCCR0000??VEX?"], func=lambda x: 0.750, y_unit="m/s", upper=True),
-                            Limit_1Points([f"?{self.p}VCCR0000??VEX?"], func=lambda x: 0.875, y_unit="m/s", upper=True),
-                            Limit_0Points([f"?{self.p}VCCR0000??VEX?"], func=lambda x: 1.000, y_unit="m/s", upper=True),
-                            Limit_Capping([f"?{self.p}VCCR0000??VEX?"], func=lambda x: 1.000, y_unit="m/s", lower=True),
+                            Limit_G([f"?{self.p}VCCR0000??VEX?"], func=lambda x: 0.500, y_unit="m/s", upper=True),
+                            Limit_A([f"?{self.p}VCCR0000??VEX?"], func=lambda x: 0.500, y_unit="m/s", lower=True),
+                            Limit_M([f"?{self.p}VCCR0000??VEX?"], func=lambda x: 0.667, y_unit="m/s", lower=True),
+                            Limit_W([f"?{self.p}VCCR0000??VEX?"], func=lambda x: 0.833, y_unit="m/s", lower=True),
+                            Limit_P([f"?{self.p}VCCR0000??VEX?"], func=lambda x: 1.000, y_unit="m/s"),
+                            Limit_C([f"?{self.p}VCCR0000??VEX?"], func=lambda x: 1.000, y_unit="m/s", lower=True),
                         ])
 
                     def calculation(self):
                         chest_deflection = (self.isomme.get_channel(f"?{self.p}CHST0003??DSXC", f"?{self.p}CHST0000??DSXC"))
-                        chest_deflection = chest_deflection * -1 if abs(min(chest_deflection.get_data())) > max(chest_deflection.get_data()) else chest_deflection
 
                         self.channel = calculate_chest_vc(chest_deflection).convert_unit("m/s")
-                        self.value = max(self.channel.get_data())
-                        self.rating = np.interp(self.value, [0.5, 1.0], [4, 0], left=4, right=-np.inf)
+                        self.value = np.min(self.channel.get_data())
+                        self.rating = self.limits.get_limit_min_value(self.channel, interpolate=True)
 
                 class Criterion_SteeringWheelContact(Criterion):
                     name = "Modifier Chest Steering Wheel Contact"
@@ -465,7 +465,7 @@ class EuroNCAP_Frontal_50kmh(Report):
                         self.p = p
 
                         self.extend_limit_list([
-                            Limit([f"?{self.p}SEBE????B3FO[X0]?"], name="-2 pt. Modifier", func=lambda: 6.0, y_unit="kN", lower=True, color="red")
+                            Limit([f"?{self.p}SEBE????B3FO[X0]?"], name="-2 pt. Modifier", func=lambda x: 6.0, y_unit="kN", lower=True, color="red", value=-2)
                         ])
 
                     def calculate(self):
@@ -500,14 +500,6 @@ class EuroNCAP_Frontal_50kmh(Report):
 
                         self.p = p
 
-                        self.extend_limit_list([
-                            Limit_4Points([f"?{self.p}FEMRLE00??FOZ?", f"?{self.p}FEMRRI00??FOZ?"], func=lambda x: -2.6, y_unit="kN", lower=True),
-                            Limit_3Points([f"?{self.p}FEMRLE00??FOZ?", f"?{self.p}FEMRRI00??FOZ?"], func=lambda x: -3.5, y_unit="kN", lower=True),
-                            Limit_2Points([f"?{self.p}FEMRLE00??FOZ?", f"?{self.p}FEMRRI00??FOZ?"], func=lambda x: -4.4, y_unit="kN", lower=True),
-                            Limit_1Points([f"?{self.p}FEMRLE00??FOZ?", f"?{self.p}FEMRRI00??FOZ?"], func=lambda x: -5.3, y_unit="kN", lower=True),
-                            Limit_0Points([f"?{self.p}FEMRLE00??FOZ?", f"?{self.p}FEMRRI00??FOZ?"], func=lambda x: -6.2, y_unit="kN", lower=True, upper=True),
-                        ])
-
                         self.criterion_femur_axial_force_left = self.Criterion_Femur_Axial_Force_Left(report, isomme, p=self.p)
                         self.criterion_femur_axial_force_right = self.Criterion_Femur_Axial_Force_Right(report, isomme, p=self.p)
 
@@ -515,8 +507,8 @@ class EuroNCAP_Frontal_50kmh(Report):
                         self.criterion_femur_axial_force_left.calculate()
                         self.criterion_femur_axial_force_right.calculate()
 
-                        self.value = np.max([self.criterion_femur_axial_force_left.value, self.criterion_femur_axial_force_right.value])
-                        self.rating = np.interp(self.value, [2.6, 6.2], [4, 0], left=4, right=0)
+                        self.value = np.min([self.criterion_femur_axial_force_left.value, self.criterion_femur_axial_force_right.value])
+                        self.rating = np.min([self.criterion_femur_axial_force_left.rating, self.criterion_femur_axial_force_right.rating])
 
                     class Criterion_Femur_Axial_Force_Left(Criterion):
                         name = "Femur Axial Force Left"
@@ -526,9 +518,18 @@ class EuroNCAP_Frontal_50kmh(Report):
 
                             self.p = p
 
+                            self.extend_limit_list([
+                                Limit_G([f"?{self.p}FEMRLE00??FOZ?"], func=lambda x: -2.6, y_unit="kN", lower=True),
+                                Limit_A([f"?{self.p}FEMRLE00??FOZ?"], func=lambda x: -2.6, y_unit="kN", upper=True),
+                                Limit_M([f"?{self.p}FEMRLE00??FOZ?"], func=lambda x: -3.8, y_unit="kN", upper=True),
+                                Limit_W([f"?{self.p}FEMRLE00??FOZ?"], func=lambda x: -5.0, y_unit="kN", upper=True),
+                                Limit_P([f"?{self.p}FEMRLE00??FOZ?"], func=lambda x: -6.2, y_unit="kN", upper=True),
+                            ])
+
                         def calculation(self):
                             self.channel = self.isomme.get_channel(f"?{self.p}FEMRLE00??FOZB")
-                            self.value = abs(min(self.channel.get_data(unit="kN")))
+                            self.value = np.min(self.channel.get_data(unit="kN"))
+                            self.rating = self.limits.get_limit_min_value(self.channel, interpolate=True)
 
                     class Criterion_Femur_Axial_Force_Right(Criterion):
                         name = "Femur Axial Force Right"
@@ -538,9 +539,18 @@ class EuroNCAP_Frontal_50kmh(Report):
 
                             self.p = p
 
+                            self.extend_limit_list([
+                                Limit_G([f"?{self.p}FEMRRI00??FOZ?"], func=lambda x: -2.6, y_unit="kN", lower=True),
+                                Limit_A([f"?{self.p}FEMRRI00??FOZ?"], func=lambda x: -2.6, y_unit="kN", upper=True),
+                                Limit_M([f"?{self.p}FEMRRI00??FOZ?"], func=lambda x: -3.8, y_unit="kN", upper=True),
+                                Limit_W([f"?{self.p}FEMRRI00??FOZ?"], func=lambda x: -5.0, y_unit="kN", upper=True),
+                                Limit_P([f"?{self.p}FEMRRI00??FOZ?"], func=lambda x: -6.2, y_unit="kN", upper=True),
+                            ])
+
                         def calculation(self):
                             self.channel = self.isomme.get_channel(f"?{self.p}FEMRRI00??FOZB")
-                            self.value = abs(min(self.channel.get_data(unit="kN")))
+                            self.value = np.min(self.channel.get_data(unit="kN"))
+                            self.rating = self.limits.get_limit_min_value(self.channel, interpolate=True)
 
                 class Criterion_Submarining(Criterion):
                     name = "Submarining"
@@ -590,8 +600,8 @@ class EuroNCAP_Frontal_50kmh(Report):
 
                     self.p = p
 
-                    self.criterion_hic_15 = self.Criterion_HIC_15(report, isomme, p=self.p)
-                    self.criterion_head_a3ms = self.Criterion_Head_a3ms(report, isomme, p=self.p)
+                    self.criterion_hic_15 = self.report.Criterion_Master.Criterion_Driver.Criterion_Head.Criterion_HIC_15(report, isomme, p=self.p)
+                    self.criterion_head_a3ms = self.report.Criterion_Master.Criterion_Driver.Criterion_Head.Criterion_Head_a3ms(report, isomme, p=self.p)
                     self.criterion_HazardousAirbagDeployment = self.Criterion_HazardousAirbagDeployment(report, isomme, p=self.p)
                     self.criterion_IncorrectAirbagDeployment = self.Criterion_IncorrectAirbagDeployment(report, isomme, p=self.p)
                     self.criterion_ExceedingForwardExcursionLine = self.Criterion_ExceedingForwardExcursionLine(report, isomme, p=self.p)
@@ -617,50 +627,6 @@ class EuroNCAP_Frontal_50kmh(Report):
                     self.rating += np.sum([self.criterion_HazardousAirbagDeployment.rating,
                                            self.criterion_IncorrectAirbagDeployment.rating,
                                            self.criterion_ExceedingForwardExcursionLine.rating])
-
-                class Criterion_HIC_15(Criterion):
-                    name = "HIC 15"
-
-                    def __init__(self, report, isomme, p):
-                        super().__init__(report, isomme)
-
-                        self.p = p
-
-                        self.extend_limit_list([
-                            Limit_4Points([f"?{self.p}HICR0015??00RX"], func=lambda x: 500, y_unit=1, upper=True),
-                            Limit_3Points([f"?{self.p}HICR0015??00RX"], func=lambda x: 550, y_unit=1, upper=True),
-                            Limit_2Points([f"?{self.p}HICR0015??00RX"], func=lambda x: 600, y_unit=1, upper=True),
-                            Limit_1Points([f"?{self.p}HICR0015??00RX"], func=lambda x: 650, y_unit=1, upper=True),
-                            Limit_0Points([f"?{self.p}HICR0015??00RX"], func=lambda x: 700, y_unit=1, upper=True),
-                            Limit_Capping([f"?{self.p}HICR0015??00RX"], func=lambda x: 700, y_unit=1, lower=True),
-                        ])
-
-                    def calculation(self):
-                        self.channel = calculate_hic(self.isomme.get_channel(f"?{self.p}HEAD??00??ACRA"), 15)
-                        self.value = self.channel.get_data()[0]
-                        self.rating = np.interp(self.value, [500, 700], [4, 0], left=4, right=-np.inf)
-
-                class Criterion_Head_a3ms(Criterion):
-                    name = "Head a3ms"
-
-                    def __init__(self, report, isomme, p):
-                        super().__init__(report, isomme)
-
-                        self.p = p
-
-                        self.extend_limit_list([
-                            Limit_4Points([f"?{self.p}HEAD003C??ACRA"], func=lambda x: 72, y_unit=Unit(g0), upper=True),
-                            Limit_3Points([f"?{self.p}HEAD003C??ACRA"], func=lambda x: 74, y_unit=Unit(g0), upper=True),
-                            Limit_2Points([f"?{self.p}HEAD003C??ACRA"], func=lambda x: 76, y_unit=Unit(g0), upper=True),
-                            Limit_1Points([f"?{self.p}HEAD003C??ACRA"], func=lambda x: 78, y_unit=Unit(g0), upper=True),
-                            Limit_0Points([f"?{self.p}HEAD003C??ACRA"], func=lambda x: 80, y_unit=Unit(g0), upper=True),
-                            Limit_Capping([f"?{self.p}HEAD003C??ACRA"], func=lambda x: 80, y_unit=Unit(g0), lower=True),
-                        ])
-
-                    def calculation(self):
-                        self.channel = calculate_xms(self.isomme.get_channel(f"?{self.p}HEAD0000??ACRA", f"?{self.p}HEADCG00??ACRA"), 3, method="C")
-                        self.value = self.channel.get_data(unit=g0)[0]
-                        self.rating = np.interp(self.value, [72, 80], [4, 0], left=4, right=-np.inf)
 
                 class Criterion_HazardousAirbagDeployment(Criterion):
                     name = "Modifier for Hazardous Airbag Deployment"
@@ -730,11 +696,11 @@ class EuroNCAP_Frontal_50kmh(Report):
                         self.p = p
 
                         self.extend_limit_list([
-                            Limit_4Points([f"?{self.p}NECKUP00??MOY?"], func=lambda x: -36.00, y_unit="Nm", lower=True),
-                            Limit_3Points([f"?{self.p}NECKUP00??MOY?"], func=lambda x: -39.25, y_unit="Nm", lower=True),
-                            Limit_2Points([f"?{self.p}NECKUP00??MOY?"], func=lambda x: -42.50, y_unit="Nm", lower=True),
-                            Limit_1Points([f"?{self.p}NECKUP00??MOY?"], func=lambda x: -45.75, y_unit="Nm", lower=True),
-                            Limit_0Points([f"?{self.p}NECKUP00??MOY?"], func=lambda x: -49.00, y_unit="Nm", lower=True, upper=True),
+                            Limit_G([f"?{self.p}NECKUP00??MOY?"], func=lambda x: -36.000, y_unit="Nm", lower=True),
+                            Limit_A([f"?{self.p}NECKUP00??MOY?"], func=lambda x: -36.000, y_unit="Nm", upper=True),
+                            Limit_M([f"?{self.p}NECKUP00??MOY?"], func=lambda x: -40.333, y_unit="Nm", upper=True),
+                            Limit_W([f"?{self.p}NECKUP00??MOY?"], func=lambda x: -44.667, y_unit="Nm", upper=True),
+                            Limit_P([f"?{self.p}NECKUP00??MOY?"], func=lambda x: -49.000, y_unit="Nm", upper=True),
                         ])
 
                     def calculation(self):
@@ -751,11 +717,11 @@ class EuroNCAP_Frontal_50kmh(Report):
                         self.p = p
 
                         self.extend_limit_list([
-                            Limit_4Points([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: 1.70, y_unit="kN", upper=True),
-                            Limit_3Points([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: 1.93, y_unit="kN", upper=True),
-                            Limit_2Points([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: 2.16, y_unit="kN", upper=True),
-                            Limit_1Points([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: 2.39, y_unit="kN", upper=True),
-                            Limit_0Points([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: 2.62, y_unit="kN", upper=True, lower=True),
+                            Limit_G([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: 1.700, y_unit="kN", upper=True),
+                            Limit_A([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: 1.700, y_unit="kN", lower=True),
+                            Limit_M([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: 2.007, y_unit="kN", lower=True),
+                            Limit_W([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: 2.313, y_unit="kN", lower=True),
+                            Limit_P([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: 2.620, y_unit="kN", lower=True),
                         ])
 
                     def calculation(self):
@@ -772,17 +738,17 @@ class EuroNCAP_Frontal_50kmh(Report):
                         self.p = p
 
                         self.extend_limit_list([
-                            Limit_4Points([f"?{self.p}NECKUP00??FOX?"], func=lambda x: 1.2000, y_unit="kN", upper=True),
-                            Limit_3Points([f"?{self.p}NECKUP00??FOX?"], func=lambda x: 1.3875, y_unit="kN", upper=True),
-                            Limit_2Points([f"?{self.p}NECKUP00??FOX?"], func=lambda x: 1.5750, y_unit="kN", upper=True),
-                            Limit_1Points([f"?{self.p}NECKUP00??FOX?"], func=lambda x: 1.7625, y_unit="kN", upper=True),
-                            Limit_0Points([f"?{self.p}NECKUP00??FOX?"], func=lambda x: 1.9500, y_unit="kN", upper=True, lower=True),
+                            Limit_G([f"?{self.p}NECKUP00??FOX?"], func=lambda x: 1.20, y_unit="kN", upper=True),
+                            Limit_A([f"?{self.p}NECKUP00??FOX?"], func=lambda x: 1.20, y_unit="kN", lower=True),
+                            Limit_M([f"?{self.p}NECKUP00??FOX?"], func=lambda x: 1.45, y_unit="kN", lower=True),
+                            Limit_W([f"?{self.p}NECKUP00??FOX?"], func=lambda x: 1.70, y_unit="kN", lower=True),
+                            Limit_P([f"?{self.p}NECKUP00??FOX?"], func=lambda x: 1.95, y_unit="kN", lower=True),
 
-                            Limit_4Points([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -1.2000, y_unit="kN", lower=True),
-                            Limit_3Points([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -1.3875, y_unit="kN", lower=True),
-                            Limit_2Points([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -1.5750, y_unit="kN", lower=True),
-                            Limit_1Points([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -1.7625, y_unit="kN", lower=True),
-                            Limit_0Points([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -1.9500, y_unit="kN", lower=True, upper=True),
+                            Limit_G([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -1.20, y_unit="kN", lower=True),
+                            Limit_A([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -1.20, y_unit="kN", upper=True),
+                            Limit_M([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -1.45, y_unit="kN", upper=True),
+                            Limit_W([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -1.70, y_unit="kN", upper=True),
+                            Limit_P([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -1.95, y_unit="kN", upper=True),
                         ])
 
                     def calculation(self):
@@ -798,8 +764,8 @@ class EuroNCAP_Frontal_50kmh(Report):
 
                     self.p = p
 
-                    self.criterion_chest_deflection = self.Criterion_Chest_Deflection(report, isomme, p)
-                    self.criterion_chest_vc = self.Criterion_Chest_VC(report, isomme, p)
+                    self.criterion_chest_deflection = self.report.Criterion_Master.Criterion_Driver.Criterion_Chest.Criterion_Chest_Deflection(report, isomme, p)
+                    self.criterion_chest_vc = self.report.Criterion_Master.Criterion_Driver.Criterion_Chest.Criterion_Chest_VC(report, isomme, p)
                     self.criterion_ShoulderBeltLoad = self.Criterion_ShoulderBeltLoad(report, isomme, p)
 
                 def calculation(self):
@@ -813,54 +779,6 @@ class EuroNCAP_Frontal_50kmh(Report):
                     self.criterion_ShoulderBeltLoad.calculate()
                     self.rating += self.criterion_ShoulderBeltLoad.rating
 
-                class Criterion_Chest_Deflection(Criterion):
-                    name = "Chest Deflection"
-
-                    def __init__(self, report, isomme, p):
-                        super().__init__(report, isomme)
-
-                        self.p = p
-
-                        self.extend_limit_list([
-                            Limit_Capping([f"?{self.p}CHST000[03]??DSX?"], func=lambda x: -34, y_unit="mm", upper=True),
-                            Limit_0Points([f"?{self.p}CHST000[03]??DSX?"], func=lambda x: -34, y_unit="mm", lower=True),
-                            Limit_1Points([f"?{self.p}CHST000[03]??DSX?"], func=lambda x: -30, y_unit="mm", lower=True),
-                            Limit_2Points([f"?{self.p}CHST000[03]??DSX?"], func=lambda x: -26, y_unit="mm", lower=True),
-                            Limit_3Points([f"?{self.p}CHST000[03]??DSX?"], func=lambda x: -22, y_unit="mm", lower=True),
-                            Limit_4Points([f"?{self.p}CHST000[03]??DSX?"], func=lambda x: -18, y_unit="mm", lower=True),
-                        ])
-
-                    def calculation(self):
-                        self.channel = self.isomme.get_channel(f"?{self.p}CHST0003??DSXC", f"?{self.p}CHST0000??DSXC").convert_unit("mm")
-                        self.value = np.min(self.channel.get_data())
-                        self.rating = self.limits.get_limit_min_value(self.channel, interpolate=True)
-                        self.color = self.limits.get_limit_min_color(self.channel)
-
-                class Criterion_Chest_VC(Criterion):
-                    name = "Chest VC"
-
-                    def __init__(self, report, isomme, p):
-                        super().__init__(report, isomme)
-
-                        self.p = p
-
-                        self.extend_limit_list([
-                            Limit_4Points([f"?{self.p}VCCR0000??VEX?"], func=lambda x: 0.500, y_unit="m/s", upper=True),
-                            Limit_3Points([f"?{self.p}VCCR0000??VEX?"], func=lambda x: 0.625, y_unit="m/s", upper=True),
-                            Limit_2Points([f"?{self.p}VCCR0000??VEX?"], func=lambda x: 0.750, y_unit="m/s", upper=True),
-                            Limit_1Points([f"?{self.p}VCCR0000??VEX?"], func=lambda x: 0.875, y_unit="m/s", upper=True),
-                            Limit_0Points([f"?{self.p}VCCR0000??VEX?"], func=lambda x: 1.000, y_unit="m/s", upper=True),
-                            Limit_Capping([f"?{self.p}VCCR0000??VEX?"], func=lambda x: 1.000, y_unit="m/s", lower=True),
-                        ])
-
-                    def calculation(self):
-                        chest_deflection = (self.isomme.get_channel(f"?{self.p}CHST0003??DSXC", f"?{self.p}CHST0000??DSXC"))
-                        chest_deflection = chest_deflection * -1 if abs(min(chest_deflection.get_data())) > max(chest_deflection.get_data()) else chest_deflection
-
-                        self.channel = calculate_chest_vc(chest_deflection).convert_unit("m/s")
-                        self.value = max(self.channel.get_data())
-                        self.rating = np.interp(self.value, [0.5, 1.0], [4, 0], left=4, right=-np.inf)
-
                 class Criterion_ShoulderBeltLoad(Criterion):
                     name = "Modifier Shoulder Belt Load"
 
@@ -870,7 +788,7 @@ class EuroNCAP_Frontal_50kmh(Report):
                         self.p = p
 
                         self.extend_limit_list([
-                            Limit([f"?{self.p}SEBE????B3FO[X0]?"], name="-2 pt. Modifier", func=lambda: 6.0, y_unit="kN", lower=True, color="red")
+                            Limit([f"?{self.p}SEBE????B3FO[X0]?"], name="-2 pt. Modifier", func=lambda x: 6.0, y_unit="kN", lower=True, color="red", value=-2)
                         ])
 
                     def calculate(self):
@@ -886,79 +804,11 @@ class EuroNCAP_Frontal_50kmh(Report):
 
                     self.p = p
 
-                    self.criterion_femur_axial_force = self.Criterion_Femur_Axial_Force(report, isomme, p=self.p)
-                    self.criterion_submarining = self.Criterion_Submarining(report, isomme, p=self.p)
+                    self.criterion_femur_axial_force = self.report.Criterion_Master.Criterion_Driver.Criterion_Femur.Criterion_Femur_Axial_Force(report, isomme, p=self.p)
 
                 def calculation(self):
                     self.criterion_femur_axial_force.calculate()
                     self.rating = self.criterion_femur_axial_force.rating
-
-                    # Modifier
-                    self.criterion_submarining.calculate()
-                    self.rating += self.criterion_submarining.rating
-
-                class Criterion_Femur_Axial_Force(Criterion):
-                    name = "Femur Axial Force"
-
-                    def __init__(self, report, isomme, p):
-                        super().__init__(report, isomme)
-
-                        self.p = p
-
-                        self.extend_limit_list([
-                            Limit_4Points([f"?{self.p}FEMRLE00??FOZ?", f"?{self.p}FEMRRI00??FOZ?"], func=lambda x: -2.6, y_unit="kN", lower=True),
-                            Limit_3Points([f"?{self.p}FEMRLE00??FOZ?", f"?{self.p}FEMRRI00??FOZ?"], func=lambda x: -3.5, y_unit="kN", lower=True),
-                            Limit_2Points([f"?{self.p}FEMRLE00??FOZ?", f"?{self.p}FEMRRI00??FOZ?"], func=lambda x: -4.4, y_unit="kN", lower=True),
-                            Limit_1Points([f"?{self.p}FEMRLE00??FOZ?", f"?{self.p}FEMRRI00??FOZ?"], func=lambda x: -5.3, y_unit="kN", lower=True),
-                            Limit_0Points([f"?{self.p}FEMRLE00??FOZ?", f"?{self.p}FEMRRI00??FOZ?"], func=lambda x: -6.2, y_unit="kN", lower=True, upper=True),
-                        ])
-
-                        self.criterion_femur_axial_force_left = self.Criterion_Femur_Axial_Force_Left(report, isomme, p=self.p)
-                        self.criterion_femur_axial_force_right = self.Criterion_Femur_Axial_Force_Right(report, isomme, p=self.p)
-
-                    def calculation(self):
-                        self.criterion_femur_axial_force_left.calculate()
-                        self.criterion_femur_axial_force_right.calculate()
-
-                        self.value = np.max([self.criterion_femur_axial_force_left.value, self.criterion_femur_axial_force_right.value])
-                        self.rating = np.interp(self.value, [2.6, 6.2], [4, 0], left=4, right=0)
-
-                    class Criterion_Femur_Axial_Force_Left(Criterion):
-                        name = "Femur Axial Force Left"
-
-                        def __init__(self, report, isomme, p):
-                            super().__init__(report, isomme)
-
-                            self.p = p
-
-                        def calculation(self):
-                            self.channel = self.isomme.get_channel(f"?{self.p}FEMRLE00??FOZB")
-                            self.value = abs(min(self.channel.get_data(unit="kN")))
-
-                    class Criterion_Femur_Axial_Force_Right(Criterion):
-                        name = "Femur Axial Force Right"
-
-                        def __init__(self, report, isomme, p):
-                            super().__init__(report, isomme)
-
-                            self.p = p
-
-                        def calculation(self):
-                            self.channel = self.isomme.get_channel(f"?{self.p}FEMRRI00??FOZB")
-                            self.value = abs(min(self.channel.get_data(unit="kN")))
-
-                class Criterion_Submarining(Criterion):
-                    name = "Submarining"
-                    submarining: bool = False
-
-                    def __init__(self, report, isomme, p):
-                        super().__init__(report, isomme)
-
-                        self.p = p
-
-                    def calculation(self):
-                        self.value = self.submarining
-                        self.rating = -4 if self.submarining else 0
 
         class Criterion_Rear_Passenger(Criterion):
             name = "Rear Passenger"
@@ -995,8 +845,8 @@ class EuroNCAP_Frontal_50kmh(Report):
 
                     self.p = p
 
-                    self.criterion_hic_15 = self.Criterion_HIC_15(report, isomme, p=self.p)
-                    self.criterion_head_a3ms = self.Criterion_Head_a3ms(report, isomme, p=self.p)
+                    self.criterion_hic_15 = self.report.Criterion_Master.Criterion_Driver.Criterion_Head.Criterion_HIC_15(report, isomme, p=self.p)
+                    self.criterion_head_a3ms = self.report.Criterion_Master.Criterion_Driver.Criterion_Head.Criterion_Head_a3ms(report, isomme, p=self.p)
                     self.criterion_HazardousAirbagDeployment = self.Criterion_HazardousAirbagDeployment(report, isomme, p=self.p)
                     self.criterion_IncorrectAirbagDeployment = self.Criterion_IncorrectAirbagDeployment(report, isomme, p=self.p)
                     self.criterion_ExceedingForwardExcursionLine = self.Criterion_ExceedingForwardExcursionLine(report, isomme, p=self.p)
@@ -1019,50 +869,6 @@ class EuroNCAP_Frontal_50kmh(Report):
                     self.rating += np.sum([self.criterion_HazardousAirbagDeployment.rating,
                                            self.criterion_IncorrectAirbagDeployment.rating,
                                            self.criterion_ExceedingForwardExcursionLine.rating])
-
-                class Criterion_HIC_15(Criterion):
-                    name = "HIC 15"
-
-                    def __init__(self, report, isomme, p):
-                        super().__init__(report, isomme)
-
-                        self.p = p
-
-                        self.extend_limit_list([
-                            Limit_4Points([f"?{self.p}HICR0015??00RX"], func=lambda x: 500, y_unit=1, upper=True),
-                            Limit_3Points([f"?{self.p}HICR0015??00RX"], func=lambda x: 550, y_unit=1, upper=True),
-                            Limit_2Points([f"?{self.p}HICR0015??00RX"], func=lambda x: 600, y_unit=1, upper=True),
-                            Limit_1Points([f"?{self.p}HICR0015??00RX"], func=lambda x: 650, y_unit=1, upper=True),
-                            Limit_0Points([f"?{self.p}HICR0015??00RX"], func=lambda x: 700, y_unit=1, upper=True),
-                            Limit_Capping([f"?{self.p}HICR0015??00RX"], func=lambda x: 700, y_unit=1, lower=True),
-                        ])
-
-                    def calculation(self):
-                        self.channel = calculate_hic(self.isomme.get_channel(f"?{self.p}HEAD??00??ACRA"), 15)
-                        self.value = self.channel.get_data()[0]
-                        self.rating = np.interp(self.value, [500, 700], [4, 0], left=4, right=-np.inf)
-
-                class Criterion_Head_a3ms(Criterion):
-                    name = "Head a3ms"
-
-                    def __init__(self, report, isomme, p):
-                        super().__init__(report, isomme)
-
-                        self.p = p
-
-                        self.extend_limit_list([
-                            Limit_4Points([f"?{self.p}HEAD003C??ACRA"], func=lambda x: 72, y_unit=Unit(g0), upper=True),
-                            Limit_3Points([f"?{self.p}HEAD003C??ACRA"], func=lambda x: 74, y_unit=Unit(g0), upper=True),
-                            Limit_2Points([f"?{self.p}HEAD003C??ACRA"], func=lambda x: 76, y_unit=Unit(g0), upper=True),
-                            Limit_1Points([f"?{self.p}HEAD003C??ACRA"], func=lambda x: 78, y_unit=Unit(g0), upper=True),
-                            Limit_0Points([f"?{self.p}HEAD003C??ACRA"], func=lambda x: 80, y_unit=Unit(g0), upper=True),
-                            Limit_Capping([f"?{self.p}HEAD003C??ACRA"], func=lambda x: 80, y_unit=Unit(g0), lower=True),
-                        ])
-
-                    def calculation(self):
-                        self.channel = calculate_xms(self.isomme.get_channel(f"?{self.p}HEAD0000??ACRA", f"?{self.p}HEADCG00??ACRA"), 3, method="C")
-                        self.value = self.channel.get_data(unit=g0)[0]
-                        self.rating = np.interp(self.value, [72, 80], [4, 0], left=4, right=-np.inf)
 
                 class Criterion_HazardousAirbagDeployment(Criterion):
                     name = "Modifier for Hazardous Airbag Deployment"
@@ -1144,11 +950,11 @@ class EuroNCAP_Frontal_50kmh(Report):
                         self.p = p
 
                         self.extend_limit_list([
-                            Limit_4Points([f"?{self.p}NECKUP00??MOY?"], func=lambda x: -36.00, y_unit="Nm", lower=True),
-                            Limit_3Points([f"?{self.p}NECKUP00??MOY?"], func=lambda x: -39.25, y_unit="Nm", lower=True),
-                            Limit_2Points([f"?{self.p}NECKUP00??MOY?"], func=lambda x: -42.50, y_unit="Nm", lower=True),
-                            Limit_1Points([f"?{self.p}NECKUP00??MOY?"], func=lambda x: -45.75, y_unit="Nm", lower=True),
-                            Limit_0Points([f"?{self.p}NECKUP00??MOY?"], func=lambda x: -49.00, y_unit="Nm", lower=True, upper=True),
+                            Limit_G([f"?{self.p}NECKUP00??MOY?"], func=lambda x: -36.000, y_unit="Nm", lower=True),
+                            Limit_A([f"?{self.p}NECKUP00??MOY?"], func=lambda x: -36.000, y_unit="Nm", upper=True),
+                            Limit_M([f"?{self.p}NECKUP00??MOY?"], func=lambda x: -40.333, y_unit="Nm", upper=True),
+                            Limit_W([f"?{self.p}NECKUP00??MOY?"], func=lambda x: -44.667, y_unit="Nm", upper=True),
+                            Limit_P([f"?{self.p}NECKUP00??MOY?"], func=lambda x: -49.000, y_unit="Nm", upper=True),
                         ])
 
                     def calculation(self):
@@ -1167,11 +973,11 @@ class EuroNCAP_Frontal_50kmh(Report):
                         self.p = p
 
                         self.extend_limit_list([
-                            Limit_4Points([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: 1.70, y_unit="kN", upper=True),
-                            Limit_3Points([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: 1.93, y_unit="kN", upper=True),
-                            Limit_2Points([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: 2.16, y_unit="kN", upper=True),
-                            Limit_1Points([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: 2.39, y_unit="kN", upper=True),
-                            Limit_0Points([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: 2.62, y_unit="kN", upper=True, lower=True),
+                            Limit_G([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: 1.700, y_unit="kN", upper=True),
+                            Limit_A([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: 1.700, y_unit="kN", lower=True),
+                            Limit_M([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: 2.007, y_unit="kN", lower=True),
+                            Limit_W([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: 2.313, y_unit="kN", lower=True),
+                            Limit_P([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: 2.620, y_unit="kN", lower=True),
                         ])
 
                     def calculation(self):
@@ -1190,17 +996,17 @@ class EuroNCAP_Frontal_50kmh(Report):
                         self.p = p
 
                         self.extend_limit_list([
-                            Limit_4Points([f"?{self.p}NECKUP00??FOX?"], func=lambda x: 1.2000, y_unit="kN", upper=True),
-                            Limit_3Points([f"?{self.p}NECKUP00??FOX?"], func=lambda x: 1.3875, y_unit="kN", upper=True),
-                            Limit_2Points([f"?{self.p}NECKUP00??FOX?"], func=lambda x: 1.5750, y_unit="kN", upper=True),
-                            Limit_1Points([f"?{self.p}NECKUP00??FOX?"], func=lambda x: 1.7625, y_unit="kN", upper=True),
-                            Limit_0Points([f"?{self.p}NECKUP00??FOX?"], func=lambda x: 1.9500, y_unit="kN", upper=True, lower=True),
+                            Limit_G([f"?{self.p}NECKUP00??FOX?"], func=lambda x: 1.20, y_unit="kN", upper=True),
+                            Limit_A([f"?{self.p}NECKUP00??FOX?"], func=lambda x: 1.20, y_unit="kN", lower=True),
+                            Limit_M([f"?{self.p}NECKUP00??FOX?"], func=lambda x: 1.45, y_unit="kN", lower=True),
+                            Limit_W([f"?{self.p}NECKUP00??FOX?"], func=lambda x: 1.70, y_unit="kN", lower=True),
+                            Limit_P([f"?{self.p}NECKUP00??FOX?"], func=lambda x: 1.95, y_unit="kN", lower=True),
 
-                            Limit_4Points([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -1.2000, y_unit="kN", lower=True),
-                            Limit_3Points([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -1.3875, y_unit="kN", lower=True),
-                            Limit_2Points([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -1.5750, y_unit="kN", lower=True),
-                            Limit_1Points([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -1.7625, y_unit="kN", lower=True),
-                            Limit_0Points([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -1.9500, y_unit="kN", lower=True, upper=True),
+                            Limit_G([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -1.20, y_unit="kN", lower=True),
+                            Limit_A([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -1.20, y_unit="kN", upper=True),
+                            Limit_M([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -1.45, y_unit="kN", upper=True),
+                            Limit_W([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -1.70, y_unit="kN", upper=True),
+                            Limit_P([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -1.95, y_unit="kN", upper=True),
                         ])
 
                     def calculation(self):
@@ -1218,8 +1024,8 @@ class EuroNCAP_Frontal_50kmh(Report):
 
                     self.p = p
 
-                    self.criterion_chest_deflection = self.Criterion_Chest_Deflection(report, isomme, p)
-                    self.criterion_chest_vc = self.Criterion_Chest_VC(report, isomme, p)
+                    self.criterion_chest_deflection = self.report.Criterion_Master.Criterion_Driver.Criterion_Chest.Criterion_Chest_Deflection(report, isomme, p)
+                    self.criterion_chest_vc = self.report.Criterion_Master.Criterion_Driver.Criterion_Chest.Criterion_Chest_VC(report, isomme, p)
                     self.criterion_ShoulderBeltLoad = self.Criterion_ShoulderBeltLoad(report, isomme, p)
 
                 def calculation(self):
@@ -1233,54 +1039,6 @@ class EuroNCAP_Frontal_50kmh(Report):
                     self.criterion_ShoulderBeltLoad.calculate()
                     self.rating += self.criterion_ShoulderBeltLoad.rating
 
-                class Criterion_Chest_Deflection(Criterion):
-                    name = "Chest Deflection"
-
-                    def __init__(self, report, isomme, p):
-                        super().__init__(report, isomme)
-
-                        self.p = p
-
-                        self.extend_limit_list([
-                            Limit_Capping([f"?{self.p}CHST000[03]??DSX?"], func=lambda x: -34, y_unit="mm", upper=True),
-                            Limit_0Points([f"?{self.p}CHST000[03]??DSX?"], func=lambda x: -34, y_unit="mm", lower=True),
-                            Limit_1Points([f"?{self.p}CHST000[03]??DSX?"], func=lambda x: -30, y_unit="mm", lower=True),
-                            Limit_2Points([f"?{self.p}CHST000[03]??DSX?"], func=lambda x: -26, y_unit="mm", lower=True),
-                            Limit_3Points([f"?{self.p}CHST000[03]??DSX?"], func=lambda x: -22, y_unit="mm", lower=True),
-                            Limit_4Points([f"?{self.p}CHST000[03]??DSX?"], func=lambda x: -18, y_unit="mm", lower=True),
-                        ])
-
-                    def calculation(self):
-                        self.channel = self.isomme.get_channel(f"?{self.p}CHST0003??DSXC", f"?{self.p}CHST0000??DSXC").convert_unit("mm")
-                        self.value = np.min(self.channel.get_data())
-                        self.rating = self.limits.get_limit_min_value(self.channel, interpolate=True)
-                        self.color = self.limits.get_limit_min_color(self.channel)
-
-                class Criterion_Chest_VC(Criterion):
-                    name = "Chest VC"
-
-                    def __init__(self, report, isomme, p):
-                        super().__init__(report, isomme)
-
-                        self.p = p
-
-                        self.extend_limit_list([
-                            Limit_4Points([f"?{self.p}VCCR0000??VEX?"], func=lambda x: 0.500, y_unit="m/s", upper=True),
-                            Limit_3Points([f"?{self.p}VCCR0000??VEX?"], func=lambda x: 0.625, y_unit="m/s", upper=True),
-                            Limit_2Points([f"?{self.p}VCCR0000??VEX?"], func=lambda x: 0.750, y_unit="m/s", upper=True),
-                            Limit_1Points([f"?{self.p}VCCR0000??VEX?"], func=lambda x: 0.875, y_unit="m/s", upper=True),
-                            Limit_0Points([f"?{self.p}VCCR0000??VEX?"], func=lambda x: 1.000, y_unit="m/s", upper=True),
-                            Limit_Capping([f"?{self.p}VCCR0000??VEX?"], func=lambda x: 1.000, y_unit="m/s", lower=True),
-                        ])
-
-                    def calculation(self):
-                        chest_deflection = (self.isomme.get_channel(f"?{self.p}CHST0003??DSXC", f"?{self.p}CHST0000??DSXC"))
-                        chest_deflection = chest_deflection * -1 if abs(min(chest_deflection.get_data())) > max(chest_deflection.get_data()) else chest_deflection
-
-                        self.channel = calculate_chest_vc(chest_deflection).convert_unit("m/s")
-                        self.value = max(self.channel.get_data())
-                        self.rating = np.interp(self.value, [0.5, 1.0], [4, 0], left=4, right=-np.inf)
-
                 class Criterion_ShoulderBeltLoad(Criterion):
                     name = "Modifier Shoulder Belt Load"
 
@@ -1290,7 +1048,7 @@ class EuroNCAP_Frontal_50kmh(Report):
                         self.p = p
 
                         self.extend_limit_list([
-                            Limit([f"?{self.p}SEBE????B3FO[X0]?"], name="-2 pt. Modifier", func=lambda: 6.0, y_unit="kN", lower=True, color="red")
+                            Limit([f"?{self.p}SEBE????B3FO[X0]?"], name="-2 pt. Modifier", func=lambda x: 6.0, y_unit="kN", lower=True, color="red", value=-2)
                         ])
 
                     def calculate(self):
@@ -1306,8 +1064,8 @@ class EuroNCAP_Frontal_50kmh(Report):
 
                     self.p = p
 
-                    self.criterion_femur_axial_force = self.Criterion_Femur_Axial_Force(report, isomme, p=self.p)
-                    self.criterion_submarining = self.Criterion_Submarining(report, isomme, p=self.p)
+                    self.criterion_femur_axial_force = self.report.Criterion_Master.Criterion_Driver.Criterion_Femur.Criterion_Femur_Axial_Force(report, isomme, p=self.p)
+                    self.criterion_submarining = self.report.Criterion_Master.Criterion_Driver.Criterion_Femur.Criterion_Submarining(report, isomme, p=self.p)
 
                 def calculation(self):
                     self.criterion_femur_axial_force.calculate()
@@ -1316,69 +1074,6 @@ class EuroNCAP_Frontal_50kmh(Report):
                     # Modifier
                     self.criterion_submarining.calculate()
                     self.rating += self.criterion_submarining.rating
-
-                class Criterion_Femur_Axial_Force(Criterion):
-                    name = "Femur Axial Force"
-
-                    def __init__(self, report, isomme, p):
-                        super().__init__(report, isomme)
-
-                        self.p = p
-
-                        self.extend_limit_list([
-                            Limit_4Points([f"?{self.p}FEMRLE00??FOZ?", f"?{self.p}FEMRRI00??FOZ?"], func=lambda x: -2.6, y_unit="kN", lower=True),
-                            Limit_3Points([f"?{self.p}FEMRLE00??FOZ?", f"?{self.p}FEMRRI00??FOZ?"], func=lambda x: -3.5, y_unit="kN", lower=True),
-                            Limit_2Points([f"?{self.p}FEMRLE00??FOZ?", f"?{self.p}FEMRRI00??FOZ?"], func=lambda x: -4.4, y_unit="kN", lower=True),
-                            Limit_1Points([f"?{self.p}FEMRLE00??FOZ?", f"?{self.p}FEMRRI00??FOZ?"], func=lambda x: -5.3, y_unit="kN", lower=True),
-                            Limit_0Points([f"?{self.p}FEMRLE00??FOZ?", f"?{self.p}FEMRRI00??FOZ?"], func=lambda x: -6.2, y_unit="kN", lower=True, upper=True),
-                        ])
-
-                        self.criterion_femur_axial_force_left = self.Criterion_Femur_Axial_Force_Left(report, isomme, p=self.p)
-                        self.criterion_femur_axial_force_right = self.Criterion_Femur_Axial_Force_Right(report, isomme, p=self.p)
-
-                    def calculation(self):
-                        self.criterion_femur_axial_force_left.calculate()
-                        self.criterion_femur_axial_force_right.calculate()
-
-                        self.value = np.max([self.criterion_femur_axial_force_left.value, self.criterion_femur_axial_force_right.value])
-                        self.rating = np.interp(self.value, [2.6, 6.2], [4, 0], left=4, right=0)
-
-                    class Criterion_Femur_Axial_Force_Left(Criterion):
-                        name = "Femur Axial Force Left"
-
-                        def __init__(self, report, isomme, p):
-                            super().__init__(report, isomme)
-
-                            self.p = p
-
-                        def calculation(self):
-                            self.channel = self.isomme.get_channel(f"?{self.p}FEMRLE00??FOZB")
-                            self.value = abs(min(self.channel.get_data(unit="kN")))
-
-                    class Criterion_Femur_Axial_Force_Right(Criterion):
-                        name = "Femur Axial Force Right"
-
-                        def __init__(self, report, isomme, p):
-                            super().__init__(report, isomme)
-
-                            self.p = p
-
-                        def calculation(self):
-                            self.channel = self.isomme.get_channel(f"?{self.p}FEMRRI00??FOZB")
-                            self.value = abs(min(self.channel.get_data(unit="kN")))
-
-                class Criterion_Submarining(Criterion):
-                    name = "Submarining"
-                    submarining: bool = False
-
-                    def __init__(self, report, isomme, p):
-                        super().__init__(report, isomme)
-
-                        self.p = p
-
-                    def calculation(self):
-                        self.value = self.submarining
-                        self.rating = -4 if self.submarining else 0
 
         class Criterion_DoorOpeningDuringImpact(Criterion):
             name: str = "Door Opening During Impact"

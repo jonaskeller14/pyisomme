@@ -3,37 +3,37 @@ import numpy as np
 from pyisomme.limits import Limit
 
 
-class Limit_4Points(Limit):
-    name = "4 Points"
+class Limit_G(Limit):
+    name = "Good"
     color = "green"
     value = 4
 
 
-class Limit_3Points(Limit):
-    name = "3 Points"
+class Limit_A(Limit):
+    name = "Adequate"
     color = "yellow"
-    value = 3
+    value = 4
 
 
-class Limit_2Points(Limit):
-    name = "2 Points"
+class Limit_M(Limit):
+    name = "Marginal"
     color = "orange"
-    value = 2
+    value = 2.669
 
 
-class Limit_1Points(Limit):
-    name = "1 Points"
+class Limit_W(Limit):
+    name = "Weak"
     color = "brown"
-    value = 1
+    value = 1.329
 
 
-class Limit_0Points(Limit):
-    name = "0 Points"
+class Limit_P(Limit):
+    name = "Poor"
     color = "red"
-    value = 1
+    value = 0
 
 
-class Limit_Capping(Limit):
+class Limit_C(Limit):
     name = "Capping"
     color = "gray"
     value = -np.inf
