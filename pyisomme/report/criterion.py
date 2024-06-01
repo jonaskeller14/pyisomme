@@ -1,5 +1,5 @@
 from pyisomme.isomme import Isomme
-from pyisomme.limits import Limits
+from pyisomme.limits import Limit, Limits
 
 import numpy as np
 import logging
@@ -21,18 +21,19 @@ class Criterion:
         self.rating = np.nan
         self.limits = Limits(name=report.name, limit_list=[])
 
-    def extend_limit_list(self, limit_list: list):
+    def extend_limit_list(self, limit_list: list[Limit]) -> None:
         self.limits.limit_list.extend(limit_list)
         self.report.limits[self.isomme].limit_list.extend(limit_list)
 
-    def calculate(self):
+    def calculate(self) -> None:
         try:
+            logger.debug(f"Calculate {self}")
             self.calculation()
         except Exception as error_message:
             logger.exception(f"{self}:{error_message}")
 
     @abstractmethod
-    def calculation(self):
+    def calculation(self) -> None:
         pass
 
     def __repr__(self):
