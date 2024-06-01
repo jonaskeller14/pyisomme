@@ -515,13 +515,22 @@ class Isomme:
                                 return (channel_dcz - channel_dcz.get_data(t=0)).set_code(physical_dimension="DS")
 
                 # WorldSid Dummy Chest/Abdomen Displacement (Minimum of individual IR-TRACC displacment)
-                if code_pattern.main_location in ("TRRI", "ABRI") and code_pattern.fine_location_2 == "00" and code_pattern.fine_location_3 == "WS" and code_pattern.physical_dimension == "DS":
+                if code_pattern.main_location == "TRRI" and code_pattern.fine_location_2 == "00" and code_pattern.fine_location_3 == "WS" and code_pattern.physical_dimension == "DS":
                     channel_01 = self.get_channel(code_pattern.set(fine_location_2="01"))
                     channel_02 = self.get_channel(code_pattern.set(fine_location_2="02"))
                     channel_03 = self.get_channel(code_pattern.set(fine_location_2="03"))
                     if None not in (channel_01, channel_02, channel_03):
                         time = time_intersect(channel_01, channel_02, channel_03)
                         values = np.min([channel.get_data(t=time, unit=channel_01.unit) for channel in (channel_01, channel_02, channel_03)], axis=0)
+                        return Channel(code=code_pattern,
+                                       data=pd.DataFrame(values, index=time),
+                                       unit=channel_01.unit)
+                if code_pattern.main_location == "ABRI" and code_pattern.fine_location_2 == "00" and code_pattern.fine_location_3 == "WS" and code_pattern.physical_dimension == "DS":
+                    channel_01 = self.get_channel(code_pattern.set(fine_location_2="01"))
+                    channel_02 = self.get_channel(code_pattern.set(fine_location_2="02"))
+                    if None not in (channel_01, channel_02):
+                        time = time_intersect(channel_01, channel_02)
+                        values = np.min([channel.get_data(t=time, unit=channel_01.unit) for channel in (channel_01, channel_02)], axis=0)
                         return Channel(code=code_pattern,
                                        data=pd.DataFrame(values, index=time),
                                        unit=channel_01.unit)
