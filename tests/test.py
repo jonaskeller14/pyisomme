@@ -157,6 +157,21 @@ class TestIsomme(unittest.TestCase):
         assert len(isomme_1.channels) == 6
 
 
+class TestCode(unittest.TestCase):
+    def test_init(self):
+        pyisomme.Code("11HEAD0000H3ACXA")
+
+        # 15 chars
+        with self.assertRaises(AssertionError):
+            pyisomme.Code("11HEAD0000H3ACX")
+        # 17 chars
+        with self.assertRaises(AssertionError):
+            pyisomme.Code("11HEAD0000H3ACXA?")
+        # invalid chars
+        with self.assertRaises(AssertionError):
+            pyisomme.Code("11HEAD0000H3ACX*")
+
+
 class TestChannel(unittest.TestCase):
     def test_init(self):
         pyisomme.Channel(code="11HEAD0000H3ACXP", data=None)

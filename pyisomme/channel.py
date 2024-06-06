@@ -19,11 +19,13 @@ logger = logging.getLogger(__name__)
 
 
 class Code(str):
-    def __init__(self, code):
-        assert len(code) == 16
+    def __new__(cls, code):
+        assert re.fullmatch(r"[a-zA-Z0-9?]{16}", code), \
+            "Invalid code. Code must be 16 characters long, only letters and digits."
+        return super(Code, cls).__new__(cls, code)
 
+    def __init__(self, code):
         super().__init__()
-        self.__new__(Code, code)
 
         self.test_object = self[0]
         self.position = self[1]
@@ -35,7 +37,16 @@ class Code(str):
         self.direction = self[14]
         self.filter_class = self[15]
 
-    def set(self, test_object: str = None, position: str = None, main_location: str = None, fine_location_1: str = None, fine_location_2: str = None, fine_location_3: str = None, physical_dimension: str = None, direction: str = None, filter_class: str = None):
+    def set(self,
+            test_object: str = None,
+            position: str = None,
+            main_location: str = None,
+            fine_location_1: str = None,
+            fine_location_2: str = None,
+            fine_location_3: str = None,
+            physical_dimension: str = None,
+            direction: str = None,
+            filter_class: str = None) -> Code:
         if test_object is None:
             test_object = self.test_object
         if position is None:
@@ -166,8 +177,18 @@ class Channel:
     def __repr__(self):
         return f"Channel(code={self.code})"
 
-    def set_code(self, new_code: str | Code = None, **code_components):
-        if new_code is None:
+    def set_code(self, new_code: str | Code = None, **code_components) -> Channel:
+        if not re.fullmatch(r"[a-zA-Z0-9?]{16}", new_code):
+            if len(new_code) > 16:
+                logger.warning(f"Code '{new_code}' must be 16 characters long")
+                logger.warning(f"Code '{new_code}' will be shortened to 16 characters")
+                new_code = new_code[:16]
+            elif len(new_code) < 16:
+                logger.warning(f"Code '{new_code}' must be 16 characters long")
+                logger.warning(f"Code '{new_code}' will be extended to 16 characters")
+                new_code = new_code.ljust(16, "?")
+
+        if new_code is None:  # if only components are set
             assert self.code is not None
             new_code = self.code
         self.code = Code(new_code).set(**code_components)
@@ -220,18 +241,23 @@ class Channel:
                 self.info[idx] = value
         return self
 
-    def cfc(self, filter_class: str = None, cfc: float = None, method="SAE-J211-1"):
+    def cfc(self, value: int | str, method="SAE-J211-1"):
         """
         Apply a filter to smooth curves.
         REFERENCES:
         - Appendix C of "\references\SAE-J211-1-MAR95\sae.j211-1.1995.pdf"
-        :param filter_class:
-        :param cfc:
+        :param value:
         :param method:
         :return:
         """
-        assert filter_class is not None or cfc is not None
-        assert filter_class is None or cfc is None
+        if isinstance(value, str):
+            filter_class = value
+            cfc = None
+        elif isinstance(value, int):
+            filter_class = None
+            cfc = value
+        else:
+            raise ValueError
 
         # Convert Filter-Class to cfc value
         if cfc is None:
