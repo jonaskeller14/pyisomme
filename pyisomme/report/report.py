@@ -64,7 +64,7 @@ class Report:
     class Criterion_Master(Criterion):
         pass
 
-    def export_pptx(self, path, template="template.pptx"):
+    def export_pptx(self, path, template: str = None):
         presentation = Presentation(template)
 
         with logging_redirect_tqdm():
