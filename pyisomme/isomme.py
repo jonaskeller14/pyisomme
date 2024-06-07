@@ -704,11 +704,11 @@ class Isomme:
                         logger.debug(error)
         return channel_list
 
-    def add_sample_channel(self, code="SAMPLE??????????", t_range: tuple = (0, 0.01, 1000), y_range: tuple = (0, 10), mode: str = "sin", unit=None):
-        self.channels.append(create_sample(code, t_range, y_range, mode, unit))
+    def add_sample_channel(self, *args, **kwargs) -> Isomme:
+        self.channels.append(create_sample(*args, **kwargs))
         return self
 
-    def print_channel_list(self):
+    def print_channel_list(self) -> None:
         """
         Print all channel codes to console.
         :return: None

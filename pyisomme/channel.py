@@ -493,7 +493,11 @@ class Channel:
         return Channel(self.code, new_data, self.unit, self.info).set_info({"Calculation History": "abs(x)"}, replace=False)
 
 
-def create_sample(code: str = "SAMPLE??????????", t_range: tuple = (0, 0.01, 1000), y_range: tuple = (0, 10), mode: str = "sin", unit: str | Unit = "1"):
+def create_sample(code: str = "SAMPLE??????????",
+                  t_range: tuple = (0, 0.1, 1000),
+                  y_range: tuple = (0, 10),
+                  mode: str = "sin",
+                  unit: str | Unit = "1") -> Channel:
     """
     Create a sample Channel object for testing purposes.
     :param code: channel code (str)
@@ -518,7 +522,7 @@ def create_sample(code: str = "SAMPLE??????????", t_range: tuple = (0, 0.01, 100
         raise ValueError(f"mode={mode} does not exist.")
 
     data = pd.DataFrame({"Time": time_array, "SAMPLE": value_array}).set_index("Time")
-    return Channel(code, data, unit)
+    return Channel(code, data, unit, info={"Sampling interval": np.diff(time_array)[0]})
 
 
 def time_intersect(*channels: Channel) -> np.ndarray:
