@@ -1,5 +1,6 @@
 from pyisomme.report.page import Page_Cover, Page_OLC, Page_Plot_nxn
 from pyisomme.report.report import Report
+from pyisomme.limits import Limit
 from pyisomme.report.euro_ncap.frontal_50kmh import EuroNCAP_Frontal_50kmh
 from pyisomme.report.criterion import Criterion
 from pyisomme.report.euro_ncap.limits import Limit_G, Limit_P, Limit_C, Limit_M, Limit_A, Limit_W
@@ -26,6 +27,7 @@ class EuroNCAP_Frontal_MPDB(Report):
             Page_Cover(self),
 
             EuroNCAP_Frontal_50kmh.Page_Driver_Head_Acceleration(self),
+            self.Page_Driver_Head_Damage(self),
             EuroNCAP_Frontal_50kmh.Page_Driver_Neck_Load(self),
             self.Page_Driver_Chest_Compression(self),
             self.Page_Driver_Abdomen_Compression(self),
@@ -68,7 +70,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                 ]),
                 np.min([
                     self.criterion_driver.criterion_chest_abdomen.rating,
-                    self.criterion_passenger.criterion_chest_abdomen.rating,
+                    self.criterion_passenger.criterion_chest.rating,
                 ]),
                 np.min([
                     self.criterion_driver.criterion_knee_femur_pelvis.rating,
@@ -102,7 +104,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                 self.criterion_knee_femur_pelvis = self.Criterion_Knee_Femur_Pelvis(report, isomme, p=self.p)
                 self.criterion_lowerleg_foot_ankle = self.Criterion_LowerLeg_Foot_Ankle(report, isomme, p=self.p)
 
-            def calculate(self):
+            def calculation(self):
                 self.criterion_head_neck.calculate()
                 self.criterion_chest_abdomen.calculate()
                 self.criterion_knee_femur_pelvis.calculate()
@@ -149,6 +151,7 @@ class EuroNCAP_Frontal_MPDB(Report):
 
                         self.criterion_hic_15 = EuroNCAP_Frontal_50kmh.Criterion_Master.Criterion_Driver.Criterion_Head.Criterion_HIC_15(report, isomme, p=self.p)
                         self.criterion_head_a3ms = EuroNCAP_Frontal_50kmh.Criterion_Master.Criterion_Driver.Criterion_Head.Criterion_Head_a3ms(report, isomme, p=self.p)
+                        self.criterion_damage = self.Criterion_DAMAGE(self.report, self.isomme, p=self.p)
 
                     def calculation(self):
                         if np.max(np.abs(self.isomme.get_channel(f"?{self.p}HEAD??00??ACRA").get_data(unit=g0))):
@@ -162,6 +165,29 @@ class EuroNCAP_Frontal_MPDB(Report):
                                                   self.criterion_head_a3ms.rating])
                         else:
                             self.rating = 4
+
+                        # Modifier
+                        self.criterion_damage.calculate()
+                        self.rating += self.criterion_damage.rating
+
+                    class Criterion_DAMAGE(Criterion):
+                        name = "Modifier for Brain Injury - DAMAGE"
+
+                        def __init__(self, report, isomme, p: int):
+                            super().__init__(report, isomme)
+
+                            self.p = p
+
+                            self.extend_limit_list([
+                                Limit([f"?{self.p}HEADDAMA??AAR?"], func=lambda x: 0.42, y_unit="rad/s^2", value=0.0, color="green", name="0 pt. Modifier", upper=True),
+                                Limit([f"?{self.p}HEADDAMA??AAR?"], func=lambda x: 0.42, y_unit="rad/s^2", value=-1., color="orange", name="-1 pt. Modifier", lower=True),
+                                Limit([f"?{self.p}HEADDAMA??AAR?"], func=lambda x: 0.47, y_unit="rad/s^2", value=-2., color="red", name="-2 pt. Modifier", lower=True),
+                            ])
+
+                        def calculation(self) -> None:
+                            self.channel = self.isomme.get_channel(f"?{self.p}HEADDAMA??AARA")
+                            self.value = np.max(self.channel.get_data())
+                            self.rating = self.limits.get_limit_min_value(self.channel, interpolate=False)
 
                 class Criterion_Neck(Criterion):
                     name = "Neck"
@@ -798,6 +824,20 @@ class EuroNCAP_Frontal_MPDB(Report):
                         self.criterion_tibia_index.rating,
                         self.criterion_tibia_compression.rating,
                     ])
+
+    class Page_Driver_Head_Damage(Page_Plot_nxn):
+        name = "Driver Head DAMAGE"
+        title = "Driver Head DAMAGE"
+        nrows = 2
+        ncols = 2
+        sharey = True
+
+        def __init__(self, report):
+            super().__init__(report)
+            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_driver}HEADDAMA??AAXA"],
+                                      [f"?{self.report.criterion_master[isomme].p_driver}HEADDAMA??AAYA"],
+                                      [f"?{self.report.criterion_master[isomme].p_driver}HEADDAMA??AAZA"],
+                                      [f"?{self.report.criterion_master[isomme].p_driver}HEADDAMA??AARA"]] for isomme in self.report.isomme_list}
 
     class Page_Driver_Chest_Compression(Page_Plot_nxn):
         name = "Driver Chest Compression"
