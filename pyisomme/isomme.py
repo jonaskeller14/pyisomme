@@ -344,7 +344,7 @@ class Isomme:
             if filter and fnmatch.fnmatch(code_pattern, "*[ABCD]"):
                 for channel in self.channels:
                     if fnmatch.fnmatch(channel.code, code_pattern[:-1] + "?"):
-                        return channel.cfc(filter_class=code_pattern[-1])
+                        return channel.cfc(code_pattern[-1])
             try:
                 code_pattern = Code(code_pattern)
             except AssertionError:
