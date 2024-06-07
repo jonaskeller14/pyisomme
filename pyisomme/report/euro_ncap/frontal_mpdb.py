@@ -49,8 +49,8 @@ class EuroNCAP_Frontal_MPDB(Report):
 
             p_driver = isomme.get_test_info("Driver position object 1")
             if p_driver is not None:
-                self.p_driver = p_driver
-            self.p_passenger = 1 if p_driver != 1 else self.p_passenger
+                self.p_driver = int(p_driver)
+            self.p_passenger = 1 if self.p_driver != 1 else self.p_passenger
 
             self.criterion_driver = self.Criterion_Driver(report, isomme, p=self.p_driver)
             self.criterion_passenger = self.Criterion_Passenger(report, isomme, p=self.p_passenger)
