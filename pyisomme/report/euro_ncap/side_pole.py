@@ -39,10 +39,10 @@ class EuroNCAP_Side_Pole(Report):
         def __init__(self, report, isomme):
             super().__init__(report, isomme)
 
-            self.criterion_head = self.Criterion_Head(report, isomme, p=self.p)
-            self.criterion_chest = self.Criterion_Chest(report, isomme, p=self.p)
-            self.criterion_abdomen = self.Criterion_Abdomen(report, isomme, p=self.p)
-            self.criterion_pelvis = self.Criterion_Pelvis(report, isomme, p=self.p)
+            self.criterion_head = self.Criterion_Head(self.report, self.isomme, p=self.p)
+            self.criterion_chest = self.Criterion_Chest(self.report, self.isomme, p=self.p)
+            self.criterion_abdomen = self.Criterion_Abdomen(self.report, self.isomme, p=self.p)
+            self.criterion_pelvis = self.Criterion_Pelvis(self.report, self.isomme, p=self.p)
 
         def calculation(self):
             self.criterion_head.calculate()
@@ -66,8 +66,8 @@ class EuroNCAP_Side_Pole(Report):
 
                 self.p = p
 
-                self.criterion_hic_15 = self.Criterion_HIC_15(report, isomme, p=self.p)
-                self.criterion_head_a3ms = self.Criterion_Head_a3ms(report, isomme, p=self.p)
+                self.criterion_hic_15 = self.Criterion_HIC_15(self.report, self.isomme, p=self.p)
+                self.criterion_head_a3ms = self.Criterion_Head_a3ms(self.report, self.isomme, p=self.p)
                 self.criterion_direct_head_contact_with_the_pole = self.Criterion_DirectHeadContactWithThePole(report, isomme)
 
             def calculation(self):
@@ -134,7 +134,7 @@ class EuroNCAP_Side_Pole(Report):
 
                 self.p = p
 
-                self.criterion_chest_lateral_compression = self.Criterion_Chest_Lateral_Compression(report, isomme, p=self.p)
+                self.criterion_chest_lateral_compression = self.Criterion_Chest_Lateral_Compression(self.report, self.isomme, p=self.p)
 
             def calculation(self) -> None:
                 self.criterion_chest_lateral_compression.calculate()
@@ -171,7 +171,7 @@ class EuroNCAP_Side_Pole(Report):
 
                 self.p = p
 
-                self.criterion_abdomen_lateral_compression = self.Criterion_Abdomen_Lateral_Compression(report, isomme, p=self.p)
+                self.criterion_abdomen_lateral_compression = self.Criterion_Abdomen_Lateral_Compression(self.report, self.isomme, p=self.p)
 
             def calculation(self) -> None:
                 self.criterion_abdomen_lateral_compression.calculate()
@@ -208,7 +208,7 @@ class EuroNCAP_Side_Pole(Report):
 
                 self.p = p
 
-                self.criterion_public_symphysis_force = self.Criterion_Public_Symphysis_Force(report, isomme, p=self.p)
+                self.criterion_public_symphysis_force = self.Criterion_Public_Symphysis_Force(self.report, self.isomme, p=self.p)
 
             def calculation(self) -> None:
                 self.criterion_public_symphysis_force.calculate()

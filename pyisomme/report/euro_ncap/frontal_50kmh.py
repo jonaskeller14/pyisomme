@@ -1139,7 +1139,7 @@ class EuroNCAP_Frontal_50kmh(Report):
 
         def __init__(self, report):
             super().__init__(report)
-            self.codes = {isomme: [f"1{self.report.criterion_master[isomme].p_driver}HEAD??????AC{xyzr}A" for xyzr in "XYZR"] for isomme in self.report.isomme_list}
+            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_driver}HEAD??????AC{xyzr}A"] for xyzr in "XYZR"] for isomme in self.report.isomme_list}
 
     class Page_Driver_Neck_Load(Page_Plot_nxn):
         name: str = "Driver Neck Load"
@@ -1150,9 +1150,9 @@ class EuroNCAP_Frontal_50kmh(Report):
 
         def __init__(self, report):
             super().__init__(report)
-            self.codes = {isomme: [f"1{self.report.criterion_master[isomme].p_driver}NECKUP00??MOYB",
-                                   f"1{self.report.criterion_master[isomme].p_driver}NECKUP00??FOZA",
-                                   f"1{self.report.criterion_master[isomme].p_driver}NECKUP00??FOXA"] for isomme in self.report.isomme_list}
+            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_driver}NECKUP00??MOYB"],
+                                      [f"?{self.report.criterion_master[isomme].p_driver}NECKUP00??FOZA"],
+                                      [f"?{self.report.criterion_master[isomme].p_driver}NECKUP00??FOXA"]] for isomme in self.report.isomme_list}
 
     class Page_Driver_Chest_Deflection(Page_Plot_nxn):
         name: str = "Driver Chest Deflection"
@@ -1162,8 +1162,8 @@ class EuroNCAP_Frontal_50kmh(Report):
 
         def __init__(self, report):
             super().__init__(report)
-            self.codes = {isomme: [f"1{self.report.criterion_master[isomme].p_driver}CHST000???DSXC",
-                                   f"1{self.report.criterion_master[isomme].p_driver}VCCR000???VEXX"] for isomme in self.report.isomme_list}
+            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_driver}CHST000???DSXC"],
+                                      [f"?{self.report.criterion_master[isomme].p_driver}VCCR000???VEXX"]] for isomme in self.report.isomme_list}
 
     class Page_Driver_Femur_Axial_Force(Page_Plot_nxn):
         name: str = "Driver Femur Axial Force"
@@ -1174,8 +1174,8 @@ class EuroNCAP_Frontal_50kmh(Report):
 
         def __init__(self, report):
             super().__init__(report)
-            self.codes = {isomme: [f"1{self.report.criterion_master[isomme].p_driver}FEMRLE00??FOZB",
-                                   f"1{self.report.criterion_master[isomme].p_driver}FEMRRI00??FOZB"] for isomme in self.report.isomme_list}
+            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_driver}FEMRLE00??FOZB"],
+                                      [f"?{self.report.criterion_master[isomme].p_driver}FEMRRI00??FOZB"]] for isomme in self.report.isomme_list}
 
     class Page_Front_Passenger_Result_Table(Page_Result_Table):
         name: str = "Front Passenger Result Table"
@@ -1201,7 +1201,7 @@ class EuroNCAP_Frontal_50kmh(Report):
 
         def __init__(self, report):
             super().__init__(report)
-            self.codes = {isomme: [f"1{self.report.criterion_master[isomme].p_front_passenger}HEAD??????AC{xyzr}A" for xyzr in "XYZR"] for isomme in self.report.isomme_list}
+            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_front_passenger}HEAD??????AC{xyzr}A"] for xyzr in "XYZR"] for isomme in self.report.isomme_list}
 
     class Page_Front_Passenger_Neck_Load(Page_Plot_nxn):
         name: str = "Front Passenger Neck Load"
@@ -1212,9 +1212,9 @@ class EuroNCAP_Frontal_50kmh(Report):
 
         def __init__(self, report):
             super().__init__(report)
-            self.codes = {isomme: [f"1{self.report.criterion_master[isomme].p_front_passenger}NECKUP00??MOYB",
-                                   f"1{self.report.criterion_master[isomme].p_front_passenger}NECKUP00??FOZA",
-                                   f"1{self.report.criterion_master[isomme].p_front_passenger}NECKUP00??FOXA"] for isomme in self.report.isomme_list}
+            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_front_passenger}NECKUP00??MOYB"],
+                                      [f"?{self.report.criterion_master[isomme].p_front_passenger}NECKUP00??FOZA"],
+                                      [f"?{self.report.criterion_master[isomme].p_front_passenger}NECKUP00??FOXA"]] for isomme in self.report.isomme_list}
 
     class Page_Front_Passenger_Chest_Deflection(Page_Plot_nxn):
         name: str = "Front Passenger Chest Deflection"
@@ -1224,7 +1224,7 @@ class EuroNCAP_Frontal_50kmh(Report):
 
         def __init__(self, report):
             super().__init__(report)
-            self.codes = {isomme: [f"1{self.report.criterion_master[isomme].p_front_passenger}CHST000???DSXC"] for isomme in self.report.isomme_list}
+            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_front_passenger}CHST000???DSXC"]] for isomme in self.report.isomme_list}
 
     class Page_Front_Passenger_Femur_Axial_Force(Page_Plot_nxn):
         name: str = "Front Passenger Femur Axial Force"
@@ -1235,7 +1235,7 @@ class EuroNCAP_Frontal_50kmh(Report):
 
         def __init__(self, report):
             super().__init__(report)
-            self.codes = {isomme: [f"1{self.report.criterion_master[isomme].p_front_passenger}FEMRLE00??FOZB", f"1{self.report.criterion_master[isomme].p_front_passenger}FEMRRI00??FOZB"] for isomme in self.report.isomme_list}
+            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_front_passenger}FEMRLE00??FOZB"], [f"?{self.report.criterion_master[isomme].p_front_passenger}FEMRRI00??FOZB"]] for isomme in self.report.isomme_list}
 
     class Page_Rear_Passenger_Result_Table(Page_Result_Table):
         name: str = "Rear Passenger Result Table"
@@ -1261,7 +1261,7 @@ class EuroNCAP_Frontal_50kmh(Report):
 
         def __init__(self, report):
             super().__init__(report)
-            self.codes = {isomme: [f"1{self.report.criterion_master[isomme].p_rear_passenger}HEAD??????AC{xyzr}A" for xyzr in "XYZR"] for isomme in self.report.isomme_list}
+            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_rear_passenger}HEAD??????AC{xyzr}A"] for xyzr in "XYZR"] for isomme in self.report.isomme_list}
 
     class Page_Rear_Passenger_Neck_Load(Page_Plot_nxn):
         name: str = "Rear Passenger Neck Load"
@@ -1272,9 +1272,9 @@ class EuroNCAP_Frontal_50kmh(Report):
 
         def __init__(self, report):
             super().__init__(report)
-            self.codes = {isomme: [f"1{self.report.criterion_master[isomme].p_rear_passenger}NECKUP00??MOYB",
-                                   f"1{self.report.criterion_master[isomme].p_rear_passenger}NECKUP00??FOZA",
-                                   f"1{self.report.criterion_master[isomme].p_rear_passenger}NECKUP00??FOXA"] for isomme in self.report.isomme_list}
+            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_rear_passenger}NECKUP00??MOYB"],
+                                      [f"?{self.report.criterion_master[isomme].p_rear_passenger}NECKUP00??FOZA"],
+                                      [f"?{self.report.criterion_master[isomme].p_rear_passenger}NECKUP00??FOXA"]] for isomme in self.report.isomme_list}
 
     class Page_Rear_Passenger_Chest_Deflection(Page_Plot_nxn):
         name: str = "Rear Passenger Chest Deflection"
@@ -1284,7 +1284,7 @@ class EuroNCAP_Frontal_50kmh(Report):
 
         def __init__(self, report):
             super().__init__(report)
-            self.codes = {isomme: [f"1{self.report.criterion_master[isomme].p_rear_passenger}CHST000???DSXC"] for isomme in self.report.isomme_list}
+            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_rear_passenger}CHST000???DSXC"]] for isomme in self.report.isomme_list}
 
     class Page_Rear_Passenger_Femur_Axial_Force(Page_Plot_nxn):
         name: str = "Rear Passenger Femur Axial Force"
@@ -1295,5 +1295,5 @@ class EuroNCAP_Frontal_50kmh(Report):
 
         def __init__(self, report):
             super().__init__(report)
-            self.codes = {isomme: [f"1{self.report.criterion_master[isomme].p_rear_passenger}FEMRLE00??FOZB",
-                                   f"1{self.report.criterion_master[isomme].p_rear_passenger}FEMRRI00??FOZB"] for isomme in self.report.isomme_list}
+            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_rear_passenger}FEMRLE00??FOZB"],
+                                      [f"?{self.report.criterion_master[isomme].p_rear_passenger}FEMRRI00??FOZB"]] for isomme in self.report.isomme_list}

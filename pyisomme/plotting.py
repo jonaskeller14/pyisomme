@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from pyisomme.limits import Limits, limit_list_unique, limit_list_sort
-from pyisomme.report import Report
-from pyisomme.criterion import Criterion
+from pyisomme.channel import Channel
+from pyisomme.isomme import Isomme
 
 import copy
 import matplotlib.pyplot as plt
@@ -27,23 +27,15 @@ class Plot:
 
 
 class Plot_Line(Plot):
-    codes: dict
+    channels: dict[Isomme, list[list[Channel]]]
     nrows: int = 1
     ncols: int = 1
     sharex: bool
     sharey: bool
-    limits: dict | None
-
-    # TODO: tuple to accept mutliple code alternatives --> OLC
-    # TODO: Modify to accept Channel instead of codes only --> Subclass? und dann hier nur interface, welches alle daten in format formatiert??
-    # TODO: Modify to plot multiple curves in one plot (OLC) --> set optional legend values optional (codes = ["11HEAD*", ["OLC", "BPIL"]])
-    # TODO legend = [None, ["OLC", "Velocity"]]
-    # TODO Oder objectorientiert mit bausteinen ähnlich neuronales Netz
-    # TODO: Ziel einfacher Command mit vielen optionalen Parameters
+    limits: dict[Isomme, Limits] | None = None
 
     def __init__(self,
-                 isomme_list: list,
-                 codes: dict | list | str,
+                 channels: dict[Isomme, list[list[Channel | str]]],
                  nrows: int = None,
                  ncols: int = None,
                  xlim: tuple = None,
@@ -51,15 +43,16 @@ class Plot_Line(Plot):
                  sharex: bool = True,
                  sharey: bool = False,
                  figsize: tuple = (10, 10),
-                 limits: Limits | dict=None):
-        super().__init__(isomme_list, figsize)
+                 limits: Limits | dict[Isomme, Limits] = None):
+        super().__init__(isomme_list=list(channels.keys()), figsize=figsize)
 
-        if isinstance(codes, dict):
-            self.codes = codes
-        elif isinstance(codes, list):
-            self.codes = {isomme: codes for isomme in isomme_list}
-        elif isinstance(codes, str):
-            self.codes = {isomme: [codes] for isomme in isomme_list}
+        for isomme, channel_list in channels.items():
+            for idx_ax, channel_ax_list in enumerate(channel_list):
+                for idx, channel_ax in enumerate(channel_ax_list):
+                    if isinstance(channel_ax, Channel):
+                        continue
+                    channels[isomme][idx_ax][idx] = isomme.get_channel(channel_ax)
+        self.channels = channels
 
         if nrows is not None:
             self.nrows = nrows
@@ -75,14 +68,12 @@ class Plot_Line(Plot):
         if isinstance(limits, dict):
             self.limits = limits
         elif isinstance(limits, Limits):
-            self.limits = {isomme: limits for isomme in isomme_list}
-        else:
-            self.limits = None
+            self.limits = {isomme: limits for isomme in self.isomme_list}
 
         self.fig = self.plot()
 
     def plot(self):
-        fig, axs = plt.subplots(self.nrows, self.ncols, figsize=self.figsize, sharey=self.sharey, layout="constrained")  # TODO: share_y selbst implementieren
+        fig, axs = plt.subplots(self.nrows, self.ncols, figsize=self.figsize, sharey=self.sharey, layout="constrained")
         if (self.nrows * self.ncols) == 1:
             axs = [axs, ]
         else:
@@ -92,35 +83,42 @@ class Plot_Line(Plot):
         codes_plotted = {ax: {isomme: [] for isomme in self.isomme_list} for ax in axs}
 
         for idx, ax in enumerate(axs):
-            if idx >= max([len(self.codes[isomme]) for isomme in self.isomme_list]):
+            if idx >= max([len(self.channels[isomme]) for isomme in self.isomme_list]):
                 ax.remove()
                 break
 
             ax.margins(x=0, y=0)
             for isomme, color in zip(self.isomme_list, self.colors):
-                if idx >= len(self.codes[isomme]):
+                if idx >= len(self.channels[isomme]):
                     continue
-                code = self.codes[isomme][idx]
-                channel = isomme.get_channel(code)
-                if channel is None:
-                    continue
-                if y_units[ax] is None:
-                    y_units[ax] = channel.unit
-                data = copy.deepcopy(channel.convert_unit(y_units[ax]).data)
-                data.index *= 1000  # convert to ms
-                ax.plot(data, c=color, label=isomme.test_number)
-                ax.set_title(f"{code}")
-                ax.set_xlabel('Time [ms]')
-                ax.set_ylabel(f"{channel.get_info('Dimension')} [{y_units[ax]}]")
-                codes_plotted[ax][isomme].append(channel.code)
+                channels = self.channels[isomme][idx]
+                for idx2, channel in enumerate(channels):
+                    if channel is None:
+                        continue
+                    if y_units[ax] is None:
+                        y_units[ax] = channel.unit
+
+                    logger.debug(f"Plotting {isomme} {channel}")
+
+                    data = copy.deepcopy(channel.convert_unit(y_units[ax]).data)
+                    data.index *= 1000  # convert to ms
+                    ax.plot(data, c=color, label=isomme.test_number if len(channels) <= 1 else f"{isomme.test_number} {channel.code}", ls=self.linestyles[idx2])
+                    if not ax.get_title():
+                        ax.set_title(f"{channel.code}")
+                    if not ax.get_xlabel():
+                        ax.set_xlabel('Time [ms]')
+                    if not ax.get_ylabel():
+                        ax.set_ylabel(f"{channel.get_info('Dimension')} [{y_units[ax]}]")
+                    codes_plotted[ax][isomme].append(channel.code)
 
         xlim_dict = {ax: self.xlim if self.xlim is not None else ax.get_xlim() if not self.sharex else (min([a.get_xlim()[0] for a in axs]), max([a.get_xlim()[1] for a in axs])) for ax in axs}
 
         # Limits
         limit_list_dict = {ax: [] for ax in axs}
-        for ax in axs:
-            for isomme in self.isomme_list:
-                limit_list_dict[ax] += self.limits[isomme].get_limits(*(codes_plotted[ax][isomme]))
+        if self.limits is not None:
+            for ax in axs:
+                for isomme in self.isomme_list:
+                    limit_list_dict[ax] += self.limits[isomme].get_limits(*(codes_plotted[ax][isomme]))
 
         # Limit (Line)
         for ax in axs:

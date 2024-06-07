@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from pyisomme.plotting import *
 
 from pptx.dml.color import RGBColor
@@ -86,7 +88,7 @@ class Page_Result_Table(Page):
 class Page_Plot_nxn(Page):
     name: str
     title: str
-    codes: dict
+    channels: dict[Isomme, list[list[Channel | str]]]
     nrows: int = 1
     ncols: int = 1
     sharey: bool = None
@@ -110,7 +112,7 @@ class Page_Plot_nxn(Page):
         figsize_y = 8
         figsize_x = figsize_y * float(width) / float(height)
 
-        fig = Plot_Line(self.report.isomme_list, self.codes, nrows=self.nrows, ncols=self.ncols, sharey=self.sharey, limits=self.report.limits, figsize=(figsize_x, figsize_y)).fig
+        fig = Plot_Line(self.channels, nrows=self.nrows, ncols=self.ncols, sharey=self.sharey, limits=self.report.limits, figsize=(figsize_x, figsize_y)).fig
         fig.savefig("tmp.png", transparent=True)
 
         slide.shapes.add_picture("tmp.png", left=left, top=top, height=height)
@@ -121,11 +123,11 @@ class Page_Plot_nxn(Page):
 class Page_OLC(Page_Plot_nxn):
     name: str = "OLC"
     title: str = "Occupant Load Criterion (OLC)"
-    codes: dict
+    channels: dict
     nrows: int = 1
-    ncols: int = 2
+    ncols: int = 1
     sharey: bool = None
 
     def __init__(self, report):
         super().__init__(report)
-        self.codes = {isomme: ["14BPIL??????VEXA", "14BPIL0OLC??VEXA"] for isomme in self.report.isomme_list}
+        self.channels = {isomme: [["14BPIL??????VEXA", "14BPIL0OLC??VEXA"]] for isomme in self.report.isomme_list}
