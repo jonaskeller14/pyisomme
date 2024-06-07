@@ -415,10 +415,23 @@ class Isomme:
                     if channel is not None:
                         return calculate_chest_vc(channel)
 
-                # Acetabulum Compression (Minimum of left and right)
-                if code_pattern.main_location == "ACTB" and code_pattern.fine_location_1 == "00":
+                # Acetabulum Compression (Maximum of left and right)
+                if code_pattern.main_location == "ACTB" and code_pattern.fine_location_1 == "00" and code_pattern.fine_location_2 == "00" and code_pattern.physical_dimension == "FO" and code_pattern.direction == "R":
                     channel_left = self.get_channel(code_pattern.set(fine_location_1="LE"))
-                    channel_right = self.get_channel(code_pattern.set(fine_location_1="RE"))
+                    channel_right = self.get_channel(code_pattern.set(fine_location_1="RI"))
+                    if channel_left is not None and channel_right is not None:
+                        time = time_intersect(channel_left, channel_right)
+                        values = np.min([
+                            channel_left.get_data(t=time),
+                            channel_right.get_data(t=time, unit=channel_left.unit)], axis=0)
+                        return Channel(code=channel_left.code.set(fine_location_1="00"),
+                                       data=pd.DataFrame(values, index=time),
+                                       unit=channel_left.unit)
+
+                # Femur Compression (Minimum of left and right)
+                if code_pattern.main_location == "FEMR" and code_pattern.fine_location_1 == "00" and code_pattern.fine_location_2 == "00" and code_pattern.physical_dimension == "FO" and code_pattern.direction == "Z":
+                    channel_left = self.get_channel(code_pattern.set(fine_location_1="LE"))
+                    channel_right = self.get_channel(code_pattern.set(fine_location_1="RI"))
                     if channel_left is not None and channel_right is not None:
                         time = time_intersect(channel_left, channel_right)
                         values = np.min([
@@ -429,9 +442,9 @@ class Isomme:
                                        unit=channel_left.unit)
 
                 # Knee Slider Compression (Minimum of left and right)
-                if code_pattern.main_location == "KNSL" and code_pattern.fine_location_1 == "00":
+                if code_pattern.main_location == "KNSL" and code_pattern.fine_location_1 == "00" and code_pattern.fine_location_2 == "00" and code_pattern.physical_dimension == "FO" and code_pattern.direction == "X":
                     channel_left = self.get_channel(code_pattern.set(fine_location_1="LE"))
-                    channel_right = self.get_channel(code_pattern.set(fine_location_1="RE"))
+                    channel_right = self.get_channel(code_pattern.set(fine_location_1="RI"))
                     if channel_left is not None and channel_right is not None:
                         time = time_intersect(channel_left, channel_right)
                         values = np.min([
@@ -440,6 +453,58 @@ class Isomme:
                         return Channel(code=channel_left.code.set(fine_location_1="00"),
                                        data=pd.DataFrame(values, index=time),
                                        unit=channel_left.unit)
+
+                # Tibia Index (Maximum of left and right)
+                if code_pattern.main_location == "TIIN" and code_pattern.fine_location_1 == "00" and code_pattern.physical_dimension == "00" and code_pattern.direction == "0":
+                    channel_left = self.get_channel(code_pattern.set(fine_location_1="LE"))
+                    channel_right = self.get_channel(code_pattern.set(fine_location_1="RI"))
+                    if channel_left is not None and channel_right is not None:
+                        time = time_intersect(channel_left, channel_right)
+                        values = np.max([
+                            channel_left.get_data(t=time),
+                            channel_right.get_data(t=time, unit=channel_left.unit)], axis=0)
+                        return Channel(code=channel_left.code.set(fine_location_1="00"),
+                                       data=pd.DataFrame(values, index=time),
+                                       unit=channel_left.unit)
+
+                # Tibia Index (Maximum of upper and lower)
+                if code_pattern.main_location == "TIIN" and code_pattern.fine_location_2 == "00" and code_pattern.physical_dimension == "00" and code_pattern.direction == "0":
+                    channel_upper = self.get_channel(code_pattern.set(fine_location_2="UP"))
+                    channel_lower = self.get_channel(code_pattern.set(fine_location_2="LO"))
+                    if channel_upper is not None and channel_lower is not None:
+                        time = time_intersect(channel_upper, channel_lower)
+                        values = np.max([
+                            channel_upper.get_data(t=time),
+                            channel_lower.get_data(t=time, unit=channel_upper.unit)], axis=0)
+                        return Channel(code=channel_upper.code.set(fine_location_2="00"),
+                                       data=pd.DataFrame(values, index=time),
+                                       unit=channel_upper.unit)
+
+                # Tibia Compression (Minimum of left and right)
+                if code_pattern.main_location == "TIIN" and code_pattern.fine_location_1 == "00" and code_pattern.physical_dimension == "FO" and code_pattern.direction == "Z":
+                    channel_left = self.get_channel(code_pattern.set(fine_location_1="LE"))
+                    channel_right = self.get_channel(code_pattern.set(fine_location_1="RI"))
+                    if channel_left is not None and channel_right is not None:
+                        time = time_intersect(channel_left, channel_right)
+                        values = np.min([
+                            channel_left.get_data(t=time),
+                            channel_right.get_data(t=time, unit=channel_left.unit)], axis=0)
+                        return Channel(code=channel_left.code.set(fine_location_1="00"),
+                                       data=pd.DataFrame(values, index=time),
+                                       unit=channel_left.unit)
+
+                # Tibia Compression (Minimum of upper and lower)
+                if code_pattern.main_location == "TIIN" and code_pattern.fine_location_2 == "00" and code_pattern.physical_dimension == "FO" and code_pattern.direction == "Z":
+                    channel_upper = self.get_channel(code_pattern.set(fine_location_2="UP"))
+                    channel_lower = self.get_channel(code_pattern.set(fine_location_2="LO"))
+                    if channel_upper is not None and channel_lower is not None:
+                        time = time_intersect(channel_upper, channel_lower)
+                        values = np.min([
+                            channel_upper.get_data(t=time),
+                            channel_lower.get_data(t=time, unit=channel_upper.unit)], axis=0)
+                        return Channel(code=channel_upper.code.set(fine_location_2="00"),
+                                       data=pd.DataFrame(values, index=time),
+                                       unit=channel_upper.unit)
 
                 # Tibia Index
                 if code_pattern.main_location == "TIIN" and code_pattern.physical_dimension == "00" and code_pattern.direction == "0":
@@ -451,17 +516,17 @@ class Isomme:
 
                 # THOR Dummy Chest/Abdomen Displacement (Minimum of individual IR-TRACC displacment)
                 # page 31: https://www.humaneticsgroup.com/sites/default/files/2020-11/thor-50m_3d_ir-tracc_um-rev_c.pdf
-                if code_pattern.main_location == "CHST" and code_pattern.fine_location_1 == "00" and code_pattern.fine_location_2 == "00" and code_pattern.fine_location_3 in ("TH", "T3") and code_pattern.physical_dimension == "DS":
+                if code_pattern.main_location == "CHST" and code_pattern.fine_location_1 == "00" and code_pattern.fine_location_2 == "00" and code_pattern.physical_dimension == "DS":
                     channels = [self.get_channel(code_pattern.set(fine_location_1=fine_location_1, fine_location_2=fine_location_2)) for fine_location_1, fine_location_2 in (("LE","UP"), ("RI","UP"), ("LE","LO"), ("RI","LO"))]
-                    if None not in channels:
+                    if None not in channels and all(channel.code.fine_location_3 in ("TH", "T3", "00", "??") for channel in channels):
                         time = time_intersect(*channels)
                         values = np.min([channel.get_data(t=time, unit=channels[0].unit) for channel in channels], axis=0)
                         return Channel(code=code_pattern,
                                        data=pd.DataFrame(values, index=time),
                                        unit=channels[0].unit)
-                if code_pattern.main_location == "ABDO" and code_pattern.fine_location_1 == "00" and code_pattern.fine_location_2 == "00" and code_pattern.fine_location_3 in ("TH", "T3") and code_pattern.physical_dimension == "DS":
+                if code_pattern.main_location == "ABDO" and code_pattern.fine_location_1 == "00" and code_pattern.fine_location_2 == "00" and code_pattern.physical_dimension == "DS":
                     channels = [self.get_channel(code_pattern.set(fine_location_1=fine_location_1, fine_location_2=fine_location_2)) for fine_location_1, fine_location_2 in (("LE","00"), ("RI","00"))]
-                    if None not in channels:
+                    if None not in channels and all(channel.code.fine_location_3 in ("TH", "T3", "00", "??") for channel in channels):
                         time = time_intersect(*channels)
                         values = np.min([channel.get_data(t=time, unit=channels[0].unit) for channel in channels], axis=0)
                         return Channel(code=code_pattern,
@@ -477,14 +542,14 @@ class Isomme:
                             channel_dc0 = self.get_channel(code_pattern.set(physical_dimension="DC", direction="0"))
                             channel_any = self.get_channel(code_pattern.set(physical_dimension="AN", direction="Y"))
                             channel_anz = self.get_channel(code_pattern.set(physical_dimension="AN", direction="Z"))
-                            if channel_dc0 is not None and channel_any is not None and channel_anz is not None:
+                            if None not in (channel_dc0, channel_any, channel_anz):
                                 time = time_intersect(channel_dc0, channel_any, channel_anz)
                                 values = delta * np.sin((channel_any).get_data(t=time, unit="rad")) + channel_dc0.get_data(t=time, unit="mm") * np.cos(channel_any.get_data(t=time, unit="rad")) * np.cos(channel_anz.get_data(t=time, unit="rad"))
                                 return Channel(code=code_pattern, data=pd.DataFrame(values, index=time), unit="mm")
                         if code_pattern.direction == "Y":
                             channel_dc0 = self.get_channel(code_pattern.set(physical_dimension="DC", direction="0"))
                             channel_anz = self.get_channel(code_pattern.set(physical_dimension="AN", direction="Z"))
-                            if channel_dc0 is not None and channel_anz is not None:
+                            if None not in (channel_dc0, channel_anz):
                                 time = time_intersect(channel_dc0, channel_anz)
                                 values = channel_dc0.get_data(t=time, unit="mm") * np.sin(channel_anz.get_data(t=time, unit="rad"))
                                 return Channel(code=code_pattern, data=pd.DataFrame(values, index=time), unit="mm")
@@ -492,7 +557,7 @@ class Isomme:
                             channel_dc0 = self.get_channel(code_pattern.set(physical_dimension="DC", direction="0"))
                             channel_any = self.get_channel(code_pattern.set(physical_dimension="AN", direction="Y"))
                             channel_anz = self.get_channel(code_pattern.set(physical_dimension="AN", direction="Z"))
-                            if channel_dc0 is not None and channel_any is not None and channel_anz is not None:
+                            if None not in (channel_dc0, channel_any, channel_anz):
                                 time = time_intersect(channel_dc0, channel_any, channel_anz)
                                 values = delta * np.cos((channel_any).get_data(t=time, unit="rad")) - channel_dc0.get_data(t=time, unit="mm") * np.sin(channel_any.get_data(t=time, unit="rad")) * np.cos(channel_anz.get_data(t=time, unit="rad"))
                                 return Channel(code=code_pattern, data=pd.DataFrame(values, index=time), unit="mm")
@@ -500,7 +565,7 @@ class Isomme:
                         if code_pattern.direction == "0":
                             channel_dc0 = self.get_channel(code_pattern.set(physical_dimension="DC"))
                             if channel_dc0 is not None:
-                                channel_ds0 = (channel_dc0 - channel_dc0.get_data(t=0)).set_code(physical_dimension="DS")
+                                return (channel_dc0 - channel_dc0.get_data(t=0)).set_code(physical_dimension="DS")
                         if code_pattern.direction == "X":
                             channel_dcx = self.get_channel(code_pattern.set(physical_dimension="DC", direction="X"))
                             if channel_dcx is not None:
