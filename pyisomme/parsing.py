@@ -68,7 +68,9 @@ def parse_xxx(text: str, test_number="data"):
 
     # data
     array = np.array(lines[start_data_idx:])
-    # TODO: Explicit
+
+    if info.get("Reference channel") == "explicit":
+        raise NotImplementedError
     # Implicit
     if "Time of first sample" in info and "Sampling interval" in info:
         n = len(array)

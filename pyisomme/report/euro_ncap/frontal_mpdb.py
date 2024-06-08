@@ -32,11 +32,15 @@ class EuroNCAP_Frontal_MPDB(Report):
             self.Page_Driver_Chest_Compression(self),
             self.Page_Driver_Abdomen_Compression(self),
             EuroNCAP_Frontal_50kmh.Page_Driver_Femur_Axial_Force(self),
+            self.Page_Driver_Tibia_Compression(self),
+            self.Page_Driver_Tibia_Index(self),
 
             self.Page_Passenger_Head_Acceleration(self),
             self.Page_Passenger_Neck_Load(self),
             self.Page_Passenger_Chest_Deflection(self),
             self.Page_Passenger_Femur_Axial_Force(self),
+            self.Page_Passenger_Tibia_Compression(self),
+            self.Page_Passenger_Tibia_Index(self),
 
             Page_OLC(self),
         ]
@@ -539,11 +543,11 @@ class EuroNCAP_Frontal_MPDB(Report):
                         self.p = p
 
                         self.extend_limit_list([
-                            Limit_G([f"?{self.p}TIIN??????000B"], func=lambda x: 0.4, y_unit="1", upper=True),
-                            Limit_A([f"?{self.p}TIIN??????000B"], func=lambda x: 0.4, y_unit="1", lower=True),
-                            Limit_M([f"?{self.p}TIIN??????000B"], func=lambda x: 0.7, y_unit="1", lower=True),
-                            Limit_W([f"?{self.p}TIIN??????000B"], func=lambda x: 1.0, y_unit="1", lower=True),
-                            Limit_P([f"?{self.p}TIIN??????000B"], func=lambda x: 1.3, y_unit="1", lower=True),
+                            Limit_G([f"?{self.p}TIIN??????000?"], func=lambda x: 0.4, y_unit="1", upper=True),
+                            Limit_A([f"?{self.p}TIIN??????000?"], func=lambda x: 0.4, y_unit="1", lower=True),
+                            Limit_M([f"?{self.p}TIIN??????000?"], func=lambda x: 0.7, y_unit="1", lower=True),
+                            Limit_W([f"?{self.p}TIIN??????000?"], func=lambda x: 1.0, y_unit="1", lower=True),
+                            Limit_P([f"?{self.p}TIIN??????000?"], func=lambda x: 1.3, y_unit="1", lower=True),
                         ])
 
                     def calculation(self):
@@ -856,13 +860,41 @@ class EuroNCAP_Frontal_MPDB(Report):
     class Page_Driver_Abdomen_Compression(Page_Plot_nxn):
         name = "Driver Abdomen Compression"
         title = "Driver Abdomen Compression"
-        nrow = 1
+        nrows = 1
         ncols = 2
 
         def __init__(self, report):
             super().__init__(report)
             self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_driver}ABDOLE00??DSXC"],
                                       [f"?{self.report.criterion_master[isomme].p_driver}ABDORI00??DSXC"]] for isomme in self.report.isomme_list}
+
+    class Page_Driver_Tibia_Compression(Page_Plot_nxn):
+        name = "Driver Tibia Compression"
+        title = "Driver Tibia Compression"
+        nrows = 2
+        ncols = 2
+        sharey = True
+
+        def __init__(self, report):
+            super().__init__(report)
+            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_driver}TIBILEUP??FOZB"],
+                                      [f"?{self.report.criterion_master[isomme].p_driver}TIBIRIUP??FOZB"],
+                                      [f"?{self.report.criterion_master[isomme].p_driver}TIBILELO??FOZB"],
+                                      [f"?{self.report.criterion_master[isomme].p_driver}TIBIRILO??FOZB"]] for isomme in self.report.isomme_list}
+
+    class Page_Driver_Tibia_Index(Page_Plot_nxn):
+        name = "Driver Tibia Index"
+        title = "Driver Tibia Index"
+        nrows = 2
+        ncols = 2
+        sharey = True
+
+        def __init__(self, report):
+            super().__init__(report)
+            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_driver}TIINLEUP??000B"],
+                                      [f"?{self.report.criterion_master[isomme].p_driver}TIINRIUP??000B"],
+                                      [f"?{self.report.criterion_master[isomme].p_driver}TIINLELO??000B"],
+                                      [f"?{self.report.criterion_master[isomme].p_driver}TIINRILO??000B"]] for isomme in self.report.isomme_list}
 
     class Page_Passenger_Head_Acceleration(Page_Plot_nxn):
         name: str = "Passenger Head Acceleration"
@@ -910,3 +942,31 @@ class EuroNCAP_Frontal_MPDB(Report):
             super().__init__(report)
             self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_passenger}FEMRLE00??FOZB"],
                                       [f"?{self.report.criterion_master[isomme].p_passenger}FEMRRI00??FOZB"]] for isomme in self.report.isomme_list}
+
+    class Page_Passenger_Tibia_Compression(Page_Plot_nxn):
+        name = "Passenger Tibia Compression"
+        title = "Passenger Tibia Compression"
+        nrows = 2
+        ncols = 2
+        sharey = True
+
+        def __init__(self, report):
+            super().__init__(report)
+            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_passenger}TIBILEUP??FOZB"],
+                                      [f"?{self.report.criterion_master[isomme].p_passenger}TIBIRIUP??FOZB"],
+                                      [f"?{self.report.criterion_master[isomme].p_passenger}TIBILELO??FOZB"],
+                                      [f"?{self.report.criterion_master[isomme].p_passenger}TIBIRILO??FOZB"]] for isomme in self.report.isomme_list}
+
+    class Page_Passenger_Tibia_Index(Page_Plot_nxn):
+        name = "Passenger Tibia Index"
+        title = "Passenger Tibia Index"
+        nrows = 2
+        ncols = 2
+        sharey = True
+
+        def __init__(self, report):
+            super().__init__(report)
+            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_passenger}TIINLEUP??000B"],
+                                      [f"?{self.report.criterion_master[isomme].p_passenger}TIINRIUP??000B"],
+                                      [f"?{self.report.criterion_master[isomme].p_passenger}TIINLELO??000B"],
+                                      [f"?{self.report.criterion_master[isomme].p_passenger}TIINRILO??000B"]] for isomme in self.report.isomme_list}

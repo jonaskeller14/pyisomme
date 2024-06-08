@@ -24,10 +24,10 @@ class TestUnit(unittest.TestCase):
 class TestParsing(unittest.TestCase):
     def test_utf_8(self):
         iso = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "tests", "utf-8"))
-        print(iso.test_info)
-        print(iso.channel_info)
-        print(iso.channels)
-        print(iso.channels[0].info)
+        logger.info(iso.test_info)
+        logger.info(iso.channel_info)
+        logger.info(iso.channels)
+        logger.info(iso.channels[0].info)
         assert len(iso.test_info) != 0
         assert len(iso.channel_info) != 0
         assert len(iso.channels) != 0
@@ -35,10 +35,10 @@ class TestParsing(unittest.TestCase):
 
     def test_ascii(self):
         iso = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "tests", "ascii"))
-        print(iso.test_info)
-        print(iso.channel_info)
-        print(iso.channels)
-        print(iso.channels[0].info)
+        logger.info(iso.test_info)
+        logger.info(iso.channel_info)
+        logger.info(iso.channels)
+        logger.info(iso.channels[0].info)
         assert len(iso.test_info) != 0
         assert len(iso.channel_info) != 0
         assert len(iso.channels) != 0
@@ -46,10 +46,10 @@ class TestParsing(unittest.TestCase):
 
     def test_windows_1252(self):
         iso = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "tests", "windows-1252"))
-        print(iso.test_info)
-        print(iso.channel_info)
-        print(iso.channels)
-        print(iso.channels[0].info)
+        logger.info(iso.test_info)
+        logger.info(iso.channel_info)
+        logger.info(iso.channels)
+        logger.info(iso.channels[0].info)
         assert len(iso.test_info) != 0
         assert len(iso.channel_info) != 0
         assert len(iso.channels) != 0
@@ -57,10 +57,10 @@ class TestParsing(unittest.TestCase):
 
     def test_iso_8859_1(self):
         iso = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "tests", "iso-8859-1"))
-        print(iso.test_info)
-        print(iso.channel_info)
-        print(iso.channels)
-        print(iso.channels[0].info)
+        logger.info(iso.test_info)
+        logger.info(iso.channel_info)
+        logger.info(iso.channels)
+        logger.info(iso.channels[0].info)
         assert len(iso.test_info) != 0
         assert len(iso.channel_info) != 0
         assert len(iso.channels) != 0
@@ -68,10 +68,10 @@ class TestParsing(unittest.TestCase):
 
     def test_utf_8_zip(self):
         iso = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "tests", "utf-8.zip"))
-        print(iso.test_info)
-        print(iso.channel_info)
-        print(iso.channels)
-        print(iso.channels[0].info)
+        logger.info(iso.test_info)
+        logger.info(iso.channel_info)
+        logger.info(iso.channels)
+        logger.info(iso.channels[0].info)
         assert len(iso.test_info) != 0
         assert len(iso.channel_info) != 0
         assert len(iso.channels) != 0
@@ -79,10 +79,10 @@ class TestParsing(unittest.TestCase):
 
     def test_ascii_zip(self):
         iso = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "tests", "ascii.zip"))
-        print(iso.test_info)
-        print(iso.channel_info)
-        print(iso.channels)
-        print(iso.channels[0].info)
+        logger.info(iso.test_info)
+        logger.info(iso.channel_info)
+        logger.info(iso.channels)
+        logger.info(iso.channels[0].info)
         assert len(iso.test_info) != 0
         assert len(iso.channel_info) != 0
         assert len(iso.channels) != 0
@@ -90,10 +90,10 @@ class TestParsing(unittest.TestCase):
 
     def test_windows_1252_zip(self):
         iso = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "tests", "windows-1252.zip"))
-        print(iso.test_info)
-        print(iso.channel_info)
-        print(iso.channels)
-        print(iso.channels[0].info)
+        logger.info(iso.test_info)
+        logger.info(iso.channel_info)
+        logger.info(iso.channels)
+        logger.info(iso.channels[0].info)
         assert len(iso.test_info) != 0
         assert len(iso.channel_info) != 0
         assert len(iso.channels) != 0
@@ -101,10 +101,10 @@ class TestParsing(unittest.TestCase):
 
     def test_iso_8859_1_zip(self):
         iso = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "tests", "iso-8859-1.zip"))
-        print(iso.test_info)
-        print(iso.channel_info)
-        print(iso.channels)
-        print(iso.channels[0].info)
+        logger.info(iso.test_info)
+        logger.info(iso.channel_info)
+        logger.info(iso.channels)
+        logger.info(iso.channels[0].info)
         assert len(iso.test_info) != 0
         assert len(iso.channel_info) != 0
         assert len(iso.channels) != 0
@@ -117,20 +117,9 @@ class TestIsomme(unittest.TestCase):
         pyisomme.Isomme(test_number="999", test_info={}, channels=[], channel_info={})
 
     def test_read(self):
-        pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "iso-mme-org", "MME 1.6 Testdata short", "98_7707"))
-        pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "iso-mme-org", "MME 1.6 Testdata short", "3239"))
-        pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "iso-mme-org", "MME 1.6 Testdata short", "AK3T02FO"))
-        pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "iso-mme-org", "MME 1.6 Testdata short", "AK3T02SI"))
-        pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "iso-mme-org", "MME 1.6 Testdata short", "VW1FGS15"))
-
         pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "11391"))
-        pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "14065"))
-        pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "14084"))
-        pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "14531"))
+        pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "11391", "11391.mme"))
         pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "v11391ISO.zip"))
-        pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "v14065ISO.zip"))
-        pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "v14084ISO.zip"))
-        pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "v14531ISO.zip"))
 
     def test_get_test_info(self):
         isomme = pyisomme.Isomme(test_info={"Laboratory test ref. number": "98/7707"})
@@ -197,18 +186,31 @@ class TestCalculate(unittest.TestCase):
         # Repair wring data
         for channel in self.v1.channels:
             if channel.code.main_location == "TIBI" and channel.code.fine_location_3 == "00":
-                channel.code.fine_location_3 = "H3"
+                channel.set_code(fine_location_3="H3")
 
         assert self.v1.get_channel("?1TIINLEUP??000B") is not None
         assert self.v1.get_channel("?3TIINRILO??000B") is not None
 
 
 class TestReport(unittest.TestCase):
-    v1 = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "11391"), "1[13]*")
-    v2 = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "14084"), "1[13]*")
+    v1 = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "11391"), "?[013]*")
+    v2 = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "14084"), "?[013]*")
+    v3 = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "09203"), "?[013]*")
 
     def test_EuroNCAP_Frontal_50kmh(self):
-        pyisomme.EuroNCAP_Frontal_50kmh([self.v1, self.v2], "My Report").calculate()
+        pyisomme.report.euro_ncap.frontal_50kmh.EuroNCAP_Frontal_50kmh([self.v1, self.v2]).calculate().export_pptx("out/EuroNCAP_Frontal_50kmh.pptx")
+
+    def test_EuroNCAP_Frontal_MPDB(self):
+        for channel in self.v3.channels:
+            if channel.code.main_location == "TIBI" and channel.code.fine_location_3 in ("00", "??"):
+                channel.set_code(fine_location_3="TH")
+        pyisomme.report.euro_ncap.frontal_mpdb.EuroNCAP_Frontal_MPDB([self.v3, self.v2, self.v1]).calculate().export_pptx("out/EuroNCAP_Frontal_MPDB.pptx")
+
+    def test_EuroNCAP_Side_Barrier(self):
+        pyisomme.report.euro_ncap.side_barrier.EuroNCAP_Side_Barrier([self.v1]).calculate().export_pptx("out/EuroNCAP_Side_Barrier.pptx")
+
+    def test_EuroNCAP_Side_Pole(self):
+        pyisomme.report.euro_ncap.side_pole.EuroNCAP_Side_Pole([self.v1]).calculate().export_pptx("out/EuroNCAP_Side_Pole.pptx")
 
 
 class TestPlotting(unittest.TestCase):

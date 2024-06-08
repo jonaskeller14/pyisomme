@@ -49,9 +49,8 @@ class Plot_Line(Plot):
         for isomme, channel_list in channels.items():
             for idx_ax, channel_ax_list in enumerate(channel_list):
                 for idx, channel_ax in enumerate(channel_ax_list):
-                    if isinstance(channel_ax, Channel):
-                        continue
-                    channels[isomme][idx_ax][idx] = isomme.get_channel(channel_ax)
+                    if isinstance(channel_ax, str):
+                        channels[isomme][idx_ax][idx] = isomme.get_channel(channel_ax)
         self.channels = channels
 
         if nrows is not None:

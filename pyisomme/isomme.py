@@ -511,7 +511,8 @@ class Isomme:
                     channel_MOX = self.get_channel(code_pattern.set(main_location="TIBI", physical_dimension="MO", direction="X"))
                     channel_MOY = self.get_channel(code_pattern.set(main_location="TIBI", physical_dimension="MO", direction="Y"))
                     channel_FOZ = self.get_channel(code_pattern.set(main_location="TIBI", physical_dimension="FO", direction="Z"))
-                    if None not in [channel_MOX, channel_MOY, channel_FOZ]:
+                    channels = [channel_MOX, channel_MOY, channel_FOZ]
+                    if None not in channels and all([channel.code.fine_location_3 in ("H3", "HF", "TH", "T3") for channel in channels]):
                         return calculate_tibia_index(channel_MOX, channel_MOY, channel_FOZ)
 
                 # THOR Dummy Chest/Abdomen Displacement (Minimum of individual IR-TRACC displacment)

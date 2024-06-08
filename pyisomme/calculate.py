@@ -249,7 +249,7 @@ def calculate_bric(c_av_x: Channel | None,
 @debug_logging(logger)
 def calculate_damage(c_aa_x: Channel | None,
                      c_aa_y: Channel | None,
-                     c_aa_z: Channel | None) -> tuple | None:
+                     c_aa_z: Channel | None) -> tuple[Channel] | None:
     """
     :param c_aa_x: Angular Acceleration Channel
     :param c_aa_y: Angular Acceleration Channel

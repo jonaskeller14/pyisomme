@@ -188,7 +188,7 @@ def limit_list_unique(limit_list: list[Limit], x, x_unit, y_unit) -> list:
                 continue
 
             if limit.name != filtered_limit.name:
-                raise ValueError("Multiple limits with same data but different names")
+                raise ValueError(f"Multiple limits with same data but different names: {limit.name} and {filtered_limit.name}")
 
             add = False
         if add:
