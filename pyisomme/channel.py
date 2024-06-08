@@ -192,7 +192,7 @@ class Channel:
             logger.warning(f"'{self.code}' not a valid channel code")
         return self
 
-    def set_unit(self, new_unit: None | str | Unit):
+    def set_unit(self, new_unit: None | str | Unit) -> Channel:
         """
         Set unit of Channel and return Channel.
         For converting the data see convert_unit()-method.
@@ -210,7 +210,7 @@ class Channel:
         self.unit = Unit(new_unit)
         return self
 
-    def convert_unit(self, new_unit: str | Unit):
+    def convert_unit(self, new_unit: str | Unit) -> Channel:
         """
         Convert unit of Channel and return Channel.
         For setting unit without conversion see set_unit()-method.
@@ -223,7 +223,7 @@ class Channel:
         self.unit = Unit(new_unit)
         return self
 
-    def set_info(self, new_info: dict, replace: bool = False):
+    def set_info(self, new_info: dict, replace: bool = False) -> Channel:
         """
         Create new info entries or append info to existing ones.
         :param new_info: dictionary
@@ -237,7 +237,7 @@ class Channel:
                 self.info[idx] = value
         return self
 
-    def cfc(self, value: int | str, method="ISO-6487"):
+    def cfc(self, value: int | str, method="ISO-6487") -> Channel:
         """
         Apply a filter to smooth curves.
         REFERENCES:
@@ -415,7 +415,7 @@ class Channel:
         else:
             raise NotImplementedError
 
-    def get_data(self, t=None, unit=None):
+    def get_data(self, t=None, unit=None) -> np.ndarray | float:
         """
         Returns Value at time t. If t is out of recorded range, zero will be returned
         If t between timesteps --> Interpolation
@@ -443,7 +443,7 @@ class Channel:
         # Interpolation
         return np.interp(t, time_array, value_array, left=0, right=0)
 
-    def get_info(self, *labels):
+    def get_info(self, *labels) -> str | None:
         """
         Get channel info by giving one or multiple label(s) to identify information.
         Regex or fnmatch patterns possible.
@@ -461,7 +461,7 @@ class Channel:
                     continue
         return None
 
-    def differentiate(self):
+    def differentiate(self) -> Channel:
         """
         Return new Channel with differentiated data
         :return: Channel
@@ -477,7 +477,7 @@ class Channel:
         new_channel = Channel(new_code, new_data, unit=new_unit, info=new_info)
         return new_channel
 
-    def integrate(self, x_0: float = 0):
+    def integrate(self, x_0: float = 0) -> Channel:
         """
         Return new Channel with integrated data
         :param x_0: value at t=0
@@ -497,7 +497,7 @@ class Channel:
         new_channel += x_0
         return new_channel
 
-    def plot(self, *args, **kwargs):
+    def plot(self, *args, **kwargs) -> None:
         self.data.plot(*args, **kwargs).get_figure().show()
 
     # Operator methods
