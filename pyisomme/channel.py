@@ -292,7 +292,7 @@ class Channel:
         if method == "ISO-6487":
             raise NotImplementedError  # TODO Add filterung method ISO-6487
         elif method == "SAE-J211-1":
-            input_values = self.data.to_numpy()
+            input_values = self.get_data()
             sample_interval = self.info.get("Sampling interval")
             wd = 2 * np.pi * cfc / 0.6 * 1.25
             wa = np.tan(wd * sample_interval / 2.0)
