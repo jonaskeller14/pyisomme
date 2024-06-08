@@ -237,11 +237,12 @@ class Channel:
                 self.info[idx] = value
         return self
 
-    def cfc(self, value: int | str, method="SAE-J211-1"):
+    def cfc(self, value: int | str, method="ISO-6487"):
         """
         Apply a filter to smooth curves.
         REFERENCES:
-        - Appendix C of "\references\SAE-J211-1-MAR95\sae.j211-1.1995.pdf"
+        - Appendix C of references/SAE-J211-1-MAR95/sae.j211-1.1995.pdf
+        - Annex A of references/ISO-6487/ISO-6487-2015.pdf
         :param value:
         :param method:
         :return:
@@ -286,7 +287,82 @@ class Channel:
 
         # Calculation
         if method == "ISO-6487":
-            raise NotImplementedError  # TODO Add filterung method ISO-6487
+            # Variables used
+            samples = self.get_data()
+            number_of_samples = len(samples)
+            sample_rate = self.info.get("Sampling interval")
+
+            number_of_add_points = 0.01 * sample_rate
+            number_of_add_points = min([max([number_of_add_points, 100]), number_of_samples - 1])
+            index_last_point = number_of_samples + 2 * number_of_add_points - 1
+
+            # Initial condition
+            filter_tab = np.zeros(index_last_point + 1)
+            for i in range(number_of_add_points, number_of_add_points + number_of_samples):
+                filter_tab[i] = samples[i - number_of_add_points]
+
+            for i in range(0, number_of_add_points):
+                filter_tab[number_of_add_points - i - 1] = 2 * samples[0] - samples[i+1]
+                filter_tab[number_of_samples + number_of_add_points + i] = 2 * samples[number_of_samples-1] - samples[number_of_samples - i - 2]
+
+            # Computer filter coefficients
+            wd = 2 * np.pi * cfc / 0.6 * 1.25
+            wa = np.tan(wd * sample_rate / 2.0)
+            b0 = wa**2 / (1 + wa**2 + np.sqrt(2) * wa)
+            b1 = 2 * b0
+            b2 = b0
+            a1 = -2 * (wa**2 - 1) / (1 + wa**2 + np.sqrt(2) * wa)
+            a2 = (-1 + np.sqrt(2)*wa - wa**2) / (1 + wa**2 + np.sqrt(2) * wa)
+
+            # Filter forward
+            y1 = 0
+            for i in range(0, 10):
+                y1 = y1 + filter_tab[i]
+            y1 = y1/10
+            x2 = 0
+            x1 = filter_tab[0]
+            x0 = filter_tab[1]
+            filter_tab[0] = y1
+            filter_tab[1] = y1
+            for i in range(2, index_last_point+1):
+                x2 = x1
+                x1 = x0
+                x0 = filter_tab[i]
+                filter_tab[i] = b0 * x0 + b1 * x1 + b2 * x2 + a1 * filter_tab[i - 1] + a2 * filter_tab[i - 2]
+
+            # Filter backward
+            y1 = 0
+            for i in range(index_last_point, index_last_point-9-1, -1):
+                y1 = y1 + filter_tab[i]
+            y1 = y1/10
+            x2 = 0
+            x1 = filter_tab[index_last_point]
+            x0 = filter_tab[index_last_point-1]
+            filter_tab[index_last_point] = y1
+            filter_tab[index_last_point-1] = y1
+            for i in range(index_last_point-2, 0-1, -1):
+                x2 = x1
+                x1 = x0
+                x0 = filter_tab[i]
+                filter_tab[i] = b0 * x0 + b1 * x1 + b2 * x2 + a1 * filter_tab[i + 1] + a2 * filter_tab[i + 2]
+
+            # Filtering of samples
+            for i in range(number_of_add_points, number_of_add_points + number_of_samples):
+                samples[i - number_of_add_points] = filter_tab[i]
+
+            data = copy.deepcopy(self.data)
+            data.iloc[:, 0] = samples
+
+            info = self.info
+            info.update({"Channel frequency class": cfc})
+
+            return Channel(
+                code=self.code.set(filter_class=filter_class),
+                data=data,
+                unit=self.unit,
+                info=info
+            )
+
         elif method == "SAE-J211-1":
             input_values = self.get_data()
             sample_interval = self.info.get("Sampling interval")
