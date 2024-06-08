@@ -79,7 +79,7 @@ class Limits:
     def get_limits(self, *codes: Code | str) -> list:
         """
         Returns list of limits matching given code.
-        :param code: Channel code (pattern not allowed)
+        :param codes: Channel code (pattern not allowed)
         :return:
         """
         output = []
@@ -118,6 +118,7 @@ class Limits:
 
     def get_limit_values(self, channel: Channel, interpolate=True) -> list:
         limits = limit_list_sort(self.get_limits(channel.code))
+        assert len(limits) > 0, "No limits found."
         assert None not in [limit.value for limit in limits], "All limits must have a value defined."
 
         channel_times = channel.data.index

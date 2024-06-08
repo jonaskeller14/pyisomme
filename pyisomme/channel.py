@@ -24,18 +24,18 @@ class Code(str):
             "Invalid code. Code must be 16 characters long, only letters and digits."
         return super(Code, cls).__new__(cls, code)
 
-    def __init__(self, code):
+    def __init__(self, code: str):
         super().__init__()
 
-        self.test_object = self[0]
-        self.position = self[1]
-        self.main_location = self[2:6]
-        self.fine_location_1 = self[6:8]
-        self.fine_location_2 = self[8:10]
-        self.fine_location_3 = self[10:12]
-        self.physical_dimension = self[12:14]
-        self.direction = self[14]
-        self.filter_class = self[15]
+        self.test_object: str = code[0]
+        self.position: str = code[1]
+        self.main_location: str = code[2:6]
+        self.fine_location_1: str = code[6:8]
+        self.fine_location_2: str = code[8:10]
+        self.fine_location_3: str = code[10:12]
+        self.physical_dimension: str = code[12:14]
+        self.direction: str = code[14]
+        self.filter_class: str = code[15]
 
     def set(self,
             test_object: str = None,
@@ -71,7 +71,6 @@ class Code(str):
     def get_info(self) -> dict:
         """
         Data from 'channel_codes.xml'
-        :param code: ISO-MME channel code (16 character)
         :return: dict with code attributes
         """
         info = {}
@@ -89,7 +88,6 @@ class Code(str):
         """
         Returns SI-Unit (default-unit) of Dimension (part of the channel code).
         Default Units are stored in 'channel_codes.xml'
-        :param code: Channel code (str)
         :return: Unit or None
         """
         root = ET.parse(Path(__file__).parent.joinpath("channel_codes.xml")).getroot()
@@ -104,7 +102,6 @@ class Code(str):
     def integrate(self):
         """
         Integrate Dimension of Channel code.
-        :param code: Channel code (str)
         :return: str or Error is raised
         """
         replace_patterns = (
@@ -121,7 +118,6 @@ class Code(str):
     def differentiate(self):
         """
         Differentiate Dimension of Channel code.
-        :param code: Channel code (str)
         :return: str or Error is raised
         """
         replace_patterns = (
@@ -139,7 +135,6 @@ class Code(str):
     def is_valid(self) -> bool:
         """
         Data from 'channel_codes.xml'
-        :param code: ISO-MME channel code (16 character)
         :return: True if code contains valid parts and is as a whole valid
         """
         if len(self) != 16:
@@ -165,7 +160,7 @@ class Channel:
     unit: Unit = None
     info: dict = None
 
-    def __init__(self, code: str | Code, data, unit: str | Unit = None, info=None):
+    def __init__(self, code: str | Code, data: pd.DataFrame, unit: str | Unit = None, info: dict = None):
         self.set_code(code)
         self.data = data
         self.set_unit(unit)
@@ -533,7 +528,7 @@ def time_intersect(*channels: Channel) -> np.ndarray:
     :return: time array
     """
     if len(channels) == 0:
-        return []
+        return np.array([])
     time_array = channels[0].data.index
     for channel in channels[1:]:
         time_array = np.intersect1d(time_array, channel.data.index)

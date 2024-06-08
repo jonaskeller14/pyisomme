@@ -333,6 +333,8 @@ class Isomme:
         :param code_patterns:
         :param filter: create channel by filtering if channel does not exist yet
         :param calculate: create channel by calculation if channel does not exist yet
+        :param differentiate: Allow differentiation if channel not found otherwise
+        :param integrate: Allow integration if channel not found otherwise
         :return: Channel object or None
         """
         for code_pattern in code_patterns:

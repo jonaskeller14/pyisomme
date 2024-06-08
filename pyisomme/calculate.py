@@ -515,8 +515,8 @@ def calculate_olc(c_v: Channel | None,
 
     c_olc = Channel(
         code=c_v.code.set(fine_location_1="0O", fine_location_2="LC", filter_class="X"),
-        data=olc / 9.81,
-        unit=Unit("g"),
+        data=pd.DataFrame([olc / 9.81]),
+        unit=g0,
         info={
             "t_1 [s]": t_1,
             "t_2 [s]": t_2,
