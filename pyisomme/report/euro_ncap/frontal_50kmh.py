@@ -66,7 +66,7 @@ class EuroNCAP_Frontal_50kmh(Report):
             self.criterion_driver = self.Criterion_Driver(report, isomme, p=self.p_driver)
             self.criterion_front_passenger = self.Criterion_Front_Passenger(report, isomme, p=self.p_front_passenger)
             self.criterion_rear_passenger = self.Criterion_Rear_Passenger(report, isomme, p=self.p_rear_passenger)
-            self.criterion_DoorOpeningDuringImpact = self.Criterion_DoorOpeningDuringImpact(report, isomme)
+            self.criterion_door_opening_during_impact = self.Criterion_DoorOpeningDuringImpact(report, isomme)
 
         def calculation(self):
             logger.info("Calculate Driver")
@@ -85,7 +85,7 @@ class EuroNCAP_Frontal_50kmh(Report):
             self.rating = np.interp(self.rating, [0, 8], [0, 8], left=0, right=np.nan)
 
             # Modifier
-            self.rating += self.criterion_DoorOpeningDuringImpact.rating
+            self.rating += self.criterion_door_opening_during_impact.rating
 
         class Criterion_Driver(Criterion):
             name = "Driver"
@@ -469,6 +469,7 @@ class EuroNCAP_Frontal_50kmh(Report):
                         self.p = p
 
                         self.extend_limit_list([
+                            Limit([f"?{self.p}SEBE????B3FO[X0]?"], name="No Modifier applied", func=lambda x: 6.0, y_unit="kN", upper=True, color="greem", value=0),
                             Limit([f"?{self.p}SEBE????B3FO[X0]?"], name="-2 pt. Modifier", func=lambda x: 6.0, y_unit="kN", lower=True, color="red", value=-2)
                         ])
 
@@ -770,7 +771,7 @@ class EuroNCAP_Frontal_50kmh(Report):
 
                     self.criterion_chest_deflection = self.report.Criterion_Master.Criterion_Driver.Criterion_Chest.Criterion_Chest_Deflection(report, isomme, p)
                     self.criterion_chest_vc = self.report.Criterion_Master.Criterion_Driver.Criterion_Chest.Criterion_Chest_VC(report, isomme, p)
-                    self.criterion_ShoulderBeltLoad = self.Criterion_ShoulderBeltLoad(report, isomme, p)
+                    self.criterion_shoulder_belt_load = self.report.Criterion_Master.Criterion_Driver.Criterion_Chest.Criterion_ShoulderBeltLoad(report, isomme, p)
 
                 def calculation(self):
                     self.criterion_chest_deflection.calculate()
@@ -780,25 +781,8 @@ class EuroNCAP_Frontal_50kmh(Report):
                                           self.criterion_chest_vc.rating])
 
                     # Modifier
-                    self.criterion_ShoulderBeltLoad.calculate()
-                    self.rating += self.criterion_ShoulderBeltLoad.rating
-
-                class Criterion_ShoulderBeltLoad(Criterion):
-                    name = "Modifier Shoulder Belt Load"
-
-                    def __init__(self, report, isomme, p):
-                        super().__init__(report, isomme)
-
-                        self.p = p
-
-                        self.extend_limit_list([
-                            Limit([f"?{self.p}SEBE????B3FO[X0]?"], name="-2 pt. Modifier", func=lambda x: 6.0, y_unit="kN", lower=True, color="red", value=-2)
-                        ])
-
-                    def calculate(self):
-                        self.channel = self.isomme.get_channel(f"?{self.p}SEBE????B3FO[X0]D")
-                        self.value = np.max(self.channel.get_data(unit="kN"))
-                        self.rating = -2 if self.value >= 6 else 0
+                    self.criterion_shoulder_belt_load.calculate()
+                    self.rating += self.criterion_shoulder_belt_load.rating
 
             class Criterion_Femur(Criterion):
                 name = "Femur"
@@ -1030,7 +1014,7 @@ class EuroNCAP_Frontal_50kmh(Report):
 
                     self.criterion_chest_deflection = self.report.Criterion_Master.Criterion_Driver.Criterion_Chest.Criterion_Chest_Deflection(report, isomme, p)
                     self.criterion_chest_vc = self.report.Criterion_Master.Criterion_Driver.Criterion_Chest.Criterion_Chest_VC(report, isomme, p)
-                    self.criterion_ShoulderBeltLoad = self.Criterion_ShoulderBeltLoad(report, isomme, p)
+                    self.criterion_shoulder_belt_load = self.report.Criterion_Master.Criterion_Driver.Criterion_Chest.Criterion_ShoulderBeltLoad(report, isomme, p)
 
                 def calculation(self):
                     self.criterion_chest_deflection.calculate()
@@ -1040,25 +1024,8 @@ class EuroNCAP_Frontal_50kmh(Report):
                                           self.criterion_chest_vc.rating])
 
                     # Modifier
-                    self.criterion_ShoulderBeltLoad.calculate()
-                    self.rating += self.criterion_ShoulderBeltLoad.rating
-
-                class Criterion_ShoulderBeltLoad(Criterion):
-                    name = "Modifier Shoulder Belt Load"
-
-                    def __init__(self, report, isomme, p):
-                        super().__init__(report, isomme)
-
-                        self.p = p
-
-                        self.extend_limit_list([
-                            Limit([f"?{self.p}SEBE????B3FO[X0]?"], name="-2 pt. Modifier", func=lambda x: 6.0, y_unit="kN", lower=True, color="red", value=-2)
-                        ])
-
-                    def calculate(self):
-                        self.channel = self.isomme.get_channel(f"?{self.p}SEBE????B3FO[X0]D")
-                        self.value = np.max(self.channel.get_data(unit="kN"))
-                        self.rating = -2 if self.value >= 6 else 0
+                    self.criterion_shoulder_belt_load.calculate()
+                    self.rating += self.criterion_shoulder_belt_load.rating
 
             class Criterion_Femur(Criterion):
                 name = "Femur"

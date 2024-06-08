@@ -1,6 +1,7 @@
 from pyisomme.report.page import Page_Cover, Page_OLC, Page_Plot_nxn
 from pyisomme.report.report import Report
 from pyisomme.limits import Limit
+from pyisomme.calculate import calculate_olc
 from pyisomme.report.euro_ncap.frontal_50kmh import EuroNCAP_Frontal_50kmh
 from pyisomme.report.criterion import Criterion
 from pyisomme.report.euro_ncap.limits import Limit_G, Limit_P, Limit_C, Limit_M, Limit_A, Limit_W
@@ -63,6 +64,9 @@ class EuroNCAP_Frontal_MPDB(Report):
             self.criterion_driver = self.Criterion_Driver(report, isomme, p=self.p_driver)
             self.criterion_passenger = self.Criterion_Passenger(report, isomme, p=self.p_passenger)
 
+            self.criterion_door_opening_during_impact = EuroNCAP_Frontal_50kmh.Criterion_Master.Criterion_DoorOpeningDuringImpact(report, isomme)
+            self.criterion_compatibility_modifier = self.Criterion_Compatibility_Modifier(report, isomme)
+
         def calculation(self):
             logger.info("Calculate Driver")
             self.criterion_driver.calculate()
@@ -88,10 +92,13 @@ class EuroNCAP_Frontal_MPDB(Report):
                 ])
             ])
 
-            # TODO: compatibilry
-            # TODO: Modifier
-            self.rating += np.sum([
+            # Modifier
+            self.criterion_door_opening_during_impact.calculate()
+            self.criterion_compatibility_modifier.calculate()
 
+            self.rating += np.sum([
+                self.criterion_door_opening_during_impact.rating,
+                self.criterion_compatibility_modifier.rating
             ])
 
             # Capping (-np.inf) leads to 0 points. More than 16 points should not be possible if sub-criteria defined correctly
@@ -322,10 +329,16 @@ class EuroNCAP_Frontal_MPDB(Report):
 
                         self.criterion_chest_compression = self.Criterion_Chest_Compression(report, isomme, p=self.p)
 
+                        self.criterion_shoulder_belt_load = EuroNCAP_Frontal_50kmh.Criterion_Master.Criterion_Driver.Criterion_Chest.Criterion_ShoulderBeltLoad(report, isomme, p=self.p)
+
                     def calculation(self):
                         self.criterion_chest_compression.calculate()
 
                         self.rating = self.criterion_chest_compression.rating
+
+                        # Modifier
+                        self.criterion_shoulder_belt_load.calculate()
+                        self.rating += self.criterion_shoulder_belt_load.rating
 
                     class Criterion_Chest_Compression(Criterion):
                         name = "Chest Compression"
@@ -394,6 +407,8 @@ class EuroNCAP_Frontal_MPDB(Report):
                     self.criterion_femur = self.Criterion_Femur(report, isomme, p=self.p)
                     self.criterion_knee = self.Criterion_Knee(report, isomme, p=self.p)
 
+                    self.criterion_submarining = EuroNCAP_Frontal_50kmh.Criterion_Master.Criterion_Driver.Criterion_Femur.Criterion_Submarining(report, isomme, p=self.p)
+
                 def calculation(self):
                     self.criterion_pelvis.calculate()
                     self.criterion_femur.calculate()
@@ -404,6 +419,11 @@ class EuroNCAP_Frontal_MPDB(Report):
                         self.criterion_femur.rating,
                         self.criterion_knee.rating
                     ])
+
+                    # Modifier
+                    self.criterion_submarining.calculate()
+
+                    self.rating += self.criterion_submarining.rating
 
                 class Criterion_Pelvis(Criterion):
                     name = "Pelvis"
@@ -760,6 +780,8 @@ class EuroNCAP_Frontal_MPDB(Report):
                     self.criterion_chest_compression = self.Criterion_Chest_Compression(report, isomme, p)
                     self.criterion_chest_vc = EuroNCAP_Frontal_50kmh.Criterion_Master.Criterion_Driver.Criterion_Chest.Criterion_Chest_VC(report, isomme, p)
 
+                    self.criterion_shoulder_belt_load = EuroNCAP_Frontal_50kmh.Criterion_Master.Criterion_Driver.Criterion_Chest.Criterion_ShoulderBeltLoad(report, isomme, p=self.p)
+
                 def calculation(self) -> None:
                     self.criterion_chest_compression.calculate()
                     self.criterion_chest_vc.calculate()
@@ -768,6 +790,9 @@ class EuroNCAP_Frontal_MPDB(Report):
                         self.criterion_chest_compression.rating,
                         self.criterion_chest_vc.rating,
                     ])
+
+                    # Modifier
+                    self.rating += self.criterion_shoulder_belt_load.rating
 
                 class Criterion_Chest_Compression(Criterion):
                     name = "Chest Compression"
@@ -830,6 +855,51 @@ class EuroNCAP_Frontal_MPDB(Report):
                         self.criterion_tibia_index.rating,
                         self.criterion_tibia_compression.rating,
                     ])
+
+        class Criterion_Compatibility_Modifier(Criterion):
+            name = "Compatibility Modifier"
+
+            def __init__(self, report, isomme):
+                super().__init__(report, isomme)
+
+                self.criterion_olc_modifier = self.Criterion_OLC_Modifier(report, isomme)
+                # self.criterion_sd_modifier = self.Criterion_SD_Modifier(report, isomme)
+                # self.criterion_bo_modifier = self.Criterion_BO_Modifier(report, isomme)
+
+            def calculation(self):
+                self.criterion_olc_modifier.calculate()
+                # self.criterion_sd_modifier.calculate()
+                # self.criterion_bo_modifier.calculate()
+
+                self.value = np.sum([
+                    self.criterion_olc_modifier.rating,
+                    # self.criterion_sd_modifier.rating,
+                    # self.criterion_bo_modifier.rating
+                ])
+                self.rating = np.interp(self.value, [-8, 0], [-8, 0])  # penalty will not exceed -8 pts.
+
+            class Criterion_OLC_Modifier(Criterion):
+                name = "Occupant Load Criterion (OLC) Modifier"
+
+                def __init__(self, report, isomme):
+                    super().__init__(report, isomme)
+
+                    self.extend_limit_list([
+                        Limit([f"M?MBAR0OLC??ACX?"], func=lambda x: 25, y_unit=g0, name="No Modifier applied", value=0, upper=True),
+                        Limit([f"M?MBAR0OLC??ACX?"], func=lambda x: 25, y_unit=g0, name="-2..0 pt. Modifier", value=0, lower=True),
+                        Limit([f"M?MBAR0OLC??ACX?"], func=lambda x: 40, y_unit=g0, name="-2 pt. Modifier", value=-2, lower=True),
+                    ])
+
+                def calculation(self):
+                    self.channel = calculate_olc(self.isomme.get_channel(f"M?MBAR0000??VEXA", f"M?MBARCG00??VEXA"))[0]
+                    self.value = self.channel.get_data(unit=g0)[0]
+                    self.rating = self.limits.get_limit_min_value(self.channel, interpolate=True)
+
+            class Criterion_SD_Modifier(Criterion):
+                pass
+
+            class Criterion_BO_Modifier(Criterion):
+                pass
 
     class Page_Driver_Head_Damage(Page_Plot_nxn):
         name = "Driver Head DAMAGE"
