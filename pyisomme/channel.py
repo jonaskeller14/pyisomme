@@ -178,6 +178,10 @@ class Channel:
         return f"Channel(code={self.code})"
 
     def set_code(self, new_code: str | Code = None, **code_components) -> Channel:
+        if new_code is None:  # if only components are set
+            assert self.code is not None
+            new_code = self.code
+
         if not re.fullmatch(r"[a-zA-Z0-9?]{16}", new_code):
             if len(new_code) > 16:
                 logger.warning(f"Code '{new_code}' must be 16 characters long")
@@ -188,9 +192,6 @@ class Channel:
                 logger.warning(f"Code '{new_code}' will be extended to 16 characters")
                 new_code = new_code.ljust(16, "?")
 
-        if new_code is None:  # if only components are set
-            assert self.code is not None
-            new_code = self.code
         self.code = Code(new_code).set(**code_components)
         if not self.code.is_valid():
             logger.warning(f"'{self.code}' not a valid channel code")
