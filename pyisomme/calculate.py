@@ -419,6 +419,27 @@ def calculate_chest_vc(channel: Channel | None, scaling_factor: float = None, de
     return Channel(code=new_code, unit=new_unit, data=new_data, info=new_info)
 
 
+def calculate_iliac_force_drop(channel: Channel | None, delta_t: float = 0.001) -> Channel | None:
+    """
+    References:
+    - references/Euro-NCAP/tb-021-data-acquisition-and-injury-calculation-v402.pdf
+    :param channel: Iliac Force channel
+    :param delta_t:
+    :return:
+    """
+    if channel is None:
+        return None
+
+    time_array = channel.data.index
+
+    ifd = channel.get_data(t=time_array + delta_t) - channel.get_data(t=time_array)
+
+    return Channel(code="????????????????",
+                   data=pd.DataFrame(ifd, index=time_array),
+                   unit=channel.unit,
+                   info=channel.info)
+
+
 def calculate_tibia_index(channel_MOX: Channel | None,
                           channel_MOY: Channel | None,
                           channel_FOZ: Channel | None,
