@@ -46,6 +46,8 @@ class EuroNCAP_Frontal_MPDB(Report):
             self.Page_Passenger_Tibia_Index(self),
 
             Page_OLC(self),
+
+            self.Page_OLC_Trolley(self)
         ]
 
     class Criterion_Master(Criterion):
@@ -885,9 +887,9 @@ class EuroNCAP_Frontal_MPDB(Report):
                     super().__init__(report, isomme)
 
                     self.extend_limit_list([
-                        Limit([f"M?MBAR0OLC??ACX?"], func=lambda x: 25, y_unit=g0, name="No Modifier applied", value=0, upper=True),
-                        Limit([f"M?MBAR0OLC??ACX?"], func=lambda x: 25, y_unit=g0, name="-2..0 pt. Modifier", value=0, lower=True),
-                        Limit([f"M?MBAR0OLC??ACX?"], func=lambda x: 40, y_unit=g0, name="-2 pt. Modifier", value=-2, lower=True),
+                        Limit([f"M?MBAR0OLC??VEX?"], func=lambda x: 25, y_unit=g0, name="No Modifier applied", value=0, upper=True),
+                        Limit([f"M?MBAR0OLC??VEX?"], func=lambda x: 25, y_unit=g0, name="-2..0 pt. Modifier", value=0, lower=True),
+                        Limit([f"M?MBAR0OLC??VEX?"], func=lambda x: 40, y_unit=g0, name="-2 pt. Modifier", value=-2, lower=True),
                     ])
 
                 def calculation(self):
@@ -1066,3 +1068,16 @@ class EuroNCAP_Frontal_MPDB(Report):
                                       [f"?{self.report.criterion_master[isomme].p_passenger}TIINRIUP??000B"],
                                       [f"?{self.report.criterion_master[isomme].p_passenger}TIINLELO??000B"],
                                       [f"?{self.report.criterion_master[isomme].p_passenger}TIINRILO??000B"]] for isomme in self.report.isomme_list}
+
+    class Page_OLC_Trolley(Page_Plot_nxn):
+        name: str = "OLC Trolley"
+        title: str = "Occupant Load Criterion (OLC) of Trolley"
+        channels: dict
+        nrows: int = 1
+        ncols: int = 1
+        sharey: bool = None
+
+        def __init__(self, report):
+            super().__init__(report)
+            self.channels = {isomme: [[isomme.get_channel(f"M?MBAR0000??VEXA", f"M?MBARCG00??VEXA"),
+                                       calculate_olc(isomme.get_channel(f"M?MBAR0000??VEXA", f"M?MBARCG00??VEXA"))[1]]] for isomme in self.report.isomme_list}
