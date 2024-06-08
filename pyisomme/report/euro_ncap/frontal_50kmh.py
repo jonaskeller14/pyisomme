@@ -469,7 +469,7 @@ class EuroNCAP_Frontal_50kmh(Report):
                         self.p = p
 
                         self.extend_limit_list([
-                            Limit([f"?{self.p}SEBE????B3FO[X0]?"], name="No Modifier applied", func=lambda x: 6.0, y_unit="kN", upper=True, color="greem", value=0),
+                            Limit([f"?{self.p}SEBE????B3FO[X0]?"], name="No Modifier applied", func=lambda x: 6.0, y_unit="kN", upper=True, color="green", value=0),
                             Limit([f"?{self.p}SEBE????B3FO[X0]?"], name="-2 pt. Modifier", func=lambda x: 6.0, y_unit="kN", lower=True, color="red", value=-2)
                         ])
 

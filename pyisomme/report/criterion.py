@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 from pyisomme.isomme import Isomme
+from pyisomme.channel import Channel
 from pyisomme.limits import Limit, Limits
 
 import numpy as np
@@ -12,13 +15,13 @@ logger = logging.getLogger(__name__)
 class Criterion:
     name: str = None
     limits: Limits = None
+    channel: Channel | None = None
+    value: float = np.nan
+    rating: float = np.nan
 
     def __init__(self, report, isomme: Isomme):
         self.report = report
         self.isomme = isomme
-        self.channel = None
-        self.value = np.nan
-        self.rating = np.nan
         self.limits = Limits(name=report.name, limit_list=[])
 
     def extend_limit_list(self, limit_list: list[Limit]) -> None:

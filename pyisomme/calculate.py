@@ -483,7 +483,7 @@ def calculate_tibia_index(channel_MOX: Channel | None,
 @debug_logging(logger)
 def calculate_olc(c_v: Channel | None,
                   free_flight_phase_displacement: float = 0.065,
-                  restraining_phase_displacement: float = 0.235) -> tuple | None:
+                  restraining_phase_displacement: float = 0.235) -> tuple[Channel | None] | None:
     """
     Calculate OLC
     :param c_v:
@@ -492,7 +492,7 @@ def calculate_olc(c_v: Channel | None,
     :return:
     """
     if c_v is None:
-        return None
+        return None, None
 
     c_v = c_v.convert_unit("m/s")
 
