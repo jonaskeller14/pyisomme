@@ -32,6 +32,7 @@ class EuroNCAP_Frontal_MPDB(Report):
             self.Page_Driver_Chest_Compression(self),
             self.Page_Driver_Abdomen_Compression(self),
             EuroNCAP_Frontal_50kmh.Page_Driver_Femur_Axial_Force(self),
+            self.Page_Driver_Knee_Slider_Compression(self),
             self.Page_Driver_Tibia_Compression(self),
             self.Page_Driver_Tibia_Index(self),
 
@@ -39,6 +40,7 @@ class EuroNCAP_Frontal_MPDB(Report):
             self.Page_Passenger_Neck_Load(self),
             self.Page_Passenger_Chest_Deflection(self),
             self.Page_Passenger_Femur_Axial_Force(self),
+            self.Page_Passenger_Knee_Slider_Compression(self),
             self.Page_Passenger_Tibia_Compression(self),
             self.Page_Passenger_Tibia_Index(self),
 
@@ -896,6 +898,18 @@ class EuroNCAP_Frontal_MPDB(Report):
                                       [f"?{self.report.criterion_master[isomme].p_driver}TIINLELO??000B"],
                                       [f"?{self.report.criterion_master[isomme].p_driver}TIINRILO??000B"]] for isomme in self.report.isomme_list}
 
+    class Page_Driver_Knee_Slider_Compression(Page_Plot_nxn):
+        name = "Driver Knee Slider Compression"
+        title = "Driver Knee Slider Compression"
+        nrows = 1
+        ncols = 2
+        sharey = True
+
+        def __init__(self, report):
+            super().__init__(report)
+            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_driver}KNSLLE00??DSXB"],
+                                      [f"?{self.report.criterion_master[isomme].p_driver}KNSLRI00??DSXB"]]for isomme in self.report.isomme_list}
+
     class Page_Passenger_Head_Acceleration(Page_Plot_nxn):
         name: str = "Passenger Head Acceleration"
         title: str = "Passenger Head Acceleration"
@@ -942,6 +956,18 @@ class EuroNCAP_Frontal_MPDB(Report):
             super().__init__(report)
             self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_passenger}FEMRLE00??FOZB"],
                                       [f"?{self.report.criterion_master[isomme].p_passenger}FEMRRI00??FOZB"]] for isomme in self.report.isomme_list}
+
+    class Page_Passenger_Knee_Slider_Compression(Page_Plot_nxn):
+        name = "Passenger Knee Slider Compression"
+        title = "Passenger Knee Slider Compression"
+        nrows = 1
+        ncols = 2
+        sharey = True
+
+        def __init__(self, report):
+            super().__init__(report)
+            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_passenger}KNSLLE00??DSXB"],
+                                      [f"?{self.report.criterion_master[isomme].p_passenger}KNSLRI00??DSXB"]]for isomme in self.report.isomme_list}
 
     class Page_Passenger_Tibia_Compression(Page_Plot_nxn):
         name = "Passenger Tibia Compression"
