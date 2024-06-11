@@ -393,7 +393,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                             ])
 
                         def calculation(self):
-                            self.channel = self.isomme.get_channel(f"?{[self.p]}ABDO0000??DSXC").convert_unit("mm")
+                            self.channel = self.isomme.get_channel(f"?{self.p}ABDO0000??DSXC").convert_unit("mm")
                             self.value = np.min(self.channel.get_data())
                             self.rating = self.limits.get_limit_min_value(self.channel, interpolate=False)
 
