@@ -225,20 +225,6 @@ class Channel:
         self.unit = Unit(new_unit)
         return self
 
-    def set_info(self, new_info: dict, replace: bool = False) -> Channel:
-        """
-        Create new info entries or append info to existing ones.
-        :param new_info: dictionary
-        :param replace: Append information or replace existing information
-        :return: Channel (self)
-        """
-        for idx, value in new_info.items():
-            if idx in self.info.keys() and not replace:
-                self.info[idx] += f"; {value}"
-            else:
-                self.info[idx] = value
-        return self
-
     def cfc(self, value: int | str, method="ISO-6487") -> Channel:
         """
         Apply a filter to smooth curves.
