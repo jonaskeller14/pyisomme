@@ -1075,7 +1075,6 @@ class EuroNCAP_Frontal_MPDB(Report):
         channels: dict
         nrows: int = 1
         ncols: int = 1
-        sharey: bool = None
 
         def __init__(self, report):
             super().__init__(report)
