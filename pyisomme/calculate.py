@@ -245,7 +245,7 @@ def calculate_bric(c_av_x: Channel | None,
 @debug_logging(logger)
 def calculate_damage(c_aa_x: Channel | None,
                      c_aa_y: Channel | None,
-                     c_aa_z: Channel | None) -> tuple[Channel] | None:
+                     c_aa_z: Channel | None) -> tuple[Channel, ...] | None:
     """
     :param c_aa_x: Angular Acceleration Channel
     :param c_aa_y: Angular Acceleration Channel
@@ -334,6 +334,108 @@ def calculate_damage(c_aa_x: Channel | None,
 @debug_logging(logger)
 def calculate_neck_nij() -> tuple:
     pass
+
+
+@debug_logging(logger)
+def calculate_neck_MOCx(channel_Mx: Channel, channel_Fy: Channel) -> Channel | None:
+    """
+    References:
+    - references/Euro-NCAP/tb-021-data-acquisition-and-injury-calculation-v402.pdf
+
+    :param channel_Mx:
+    :param channel_Fy:
+    :return:
+    """
+    if None in (channel_Mx, channel_Fy):
+        return None
+
+    dummys = list({channel_Mx.code.fine_location_3, channel_Fy.code.fine_location_3})
+    assert len(dummys) == 1
+    dummy = dummys[0]
+    assert dummy in ("WS",)
+
+    d = {"WS": 0.0195}[dummy]
+
+    return channel_Mx + channel_Fy * d
+
+
+@debug_logging(logger)
+def calculate_neck_MOCy(channel_My: Channel, channel_Fx: Channel) -> Channel | None:
+    """
+    References:
+    - references/Euro-NCAP/tb-021-data-acquisition-and-injury-calculation-v402.pdf
+
+    :param channel_My:
+    :param channel_Fx:
+    :return:
+    """
+    if None in (channel_My, channel_Fx):
+        return None
+
+    dummys = list({channel_My.code.fine_location_3, channel_Fx.code.fine_location_3})
+    assert len(dummys) == 1
+    dummy = dummys[0]
+    assert dummy in ("WS", "H3", "HF")
+
+    d = {"WS": 0.0195,
+         "H3": 0.01778,
+         "HF": 0.01778}[dummy]
+
+    return channel_My - channel_Fx * d
+
+
+@debug_logging(logger)
+def calculate_neck_Mx_base(channel_Mx: Channel, channel_Fy: Channel) -> Channel | None:
+    """
+    References:
+    - references/Euro-NCAP/tb-021-data-acquisition-and-injury-calculation-v402.pdf
+
+    :param channel_Mx:
+    :param channel_Fy:
+    :return:
+    """
+    if None in (channel_Mx, channel_Fy):
+        return None
+
+    dummys = list({channel_Mx.code.fine_location_3, channel_Fy.code.fine_location_3})
+    assert len(dummys) == 1
+    dummy = dummys[0]
+    assert dummy in ("WS",)
+
+    dz = {"WS": 0.0145}[dummy]
+
+    channel = channel_Mx - channel_Fy * dz
+    channel.data = pd.DataFrame(data=[np.max(np.abs(channel.get_data()))],
+                                index=channel.data.index[np.argmax(np.abs(channel.get_data()))])
+    channel.set_code(physical_dimension="00", direction="X", filter_class="X")
+    return channel
+
+
+@debug_logging(logger)
+def calculate_neck_My_base(channel_My: Channel, channel_Fx: Channel) -> Channel | None:
+    """
+    References:
+    - references/Euro-NCAP/tb-021-data-acquisition-and-injury-calculation-v402.pdf
+
+    :param channel_My:
+    :param channel_Fx:
+    :return:
+    """
+    if None in (channel_My, channel_Fx):
+        return None
+
+    dummys = list({channel_My.code.fine_location_3, channel_Fx.code.fine_location_3})
+    assert len(dummys) == 1
+    dummy = dummys[0]
+    assert dummy in ("WS",)
+
+    dz = {"WS": 0.0145}[dummy]
+
+    channel = channel_My + channel_Fx * dz
+    channel.data = pd.DataFrame(data=[np.abs(np.min(channel.get_data()))],
+                                index=channel.data.index[np.argmin(channel.get_data())])
+    channel.set_code(physical_dimension="00", direction="Y", filter_class="X")
+    return channel
 
 
 @debug_logging(logger)
@@ -476,7 +578,7 @@ def calculate_tibia_index(channel_MOX: Channel | None,
 @debug_logging(logger)
 def calculate_olc(c_v: Channel | None,
                   free_flight_phase_displacement: float = 0.065,
-                  restraining_phase_displacement: float = 0.235) -> tuple[Channel | None] | None:
+                  restraining_phase_displacement: float = 0.235) -> tuple[Channel | None, ...] | None:
     """
     Calculate OLC
     :param c_v:
