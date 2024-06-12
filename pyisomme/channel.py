@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pyisomme.unit import Unit
+from pyisomme.info import Info
 
 import re
 import pandas as pd
@@ -77,7 +78,8 @@ class Code(str):
         root = ET.parse(Path(__file__).parent.joinpath("channel_codes.xml")).getroot()
         for element in root.findall("Codification/Element"):
             for channel in element.findall(".//Channel"):
-                if fnmatch(self, channel.get("code")):
+                channel_code = channel.get("code")
+                if fnmatch(str(self), channel.get("code")):
                     info[element.get("name")] = channel.get("description")
                     break
             if element.get("name") not in info:
@@ -93,7 +95,7 @@ class Code(str):
         root = ET.parse(Path(__file__).parent.joinpath("channel_codes.xml")).getroot()
         for element in root.findall("Codification/Element[@name='Physical Dimension']"):
             for channel in element.findall(".//Channel"):
-                if fnmatch(self, channel.get("code")):
+                if fnmatch(str(self), channel.get("code")):
                     default_unit = channel.get("default_unit")
                     if default_unit is not None:
                         return Unit(default_unit)
@@ -145,7 +147,7 @@ class Code(str):
         for element in root.findall("Codification/Element"):
             match = False
             for channel in element.findall(".//Channel"):
-                if fnmatch(self, channel.get("code")):
+                if fnmatch(str(self), channel.get("code")):
                     match = True
                     break
             if not match:
@@ -157,14 +159,14 @@ class Code(str):
 class Channel:
     code: Code
     data: pd.DataFrame
-    unit: Unit = None
-    info: dict = None
+    unit: Unit
+    info: Info
 
-    def __init__(self, code: str | Code, data: pd.DataFrame, unit: str | Unit = None, info: dict = None):
+    def __init__(self, code: str | Code, data: pd.DataFrame, unit: str | Unit = None, info: list = None):
         self.set_code(code)
         self.data = data
         self.set_unit(unit)
-        self.info = info if info is not None else {}
+        self.info = Info(info) if info is not None else Info([])
 
     def __str__(self):
         return self.code
@@ -443,7 +445,7 @@ class Channel:
         # Interpolation
         return np.interp(t, time_array, value_array, left=0, right=0)
 
-    def get_info(self, *labels) -> str | None:
+    def get_info(self, *labels: str) -> str | None:
         """
         Get channel info by giving one or multiple label(s) to identify information.
         Regex or fnmatch patterns possible.
@@ -451,12 +453,12 @@ class Channel:
         :return: first match or None
         """
         for label in labels:
-            for key in self.info:
-                if fnmatch(key, label):
-                    return self.info[key]
+            for name, value in self.info:
+                if fnmatch(name, label):
+                    return value
                 try:
-                    if re.match(label, key):
-                        return self.info[key]
+                    if re.match(label, name):
+                        return value
                 except re.error:
                     continue
         return None
@@ -558,11 +560,11 @@ class Channel:
 
     def __pow__(self, power, modulo=None):
         new_data = self.data**power
-        return Channel(self.code, new_data, self.unit, self.info).set_info({"Calculation History": f"x^{power}"}, replace=False)
+        return Channel(self.code, new_data, self.unit, self.info + [("Calculation History", f"x^{power}")])
 
     def __abs__(self):
         new_data = abs(self.data)
-        return Channel(self.code, new_data, self.unit, self.info).set_info({"Calculation History": "abs(x)"}, replace=False)
+        return Channel(self.code, new_data, self.unit, self.info + [("Calculation History", "abs(x)")])
 
 
 def create_sample(code: str = "SAMPLE??????????",
@@ -594,7 +596,7 @@ def create_sample(code: str = "SAMPLE??????????",
         raise ValueError(f"mode={mode} does not exist.")
 
     data = pd.DataFrame({"Time": time_array, "SAMPLE": value_array}).set_index("Time")
-    return Channel(code, data, unit, info={"Sampling interval": np.diff(time_array)[0]})
+    return Channel(code, data, unit, info=[("Sampling interval", np.diff(time_array)[0])])
 
 
 def time_intersect(*channels: Channel) -> np.ndarray:

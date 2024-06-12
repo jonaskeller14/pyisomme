@@ -100,13 +100,11 @@ def calculate_hic(channel: Channel, max_delta_t) -> Channel | None:
                               filter_class="X"),
         data=pd.DataFrame([res]),
         unit=None,
-        info={
-            "Name of the channel": f"HIC VALUE {max_delta_t * 1e3:.0f}",
-            "Data source": "Calculation",
-            "Number of samples": 1,
-            ".Start time": res_t1,
-            ".End time": res_t2
-        })
+        info=[("Name of the channel", f"HIC VALUE {max_delta_t * 1e3:.0f}"),
+              ("Data source", "Calculation"),
+              ("Number of samples", 1),
+              (".Start time", res_t1),
+              (".End time", res_t2),])
 
 
 @debug_logging(logger)
@@ -236,12 +234,10 @@ def calculate_bric(c_av_x: Channel | None,
     return Channel(
         code=c_av_x.code.set(main_location="BRIC", physical_dimension="00", direction="0", filter_class="X"),
         data=pd.DataFrame([bric]),
-        info={".Analysis start time": np.min([c_av_x.data.index, c_av_y.data.index, c_av_z.data.index]),
-              ".Analysis end time": np.max([c_av_x.data.index, c_av_y.data.index, c_av_z.data.index]),
-              ".Channel 001": c_av_x.code,
-              ".Channel 002": c_av_y.code,
-              ".Channel 003": c_av_z.code,
-              ".Filter": " / ".join({c_av_x.code.filter_class, c_av_y.code.filter_class, c_av_z.code.filter_class})},
+        info=[(".Analysis start time", np.min([c_av_x.data.index, c_av_y.data.index, c_av_z.data.index])),
+              (".Analysis end time", np.max([c_av_x.data.index, c_av_y.data.index, c_av_z.data.index])),
+              (".Channel 003", c_av_z.code),
+              (".Filter", " / ".join({c_av_x.code.filter_class, c_av_y.code.filter_class, c_av_z.code.filter_class}))],
         unit="1"
     )
 
@@ -472,12 +468,9 @@ def calculate_tibia_index(channel_MOX: Channel | None,
         code=channel_MOX.code.set(main_location="TIIN", physical_dimension="00", direction="0"),
         data=pd.DataFrame(t_i, index=time),
         unit="1",
-        info={
-            "Channel 001": channel_MOX.code,
-            "Channel 002": channel_MOY.code,
-            "Channel 003": channel_FOZ.code,
-        }
-    )
+        info=[("Channel 001", channel_MOX.code),
+              ("Channel 002", channel_MOY.code),
+              ("Channel 003", channel_FOZ.code),])
 
 
 @debug_logging(logger)
@@ -538,9 +531,7 @@ def calculate_olc(c_v: Channel | None,
         code=c_v.code.set(fine_location_1="0O", fine_location_2="LC", filter_class="X"),
         data=pd.DataFrame([olc / 9.81]),
         unit=g0,
-        info={
-            "t_1 [s]": t_1,
-            "t_2 [s]": t_2,
-        }
+        info=[("t_1 [s]", t_1),
+              ("t_2 [s]", t_2)]
     )
     return c_olc, c_olc_visual

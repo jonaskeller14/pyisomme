@@ -1,4 +1,5 @@
 from pyisomme.channel import Channel
+from pyisomme.info import Info
 
 import logging
 from datetime import datetime
@@ -9,9 +10,9 @@ import pandas as pd
 logger = logging.getLogger(__name__)
 
 
-def parse_mme(text: str) -> dict:
+def parse_mme(text: str) -> list:
     lines = text.splitlines()
-    test_info = {}
+    info = Info([])
     for line in lines:
         line = line.strip()
 
@@ -29,21 +30,17 @@ def parse_mme(text: str) -> dict:
             logger.error(f"Could not parse malformed line: '{line}'")
             continue
 
-        # Add to dict
-        if name not in test_info:
-            test_info[name] = value
-        else:
-            logger.error(f"NotImplementedError: Multiple Variables with the same name found: '{name}'")
-    return test_info
+        info[name] = value
+    return info
 
 
-def parse_chn(text: str) -> dict:
+def parse_chn(text: str) -> list:
     return parse_mme(text)
 
 
 def parse_xxx(text: str, test_number="data"):
     lines = text.splitlines()
-    info = {}
+    info = Info([])
     start_data_idx = 0
     for idx, line in enumerate(lines):
         line = line.strip()
@@ -57,11 +54,7 @@ def parse_xxx(text: str, test_number="data"):
             start_data_idx = idx
             break
 
-        # Add to dict
-        if name not in info:
-            info[name] = value
-        else:
-            logger.error(f"NotImplementedError: Multiple Variables with the same name found: '{name}'")
+        info[name] = value
 
     code = info.get("Channel code")
     unit = info.get("Unit")

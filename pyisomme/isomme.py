@@ -4,6 +4,7 @@ from pyisomme.parsing import parse_mme, parse_chn, parse_xxx
 from pyisomme.channel import create_sample, Code
 from pyisomme.calculate import *
 from pyisomme.utils import debug_logging
+from pyisomme.info import Info
 
 from tqdm import tqdm
 from tqdm.contrib.logging import logging_redirect_tqdm
@@ -22,14 +23,22 @@ logger = logging.getLogger(__name__)
 
 
 class Isomme:
-    def __init__(self, test_number=None, test_info=None, channels=None, channel_info=None):
+    test_number: str
+    test_info: Info
+    channels: list
+    channel_info: Info
+
+    def __init__(self, test_number: str = None,
+                 test_info: list = None,
+                 channels: list = None,
+                 channel_info: list = None):
         """
         Create empty Isomme object.
         """
         self.test_number = test_number
-        self.test_info = {} if test_info is None else test_info
+        self.test_info = Info([]) if test_info is None else Info(test_info)
         self.channels = [] if channels is None else channels
-        self.channel_info = {} if channel_info is None else channel_info
+        self.channel_info = Info([]) if channel_info is None else Info(channel_info)
 
     def get_test_info(self, *labels):
         """
@@ -39,12 +48,12 @@ class Isomme:
         :return: first match or None
         """
         for label in labels:
-            for key in self.test_info:
-                if fnmatch.fnmatch(key, label):
-                    return self.test_info[key]
+            for name, value in self.test_info:
+                if fnmatch.fnmatch(name, label):
+                    return value
                 try:
-                    if re.match(label, key):
-                        return self.test_info[key]
+                    if re.match(label, name):
+                        return value
                 except re.error:
                     continue
         return None
@@ -210,15 +219,15 @@ class Isomme:
         :param channel_code_patterns: (optional) only export specific channels identified by code-pattern
         :return:
         """
-        def write_info(file, name_value_dict):
+        def write_info(file, info: list):
             """
             Pattern:
             <NAME>    :<VALUE>
             :param file:
-            :param name_value_dict:
+            :param info:
             :return:
             """
-            for name, value in name_value_dict.items():
+            for name, value in info:
                 file.write(f"{name.ljust(29, ' ')}:{value}\n")
             return file
 
