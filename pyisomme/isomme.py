@@ -111,16 +111,23 @@ class Isomme:
                         for channel_code_pattern in channel_code_patterns:
                             if fnmatch.fnmatch(code, channel_code_pattern):
                                 skip = False
+                                break
                     if not skip:
-                        xxx = key.replace("Name of channel", "").replace(" ", "")
-                        if xxx.isdigit() and len(glob(str(Path(chn_filepath).parent.joinpath(f"*.{xxx}")))) >= 1:
-                            xxx_path = glob(str(Path(chn_filepath).parent.joinpath(f"*.{xxx}")))[0]
+                        xxx = re.search("Name of channel (\d*)", key)
+                        if xxx is None:
+                            raise Exception
+                        xxx = xxx.groups()[0]
+                        xxx_paths = list(Path(chn_filepath).parent.glob(f"*.{xxx}"))
+                        if len(xxx_paths) != 0:
+                            xxx_path = xxx_paths[0]
                             try:
                                 with open(xxx_path, "r", encoding="utf-8") as xxx_file:
                                     self.channels.append(parse_xxx(xxx_file.read(), self.test_number))
                             except UnicodeDecodeError:
                                 with open(xxx_path, "r", encoding="iso-8859-1") as xxx_file:
                                     self.channels.append(parse_xxx(xxx_file.read(), self.test_number))
+                        else:
+                            logger.critical(f"Channel file '*.{xxx}' not found.")
 
         def read_from_folder(path: Path):
             if len(list(path.glob("**/*.mme"))) > 1:
@@ -166,15 +173,23 @@ class Isomme:
                         for channel_code_pattern in channel_code_patterns:
                             if fnmatch.fnmatch(code, channel_code_pattern):
                                 skip = False
+                                break
                     if not skip:
-                        xxx = key.replace("Name of channel", "").replace(" ", "")
-                        if xxx.isdigit() and len(fnmatch.filter(archive.namelist(), str(Path(chn_filepath).parent.joinpath(f"*.{xxx}")))) >= 1:
-                            with archive.open(fnmatch.filter(archive.namelist(), str(Path(chn_filepath).parent.joinpath(f"*.{xxx}")))[0], "r") as xxx_file:
+                        xxx = re.search("Name of channel (\d*)", key)
+                        if xxx is None:
+                            raise Exception
+                        xxx = xxx.groups()[0]
+                        xxx_paths = fnmatch.filter(archive.namelist(), str(Path(chn_filepath).parent.joinpath(f"*.{xxx}")))
+                        if len(xxx_paths) != 0:
+                            xxx_path = xxx_paths[0]
+                            with archive.open(xxx_path, "r") as xxx_file:
                                 xxx_content = xxx_file.read()
                                 try:
                                     self.channels.append(parse_xxx(xxx_content.decode("utf-8"), self.test_number))
                                 except UnicodeDecodeError:
                                     self.channels.append(parse_xxx(xxx_content.decode("iso-8859-1"), self.test_number))
+                    else:
+                        logger.critical(f"Channel file '*.{xxx}' not found.")
 
         path = Path(path)
         if path.suffix == ".mme":
@@ -204,11 +219,7 @@ class Isomme:
             :return:
             """
             for name, value in name_value_dict.items():
-                if len(name) > 29:
-                    logger.warning(f"Variable-Name '{name}' too long. It will be shorten to '{name[:29]}'")
-                    name = name[:29]
-                space = " "*(29 - len(name))
-                file.write(f"{name}{space}:{value}\n")
+                file.write(f"{name.ljust(29, ' ')}:{value}\n")
             return file
 
         # Main
