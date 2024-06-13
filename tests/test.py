@@ -174,6 +174,22 @@ class TestCalculate(unittest.TestCase):
         assert iso.get_channel(f"?1HEADDAMA??AAZ?") is not None
         assert iso.get_channel(f"?1HEADDAMA??AAR?") is not None
 
+    def test_calculate_neck_MOCx(self):
+        v1 = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "11391"), "??NECK*")
+        for channel in v1:
+            channel.set_code(fine_location_3="WS")
+
+        assert v1.get_channel("??TMONUP????MOXB") is not None
+        assert v1.get_channel("??TMONUP????MOXX") is not None
+
+    def test_calculate_neck_MOCy(self):
+        v1 = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "11391"), "??NECK*")
+        for channel in v1:
+            channel.set_code(fine_location_3="WS")
+
+        assert v1.get_channel("??TMONUP????MOYB") is not None
+        assert v1.get_channel("??TMONUP????MOYX") is not None
+
     def test_calculate_tibia_index(self):
         # Repair wring data
         for channel in self.v1.channels:

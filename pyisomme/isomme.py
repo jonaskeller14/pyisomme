@@ -429,6 +429,55 @@ class Isomme:
                             if code_pattern.direction == "R":
                                 return calculate_damage(*channel_xyz)[3]
 
+                # Neck Total Moment
+                if code_pattern.main_location == "TMON":
+                    if code_pattern.fine_location_1 == "UP":
+                        if code_pattern.direction == "X":
+                            if code_pattern.filter_class == "X":
+                                channel_mx = self.get_channel(code_pattern.set(main_location="NECK", physical_dimension="MO", direction="X", filter_class="B"))
+                                channel_fy = self.get_channel(code_pattern.set(main_location="NECK", physical_dimension="FO", direction="Y", filter_class="B"))
+                                if None not in (channel_mx, channel_fy):
+                                    return calculate_neck_MOCx(channel_mx, channel_fy)[1]
+                            else:
+                                channel_mx = self.get_channel(code_pattern.set(main_location="NECK", physical_dimension="MO", direction="X"))
+                                channel_fy = self.get_channel(code_pattern.set(main_location="NECK", physical_dimension="FO", direction="Y"))
+                                if None not in (channel_mx, channel_fy):
+                                    return calculate_neck_MOCx(channel_mx, channel_fy)[0]
+                        elif code_pattern.direction == "Y":
+                            if code_pattern.filter_class == "X":
+                                channel_my = self.get_channel(code_pattern.set(main_location="NECK", physical_dimension="MO", direction="Y", filter_class="B"))
+                                channel_fx = self.get_channel(code_pattern.set(main_location="NECK", physical_dimension="FO", direction="X", filter_class="B"))
+                                if None not in (channel_my, channel_fx):
+                                    return calculate_neck_MOCy(channel_my, channel_fx)[1]
+                            else:
+                                channel_my = self.get_channel(code_pattern.set(main_location="NECK", physical_dimension="MO", direction="Y"))
+                                channel_fx = self.get_channel(code_pattern.set(main_location="NECK", physical_dimension="FO", direction="X"))
+                                if None not in (channel_my, channel_fx):
+                                    return calculate_neck_MOCy(channel_my, channel_fx)[0]
+                    elif code_pattern.fine_location_1 == "LO":
+                        if code_pattern.direction == "X":
+                            if code_pattern.filter_class == "X":
+                                channel_mx = self.get_channel(code_pattern.set(main_location="NECK", physical_dimension="MO", direction="X", filter_class="B"))
+                                channel_fy = self.get_channel(code_pattern.set(main_location="NECK", physical_dimension="FO", direction="Y", filter_class="B"))
+                                if None not in (channel_mx, channel_fy):
+                                    return calculate_neck_Mx_base(channel_mx, channel_fy)[1]
+                            else:
+                                channel_mx = self.get_channel(code_pattern.set(main_location="NECK", physical_dimension="MO", direction="X"))
+                                channel_fy = self.get_channel(code_pattern.set(main_location="NECK", physical_dimension="FO", direction="Y"))
+                                if None not in (channel_mx, channel_fy):
+                                    return calculate_neck_Mx_base(channel_mx, channel_fy)[0]
+                        elif code_pattern.direction == "Y":
+                            if code_pattern.filter_class == "X":
+                                channel_my = self.get_channel(code_pattern.set(main_location="NECK", physical_dimension="MO", direction="Y", filter_class="B"))
+                                channel_fx = self.get_channel(code_pattern.set(main_location="NECK", physical_dimension="FO", direction="X", filter_class="B"))
+                                if None not in (channel_my, channel_fx):
+                                    return calculate_neck_My_base(channel_my, channel_fx)[1]
+                            else:
+                                channel_my = self.get_channel(code_pattern.set(main_location="NECK", physical_dimension="MO", direction="Y"))
+                                channel_fx = self.get_channel(code_pattern.set(main_location="NECK", physical_dimension="FO", direction="X"))
+                                if None not in (channel_my, channel_fx):
+                                    return calculate_neck_My_base(channel_my, channel_fx)[0]
+
                 # VC
                 if code_pattern.main_location == "VCCR" and code_pattern.filter_class == "X":
                     channel = self.get_channel(code_pattern.set(main_location="CHST",

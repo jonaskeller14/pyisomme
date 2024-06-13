@@ -337,105 +337,196 @@ def calculate_neck_nij() -> tuple:
 
 
 @debug_logging(logger)
-def calculate_neck_MOCx(channel_Mx: Channel, channel_Fy: Channel) -> Channel | None:
+def calculate_neck_MOCx(channel_Mx: Channel, channel_Fy: Channel, d: float = None) -> tuple[Channel, Channel] | tuple[None, None]:
     """
     References:
     - references/Euro-NCAP/tb-021-data-acquisition-and-injury-calculation-v402.pdf
 
     :param channel_Mx:
     :param channel_Fy:
+    :param d: lever
     :return:
     """
     if None in (channel_Mx, channel_Fy):
-        return None
+        return None, None
 
-    dummys = list({channel_Mx.code.fine_location_3, channel_Fy.code.fine_location_3})
-    assert len(dummys) == 1
-    dummy = dummys[0]
-    assert dummy in ("WS",)
+    if d is None:
+        dummys = list({channel_Mx.code.fine_location_3, channel_Fy.code.fine_location_3})
+        assert len(dummys) == 1, f"Multiple dummy types found: {dummys}"
+        dummy = dummys[0]
+        assert dummy in ("WS",), f"Dummy {dummy} not supported by {calculate_neck_MOCx.__name__}"
 
-    d = {"WS": 0.0195}[dummy]
+        d = {"WS": 0.0195}[dummy]  # [m]
 
-    return channel_Mx + channel_Fy * d
+    channel_Mx = channel_Mx.convert_unit("N*m")
+    channel_Fy = channel_Fy.convert_unit("N")
+
+    channel = channel_Mx + channel_Fy * d
+    channel.set_code(main_location="TMON")
+    channel.set_unit("N*m")
+    channel.info.update({
+        ".Channel 001": channel_Mx.code,
+        ".Channel 002": channel_Fy.code,
+        ".Filter 001": channel_Mx.code.filter_class,
+        ".Filter 002": channel_Fy.code.filter_class,
+        ".D": d,
+    })
+    channel_calc = copy.deepcopy(channel)
+    channel_calc.data = pd.DataFrame(data=[channel.get_data()[np.argmax(np.abs(channel.get_data()))]],
+                                     index=[channel.data.index[np.argmax(np.abs(channel.get_data()))]])
+    channel_calc.set_code(filter_class="X")
+    channel_calc.info.update({
+        ".Time": channel_calc.data.index[0],
+        ".Analysis start time": channel.data.index[0],
+        ".Analysis end time": channel.data.index[-1],
+    })
+    return channel, channel_calc
 
 
 @debug_logging(logger)
-def calculate_neck_MOCy(channel_My: Channel, channel_Fx: Channel) -> Channel | None:
+def calculate_neck_MOCy(channel_My: Channel, channel_Fx: Channel, d: float = None) -> tuple[Channel, Channel] | tuple[None, None]:
     """
     References:
     - references/Euro-NCAP/tb-021-data-acquisition-and-injury-calculation-v402.pdf
 
     :param channel_My:
     :param channel_Fx:
+    :param d: lever
     :return:
     """
     if None in (channel_My, channel_Fx):
-        return None
+        return None, None
 
-    dummys = list({channel_My.code.fine_location_3, channel_Fx.code.fine_location_3})
-    assert len(dummys) == 1
-    dummy = dummys[0]
-    assert dummy in ("WS", "H3", "HF")
+    if d is None:
+        dummys = list({channel_My.code.fine_location_3, channel_Fx.code.fine_location_3})
+        assert len(dummys) == 1, f"Multiple dummy types found: {dummys}"
+        dummy = dummys[0]
+        assert dummy in ("WS", "H3", "HF"), f"Dummy {dummy} not supported by {calculate_neck_MOCy.__name__}"
 
-    d = {"WS": 0.0195,
-         "H3": 0.01778,
-         "HF": 0.01778}[dummy]
+        d = {"WS": 0.0195,
+             "H3": 0.01778,
+             "HF": 0.01778}[dummy]  # [m]
 
-    return channel_My - channel_Fx * d
+    channel_My = channel_My.convert_unit("N*m")
+    channel_Fx = channel_Fx.convert_unit("N")
+
+    channel = channel_My - channel_Fx * d
+    channel.set_code(main_location="TMON")
+    channel.set_unit("N*m")
+    channel.info.update({
+        ".Channel 001": channel_My.code,
+        ".Channel 002": channel_Fx.code,
+        ".Filter 001": channel_My.code.filter_class,
+        ".Filter 002": channel_Fx.code.filter_class,
+        ".D": d,
+    })
+
+    channel_calc = copy.deepcopy(channel)
+    channel_calc.data = pd.DataFrame(data=[np.min(channel.get_data())],
+                                     index=[channel.data.index[np.argmin(channel.get_data())]])
+    channel_calc.set_code(filter_class="X")
+    channel_calc.info.update({
+        ".Time": channel_calc.data.index[0],
+        ".Analysis start time": channel.data.index[0],
+        ".Analysis end time": channel.data.index[-1],
+    })
+    return channel, channel_calc
 
 
 @debug_logging(logger)
-def calculate_neck_Mx_base(channel_Mx: Channel, channel_Fy: Channel) -> Channel | None:
+def calculate_neck_Mx_base(channel_Mx: Channel, channel_Fy: Channel, dz: float = None) -> tuple[Channel, Channel] | tuple[None, None]:
     """
     References:
     - references/Euro-NCAP/tb-021-data-acquisition-and-injury-calculation-v402.pdf
 
     :param channel_Mx:
     :param channel_Fy:
+    :param dz: lever
     :return:
     """
     if None in (channel_Mx, channel_Fy):
-        return None
+        return None, None
 
-    dummys = list({channel_Mx.code.fine_location_3, channel_Fy.code.fine_location_3})
-    assert len(dummys) == 1
-    dummy = dummys[0]
-    assert dummy in ("WS",)
+    if dz is None:
+        dummys = list({channel_Mx.code.fine_location_3, channel_Fy.code.fine_location_3})
+        assert len(dummys) == 1, f"Multiple dummy types found: {dummys}"
+        dummy = dummys[0]
+        assert dummy in ("WS",), f"Dummy {dummy} not supported by {calculate_neck_Mx_base.__name__}"
 
-    dz = {"WS": 0.0145}[dummy]
+        dz = {"WS": 0.0145}[dummy]  # [m]
+
+    channel_Mx = channel_Mx.convert_unit("N*m")
+    channel_Fy = channel_Fy.convert_unit("N")
 
     channel = channel_Mx - channel_Fy * dz
-    channel.data = pd.DataFrame(data=[np.max(np.abs(channel.get_data()))],
-                                index=channel.data.index[np.argmax(np.abs(channel.get_data()))])
-    channel.set_code(physical_dimension="00", direction="X", filter_class="X")
-    return channel
+    channel.set_code(main_location="TMON")
+    channel.set_unit("N*m")
+    channel.info.update({
+        ".Channel 001": channel_Mx.code,
+        ".Channel 002": channel_Fy.code,
+        ".Filter 001": channel_Mx.code.filter_class,
+        ".Filter 002": channel_Fy.code.filter_class,
+        ".Dz": dz,
+    })
+
+    channel_calc = copy.deepcopy(channel)
+    channel_calc.data = pd.DataFrame(data=[np.max(np.abs(channel.get_data()))],
+                                     index=[channel.data.index[np.argmax(np.abs(channel.get_data()))]])
+    channel_calc.set_code(filter_class="X")
+    channel_calc.info.update({
+        ".Time": channel_calc.data.index[0],
+        ".Analysis start time": channel.data.index[0],
+        ".Analysis end time": channel.data.index[-1],
+    })
+    return channel, channel_calc
 
 
 @debug_logging(logger)
-def calculate_neck_My_base(channel_My: Channel, channel_Fx: Channel) -> Channel | None:
+def calculate_neck_My_base(channel_My: Channel, channel_Fx: Channel, dz: float = None) -> tuple[Channel, Channel] | tuple[None, None]:
     """
     References:
     - references/Euro-NCAP/tb-021-data-acquisition-and-injury-calculation-v402.pdf
 
     :param channel_My:
     :param channel_Fx:
+    :param dz: lever
     :return:
     """
     if None in (channel_My, channel_Fx):
-        return None
+        return None, None
 
-    dummys = list({channel_My.code.fine_location_3, channel_Fx.code.fine_location_3})
-    assert len(dummys) == 1
-    dummy = dummys[0]
-    assert dummy in ("WS",)
+    if dz is None:
+        dummys = list({channel_My.code.fine_location_3, channel_Fx.code.fine_location_3})
+        assert len(dummys) == 1, f"Multiple dummy types found: {dummys}"
+        dummy = dummys[0]
+        assert dummy in ("WS",), f"Dummy {dummy} not supported by {calculate_neck_My_base.__name__}"
 
-    dz = {"WS": 0.0145}[dummy]
+        dz = {"WS": 0.0145}[dummy]  # [m]
+
+    channel_My = channel_My.convert_unit("N*m")
+    channel_Fx = channel_Fx.convert_unit("N")
 
     channel = channel_My + channel_Fx * dz
-    channel.data = pd.DataFrame(data=[np.abs(np.min(channel.get_data()))],
-                                index=channel.data.index[np.argmin(channel.get_data())])
-    channel.set_code(physical_dimension="00", direction="Y", filter_class="X")
-    return channel
+    channel.set_unit("N*m")
+    channel.set_code(main_location="TMON")
+    channel.info.update({
+        ".Channel 001": channel_My.code,
+        ".Channel 002": channel_Fx.code,
+        ".Filter 001": channel_My.code.filter_class,
+        ".Filter 002": channel_Fx.code.filter_class,
+        ".Dz": dz,
+    })
+
+    channel_calc = copy.deepcopy(channel)
+    channel_calc.data = pd.DataFrame(data=[np.abs(np.min(channel.get_data()))],
+                                     index=[channel.data.index[np.argmin(channel.get_data())]])
+    channel_calc.set_code(filter_class="X")
+    channel_calc.info.update({
+        ".Time": channel_calc.data.index[0],
+        ".Analysis start time": channel.data.index[0],
+        ".Analysis end time": channel.data.index[-1],
+    })
+    return channel, channel_calc
 
 
 @debug_logging(logger)
@@ -570,9 +661,9 @@ def calculate_tibia_index(channel_MOX: Channel | None,
         code=channel_MOX.code.set(main_location="TIIN", physical_dimension="00", direction="0"),
         data=pd.DataFrame(t_i, index=time),
         unit="1",
-        info=[("Channel 001", channel_MOX.code),
-              ("Channel 002", channel_MOY.code),
-              ("Channel 003", channel_FOZ.code),])
+        info=[(".Channel 001", channel_MOX.code),
+              (".Channel 002", channel_MOY.code),
+              (".hannel 003", channel_FOZ.code),])
 
 
 @debug_logging(logger)
