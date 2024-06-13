@@ -420,16 +420,16 @@ def calculate_neck_nij(c_fz: Channel,
     is_extension = mocy < 0
 
     data_ncf = pd.DataFrame(np.zeros(len(t)), index=t)
-    data_ncf[is_compression * is_flexion] = fz[is_compression * is_flexion] / fz_c_crit + mocy[is_compression * is_flexion] / mocy_f_crit
+    data_ncf.iloc[is_compression * is_flexion, 0] = fz[is_compression * is_flexion] / fz_c_crit + mocy[is_compression * is_flexion] / mocy_f_crit
 
     data_nce = pd.DataFrame(np.zeros(len(t)), index=t)
-    data_nce[is_compression * is_extension] = fz[is_compression * is_extension] / fz_c_crit + mocy[is_compression * is_extension] / mocy_e_crit
+    data_nce.iloc[is_compression * is_extension, 0] = fz[is_compression * is_extension] / fz_c_crit + mocy[is_compression * is_extension] / mocy_e_crit
 
     data_ntf = pd.DataFrame(np.zeros(len(t)), index=t)
-    data_ntf[is_tension * is_flexion] = fz[is_tension * is_flexion] / fz_t_crit + mocy[is_tension * is_flexion] / mocy_f_crit
+    data_ntf.iloc[is_tension * is_flexion, 0] = fz[is_tension * is_flexion] / fz_t_crit + mocy[is_tension * is_flexion] / mocy_f_crit
 
     data_nte = pd.DataFrame(np.zeros(len(t)), index=t)
-    data_nte[is_tension * is_extension] = fz[is_tension * is_extension] / fz_t_crit + mocy[is_tension * is_extension] / mocy_e_crit
+    data_nte.iloc[is_tension * is_extension, 0] = fz[is_tension * is_extension] / fz_t_crit + mocy[is_tension * is_extension] / mocy_e_crit
 
     c_nij = Channel(code=c_fz.code.set(main_location="NIJC", fine_location_1="OP" if oop else "IP", fine_location_2="00", physical_dimension="00", direction="Y"),
                     data=data_ncf + data_nce + data_nte + data_nte,
