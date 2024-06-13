@@ -162,11 +162,11 @@ class Channel:
     unit: Unit
     info: Info
 
-    def __init__(self, code: str | Code, data: pd.DataFrame, unit: str | Unit = None, info: list = None):
+    def __init__(self, code: str | Code, data: pd.DataFrame, unit: str | Unit = None, info: list | dict = None):
         self.set_code(code)
         self.data = data
         self.set_unit(unit)
-        self.info = Info(info) if info is not None else Info([])
+        self.info = Info([]) if info is None else Info(info) if isinstance(info, list) else Info([(n, v) for n, v in info.items()])
 
     def __str__(self):
         return self.code
