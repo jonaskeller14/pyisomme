@@ -478,6 +478,37 @@ class Isomme:
                                 if None not in (channel_my, channel_fx):
                                     return calculate_neck_My_base(channel_my, channel_fx)[0]
 
+                # Neck NIJ  # FIXME: Total Moment (TMON statt NECK ??)
+                if code_pattern.main_location == "NIJC":
+                    if code_pattern.filter_class == "X":
+                        c_fz = self.get_channel(code_pattern.set(main_location="NECK", fine_location_1="UP", fine_location_2="00", physical_dimension="FO", direction="Z", filter_class="B"))
+                        c_mocy = self.get_channel(code_pattern.set(main_location="NECK", fine_location_1="UP", fine_location_2="00", physical_dimension="MO", direction="Y", filter_class="B"))
+                        if None not in (c_fz, c_mocy):
+                            if code_pattern.fine_location_2 == "00":
+                                return calculate_neck_nij(c_fz, c_mocy, oop=code_pattern.fine_location_1 == "OP")[5]
+                            elif code_pattern.fine_location_2 == "CF":
+                                return calculate_neck_nij(c_fz, c_mocy, oop=code_pattern.fine_location_1 == "OP")[6]
+                            elif code_pattern.fine_location_2 == "CE":
+                                return calculate_neck_nij(c_fz, c_mocy, oop=code_pattern.fine_location_1 == "OP")[7]
+                            elif code_pattern.fine_location_2 == "TF":
+                                return calculate_neck_nij(c_fz, c_mocy, oop=code_pattern.fine_location_1 == "OP")[8]
+                            elif code_pattern.fine_location_2 == "TE":
+                                return calculate_neck_nij(c_fz, c_mocy, oop=code_pattern.fine_location_1 == "OP")[9]
+                    else:
+                        c_fz = self.get_channel(code_pattern.set(main_location="NECK", fine_location_1="UP", fine_location_2="00", physical_dimension="FO", direction="Z"))
+                        c_mocy = self.get_channel(code_pattern.set(main_location="NECK", fine_location_1="UP", fine_location_2="00", physical_dimension="MO", direction="Y"))
+                        if None not in (c_fz, c_mocy):
+                            if code_pattern.fine_location_2 == "00":
+                                return calculate_neck_nij(c_fz, c_mocy, oop=code_pattern.fine_location_1 == "OP")[0]
+                            elif code_pattern.fine_location_2 == "CF":
+                                return calculate_neck_nij(c_fz, c_mocy, oop=code_pattern.fine_location_1 == "OP")[1]
+                            elif code_pattern.fine_location_2 == "CE":
+                                return calculate_neck_nij(c_fz, c_mocy, oop=code_pattern.fine_location_1 == "OP")[2]
+                            elif code_pattern.fine_location_2 == "TF":
+                                return calculate_neck_nij(c_fz, c_mocy, oop=code_pattern.fine_location_1 == "OP")[3]
+                            elif code_pattern.fine_location_2 == "TE":
+                                return calculate_neck_nij(c_fz, c_mocy, oop=code_pattern.fine_location_1 == "OP")[4]
+
                 # VC
                 if code_pattern.main_location == "VCCR" and code_pattern.filter_class == "X":
                     channel = self.get_channel(code_pattern.set(main_location="CHST",

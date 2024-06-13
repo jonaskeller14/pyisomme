@@ -201,11 +201,14 @@ class TestCalculate(unittest.TestCase):
 
 
 class TestReport(unittest.TestCase):
-    v1 = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "11391"), "?[013]*")
-    v2 = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "14084"), "?[013]*")
-    v3 = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "09203"), "?[013]*")
+    v1 = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "11391"), "[!B][013]*")
+    v2 = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "14084"), "[!B][013]*")
+    v3 = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "09203"), "[!B][013]*")
 
     def test_EuroNCAP_Frontal_50kmh(self):
+        for channel in self.v1.channels + self.v2.channels:
+            if channel.code.main_location == "NECK" and channel.code.fine_location_3 in ("00", "??"):
+                channel.set_code(fine_location_3="H3")
         pyisomme.report.euro_ncap.frontal_50kmh.EuroNCAP_Frontal_50kmh([self.v1, self.v2]).calculate().export_pptx("out/EuroNCAP_Frontal_50kmh.pptx")
 
     def test_EuroNCAP_Frontal_MPDB(self):

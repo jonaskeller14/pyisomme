@@ -30,12 +30,14 @@ class EuroNCAP_Frontal_50kmh(Report):
             self.Page_Driver_Result_Values_Table(self),
             self.Page_Driver_Head_Acceleration(self),
             self.Page_Driver_Neck_Load(self),
+            self.Page_Driver_Neck_NIJ(self),
             self.Page_Driver_Chest_Deflection(self),
             self.Page_Driver_Femur_Axial_Force(self),
 
             self.Page_Front_Passenger_Result_Table(self),
             self.Page_Front_Passenger_Head_Acceleration(self),
             self.Page_Front_Passenger_Neck_Load(self),
+            self.Page_Front_Passenger_Neck_NIJ(self),
             self.Page_Front_Passenger_Chest_Deflection(self),
             self.Page_Front_Passenger_Femur_Axial_Force(self),
 
@@ -1121,6 +1123,20 @@ class EuroNCAP_Frontal_50kmh(Report):
                                       [f"?{self.report.criterion_master[isomme].p_driver}NECKUP00??FOZA"],
                                       [f"?{self.report.criterion_master[isomme].p_driver}NECKUP00??FOXA"]] for isomme in self.report.isomme_list}
 
+    class Page_Driver_Neck_NIJ(Page_Plot_nxn):
+        name: str = "Driver Neck NIJ"
+        title: str = "Driver Neck NIJ"
+        nrows: int = 2
+        ncols: int = 2
+        sharey: bool = True
+
+        def __init__(self, report):
+            super().__init__(report)
+            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_driver}NIJCIPCF??00YB"],
+                                      [f"?{self.report.criterion_master[isomme].p_driver}NIJCIPCE??00YB"],
+                                      [f"?{self.report.criterion_master[isomme].p_driver}NIJCIPTF??00YB"],
+                                      [f"?{self.report.criterion_master[isomme].p_driver}NIJCIPTE??00YB"]] for isomme in self.report.isomme_list}
+
     class Page_Driver_Chest_Deflection(Page_Plot_nxn):
         name: str = "Driver Chest Deflection"
         title: str = "Driver Chest Deflection"
@@ -1182,6 +1198,20 @@ class EuroNCAP_Frontal_50kmh(Report):
             self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_front_passenger}NECKUP00??MOYB"],
                                       [f"?{self.report.criterion_master[isomme].p_front_passenger}NECKUP00??FOZA"],
                                       [f"?{self.report.criterion_master[isomme].p_front_passenger}NECKUP00??FOXA"]] for isomme in self.report.isomme_list}
+
+    class Page_Front_Passenger_Neck_NIJ(Page_Plot_nxn):
+        name: str = "Front Passenger Neck NIJ"
+        title: str = "Front Passenger Neck NIJ"
+        nrows: int = 2
+        ncols: int = 2
+        sharey: bool = True
+
+        def __init__(self, report):
+            super().__init__(report)
+            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_front_passenger}NIJCIPCF??00YB"],
+                                      [f"?{self.report.criterion_master[isomme].p_front_passenger}NIJCIPCE??00YB"],
+                                      [f"?{self.report.criterion_master[isomme].p_front_passenger}NIJCIPTF??00YB"],
+                                      [f"?{self.report.criterion_master[isomme].p_front_passenger}NIJCIPTE??00YB"]] for isomme in self.report.isomme_list}
 
     class Page_Front_Passenger_Chest_Deflection(Page_Plot_nxn):
         name: str = "Front Passenger Chest Deflection"
