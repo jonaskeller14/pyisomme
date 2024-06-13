@@ -26,7 +26,7 @@ class Info(list):
         except KeyError:
             return default
 
-    def update(self, other: list | dict) -> list:
+    def update(self, other: list | dict) -> Info:
         """Replace if name already exists else append."""
         if isinstance(other, dict):
             return self.update([(n, v) for n, v in other.items()])
@@ -38,6 +38,12 @@ class Info(list):
                 for idx, (name, value) in enumerate(self):
                     if name == o_name:
                         self[idx] = (o_name, o_value)
+        return self
+
+    def add(self, other: list | dict) -> Info:
+        if isinstance(other, dict):
+            other = [(name, value) for name, value in other.items()]
+        super().extend(other)
         return self
 
     def keys(self) -> list:
