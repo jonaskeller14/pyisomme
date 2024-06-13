@@ -491,66 +491,93 @@ class Channel:
     # Operator methods
     def __eq__(self, other):
         if isinstance(other, Channel):
-            return self.data == other.data
+            if self.unit.physical_type == other.unit.physical_type:
+                return self.data.equals(other.convert_unit(self.unit).data)
         return False
 
     def __ne__(self, other):
-        return not __eq__(self, other)
+        return not self.__eq__(other)
 
     def __neg__(self):
         return Channel(self.code, -self.data, self.unit, self.info)
 
     def __add__(self, other):
         if isinstance(other, Channel):
-            assert self.unit == other.unit
-            time_array = np.unique(self.data.index.to_list() + other.data.index.to_list())
-            new_data = self.get_data(time_array) + other.get_data(time_array, unit=self.unit)
-            new_data = pd.DataFrame({"Time": time_array, "??": new_data}).set_index("Time")
-            return Channel(self.code, new_data, self.unit)
+            t = time_intersect(self, other)
+            if self.unit.physical_type == other.unit.physical_type:
+                return Channel(code=self.code,
+                               data=pd.DataFrame(self.get_data(t) + other.get_data(t, unit=self.unit), index=t),
+                               unit=self.unit,
+                               info=self.info)
+            else:
+                logger.warning(f"Adding channels with non compatible physical units: {self.unit} and {other.unit}")
+                return Channel(code=self.code,
+                               data=pd.DataFrame(self.get_data(t=t) + other.get_data(t=t), index=t),
+                               unit=self.unit,
+                               info=self.info)
         else:
-            new_data = self.data + other
-            return Channel(self.code, new_data, self.unit, self.info)
+            return Channel(code=self.code,
+                           data=self.data + other,
+                           unit=self.unit,
+                           info=self.info)
 
     def __sub__(self, other):
         if isinstance(other, Channel):
-            assert self.unit == other.unit
-            time_array = np.unique(self.data.index.to_list() + other.data.index.to_list())
-            new_data = self.get_data(time_array) - other.get_data(time_array, unit=self.unit)
-            new_data = pd.DataFrame({"Time": time_array, "??": new_data}).set_index("Time")
-            return Channel(self.code, new_data, self.unit)
+            t = time_intersect(self, other)
+            if self.unit.physical_type == other.unit.physical_type:
+                return Channel(code=self.code,
+                               data=pd.DataFrame(self.get_data(t) - other.get_data(t, unit=self.unit), index=t),
+                               unit=self.unit,
+                               info=self.info)
+            else:
+                logger.warning(f"Subtracting channels with non compatible physical units: {self.unit} and {other.unit}")
+                return Channel(code=self.code,
+                               data=pd.DataFrame(self.get_data(t=t) - other.get_data(t=t), index=t),
+                               unit=self.unit,
+                               info=self.info)
         else:
-            new_data = self.data - other
-            return Channel(self.code, new_data, self.unit, self.info)
+            return Channel(code=self.code,
+                           data=self.data - other,
+                           unit=self.unit,
+                           info=self.info)
 
     def __mul__(self, other):
         if isinstance(other, Channel):
-            assert self.unit == other.unit
-            time_array = np.unique(self.data.index.to_list() + other.data.index.to_list())
-            new_data = self.get_data(time_array) * other.get_data(time_array)
-            new_data = pd.DataFrame({"Time": time_array, "??": new_data}).set_index("Time")
-            return Channel(self.code, new_data, self.unit * other.unit)
+            t = time_intersect(self, other)
+            return Channel(code=self.code,
+                           data=pd.DataFrame(self.get_data(t=t) * other.get_data(t=t), index=t),
+                           unit=self.unit * other.unit,
+                           info=self.info)
         else:
-            new_data = self.data * other
-            return Channel(self.code, new_data, self.unit, self.info)
+            return Channel(code=self.code,
+                           data=self.data * other,
+                           unit=self.unit,
+                           info=self.info)
 
     def __truediv__(self, other):
         if isinstance(other, Channel):
-            assert self.unit == other.unit
-            time_array = np.unique(self.data.index.to_list() + other.data.index.to_list())
-            new_data = self.get_data(time_array) / other.get_data(time_array)
-            new_data = pd.DataFrame({"Time": time_array, "??": new_data}).set_index("Time")
-            return Channel(self.code, new_data, self.unit / other.unit)
+            t = time_intersect(self, other)
+            return Channel(code=self.code,
+                           data=pd.DataFrame(self.get_data(t=t) / other.get_data(t=t), index=t),
+                           unit=self.unit / other.unit,
+                           info=self.info)
         else:
-            new_data = self.data / other
-            return Channel(self.code, new_data, self.unit, self.info)
+            return Channel(code=self.code,
+                           data=self.data / other,
+                           unit=self.unit,
+                           info=self.info)
 
     def __pow__(self, power, modulo=None):
-        new_data = self.data**power
-        return Channel(self.code, new_data, self.unit, self.info + [("Calculation History", f"x^{power}")])
+        return Channel(code=self.code,
+                       data=self.data**power,
+                       unit=self.unit,
+                       info=self.info + [("Calculation History", f"x^{power}")])
 
     def __abs__(self):
-        new_data = abs(self.data)
-        return Channel(self.code, new_data, self.unit, self.info + [("Calculation History", "abs(x)")])
+        return Channel(code=self.code,
+                       data=abs(self.data),
+                       unit=self.unit,
+                       info=self.info + [("Calculation History", "abs(x)")])
 
 
 def create_sample(code: str = "SAMPLE??????????",

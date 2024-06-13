@@ -22,99 +22,53 @@ class TestUnit(unittest.TestCase):
 
 
 class TestParsing(unittest.TestCase):
+    def check_if_isomme_not_empty(self, isomme):
+        logger.info(isomme.test_info)
+        logger.info(isomme.channel_info)
+        logger.info(isomme.channels)
+        logger.info(isomme.channels[0].info)
+        assert len(isomme.test_info) != 0
+        assert len(isomme.channel_info) != 0
+        assert len(isomme.channels) != 0
+        assert len(isomme.channels[0].info) != 0
+
     def test_utf_8(self):
-        iso = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "tests", "utf-8"))
-        logger.info(iso.test_info)
-        logger.info(iso.channel_info)
-        logger.info(iso.channels)
-        logger.info(iso.channels[0].info)
-        assert len(iso.test_info) != 0
-        assert len(iso.channel_info) != 0
-        assert len(iso.channels) != 0
-        assert len(iso.channels[0].info) != 0
+        isomme = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "tests", "utf-8"))
+        self.check_if_isomme_not_empty(isomme)
 
     def test_ascii(self):
-        iso = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "tests", "ascii"))
-        logger.info(iso.test_info)
-        logger.info(iso.channel_info)
-        logger.info(iso.channels)
-        logger.info(iso.channels[0].info)
-        assert len(iso.test_info) != 0
-        assert len(iso.channel_info) != 0
-        assert len(iso.channels) != 0
-        assert len(iso.channels[0].info) != 0
+        isomme = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "tests", "ascii"))
+        self.check_if_isomme_not_empty(isomme)
 
     def test_windows_1252(self):
-        iso = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "tests", "windows-1252"))
-        logger.info(iso.test_info)
-        logger.info(iso.channel_info)
-        logger.info(iso.channels)
-        logger.info(iso.channels[0].info)
-        assert len(iso.test_info) != 0
-        assert len(iso.channel_info) != 0
-        assert len(iso.channels) != 0
-        assert len(iso.channels[0].info) != 0
+        isomme = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "tests", "windows-1252"))
+        self.check_if_isomme_not_empty(isomme)
 
     def test_iso_8859_1(self):
-        iso = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "tests", "iso-8859-1"))
-        logger.info(iso.test_info)
-        logger.info(iso.channel_info)
-        logger.info(iso.channels)
-        logger.info(iso.channels[0].info)
-        assert len(iso.test_info) != 0
-        assert len(iso.channel_info) != 0
-        assert len(iso.channels) != 0
-        assert len(iso.channels[0].info) != 0
+        isomme = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "tests", "iso-8859-1"))
+        self.check_if_isomme_not_empty(isomme)
 
     def test_utf_8_zip(self):
-        iso = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "tests", "utf-8.zip"))
-        logger.info(iso.test_info)
-        logger.info(iso.channel_info)
-        logger.info(iso.channels)
-        logger.info(iso.channels[0].info)
-        assert len(iso.test_info) != 0
-        assert len(iso.channel_info) != 0
-        assert len(iso.channels) != 0
-        assert len(iso.channels[0].info) != 0
+        isomme = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "tests", "utf-8.zip"))
+        self.check_if_isomme_not_empty(isomme)
 
     def test_ascii_zip(self):
-        iso = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "tests", "ascii.zip"))
-        logger.info(iso.test_info)
-        logger.info(iso.channel_info)
-        logger.info(iso.channels)
-        logger.info(iso.channels[0].info)
-        assert len(iso.test_info) != 0
-        assert len(iso.channel_info) != 0
-        assert len(iso.channels) != 0
-        assert len(iso.channels[0].info) != 0
+        isomme = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "tests", "ascii.zip"))
+        self.check_if_isomme_not_empty(isomme)
 
     def test_windows_1252_zip(self):
-        iso = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "tests", "windows-1252.zip"))
-        logger.info(iso.test_info)
-        logger.info(iso.channel_info)
-        logger.info(iso.channels)
-        logger.info(iso.channels[0].info)
-        assert len(iso.test_info) != 0
-        assert len(iso.channel_info) != 0
-        assert len(iso.channels) != 0
-        assert len(iso.channels[0].info) != 0
+        isomme = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "tests", "windows-1252.zip"))
+        self.check_if_isomme_not_empty(isomme)
 
     def test_iso_8859_1_zip(self):
-        iso = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "tests", "iso-8859-1.zip"))
-        logger.info(iso.test_info)
-        logger.info(iso.channel_info)
-        logger.info(iso.channels)
-        logger.info(iso.channels[0].info)
-        assert len(iso.test_info) != 0
-        assert len(iso.channel_info) != 0
-        assert len(iso.channels) != 0
-        assert len(iso.channels[0].info) != 0
+        isomme = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "tests", "iso-8859-1.zip"))
+        self.check_if_isomme_not_empty(isomme)
 
 
 class TestIsomme(unittest.TestCase):
     def test_init(self):
         pyisomme.Isomme()
-        pyisomme.Isomme(test_number="999", test_info={}, channels=[], channel_info={})
+        pyisomme.Isomme(test_number="999", test_info=[], channels=[], channel_info=[])
 
     def test_read(self):
         pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "11391"))
@@ -122,26 +76,26 @@ class TestIsomme(unittest.TestCase):
         pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "v11391ISO.zip"))
 
     def test_get_test_info(self):
-        isomme = pyisomme.Isomme(test_info={"Laboratory test ref. number": "98/7707"})
+        isomme = pyisomme.Isomme(test_info=[("Laboratory test ref. number", "98/7707")])
         assert isomme.get_test_info("Laboratory test ref. number") == isomme.get_test_info("[XL]abo?atory * ref. number")
         assert isomme.get_test_info("Laboratory test ref. number") == isomme.get_test_info("[XL]abo.atory .* ref. number")
 
     def test_get_channel_info(self):
-        isomme = pyisomme.Isomme(channel_info={"Laboratory test ref. number": "98/7707"})
+        isomme = pyisomme.Isomme(channel_info=[("Laboratory test ref. number", "98/7707")])
         assert isomme.get_test_info("Laboratory test ref. number") == isomme.get_test_info("[XL]abo?atory * ref. number")
         assert isomme.get_test_info("Laboratory test ref. number") == isomme.get_test_info("[XL]abo.atory .* ref. number")
 
     def test_extend(self):
-        isomme_1 = pyisomme.Isomme(channels=[pyisomme.Channel(code="11HEAD0000H3ACXA", data=None),
-                                             pyisomme.Channel(code="11HEAD0000H3ACYA", data=None),])
-        isomme_2 = pyisomme.Isomme(channels=[pyisomme.Channel(code="11HEAD0000H3ACZA", data=None),])
+        isomme_1 = pyisomme.Isomme(channels=[pyisomme.Channel(code="11HEAD0000H3ACXA", data=pd.DataFrame([])),
+                                             pyisomme.Channel(code="11HEAD0000H3ACYA", data=pd.DataFrame([])),])
+        isomme_2 = pyisomme.Isomme(channels=[pyisomme.Channel(code="11HEAD0000H3ACZA", data=pd.DataFrame([])),])
         isomme_1.extend(isomme_2)
         assert len(isomme_1.channels) == 3
-        channel = pyisomme.Channel(code="13HEAD0000H3ACXA", data=None)
+        channel = pyisomme.Channel(code="13HEAD0000H3ACXA", data=pd.DataFrame([]))
         isomme_1.extend(channel)
         assert len(isomme_1.channels) == 4
-        channel_list = [pyisomme.Channel(code="13HEAD0000H3ACYA", data=None),
-                        pyisomme.Channel(code="13HEAD0000H3ACZA", data=None)]
+        channel_list = [pyisomme.Channel(code="13HEAD0000H3ACYA", data=pd.DataFrame([])),
+                        pyisomme.Channel(code="13HEAD0000H3ACZA", data=pd.DataFrame([]))]
         isomme_1.extend(channel_list)
         assert len(isomme_1.channels) == 6
 
@@ -163,12 +117,40 @@ class TestCode(unittest.TestCase):
 
 class TestChannel(unittest.TestCase):
     def test_init(self):
-        pyisomme.Channel(code="11HEAD0000H3ACXP", data=None)
+        pyisomme.Channel(code="11HEAD0000H3ACXP", data=pd.DataFrame([]))
 
     def test_get_info(self):
-        channel = pyisomme.Channel(code="11HEAD0000H3ACXP", data=None, info={"Time of first sample": -0.030399999})
+        channel = pyisomme.Channel(code="11HEAD0000H3ACXP",
+                                   data=pd.DataFrame([]),
+                                   info=[("Time of first sample", -0.030399999)])
         assert channel.get_info("Time of first sample") == channel.get_info("[XT]ime * f?rst sample")
         assert channel.get_info("Time of first sample") == channel.get_info("[XT]ime .* f.rst sample")
+
+    def test_eq(self):
+        c_1 = pyisomme.Channel(code="????????????????", data=pd.DataFrame([1]), unit="m")
+        c_2 = pyisomme.Channel(code="????????????????", data=pd.DataFrame([1000]), unit="mm")
+
+        self.assertTrue(c_1 == c_2)
+
+    def test_ne(self):
+        c_1 = pyisomme.Channel(code="????????????????", data=pd.DataFrame([1]), unit="m")
+        c_2 = pyisomme.Channel(code="????????????????", data=pd.DataFrame([1]), unit="mm")
+
+        self.assertTrue(c_1 != c_2)
+
+    def test_add(self):
+        c_1 = pyisomme.Channel(code="????????????????", data=pd.DataFrame([1]), unit="m")
+        c_2 = pyisomme.Channel(code="????????????????", data=pd.DataFrame([1000]), unit="mm")
+
+        self.assertEqual((c_1 + c_2).get_data(unit="m"), 2)
+        self.assertEqual((c_1 + 1).get_data(unit="m"), 2)
+
+    def test_sub(self):
+        c_1 = pyisomme.Channel(code="????????????????", data=pd.DataFrame([1]), unit="m")
+        c_2 = pyisomme.Channel(code="????????????????", data=pd.DataFrame([1000]), unit="mm")
+
+        self.assertEqual((c_1 - c_2).get_data(unit="m"), 0)
+        self.assertEqual((c_1 - 1).get_data(unit="m"), 0)
 
 
 class TestLimits(unittest.TestCase):
@@ -181,6 +163,16 @@ class TestLimits(unittest.TestCase):
 
 class TestCalculate(unittest.TestCase):
     v1 = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "11391"), "??TIBI*")
+
+    def test_calculate_damage(self):
+        iso = pyisomme.Isomme(test_number="1234")
+        iso.add_sample_channel(code="11HEAD0000THAAXP", unit="rad/s^2", y_range=[0, 8e5])
+        iso.add_sample_channel(code="11HEAD0000THAAYP", unit="rad/s^2", y_range=[0, 5e5])
+        iso.add_sample_channel(code="11HEAD0000THAAZP", unit="rad/s^2", y_range=[0, 3e5])
+        assert iso.get_channel(f"?1HEADDAMA??AAX?") is not None
+        assert iso.get_channel(f"?1HEADDAMA??AAY?") is not None
+        assert iso.get_channel(f"?1HEADDAMA??AAZ?") is not None
+        assert iso.get_channel(f"?1HEADDAMA??AAR?") is not None
 
     def test_calculate_tibia_index(self):
         # Repair wring data
@@ -232,9 +224,9 @@ class TestCorrelation(unittest.TestCase):
         comparison = np.sin(time * 20) * 1.3 + 0.00
 
         reference_channel = pyisomme.Channel(code="????????????????",
-                                    data=pd.DataFrame(reference, index=time))
+                                             data=pd.DataFrame(reference, index=time))
         comparison_channel = pyisomme.Channel(code="????????????????",
-                                     data=pd.DataFrame(comparison, index=time))
+                                              data=pd.DataFrame(comparison, index=time))
 
         correlation = pyisomme.Correlation_ISO18571(reference_channel, comparison_channel)
         overall_rating = correlation.overall_rating()
