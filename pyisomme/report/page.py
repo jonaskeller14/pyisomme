@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from pyisomme.plotting import *
+from pyisomme.plotting import Plot_Line
 
 from pptx.dml.color import RGBColor
 import os
@@ -91,7 +91,7 @@ class Page_Plot_nxn(Page):
     channels: dict[Isomme, list[list[Channel | str]]]
     nrows: int = 1
     ncols: int = 1
-    sharey: bool = None
+    sharey: bool = False
 
     def __init__(self, report):
         super().__init__(report)
@@ -126,7 +126,6 @@ class Page_OLC(Page_Plot_nxn):
     channels: dict
     nrows: int = 1
     ncols: int = 1
-    sharey: bool = None
 
     def __init__(self, report):
         super().__init__(report)
