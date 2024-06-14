@@ -57,7 +57,6 @@ def calculate_hic(channel: Channel, max_delta_t) -> Channel | None:
     """
     assert 0 < max_delta_t < 100
 
-    # TODO: effizienter machen. einmal integrieren und dann nur differenzen berechnen? channel.integrate()
     if channel is None:
         return None
 
@@ -290,23 +289,23 @@ def calculate_damage(c_aa_x: Channel | None,
     c_aa_z = c_aa_z.convert_unit("rad/s^2")
 
     # Constants
-    m_x = 1  # Mass
+    m_x = 1  # Mass [kg]
     m_y = 1
     m_z = 1
-    k_xx = 32142  # Stiffness
+    k_xx = 32142  # Stiffness [N/m]
     k_xy = 0
     k_xz = 1636.3
     k_yy = 23493
     k_yz = 0
     k_zz = 16935
-    a_1 = 5.9148
-    c_xx = a_1 * k_xx  # Damping
+    a_1 = 5.9148e-3  # [s]
+    c_xx = a_1 * k_xx  # Damping [s * N/m]
     c_xy = a_1 * k_xy
     c_xz = a_1 * k_xz
     c_yy = a_1 * k_yy
     c_yz = a_1 * k_yz
     c_zz = a_1 * k_zz
-    beta = 2.9903
+    beta = 2.9903  # [1/m]
 
     # Define the system of differential equations (reduction of order)
     def dydt(t, y):
@@ -327,18 +326,52 @@ def calculate_damage(c_aa_x: Channel | None,
     # Solve the system of differential equations
     sol = solve_ivp(dydt, t_span, initial_conditions, t_eval=t_array)
 
-    # TODO: Set Info
     # Create time channels
-    damage_x = Channel(code=c_aa_x.code.set(fine_location_1="DA", fine_location_2="MA", direction="X"), data=pd.DataFrame(beta * np.abs(sol.y[0]), index=sol.t), unit=c_aa_x.unit, info=None)
-    damage_y = Channel(code=c_aa_y.code.set(fine_location_1="DA", fine_location_2="MA", direction="Y"), data=pd.DataFrame(beta * np.abs(sol.y[1]), index=sol.t), unit=c_aa_y.unit, info=None)
-    damage_z = Channel(code=c_aa_z.code.set(fine_location_1="DA", fine_location_2="MA", direction="Z"), data=pd.DataFrame(beta * np.abs(sol.y[2]), index=sol.t), unit=c_aa_z.unit, info=None)
+    damage_x = Channel(code=c_aa_x.code.set(fine_location_1="DA", fine_location_2="MA", direction="X"),
+                       data=pd.DataFrame(beta * np.abs(sol.y[0]), index=sol.t),
+                       unit=c_aa_x.unit,
+                       info={"Data source": "Calculation",
+                             ".Channel 001": c_aa_x.code,
+                             ".Channel 002": c_aa_y.code,
+                             ".Channel 003": c_aa_z.code,
+                             ".Filter 001": c_aa_x.code.filter_class,
+                             ".Filter 002": c_aa_y.code.filter_class,
+                             ".Filter 003": c_aa_z.code.filter_class,})
+    damage_y = Channel(code=c_aa_y.code.set(fine_location_1="DA", fine_location_2="MA", direction="Y"),
+                       data=pd.DataFrame(beta * np.abs(sol.y[1]), index=sol.t),
+                       unit=c_aa_y.unit,
+                       info=damage_x.info)
+    damage_z = Channel(code=c_aa_z.code.set(fine_location_1="DA", fine_location_2="MA", direction="Z"),
+                       data=pd.DataFrame(beta * np.abs(sol.y[2]), index=sol.t),
+                       unit=c_aa_z.unit,
+                       info=damage_x.info)
     damage_r = calculate_resultant(damage_x, damage_y, damage_z)
 
     # Create scalar channels
-    damage_x_max = Channel(code=damage_x.code.set(filter_class="X"), data=pd.DataFrame([damage_x.data.max()], index=[damage_x.data.idxmax()]), unit=damage_x.unit, info=None)
-    damage_y_max = Channel(code=damage_y.code.set(filter_class="X"), data=pd.DataFrame([damage_y.data.max()], index=[damage_y.data.idxmax()]), unit=damage_y.unit, info=None)
-    damage_z_max = Channel(code=damage_z.code.set(filter_class="X"), data=pd.DataFrame([damage_z.data.max()], index=[damage_z.data.idxmax()]), unit=damage_z.unit, info=None)
-    damage_r_max = Channel(code=damage_r.code.set(filter_class="X"), data=pd.DataFrame([damage_r.data.max()], index=[damage_r.data.idxmax()]), unit=damage_r.unit, info=None)
+    damage_x_max = Channel(code=damage_x.code.set(filter_class="X"),
+                           data=pd.DataFrame([damage_x.data.max()], index=[damage_x.data.idxmax()]),
+                           unit=damage_x.unit,
+                           info=damage_x.info.add({".Analysis start time": damage_x.data.index[0],
+                                                   ".Analysis end time": damage_x.data.index[-1],
+                                                   ".Time": damage_x.data.index[np.argmax(damage_x.get_data())]}))
+    damage_y_max = Channel(code=damage_y.code.set(filter_class="X"),
+                           data=pd.DataFrame([damage_y.data.max()], index=[damage_y.data.idxmax()]),
+                           unit=damage_y.unit,
+                           info=damage_y.info.add({".Analysis start time": damage_y.data.index[0],
+                                                   ".Analysis end time": damage_y.data.index[-1],
+                                                   ".Time": damage_y.data.index[np.argmax(damage_y.get_data())]}))
+    damage_z_max = Channel(code=damage_z.code.set(filter_class="X"),
+                           data=pd.DataFrame([damage_z.data.max()], index=[damage_z.data.idxmax()]),
+                           unit=damage_z.unit,
+                           info=damage_z.info.add({".Analysis start time": damage_z.data.index[0],
+                                                   ".Analysis end time": damage_z.data.index[-1],
+                                                   ".Time": damage_z.data.index[np.argmax(damage_z.get_data())]}))
+    damage_r_max = Channel(code=damage_r.code.set(filter_class="X"),
+                           data=pd.DataFrame([damage_r.data.max()], index=[damage_r.data.idxmax()]),
+                           unit=damage_r.unit,
+                           info=damage_r.info.add({".Analysis start time": damage_r.data.index[0],
+                                                   ".Analysis end time": damage_r.data.index[-1],
+                                                   ".Time": damage_r.data.index[np.argmax(damage_r.get_data())]}))
 
     return damage_x, damage_y, damage_z, damage_r, damage_x_max, damage_y_max, damage_z_max, damage_r_max
 
