@@ -62,47 +62,44 @@ def parse_xxx(text: str, isomme):
     time_of_first_sample = info.get("Time of first sample")
     sampling_interval = info.get("Sampling interval")
 
-    if info.get("Reference channel") == "explicit":
-        if reference_channel_code is None:
-            raise ValueError(f"Reference channel name not found.")
-        reference_channel = isomme.get_channel(reference_channel_code)
-        if reference_channel is None:
-            raise ValueError(f"Reference channel not found.")
-
-        data = pd.DataFrame(array, index=reference_channel.get_data())
-
-    elif info.get("Reference channel") == "implicit":
+    if info.get("Reference channel") == "implicit":
         if time_of_first_sample is None:
-            raise ValueError(f"Time of first sample not found.")
-        if sampling_interval is None:
-            raise ValueError(f"Sampling interval not found.")
+            logger.error(f"[{code}] Time of first sample not found.")
+        elif sampling_interval is None:
+            logger.error(f"[{code}] Sampling interval not found.")
+        else:
+            n = len(array)
+            time_array = np.linspace(time_of_first_sample, n * sampling_interval, n)
+            return Channel(code, pd.DataFrame(array, index=time_array), unit=unit, info=info)
 
-        n = len(array)
-        time_array = np.linspace(time_of_first_sample, n * sampling_interval, n)
-
-        data = pd.DataFrame(array, index=time_array)
+    elif info.get("Reference channel") == "explicit":
+        if reference_channel_code is None:
+            logger.error(f"[{code}] Reference channel name not found.")
+        else:
+            reference_channel = isomme.get_channel(reference_channel_code)
+            if reference_channel is None:
+                logger.error(f"[{code}] Reference channel {reference_channel_code} not found.")
+            else:
+                return Channel(code=code, data=pd.DataFrame(array, index=reference_channel.get_data()), unit=unit, info=info)
 
     elif time_of_first_sample is not None and sampling_interval is not None:
-        logger.info("Assume 'Reference channel' = 'implicit'")
+        logger.info(f"[{code}] Assume 'Reference channel' = 'implicit'")
 
         n = len(array)
         time_array = np.linspace(time_of_first_sample, n * sampling_interval, n)
-
-        data = pd.DataFrame(array, index=time_array)
+        return Channel(code, pd.DataFrame(array, index=time_array), unit=unit, info=info)
 
     elif reference_channel_code is not None:
-        logger.info("Assume 'Reference channel' = 'explicit'")
+        logger.info(f"[{code}] Assume 'Reference channel' = 'explicit'")
 
         reference_channel = isomme.get_channel(reference_channel_code)
         if reference_channel is None:
-            raise ValueError(f"Reference channel not found.")
+            logger.error(f"[{code}] Reference channel not found.")
+        else:
+            return Channel(code=code, data=pd.DataFrame(array, index=reference_channel.get_data()), unit=unit, info=info)
 
-        data = pd.DataFrame(array, index=reference_channel.get_data())
-
-    else:
-        logger.warning("Reference channel type [implicit/explicit] unknown.")
-        data = pd.DataFrame(array)
-
+    logger.warning(f"[{code}] Reference channel type [implicit/explicit] unknown. Could not set index.")
+    data = pd.DataFrame(array)
     return Channel(code, data, unit=unit, info=info)
 
 
