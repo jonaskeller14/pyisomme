@@ -1015,7 +1015,7 @@ class EuroNCAP_Frontal_MPDB(Report):
         def __init__(self, report):
             super().__init__(report)
             self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_passenger}CHST000???DSXC"],
-                                      [f"?{self.report.criterion_master[isomme].p_passenger}VCCR000???VEXX"]] for isomme in self.report.isomme_list}
+                                      [f"?{self.report.criterion_master[isomme].p_passenger}VCCR000???VEXC"]] for isomme in self.report.isomme_list}
 
     class Page_Passenger_Femur_Axial_Force(Page_Plot_nxn):
         name: str = "Passenger Femur Axial Force"
