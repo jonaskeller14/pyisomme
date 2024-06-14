@@ -583,7 +583,7 @@ class Isomme:
                                        unit=channel_upper.unit)
 
                 # Tibia Compression (Minimum of left and right)
-                if code_pattern.main_location == "TIIN" and code_pattern.fine_location_1 == "00" and code_pattern.physical_dimension == "FO" and code_pattern.direction == "Z":
+                if code_pattern.main_location == "TIBI" and code_pattern.fine_location_1 == "00" and code_pattern.physical_dimension == "FO" and code_pattern.direction == "Z":
                     channel_left = self.get_channel(code_pattern.set(fine_location_1="LE"))
                     channel_right = self.get_channel(code_pattern.set(fine_location_1="RI"))
                     if channel_left is not None and channel_right is not None:
@@ -596,7 +596,7 @@ class Isomme:
                                        unit=channel_left.unit)
 
                 # Tibia Compression (Minimum of upper and lower)
-                if code_pattern.main_location == "TIIN" and code_pattern.fine_location_2 == "00" and code_pattern.physical_dimension == "FO" and code_pattern.direction == "Z":
+                if code_pattern.main_location == "TIBI" and code_pattern.fine_location_2 == "00" and code_pattern.physical_dimension == "FO" and code_pattern.direction == "Z":
                     channel_upper = self.get_channel(code_pattern.set(fine_location_2="UP"))
                     channel_lower = self.get_channel(code_pattern.set(fine_location_2="LO"))
                     if channel_upper is not None and channel_lower is not None:
