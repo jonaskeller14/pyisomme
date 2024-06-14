@@ -5,6 +5,7 @@ import logging
 from datetime import datetime
 import numpy as np
 import pandas as pd
+import re
 
 
 logger = logging.getLogger(__name__)
@@ -18,19 +19,13 @@ def parse_mme(text: str) -> list:
 
         if line == "":
             continue
-
-        # Extract variable name and value
-        if len(line.split()) == 2:
-            name = line.split()[0].strip()
-            value = get_value(line.split()[1].strip())
-        elif len(line.split(":", 1)) >= 2:
-            name = line.split(":", 1)[0].strip()
-            value = get_value(line.split(":", 1)[1].strip())
-        else:
+        match = re.fullmatch(r"(.*[^\s]+)\s*:(.*)", line)
+        if match is None:
             logger.error(f"Could not parse malformed line: '{line}'")
             continue
-
-        info[name] = value
+        else:
+            name, value = match.groups()
+            info[name] = get_value(value)
     return info
 
 
@@ -38,7 +33,7 @@ def parse_chn(text: str) -> list:
     return parse_mme(text)
 
 
-def parse_xxx(text: str, test_number="data"):
+def parse_xxx(text: str, isomme):
     lines = text.splitlines()
     info = Info([])
     start_data_idx = 0
@@ -47,32 +42,47 @@ def parse_xxx(text: str, test_number="data"):
 
         if line == "":
             continue
-        if len(line.split(":", 1)) >= 2:
-            name = line.split(":", 1)[0].strip()
-            value = get_value(line.split(":", 1)[1].strip())
-        else:
+        match = re.fullmatch(r"(.*[^\s]+)\s*:(.*)", line)
+        if match is None:
             start_data_idx = idx
             break
-
-        info[name] = value
+        else:
+            name, value = match.groups()
+            info[name] = get_value(value)
 
     code = info.get("Channel code")
     unit = info.get("Unit")
 
     # data
-    array = np.array(lines[start_data_idx:])
+    array = np.array(lines[start_data_idx:], dtype=float)
 
     if info.get("Reference channel") == "explicit":
-        raise NotImplementedError
-    # Implicit
-    if "Time of first sample" in info and "Sampling interval" in info:
+        reference_channel_code = info.get("Reference channel name")
+        if reference_channel_code is None:
+            raise ValueError(f"Reference channel name not found.")
+        reference_channel = isomme.get_channel(reference_channel_code)
+        if reference_channel is None:
+            raise ValueError(f"Reference channel not found.")
+
+        data = pd.DataFrame(array, index=reference_channel.get_data())
+
+    elif info.get("Reference channel") == "implicit":
+        time_of_first_sample = info.get("Time of first sample")
+        if time_of_first_sample is None:
+            raise ValueError(f"Time of first sample not found.")
+        sampling_interval = info.get("Sampling interval")
+        if sampling_interval is None:
+            raise ValueError(f"Sampling interval not found.")
+
         n = len(array)
-        time_array = np.linspace(info["Time of first sample"], n * info["Sampling interval"], n)
-        data = pd.DataFrame({test_number: array, "Time": time_array}).set_index("Time")
+        time_array = np.linspace(time_of_first_sample, n * sampling_interval, n)
+
+        data = pd.DataFrame(array, index=time_array)
+
     else:
-        logger.error(f"'Time of first sample' and 'Sampling interval' missing in channel information of {code}")
-        data = pd.DataFrame({test_number: array})
-    data[test_number] = data[test_number].astype(float)
+        logger.warning("Reference channel type [implicit/explicit] unknown.")
+        data = pd.DataFrame(array)
+
     return Channel(code, data, unit=unit, info=info)
 
 
@@ -94,9 +104,9 @@ def get_value(text: str):
     :param text:
     :return:
     """
-    text = text[1:] if len(text) > 0 and text[0] == ":" else text
+    text = text.strip()
     # None
-    if text.upper() in ("NOVALUE", "NONE") or text.strip() == "":
+    if text.upper() in ("NOVALUE", "NONE") or text == "":
         return None
     # Boolean
     elif text.upper() == "YES":

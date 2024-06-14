@@ -131,10 +131,10 @@ class Isomme:
                             xxx_path = xxx_paths[0]
                             try:
                                 with open(xxx_path, "r", encoding="utf-8") as xxx_file:
-                                    self.channels.append(parse_xxx(xxx_file.read(), self.test_number))
+                                    self.channels.append(parse_xxx(xxx_file.read(), isomme=self))
                             except UnicodeDecodeError:
                                 with open(xxx_path, "r", encoding="iso-8859-1") as xxx_file:
-                                    self.channels.append(parse_xxx(xxx_file.read(), self.test_number))
+                                    self.channels.append(parse_xxx(xxx_file.read(), isomme=self))
                         else:
                             logger.critical(f"Channel file '*.{xxx}' not found.")
 
@@ -194,9 +194,9 @@ class Isomme:
                             with archive.open(xxx_path, "r") as xxx_file:
                                 xxx_content = xxx_file.read()
                                 try:
-                                    self.channels.append(parse_xxx(xxx_content.decode("utf-8"), self.test_number))
+                                    self.channels.append(parse_xxx(xxx_content.decode("utf-8"), isomme=self))
                                 except UnicodeDecodeError:
-                                    self.channels.append(parse_xxx(xxx_content.decode("iso-8859-1"), self.test_number))
+                                    self.channels.append(parse_xxx(xxx_content.decode("iso-8859-1"), isomme=self))
                     else:
                         logger.critical(f"Channel file '*.{xxx}' not found.")
 
