@@ -54,7 +54,9 @@ def parse_xxx(text: str, isomme):
     unit = info.get("Unit")
 
     # data
-    array = np.array(lines[start_data_idx:], dtype=float)
+    array_str = np.array(lines[start_data_idx:])
+    array_str[array_str == "NOVALUE"] = np.nan
+    array = np.array(array_str, dtype=float)
 
     reference_channel_code = info.get("Reference channel name")
     time_of_first_sample = info.get("Time of first sample")

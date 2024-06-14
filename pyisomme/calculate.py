@@ -452,16 +452,16 @@ def calculate_neck_nij(c_fz: Channel,
     is_flexion = mocy > 0
     is_extension = mocy < 0
 
-    data_ncf = pd.DataFrame(np.zeros(len(t)), index=t)
+    data_ncf = pd.DataFrame(np.full(len(t), np.nan), index=t)
     data_ncf.iloc[is_compression * is_flexion, 0] = fz[is_compression * is_flexion] / fz_c_crit + mocy[is_compression * is_flexion] / mocy_f_crit
 
-    data_nce = pd.DataFrame(np.zeros(len(t)), index=t)
+    data_nce = pd.DataFrame(np.full(len(t), np.nan), index=t)
     data_nce.iloc[is_compression * is_extension, 0] = fz[is_compression * is_extension] / fz_c_crit + mocy[is_compression * is_extension] / mocy_e_crit
 
-    data_ntf = pd.DataFrame(np.zeros(len(t)), index=t)
+    data_ntf = pd.DataFrame(np.full(len(t), np.nan), index=t)
     data_ntf.iloc[is_tension * is_flexion, 0] = fz[is_tension * is_flexion] / fz_t_crit + mocy[is_tension * is_flexion] / mocy_f_crit
 
-    data_nte = pd.DataFrame(np.zeros(len(t)), index=t)
+    data_nte = pd.DataFrame(np.full(len(t), np.nan), index=t)
     data_nte.iloc[is_tension * is_extension, 0] = fz[is_tension * is_extension] / fz_t_crit + mocy[is_tension * is_extension] / mocy_e_crit
 
     c_nij = Channel(code=c_fz.code.set(main_location="NIJC", fine_location_1="OP" if oop else "IP", fine_location_2="00", physical_dimension="00", direction="Y"),
