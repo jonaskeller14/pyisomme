@@ -1,4 +1,5 @@
-from pyisomme.report.page import *
+from pyisomme.report.page import Page_Cover
+from pyisomme.limits import Limits
 from pyisomme.report.criterion import Criterion
 
 from pptx import Presentation
