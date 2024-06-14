@@ -794,6 +794,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                     ])
 
                     # Modifier
+                    self.criterion_shoulder_belt_load.calculate()
                     self.rating += self.criterion_shoulder_belt_load.rating
 
                 class Criterion_Chest_Compression(Criterion):
