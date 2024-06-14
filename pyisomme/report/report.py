@@ -50,7 +50,7 @@ class Report:
 
     def print_results(self):
         def print_subcriteria_results(criterion, intend="\t"):
-            print(f"{intend}{criterion.name if criterion.name is not None else criterion.__class__.__name__}: Value={criterion.value:.5g} [{criterion.channel.unit if criterion.channel is not np.nan else ''}] Rating={criterion.rating:.5g}")
+            print(f"{intend}{criterion.name if criterion.name is not None else criterion.__class__.__name__}: Value={criterion.value:.5g} [{criterion.channel.unit if criterion.channel is not None else ''}] Rating={criterion.rating:.5g}")
 
             subcriteria = [getattr(criterion, a) for a in dir(criterion) if isinstance(getattr(criterion, a), Criterion)]
             for subcriterion in subcriteria:
