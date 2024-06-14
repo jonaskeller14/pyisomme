@@ -78,7 +78,6 @@ class Code(str):
         root = ET.parse(Path(__file__).parent.joinpath("channel_codes.xml")).getroot()
         for element in root.findall("Codification/Element"):
             for channel in element.findall(".//Channel"):
-                channel_code = channel.get("code")
                 if fnmatch(str(self), channel.get("code")):
                     info[element.get("name")] = channel.get("description")
                     break
@@ -180,6 +179,10 @@ class Channel:
             new_code = self.code
 
         if not re.fullmatch(r"[a-zA-Z0-9?]{16}", new_code):
+            if re.search(r"[^a-zA-Z0-9]", new_code):
+                logger.warning(f"Code '{new_code}' contains invalid characters which will be removed")
+                new_code = re.sub(r"[^a-zA-Z0-9]", "", new_code)
+
             if len(new_code) > 16:
                 logger.warning(f"Code '{new_code}' must be 16 characters long")
                 logger.warning(f"Code '{new_code}' will be shortened to 16 characters")
