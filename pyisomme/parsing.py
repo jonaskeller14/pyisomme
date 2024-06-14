@@ -56,8 +56,11 @@ def parse_xxx(text: str, isomme):
     # data
     array = np.array(lines[start_data_idx:], dtype=float)
 
+    reference_channel_code = info.get("Reference channel name")
+    time_of_first_sample = info.get("Time of first sample")
+    sampling_interval = info.get("Sampling interval")
+
     if info.get("Reference channel") == "explicit":
-        reference_channel_code = info.get("Reference channel name")
         if reference_channel_code is None:
             raise ValueError(f"Reference channel name not found.")
         reference_channel = isomme.get_channel(reference_channel_code)
@@ -67,10 +70,8 @@ def parse_xxx(text: str, isomme):
         data = pd.DataFrame(array, index=reference_channel.get_data())
 
     elif info.get("Reference channel") == "implicit":
-        time_of_first_sample = info.get("Time of first sample")
         if time_of_first_sample is None:
             raise ValueError(f"Time of first sample not found.")
-        sampling_interval = info.get("Sampling interval")
         if sampling_interval is None:
             raise ValueError(f"Sampling interval not found.")
 
@@ -78,6 +79,23 @@ def parse_xxx(text: str, isomme):
         time_array = np.linspace(time_of_first_sample, n * sampling_interval, n)
 
         data = pd.DataFrame(array, index=time_array)
+
+    elif time_of_first_sample is not None and sampling_interval is not None:
+        logger.info("Assume 'Reference channel' = 'implicit'")
+
+        n = len(array)
+        time_array = np.linspace(time_of_first_sample, n * sampling_interval, n)
+
+        data = pd.DataFrame(array, index=time_array)
+
+    elif reference_channel_code is not None:
+        logger.info("Assume 'Reference channel' = 'explicit'")
+
+        reference_channel = isomme.get_channel(reference_channel_code)
+        if reference_channel is None:
+            raise ValueError(f"Reference channel not found.")
+
+        data = pd.DataFrame(array, index=reference_channel.get_data())
 
     else:
         logger.warning("Reference channel type [implicit/explicit] unknown.")
