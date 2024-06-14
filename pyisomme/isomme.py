@@ -543,8 +543,8 @@ class Isomme:
                                        data=pd.DataFrame(values, index=time),
                                        unit=channel_left.unit)
 
-                # Knee Slider Compression (Minimum of left and right)
-                if code_pattern.main_location == "KNSL" and code_pattern.fine_location_1 == "00" and code_pattern.fine_location_2 == "00" and code_pattern.physical_dimension == "FO" and code_pattern.direction == "X":
+                # Knee Slider Compression / Displacement (Minimum of left and right)
+                if code_pattern.main_location == "KNSL" and code_pattern.fine_location_1 == "00" and code_pattern.fine_location_2 == "00" and code_pattern.physical_dimension in ("FO", "DS") and code_pattern.direction == "X":
                     channel_left = self.get_channel(code_pattern.set(fine_location_1="LE"))
                     channel_right = self.get_channel(code_pattern.set(fine_location_1="RI"))
                     if channel_left is not None and channel_right is not None:
