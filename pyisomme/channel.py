@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from pyisomme.unit import Unit
+from pyisomme.unit import Unit, g0
 from pyisomme.info import Info
 
 import re
@@ -12,7 +12,6 @@ from pathlib import Path
 import xml.etree.ElementTree as ET
 from scipy.integrate import cumulative_trapezoid
 import copy
-from astropy.constants import g0
 from astropy.units import CompositeUnit
 
 

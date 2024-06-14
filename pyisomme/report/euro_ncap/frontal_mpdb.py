@@ -5,10 +5,10 @@ from pyisomme.calculate import calculate_olc
 from pyisomme.report.euro_ncap.frontal_50kmh import EuroNCAP_Frontal_50kmh
 from pyisomme.report.criterion import Criterion
 from pyisomme.report.euro_ncap.limits import Limit_G, Limit_P, Limit_C, Limit_M, Limit_A, Limit_W
+from pyisomme.unit import g0
 
 import logging
 import numpy as np
-from astropy.constants import g0
 
 
 logger = logging.getLogger(__name__)

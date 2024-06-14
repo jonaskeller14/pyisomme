@@ -19,6 +19,10 @@ class TestUnit(unittest.TestCase):
         pyisomme.Unit(1)
         pyisomme.Unit("1")
         pyisomme.Unit("")
+        assert pyisomme.Unit("°") == pyisomme.Unit("deg")
+        assert pyisomme.Unit("°/s2") == pyisomme.Unit("deg/s^2")
+        assert pyisomme.Unit("°/s") == pyisomme.Unit("deg/s")
+        assert pyisomme.Unit(pyisomme.Unit("m")) == pyisomme.Unit("m")
 
 
 class TestParsing(unittest.TestCase):
@@ -118,6 +122,12 @@ class TestCode(unittest.TestCase):
 class TestChannel(unittest.TestCase):
     def test_init(self):
         pyisomme.Channel(code="11HEAD0000H3ACXP", data=pd.DataFrame([]))
+        # < 16 chars
+        pyisomme.Channel(code="11HEAD0000H3", data=pd.DataFrame([]))
+        # > 16 chars
+        pyisomme.Channel(code="11HEAD0000H3ACXP123", data=pd.DataFrame([]))
+        # invalid chars
+        pyisomme.Channel(code="TOTAL_ENERGY", data=pd.DataFrame([]))
 
     def test_get_info(self):
         channel = pyisomme.Channel(code="11HEAD0000H3ACXP",

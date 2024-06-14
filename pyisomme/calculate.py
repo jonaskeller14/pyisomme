@@ -3,13 +3,13 @@ from __future__ import annotations
 from pyisomme.channel import Channel, time_intersect
 from pyisomme.unit import Unit
 from pyisomme.utils import debug_logging
+from pyisomme.unit import g0
 
 import copy
 import logging
 import numpy as np
 import pandas as pd
 from scipy.integrate import solve_ivp
-from astropy.constants import g0
 
 
 logger = logging.getLogger(__name__)

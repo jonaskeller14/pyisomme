@@ -1,12 +1,11 @@
 from pyisomme.calculate import calculate_hic, calculate_xms, calculate_chest_vc
-from pyisomme.unit import Unit
+from pyisomme.unit import Unit, g0
 from pyisomme.limits import Limit
 from pyisomme.report.page import Page_Cover, Page_OLC, Page_Result_Table, Page_Plot_nxn, Page
 from pyisomme.report.report import Report
 from pyisomme.report.criterion import Criterion
 from pyisomme.report.euro_ncap.limits import Limit_G, Limit_P, Limit_C, Limit_M, Limit_A, Limit_W
 
-from astropy.constants import g0
 import logging
 import numpy as np
 

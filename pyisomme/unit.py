@@ -1,8 +1,14 @@
-from astropy import units as astropy_units
+import astropy.units as u
+from astropy.constants import g0
 
-astropy_units.set_enabled_aliases({"Nm": astropy_units.Unit("N*m")})
+
+u.set_enabled_aliases({"Nm": u.Unit("N*m")})
+
+g0 = g0
 
 
-class Unit(astropy_units.Unit):
-    def __init__(self, unit):
-        super().__init__(unit)
+class Unit:
+    def __new__(cls, unit):
+        if isinstance(unit, str):
+            unit = unit.replace("°", "deg")
+        return u.Unit(unit)
