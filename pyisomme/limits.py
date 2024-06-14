@@ -143,10 +143,10 @@ class Limits:
         return limit_values
 
     def get_limit_max_value(self, channel: Channel, interpolate=True) -> float:
-        return np.max(self.get_limit_values(channel, interpolate))
+        return np.nanmax(self.get_limit_values(channel, interpolate))
 
     def get_limit_min_value(self, channel: Channel, interpolate=True) -> float:
-        return np.min(self.get_limit_values(channel, interpolate))
+        return np.nanmin(self.get_limit_values(channel, interpolate))
 
     def get_limit_min_color(self, channel: Channel):
         limit_values = self.get_limit_values(channel, interpolate=False)

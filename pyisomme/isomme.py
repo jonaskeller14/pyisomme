@@ -510,9 +510,8 @@ class Isomme:
                                 return calculate_neck_nij(c_fz, c_mocy, oop=code_pattern.fine_location_1 == "OP")[4]
 
                 # VC
-                if code_pattern.main_location == "VCCR" and code_pattern.filter_class == "X":
+                if code_pattern.main_location == "VCCR" and code_pattern.filter_class != "X":
                     channel = self.get_channel(code_pattern.set(main_location="CHST",
-                                                                filter_class="C",
                                                                 physical_dimension="DS"))
                     if channel is not None:
                         return calculate_chest_vc(channel)

@@ -433,18 +433,16 @@ class EuroNCAP_Frontal_50kmh(Report):
                         self.p = p
 
                         self.extend_limit_list([
-                            Limit_G([f"?{self.p}VCCR0000??VEX?"], func=lambda x: 0.500, y_unit="m/s", upper=True),
-                            Limit_A([f"?{self.p}VCCR0000??VEX?"], func=lambda x: 0.500, y_unit="m/s", lower=True),
-                            Limit_M([f"?{self.p}VCCR0000??VEX?"], func=lambda x: 0.667, y_unit="m/s", lower=True),
-                            Limit_W([f"?{self.p}VCCR0000??VEX?"], func=lambda x: 0.833, y_unit="m/s", lower=True),
-                            Limit_P([f"?{self.p}VCCR0000??VEX?"], func=lambda x: 1.000, y_unit="m/s"),
-                            Limit_C([f"?{self.p}VCCR0000??VEX?"], func=lambda x: 1.000, y_unit="m/s", lower=True),
+                            Limit_G([f"?{self.p}VCCR000[03]??VEX?"], func=lambda x: 0.500, y_unit="m/s", upper=True),
+                            Limit_A([f"?{self.p}VCCR000[03]??VEX?"], func=lambda x: 0.500, y_unit="m/s", lower=True),
+                            Limit_M([f"?{self.p}VCCR000[03]??VEX?"], func=lambda x: 0.667, y_unit="m/s", lower=True),
+                            Limit_W([f"?{self.p}VCCR000[03]??VEX?"], func=lambda x: 0.833, y_unit="m/s", lower=True),
+                            Limit_P([f"?{self.p}VCCR000[03]??VEX?"], func=lambda x: 1.000, y_unit="m/s"),
+                            Limit_C([f"?{self.p}VCCR000[03]??VEX?"], func=lambda x: 1.000, y_unit="m/s", lower=True),
                         ])
 
                     def calculation(self):
-                        chest_deflection = (self.isomme.get_channel(f"?{self.p}CHST0003??DSXC", f"?{self.p}CHST0000??DSXC"))
-
-                        self.channel = calculate_chest_vc(chest_deflection).convert_unit("m/s")
+                        self.channel = self.isomme.get_channel(f"?{self.p}VCCR0003??VEXC", f"?{self.p}VCCR0000??VEXC").convert_unit("m/s")
                         self.value = np.min(self.channel.get_data())
                         self.rating = self.limits.get_limit_min_value(self.channel, interpolate=True)
 

@@ -728,7 +728,7 @@ class EuroNCAP_Frontal_MPDB(Report):
 
                         def calculation(self):
                             self.channel = self.isomme.get_channel(f"?{self.p}NECKUP00??FOXB").convert_unit("kN")
-                            self.value = self.channel.get_data(unit="kN")[np.argmax(np.abs(self.channel.get_data("kN")))]
+                            self.value = self.channel.get_data(unit="kN")[np.argmax(np.abs(self.channel.get_data(unit="kN")))]
                             self.rating = self.limits.get_limit_min_value(self.channel)
 
                     class Criterion_Fz_Tension(Criterion):
