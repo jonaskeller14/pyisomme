@@ -393,6 +393,7 @@ class Isomme:
                     head_channel = self.get_channel(code_pattern.set(main_location="HEAD",
                                                                      fine_location_1="??",
                                                                      fine_location_2="00",
+                                                                     physical_dimension="AC",
                                                                      filter_class="A"))
                     if head_channel is not None:
                         return calculate_hic(head_channel, max_delta_t=int(code_pattern.fine_location_2))
