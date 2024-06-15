@@ -170,18 +170,18 @@ class EuroNCAP_Frontal_50kmh(Report):
                         self.p = p
 
                         self.extend_limit_list([
-                            Limit_G([f"?{self.p}HICR0015??00RX"], func=lambda x: 500.000, y_unit=1, upper=True),
-                            Limit_A([f"?{self.p}HICR0015??00RX"], func=lambda x: 500.000, y_unit=1, lower=True),
-                            Limit_M([f"?{self.p}HICR0015??00RX"], func=lambda x: 566.667, y_unit=1, lower=True),
-                            Limit_W([f"?{self.p}HICR0015??00RX"], func=lambda x: 633.333, y_unit=1, lower=True),
-                            Limit_P([f"?{self.p}HICR0015??00RX"], func=lambda x: 700.000, y_unit=1),
-                            Limit_C([f"?{self.p}HICR0015??00RX"], func=lambda x: 700.000, y_unit=1, lower=True),
+                            Limit_G([f"?{self.p}HICR??15??00RX"], func=lambda x: 500.000, y_unit=1, upper=True),
+                            Limit_A([f"?{self.p}HICR??15??00RX"], func=lambda x: 500.000, y_unit=1, lower=True),
+                            Limit_M([f"?{self.p}HICR??15??00RX"], func=lambda x: 566.667, y_unit=1, lower=True),
+                            Limit_W([f"?{self.p}HICR??15??00RX"], func=lambda x: 633.333, y_unit=1, lower=True),
+                            Limit_P([f"?{self.p}HICR??15??00RX"], func=lambda x: 700.000, y_unit=1),
+                            Limit_C([f"?{self.p}HICR??15??00RX"], func=lambda x: 700.000, y_unit=1, lower=True),
                         ])
 
                     def calculation(self):
-                        self.channel = calculate_hic(self.isomme.get_channel(f"?{self.p}HEAD??00??ACRA"), 15)
+                        self.channel = self.isomme.get_channel(f"?{self.p}HICR??15??00RX")
                         self.value = self.channel.get_data()[0]
-                        self.rating = np.interp(self.value, [500, 700], [4, 0], left=4, right=-np.inf)
+                        self.rating = self.limits.get_limit_min_value(self.channel, interpolate=True)
 
                 class Criterion_Head_a3ms(Criterion):
                     name = "Head a3ms"
