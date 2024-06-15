@@ -219,20 +219,49 @@ class TestReport(unittest.TestCase):
         for channel in self.v1.channels + self.v2.channels:
             if channel.code.main_location == "NECK" and channel.code.fine_location_3 in ("00", "??"):
                 channel.set_code(fine_location_3="H3")
-        pyisomme.report.euro_ncap.frontal_50kmh.EuroNCAP_Frontal_50kmh([self.v1, self.v2]).calculate().export_pptx("out/EuroNCAP_Frontal_50kmh.pptx")
+
+        report = pyisomme.report.euro_ncap.frontal_50kmh.EuroNCAP_Frontal_50kmh([self.v1, self.v2])
+        report.calculate()
+        report.export_pptx("out/EuroNCAP_Frontal_50kmh.pptx")
+        report.print_results()
 
     def test_EuroNCAP_Frontal_MPDB(self):
         for channel in self.v3.channels:
             if channel.code.main_location == "TIBI" and channel.code.fine_location_3 in ("00", "??"):
                 channel.set_code(fine_location_3="TH")
-        pyisomme.report.euro_ncap.frontal_mpdb.EuroNCAP_Frontal_MPDB([self.v3, self.v2, self.v1]).calculate().export_pptx("out/EuroNCAP_Frontal_MPDB.pptx")
+
+        report = pyisomme.report.euro_ncap.frontal_mpdb.EuroNCAP_Frontal_MPDB([self.v3, self.v2, self.v1])
+        report.calculate()
+        report.export_pptx("out/EuroNCAP_Frontal_MPDB.pptx")
+        report.print_results()
 
     def test_EuroNCAP_Side_Barrier(self):
-        pyisomme.report.euro_ncap.side_barrier.EuroNCAP_Side_Barrier([self.v1]).calculate().export_pptx("out/EuroNCAP_Side_Barrier.pptx")
+        self.v1.extend([
+            pyisomme.create_sample("11TRRILE01WSDSYP", y_range=(-30, 0), unit="mm"),
+            pyisomme.create_sample("11TRRILE02WSDSYP", y_range=(-30, 0), unit="mm"),
+            pyisomme.create_sample("11TRRILE03WSDSYP", y_range=(-30, 0), unit="mm"),
+            pyisomme.create_sample("11ABRILE01WSDSYP", y_range=(-30, 0), unit="mm"),
+            pyisomme.create_sample("11ABRILE02WSDSYP", y_range=(-30, 0), unit="mm"),
+        ])
+
+        report = pyisomme.report.euro_ncap.side_barrier.EuroNCAP_Side_Barrier([self.v1])
+        report.calculate()
+        report.export_pptx("out/EuroNCAP_Side_Barrier.pptx")
+        report.print_results()
 
     def test_EuroNCAP_Side_Pole(self):
-        pyisomme.report.euro_ncap.side_pole.EuroNCAP_Side_Pole([self.v1]).calculate().export_pptx("out/EuroNCAP_Side_Pole.pptx")
+        self.v1.extend([
+            pyisomme.create_sample("11TRRILE01WSDSYP", y_range=(-30, 0), unit="mm"),
+            pyisomme.create_sample("11TRRILE02WSDSYP", y_range=(-30, 0), unit="mm"),
+            pyisomme.create_sample("11TRRILE03WSDSYP", y_range=(-30, 0), unit="mm"),
+            pyisomme.create_sample("11ABRILE01WSDSYP", y_range=(-30, 0), unit="mm"),
+            pyisomme.create_sample("11ABRILE02WSDSYP", y_range=(-30, 0), unit="mm"),
+        ])
 
+        report = pyisomme.report.euro_ncap.side_pole.EuroNCAP_Side_Pole([self.v1])
+        report.calculate()
+        report.export_pptx("out/EuroNCAP_Side_Pole.pptx")
+        report.print_results()
 
 class TestPlotting(unittest.TestCase):
     v1 = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "11391"), "11NECKUP????FO??", "11TIBI*FO*")
