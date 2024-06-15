@@ -29,6 +29,11 @@ class EuroNCAP_Side_Pole(Report):
 
         self.pages = [
             Page_Cover(self),
+
+            self.Page_Head_Acceleration(self),
+            self.Page_Chest_Lateral_Compression(self),
+            self.Page_Abdomen_Lateral_Compression(self),
+            self.Page_Pubic_Symphysis_Force(self),
         ]
 
     class Criterion_Master(Criterion):
@@ -49,13 +54,13 @@ class EuroNCAP_Side_Pole(Report):
             self.criterion_abdomen.calculate()
             self.criterion_pelvis.calculate()
 
-            self.rating = self.value = np.sum([
+            self.rating = np.sum([
                 self.criterion_head.rating,
                 self.criterion_chest.rating,
                 self.criterion_abdomen.rating,
                 self.criterion_pelvis.rating
             ])
-            self.rating = self.value = np.interp(self.rating, [0, 16], [0, 16], left=0, right=np.nan)
+            self.rating = np.interp(self.rating, [0, 16], [0, 16], left=0, right=np.nan)
 
         class Criterion_Head(Criterion):
             name = "Head"
@@ -74,7 +79,7 @@ class EuroNCAP_Side_Pole(Report):
                 self.criterion_head_a3ms.calculate()
                 self.criterion_direct_head_contact_with_the_pole.calculate()
 
-                self.rating = self.value = np.min([
+                self.rating = np.min([
                     self.criterion_hic_15.rating,
                     self.criterion_head_a3ms.rating,
                     self.criterion_direct_head_contact_with_the_pole.rating,
@@ -175,7 +180,7 @@ class EuroNCAP_Side_Pole(Report):
             def calculation(self) -> None:
                 self.criterion_abdomen_lateral_compression.calculate()
 
-                self.rating = self.value = self.criterion_abdomen_lateral_compression.rating
+                self.rating = self.criterion_abdomen_lateral_compression.rating
 
             class Criterion_Abdomen_Lateral_Compression(Criterion):
                 name = "Abdomen Lateral Compression"
@@ -207,14 +212,14 @@ class EuroNCAP_Side_Pole(Report):
 
                 self.p = p
 
-                self.criterion_public_symphysis_force = self.Criterion_Public_Symphysis_Force(self.report, self.isomme, p=self.p)
+                self.criterion_pubic_symphysis_force = self.Criterion_Pubic_Symphysis_Force(self.report, self.isomme, p=self.p)
 
             def calculation(self) -> None:
-                self.criterion_public_symphysis_force.calculate()
+                self.criterion_pubic_symphysis_force.calculate()
 
-                self.rating = self.value = self.criterion_public_symphysis_force.rating
+                self.rating = self.criterion_pubic_symphysis_force.rating
 
-            class Criterion_Public_Symphysis_Force(Criterion):
+            class Criterion_Pubic_Symphysis_Force(Criterion):
                 name = "Pubic Symphysis Force"
 
                 def __init__(self, report, isomme, p):
@@ -242,3 +247,52 @@ class EuroNCAP_Side_Pole(Report):
                     self.channel = self.isomme.get_channel(f"?{self.p}PUBC0000??FOYB").convert_unit("kN")
                     self.value = self.channel.get_data()[np.argmax(np.abs(self.channel.get_data()))]
                     self.rating = self.limits.get_limit_min_value(self.channel, interpolate=True)
+
+    class Page_Head_Acceleration(Page_Plot_nxn):
+        name: str = "Driver Head Acceleration"
+        title: str = "Driver Head Acceleration"
+        nrows: int = 2
+        ncols: int = 2
+        sharey: bool = True
+
+        def __init__(self, report):
+            super().__init__(report)
+            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p}HEAD??????AC{xyzr}A"] for xyzr in "XYZR"] for isomme in self.report.isomme_list}
+
+    class Page_Chest_Lateral_Compression(Page_Plot_nxn):
+        name: str = "Chest Lateral Compression"
+        title: str = "Chest Lateral Compression"
+        nrows: int = 3
+        ncols: int = 2
+        sharey: bool = True
+
+        def __init__(self, report):
+            super().__init__(report)
+            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p}TRRILE01??DSYC"],
+                                      [f"?{self.report.criterion_master[isomme].p}TRRIRI01??DSYC"],
+                                      [f"?{self.report.criterion_master[isomme].p}TRRILE02??DSYC"],
+                                      [f"?{self.report.criterion_master[isomme].p}TRRIRI02??DSYC"],
+                                      [f"?{self.report.criterion_master[isomme].p}TRRILE03??DSYC"],
+                                      [f"?{self.report.criterion_master[isomme].p}TRRIRI04??DSYC"]] for isomme in self.report.isomme_list}
+
+    class Page_Abdomen_Lateral_Compression(Page_Plot_nxn):
+        name: str = "Abdomen Lateral Compression"
+        title: str = "Abdomen Lateral Compression"
+        nrows: int = 2
+        ncols: int = 2
+        sharey: bool = True
+
+        def __init__(self, report):
+            super().__init__(report)
+            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p}ABRILE01??DSYC"],
+                                      [f"?{self.report.criterion_master[isomme].p}ABRIRI01??DSYC"],
+                                      [f"?{self.report.criterion_master[isomme].p}ABRILE02??DSYC"],
+                                      [f"?{self.report.criterion_master[isomme].p}ABRIRI03??DSYC"]] for isomme in self.report.isomme_list}
+
+    class Page_Pubic_Symphysis_Force(Page_Plot_nxn):
+        name: str = "Pubic Symphysis Force"
+        title: str = "Pubic Symphysis Force"
+
+        def __init__(self, report):
+            super().__init__(report)
+            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p}PUBC0000??FOYB"]] for isomme in self.report.isomme_list}
