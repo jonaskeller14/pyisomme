@@ -16,10 +16,10 @@ logger = logging.getLogger(__name__)
 
 class Limit:
     name: str
-    value: float
+    rating: float
     color: str
 
-    def __init__(self, code_patterns: list, func, color: str = None, linestyle: str = "-", name: str = None, value: float = None, lower: bool = None, upper: bool = None, x_unit="s", y_unit=None):
+    def __init__(self, code_patterns: list, func, color: str = None, linestyle: str = "-", name: str = None, rating: float = None, lower: bool = None, upper: bool = None, x_unit="s", y_unit=None):
         self.code_patterns: list = code_patterns
 
         if isinstance(func, int) or isinstance(func, float):
@@ -32,8 +32,8 @@ class Limit:
         self.linestyle = linestyle
         if name is not None:
             self.name = name
-        if value is not None:
-            self.value = value
+        if rating is not None:
+            self.rating = rating
         self.lower = lower
         self.upper = upper
         self.x_unit = x_unit
@@ -99,7 +99,7 @@ class Limits:
 
     def get_limit_colors(self, channel: Channel) -> list:
         limits = limit_list_sort(self.get_limits(channel.code))
-        assert None not in [limit.value for limit in limits], "All limits must have a value defined."
+        assert None not in [limit.rating for limit in limits], "All limits must have a value defined."
         assert None not in [limit.color for limit in limits], "All limits must have a color defined."
 
         channel_time = channel.data.index
@@ -116,45 +116,45 @@ class Limits:
                     break
         return limit_colors
 
-    def get_limit_values(self, channel: Channel, interpolate=True) -> list:
+    def get_limit_ratings(self, channel: Channel, interpolate=True) -> list:
         limits = limit_list_sort(self.get_limits(channel.code))
         assert len(limits) > 0, "No limits found."
-        assert None not in [limit.value for limit in limits], "All limits must have a value defined."
+        assert None not in [limit.rating for limit in limits], "All limits must have a value defined."
 
         channel_times = channel.data.index
         channel_values = channel.data.values
 
         if interpolate:
-            limit_values = []
+            limit_ratings = []
             limit_data = {limit: limit.get_data(channel_times, x_unit="s", y_unit=channel.unit) for limit in limits}
             for idx, (channel_time, channel_value) in enumerate(zip(channel_times, channel_values)):
-                limit_values.append(np.interp(channel_value, [limit_data[limit][idx] for limit in limits], [limit.value for limit in limits]))
+                limit_ratings.append(np.interp(channel_value, [limit_data[limit][idx] for limit in limits], [limit.rating for limit in limits]))
         else:
-            limit_values = []
+            limit_ratings = []
             limit_data = {limit: limit.get_data(channel_times, x_unit="s", y_unit=channel.unit) for limit in limits}
             for idx, (channel_time, channel_value) in enumerate(zip(channel_times, channel_values)):
                 for limit, data in limit_data.items():
                     if limit.upper and channel_value < data[idx]:
-                        limit_values.append(limit.value)
+                        limit_ratings.append(limit.rating)
                         break
                     if limit.lower and channel_value >= data[idx]:
-                        limit_values.append(limit.value)
+                        limit_ratings.append(limit.rating)
                         break
-        return limit_values
+        return limit_ratings
 
-    def get_limit_max_value(self, channel: Channel, interpolate=True) -> float:
-        return np.nanmax(self.get_limit_values(channel, interpolate))
+    def get_limit_max_rating(self, channel: Channel, interpolate=True) -> float:
+        return np.nanmax(self.get_limit_ratings(channel, interpolate))
 
-    def get_limit_min_value(self, channel: Channel, interpolate=True) -> float:
-        return np.nanmin(self.get_limit_values(channel, interpolate))
+    def get_limit_min_rating(self, channel: Channel, interpolate=True) -> float:
+        return np.nanmin(self.get_limit_ratings(channel, interpolate))
 
     def get_limit_min_color(self, channel: Channel):
-        limit_values = self.get_limit_values(channel, interpolate=False)
+        limit_values = self.get_limit_ratings(channel, interpolate=False)
         limit_colors = self.get_limit_colors(channel)
         return limit_colors[np.argmin(limit_values)]
 
     def get_limit_max_color(self, channel: Channel):
-        limit_values = self.get_limit_values(channel, interpolate=False)
+        limit_values = self.get_limit_ratings(channel, interpolate=False)
         limit_colors = self.get_limit_colors(channel)
         return limit_colors[np.argmax(limit_values)]
 

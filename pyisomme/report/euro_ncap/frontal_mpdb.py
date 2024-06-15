@@ -194,15 +194,15 @@ class EuroNCAP_Frontal_MPDB(Report):
                             self.p = p
 
                             self.extend_limit_list([
-                                Limit([f"?{self.p}HEADDAMA??AAR?"], func=lambda x: 0.42, y_unit="rad/s^2", value=0.0, color="green", name="0 pt. Modifier", upper=True),
-                                Limit([f"?{self.p}HEADDAMA??AAR?"], func=lambda x: 0.42, y_unit="rad/s^2", value=-1., color="orange", name="-1 pt. Modifier", lower=True),
-                                Limit([f"?{self.p}HEADDAMA??AAR?"], func=lambda x: 0.47, y_unit="rad/s^2", value=-2., color="red", name="-2 pt. Modifier", lower=True),
+                                Limit([f"?{self.p}HEADDAMA??AAR?"], func=lambda x: 0.42, y_unit="rad/s^2", rating=0.0, color="green", name="0 pt. Modifier", upper=True),
+                                Limit([f"?{self.p}HEADDAMA??AAR?"], func=lambda x: 0.42, y_unit="rad/s^2", rating=-1., color="orange", name="-1 pt. Modifier", lower=True),
+                                Limit([f"?{self.p}HEADDAMA??AAR?"], func=lambda x: 0.47, y_unit="rad/s^2", rating=-2., color="red", name="-2 pt. Modifier", lower=True),
                             ])
 
                         def calculation(self) -> None:
                             self.channel = self.isomme.get_channel(f"?{self.p}HEADDAMA??AARA")
                             self.value = np.max(self.channel.get_data())
-                            self.rating = self.limits.get_limit_min_value(self.channel, interpolate=False)
+                            self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
 
                 class Criterion_Neck(Criterion):
                     name = "Neck"
@@ -247,7 +247,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                         def calculation(self):
                             self.channel = self.isomme.get_channel(f"?{self.p}NECKUP00??MOYB")
                             self.value = np.min(self.channel.get_data(unit="Nm"))
-                            self.rating = self.limits.get_limit_min_value(self.channel)
+                            self.rating = self.limits.get_limit_min_rating(self.channel)
 
                     class Criterion_Fz_Tension(Criterion):
                         name = "Neck Fz tension"
@@ -269,7 +269,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                         def calculation(self):
                             self.channel = self.isomme.get_channel(f"?{self.p}NECKUP00??FOZA").convert_unit("kN")
                             self.value = np.max(self.channel.get_data())
-                            self.rating = self.limits.get_limit_min_value(self.channel)
+                            self.rating = self.limits.get_limit_min_rating(self.channel)
 
                     class Criterion_Fx_Shear(Criterion):
                         name = "Neck Fx shear"
@@ -298,7 +298,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                         def calculation(self):
                             self.channel = self.isomme.get_channel(f"?{self.p}NECKUP00??FOXA").convert_unit("kN")
                             self.value = self.channel.get_data()[np.argmax(np.abs(self.channel.get_data()))]
-                            self.rating = self.limits.get_limit_min_value(self.channel)
+                            self.rating = self.limits.get_limit_min_rating(self.channel)
 
             class Criterion_Chest_Abdomen(Criterion):
                 name = "Chest and Abdomen"
@@ -362,7 +362,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                         def calculation(self):
                             self.channel = self.isomme.get_channel(f"?{self.p}CHST0000??DSXC").convert_unit("mm")
                             self.value = np.min(self.channel.get_data())
-                            self.rating = self.limits.get_limit_min_value(self.channel)
+                            self.rating = self.limits.get_limit_min_rating(self.channel)
 
                 class Criterion_Abdomen(Criterion):
                     name = "Abdomen"
@@ -395,7 +395,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                         def calculation(self):
                             self.channel = self.isomme.get_channel(f"?{self.p}ABDO0000??DSXC").convert_unit("mm")
                             self.value = np.min(self.channel.get_data())
-                            self.rating = self.limits.get_limit_min_value(self.channel, interpolate=False)
+                            self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
 
             class Criterion_Knee_Femur_Pelvis(Criterion):
                 name = "Knee, Femur and Pelvis"
@@ -461,7 +461,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                         def calculation(self):
                             self.channel = self.isomme.get_channel(f"?{self.p}ACTB0000??FORB").convert_unit("kN")
                             self.value = np.min(self.channel.get_data())
-                            self.rating = self.limits.get_limit_min_value(self.channel)
+                            self.rating = self.limits.get_limit_min_rating(self.channel)
 
                 class Criterion_Femur(Criterion):
                     name = "Femur"
@@ -496,8 +496,8 @@ class EuroNCAP_Frontal_MPDB(Report):
 
                         def calculation(self):
                             self.channel = self.isomme.get_channel(f"?{self.p}FEMR0000??FOZB").convert_unit("kN")
-                            self.value = self.channel.get_data()[np.argmin(self.limits.get_limit_values(self.channel))]  # FIXME: return 0 or no maximum for good and poor/capping (areas without gradient/interpolation)
-                            self.rating = self.limits.get_limit_min_value(self.channel)
+                            self.value = self.channel.get_data()[np.argmin(self.limits.get_limit_ratings(self.channel))]  # FIXME: return 0 or no maximum for good and poor/capping (areas without gradient/interpolation)
+                            self.rating = self.limits.get_limit_min_rating(self.channel)
 
                 class Criterion_Knee(Criterion):
                     name = "Knee"
@@ -533,7 +533,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                         def calculation(self):
                             self.channel = self.isomme.get_channel(f"?{self.p}KNSL0000??DSXB").convert_unit("mm")
                             self.value = np.min(self.channel.get_data())
-                            self.rating = self.limits.get_limit_min_value(self.channel)
+                            self.rating = self.limits.get_limit_min_rating(self.channel)
 
             class Criterion_LowerLeg_Foot_Ankle(Criterion):
                 name = "Lower Leg, Foot and Ankle"
@@ -577,7 +577,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                     def calculation(self):
                         self.channel = self.isomme.get_channel(f"?{self.p}TIIN0000??000B")
                         self.value = np.max(self.channel.get_data())
-                        self.rating = self.limits.get_limit_min_value(self.channel)
+                        self.rating = self.limits.get_limit_min_rating(self.channel)
 
                 class Criterion_Tibia_Compression(Criterion):
                     name = "Tibia Compression"
@@ -598,7 +598,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                     def calculation(self):
                         self.channel = self.isomme.get_channel(f"?{self.p}TIBI0000??FOZB").convert_unit("kN")
                         self.value = np.min(self.channel.get_data())
-                        self.rating = self.limits.get_limit_min_value(self.channel, interpolate=True)
+                        self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=True)
 
                 class Criterion_Pedal_Rearward_Displacement(Criterion):
                     name = "Pedal Rearward Displacement"
@@ -729,7 +729,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                         def calculation(self):
                             self.channel = self.isomme.get_channel(f"?{self.p}NECKUP00??FOXB").convert_unit("kN")
                             self.value = self.channel.get_data(unit="kN")[np.argmax(np.abs(self.channel.get_data(unit="kN")))]
-                            self.rating = self.limits.get_limit_min_value(self.channel)
+                            self.rating = self.limits.get_limit_min_rating(self.channel)
 
                     class Criterion_Fz_Tension(Criterion):
                         def __init__(self, report, isomme, p):
@@ -749,7 +749,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                         def calculation(self) -> None:
                             self.channel = self.isomme.get_channel(f"?{self.p}NECKUP00??FOZB").convert_unit("kN")
                             self.value = np.max(self.channel.get_data())
-                            self.rating = self.limits.get_limit_min_value(self.channel)
+                            self.rating = self.limits.get_limit_min_rating(self.channel)
 
                     class Criterion_My_Extension(Criterion):
                         def __init__(self, report, isomme, p):
@@ -769,7 +769,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                         def calculation(self) -> None:
                             self.channel = self.isomme.get_channel(f"?{self.p}NECKUP00??MOYB").convert_unit("Nm")
                             self.value = np.min(self.channel.get_data())
-                            self.rating = self.limits.get_limit_min_value(self.channel)
+                            self.rating = self.limits.get_limit_min_rating(self.channel)
 
             class Criterion_Chest(Criterion):
                 name = "Chest"
@@ -817,7 +817,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                     def calculation(self):
                         self.channel = self.isomme.get_channel(f"?{self.p}CHST0003??DSXC", f"?{self.p}CHST0000??DSXC").convert_unit("mm")
                         self.value = np.min(self.channel.get_data())
-                        self.rating = self.limits.get_limit_min_value(self.channel, interpolate=True)
+                        self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=True)
 
             class Criterion_Knee_Femur_Pelvis(Criterion):
                 name = "Knee, Femur and Pelvis"
@@ -888,15 +888,15 @@ class EuroNCAP_Frontal_MPDB(Report):
                     super().__init__(report, isomme)
 
                     self.extend_limit_list([
-                        Limit([f"M?MBAR0OLC??VEX?"], func=lambda x: 25, y_unit=g0, name="No Modifier applied", value=0, upper=True),
-                        Limit([f"M?MBAR0OLC??VEX?"], func=lambda x: 25, y_unit=g0, name="-2..0 pt. Modifier", value=0, lower=True),
-                        Limit([f"M?MBAR0OLC??VEX?"], func=lambda x: 40, y_unit=g0, name="-2 pt. Modifier", value=-2, lower=True),
+                        Limit([f"M?MBAR0OLC??VEX?"], func=lambda x: 25, y_unit=g0, name="No Modifier applied", rating=0, upper=True),
+                        Limit([f"M?MBAR0OLC??VEX?"], func=lambda x: 25, y_unit=g0, name="-2..0 pt. Modifier", rating=0, lower=True),
+                        Limit([f"M?MBAR0OLC??VEX?"], func=lambda x: 40, y_unit=g0, name="-2 pt. Modifier", rating=-2, lower=True),
                     ])
 
                 def calculation(self):
                     self.channel = calculate_olc(self.isomme.get_channel(f"M?MBAR0000??VEXA", f"M?MBARCG00??VEXA"))[0]
                     self.value = self.channel.get_data(unit=g0)[0]
-                    self.rating = self.limits.get_limit_min_value(self.channel, interpolate=True)
+                    self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=True)
 
             class Criterion_SD_Modifier(Criterion):
                 pass

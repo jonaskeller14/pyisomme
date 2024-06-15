@@ -165,7 +165,7 @@ class EuroNCAP_Side_Pole(Report):
                 def calculation(self) -> None:
                     self.channel = self.isomme.get_channel(f"?{self.p}TRRI??00??DSYC").convert_unit("mm")
                     self.value = np.min(self.channel.get_data())
-                    self.rating = self.limits.get_limit_min_value(self.channel, interpolate=True)
+                    self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=True)
 
         class Criterion_Abdomen(Criterion):
             name = "Abdomen"
@@ -202,7 +202,7 @@ class EuroNCAP_Side_Pole(Report):
                 def calculation(self) -> None:
                     self.channel = self.isomme.get_channel(f"?{self.p}ABRI??00??DSYC").convert_unit("mm")
                     self.value = np.min(self.channel.get_data())
-                    self.rating = self.limits.get_limit_min_value(self.channel, interpolate=True)
+                    self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=True)
 
         class Criterion_Pelvis(Criterion):
             name = "Pelvis"
@@ -246,7 +246,7 @@ class EuroNCAP_Side_Pole(Report):
                 def calculation(self) -> None:
                     self.channel = self.isomme.get_channel(f"?{self.p}PUBC0000??FOYB").convert_unit("kN")
                     self.value = self.channel.get_data()[np.argmax(np.abs(self.channel.get_data()))]
-                    self.rating = self.limits.get_limit_min_value(self.channel, interpolate=True)
+                    self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=True)
 
     class Page_Head_Acceleration(Page_Plot_nxn):
         name: str = "Driver Head Acceleration"

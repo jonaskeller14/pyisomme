@@ -1,4 +1,4 @@
-from pyisomme.calculate import calculate_hic, calculate_xms, calculate_chest_vc
+from pyisomme.calculate import calculate_xms
 from pyisomme.unit import Unit, g0
 from pyisomme.limits import Limit
 from pyisomme.report.page import Page_Cover, Page_OLC, Page_Result_Table, Page_Plot_nxn, Page
@@ -181,7 +181,7 @@ class EuroNCAP_Frontal_50kmh(Report):
                     def calculation(self):
                         self.channel = self.isomme.get_channel(f"?{self.p}HICR??15??00RX")
                         self.value = self.channel.get_data()[0]
-                        self.rating = self.limits.get_limit_min_value(self.channel, interpolate=True)
+                        self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=True)
 
                 class Criterion_Head_a3ms(Criterion):
                     name = "Head a3ms"
@@ -322,7 +322,7 @@ class EuroNCAP_Frontal_50kmh(Report):
                     def calculation(self):
                         self.channel = self.isomme.get_channel(f"?{self.p}NECKUP00??MOYB")
                         self.value = np.min(self.channel.get_data(unit="Nm"))
-                        self.rating = self.limits.get_limit_min_value(self.channel)
+                        self.rating = self.limits.get_limit_min_rating(self.channel)
 
                 class Criterion_Fz_tension(Criterion):
                     name = "Neck Fz tension"
@@ -344,7 +344,7 @@ class EuroNCAP_Frontal_50kmh(Report):
                     def calculation(self):
                         self.channel = self.isomme.get_channel(f"?{self.p}NECKUP00??FOZA").convert_unit("kN")
                         self.value = np.max(self.channel.get_data())
-                        self.rating = self.limits.get_limit_min_value(self.channel)
+                        self.rating = self.limits.get_limit_min_rating(self.channel)
 
                 class Criterion_Fx_shear(Criterion):
                     name = "Neck Fx shear"
@@ -374,7 +374,7 @@ class EuroNCAP_Frontal_50kmh(Report):
                     def calculation(self):
                         self.channel = self.isomme.get_channel(f"?{self.p}NECKUP00??FOXA").convert_unit("kN")
                         self.value = self.channel.get_data(unit="kN")[np.argmax(np.abs(self.channel.get_data()))]
-                        self.rating = self.limits.get_limit_min_value(self.channel)
+                        self.rating = self.limits.get_limit_min_rating(self.channel)
 
             class Criterion_Chest(Criterion):
                 name = "Chest"
@@ -422,7 +422,7 @@ class EuroNCAP_Frontal_50kmh(Report):
                     def calculation(self):
                         self.channel = self.isomme.get_channel(f"?{self.p}CHST0003??DSXC", f"?{self.p}CHST0000??DSXC").convert_unit("mm")
                         self.value = np.min(self.channel.get_data())
-                        self.rating = self.limits.get_limit_min_value(self.channel, interpolate=True)
+                        self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=True)
 
                 class Criterion_Chest_VC(Criterion):
                     name = "Chest VC"
@@ -444,7 +444,7 @@ class EuroNCAP_Frontal_50kmh(Report):
                     def calculation(self):
                         self.channel = self.isomme.get_channel(f"?{self.p}VCCR0003??VEXC", f"?{self.p}VCCR0000??VEXC").convert_unit("m/s")
                         self.value = np.min(self.channel.get_data())
-                        self.rating = self.limits.get_limit_min_value(self.channel, interpolate=True)
+                        self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=True)
 
                 class Criterion_SteeringWheelContact(Criterion):
                     name = "Modifier Chest Steering Wheel Contact"
@@ -468,8 +468,8 @@ class EuroNCAP_Frontal_50kmh(Report):
                         self.p = p
 
                         self.extend_limit_list([
-                            Limit([f"?{self.p}SEBE????B3FO[X0]?"], name="No Modifier applied", func=lambda x: 6.0, y_unit="kN", upper=True, color="green", value=0),
-                            Limit([f"?{self.p}SEBE????B3FO[X0]?"], name="-2 pt. Modifier", func=lambda x: 6.0, y_unit="kN", lower=True, color="red", value=-2)
+                            Limit([f"?{self.p}SEBE????B3FO[X0]?"], name="No Modifier applied", func=lambda x: 6.0, y_unit="kN", upper=True, color="green", rating=0),
+                            Limit([f"?{self.p}SEBE????B3FO[X0]?"], name="-2 pt. Modifier", func=lambda x: 6.0, y_unit="kN", lower=True, color="red", rating=-2)
                         ])
 
                     def calculate(self):
@@ -533,7 +533,7 @@ class EuroNCAP_Frontal_50kmh(Report):
                         def calculation(self):
                             self.channel = self.isomme.get_channel(f"?{self.p}FEMRLE00??FOZB")
                             self.value = np.min(self.channel.get_data(unit="kN"))
-                            self.rating = self.limits.get_limit_min_value(self.channel, interpolate=True)
+                            self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=True)
 
                     class Criterion_Femur_Axial_Force_Right(Criterion):
                         name = "Femur Axial Force Right"
@@ -554,7 +554,7 @@ class EuroNCAP_Frontal_50kmh(Report):
                         def calculation(self):
                             self.channel = self.isomme.get_channel(f"?{self.p}FEMRRI00??FOZB")
                             self.value = np.min(self.channel.get_data(unit="kN"))
-                            self.rating = self.limits.get_limit_min_value(self.channel, interpolate=True)
+                            self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=True)
 
                 class Criterion_Submarining(Criterion):
                     name = "Submarining"
@@ -710,7 +710,7 @@ class EuroNCAP_Frontal_50kmh(Report):
                     def calculation(self):
                         self.channel = self.isomme.get_channel(f"?{self.p}NECKUP00??MOYB")
                         self.value = np.abs(np.min(self.channel.get_data(unit="Nm")))
-                        self.rating = self.limits.get_limit_min_value(self.channel)
+                        self.rating = self.limits.get_limit_min_rating(self.channel)
 
                 class Criterion_Fz_tension(Criterion):
                     name = "Neck Fz tension"
@@ -731,7 +731,7 @@ class EuroNCAP_Frontal_50kmh(Report):
                     def calculation(self):
                         self.channel = self.isomme.get_channel(f"?{self.p}NECKUP00??FOZA").convert_unit("kN")
                         self.value = np.max(self.channel.get_data())
-                        self.rating = self.limits.get_limit_min_value(self.channel)
+                        self.rating = self.limits.get_limit_min_rating(self.channel)
 
                 class Criterion_Fx_shear(Criterion):
                     name = "Neck Fx shear"
@@ -758,7 +758,7 @@ class EuroNCAP_Frontal_50kmh(Report):
                     def calculation(self):
                         self.channel = self.isomme.get_channel(f"?{self.p}NECKUP00??FOXA").convert_unit("kN")
                         self.value = self.channel.get_data(unit="kN")[np.argmax(np.abs(self.channel.get_data()))]
-                        self.rating = self.limits.get_limit_min_value(self.channel)
+                        self.rating = self.limits.get_limit_min_rating(self.channel)
 
             class Criterion_Chest(Criterion):
                 name = "Chest"
@@ -947,7 +947,7 @@ class EuroNCAP_Frontal_50kmh(Report):
                     def calculation(self):
                         self.channel = self.isomme.get_channel(f"?{self.p}NECKUP00??MOYB")
                         self.value = np.abs(np.min(self.channel.get_data(unit="Nm")))
-                        self.rating = self.limits.get_limit_min_value(self.channel)
+                        self.rating = self.limits.get_limit_min_rating(self.channel)
                         # Reduce max. rating for rear passenger
                         self.rating = np.min([2, self.rating])
 
@@ -970,7 +970,7 @@ class EuroNCAP_Frontal_50kmh(Report):
                     def calculation(self):
                         self.channel = self.isomme.get_channel(f"?{self.p}NECKUP00??FOZA").convert_unit("kN")
                         self.value = np.max(self.channel.get_data())
-                        self.rating = self.limits.get_limit_min_value(self.channel)
+                        self.rating = self.limits.get_limit_min_rating(self.channel)
                         # Reduce max. rating for rear passenger
                         self.rating = np.min([1, self.rating])
 
@@ -999,7 +999,7 @@ class EuroNCAP_Frontal_50kmh(Report):
                     def calculation(self):
                         self.channel = self.isomme.get_channel(f"?{self.p}NECKUP00??FOXA").convert_unit("kN")
                         self.value = self.channel.get_data(unit="kN")[np.argmax(np.abs(self.channel.get_data()))]
-                        self.rating = self.limits.get_limit_min_value(self.channel)
+                        self.rating = self.limits.get_limit_min_rating(self.channel)
                         # Reduce max. rating for rear passenger
                         self.rating = np.min([1, self.rating])
 

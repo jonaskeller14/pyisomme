@@ -117,7 +117,7 @@ class EuroNCAP_Side_Barrier(Report):
                 def calculation(self) -> None:
                     self.channel = self.isomme.get_channel(f"?{self.p}TRRI??00??DSYC").convert_unit("mm")
                     self.value = np.min(self.channel.get_data())
-                    self.rating = self.limits.get_limit_min_value(self.channel, interpolate=True)
+                    self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=True)
 
         class Criterion_Abdomen(Criterion):
             name = "Abdomen"
