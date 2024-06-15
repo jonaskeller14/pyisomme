@@ -168,7 +168,7 @@ class TestLimits(unittest.TestCase):
         limits = pyisomme.Limits(limit_list=[pyisomme.Limit(code_patterns=["11NECKUP????FOX?"], func=lambda x: 500, name="sdfsdf", color="yellow", linestyle="--"),
                                              pyisomme.Limit(code_patterns=["11NECKUP.*FOX[AB]"], func=lambda x: 500, name="sdfsdf", color="yellow", linestyle="--"),
                                              pyisomme.Limit(code_patterns=["11NECKUP????FOY?"], func=lambda x: 750 - 7.5*x, name="da", color="red", linestyle="-"), ])
-        assert len(limits.get_limits("11NECKUP00H3FOXA")) == 2
+        assert len(limits.find_limits("11NECKUP00H3FOXA")) == 2
 
 
 class TestCalculate(unittest.TestCase):

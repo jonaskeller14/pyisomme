@@ -117,7 +117,7 @@ class Plot_Line(Plot):
         if self.limits is not None:
             for ax in axs:
                 for isomme in self.isomme_list:
-                    limit_list_dict[ax] += self.limits[isomme].get_limits(*(codes_plotted[ax][isomme]))
+                    limit_list_dict[ax] += self.limits[isomme].find_limits(*(codes_plotted[ax][isomme]))
 
         # Limit (Line)
         for ax in axs:

@@ -496,7 +496,7 @@ class EuroNCAP_Frontal_MPDB(Report):
 
                         def calculation(self):
                             self.channel = self.isomme.get_channel(f"?{self.p}FEMR0000??FOZB").convert_unit("kN")
-                            self.value = self.channel.get_data()[np.argmin(self.limits.get_limit_ratings(self.channel))]  # FIXME: return 0 or no maximum for good and poor/capping (areas without gradient/interpolation)
+                            self.value = self.limits.get_limit_min_y(self.channel)
                             self.rating = self.limits.get_limit_min_rating(self.channel)
 
                 class Criterion_Knee(Criterion):
@@ -728,7 +728,7 @@ class EuroNCAP_Frontal_MPDB(Report):
 
                         def calculation(self):
                             self.channel = self.isomme.get_channel(f"?{self.p}NECKUP00??FOXB").convert_unit("kN")
-                            self.value = self.channel.get_data(unit="kN")[np.argmax(np.abs(self.channel.get_data(unit="kN")))]
+                            self.value = self.limits.get_limit_min_y(self.channel)
                             self.rating = self.limits.get_limit_min_rating(self.channel)
 
                     class Criterion_Fz_Tension(Criterion):
@@ -748,7 +748,7 @@ class EuroNCAP_Frontal_MPDB(Report):
 
                         def calculation(self) -> None:
                             self.channel = self.isomme.get_channel(f"?{self.p}NECKUP00??FOZB").convert_unit("kN")
-                            self.value = np.max(self.channel.get_data())
+                            self.value = self.limits.get_limit_min_y(self.channel)
                             self.rating = self.limits.get_limit_min_rating(self.channel)
 
                     class Criterion_My_Extension(Criterion):
