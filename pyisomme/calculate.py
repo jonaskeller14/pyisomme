@@ -661,7 +661,7 @@ def calculate_neck_Mx_base(channel_Mx: Channel, channel_Fy: Channel, dz: float =
     })
 
     channel_calc = copy.deepcopy(channel)
-    channel_calc.data = pd.DataFrame(data=[np.max(np.abs(channel.get_data()))],
+    channel_calc.data = pd.DataFrame(data=[channel.get_data()[np.argmax(np.abs(channel.get_data()))]],
                                      index=[channel.data.index[np.argmax(np.abs(channel.get_data()))]])
     channel_calc.set_code(filter_class="X")
     channel_calc.info.add({
@@ -711,7 +711,7 @@ def calculate_neck_My_base(channel_My: Channel, channel_Fx: Channel, dz: float =
     })
 
     channel_calc = copy.deepcopy(channel)
-    channel_calc.data = pd.DataFrame(data=[np.abs(np.min(channel.get_data()))],
+    channel_calc.data = pd.DataFrame(data=[np.min(channel.get_data())],
                                      index=[channel.data.index[np.argmin(channel.get_data())]])
     channel_calc.set_code(filter_class="X")
     channel_calc.info.add({
