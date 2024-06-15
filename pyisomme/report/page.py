@@ -129,4 +129,5 @@ class Page_OLC(Page_Plot_nxn):
 
     def __init__(self, report):
         super().__init__(report)
-        self.channels = {isomme: [["14BPIL??????VEXA", "14BPIL0OLC??VEXA"]] for isomme in self.report.isomme_list}
+        self.channels = {isomme: [[isomme.get_channel("14BPIL??????VEXA", "10SEATLERE??VEXA"),
+                                   isomme.get_channel("14BPIL0OLC??VEXA", "10SEAT0OLC??VEXA")]] for isomme in self.report.isomme_list}
