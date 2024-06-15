@@ -283,7 +283,7 @@ class Channel:
             sample_rate = self.info.get("Sampling interval")
             if sample_rate is None:
                 sample_rate = np.diff(self.data.index).mean()
-                logger.warning(f"Sampling interval not found in channel info. Set sampling interval to mean diff: {sample_rate}.")
+                logger.debug(f"Sampling interval not found in channel info. Set sampling interval to mean diff: {sample_rate}.")
 
             number_of_add_points = 0.01 * sample_rate
             number_of_add_points = min([max([number_of_add_points, 100]), number_of_samples - 1])
@@ -361,7 +361,7 @@ class Channel:
             sample_interval = self.info.get("Sampling interval")
             if sample_interval is None:
                 sample_interval = np.diff(self.data.index).mean()
-                logger.warning(f"Sampling interval not found in channel info. Set sampling interval to mean diff: {sample_interval}.")
+                logger.debug(f"Sampling interval not found in channel info. Set sampling interval to mean diff: {sample_interval}.")
             wd = 2 * np.pi * cfc / 0.6 * 1.25
             wa = np.tan(wd * sample_interval / 2.0)
             a0 = wa**2 / (1 + wa**2 + np.sqrt(2) * wa)
@@ -480,7 +480,7 @@ class Channel:
         :return: Channel
         """
         new_data = pd.DataFrame(
-            cumulative_trapezoid(self.data.iloc[:,0], self.data.index, initial=0),
+            cumulative_trapezoid(self.data.iloc[:, 0], self.data.index, initial=0),
             index=self.data.index
         )
         new_code = self.code.integrate()

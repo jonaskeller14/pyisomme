@@ -510,11 +510,13 @@ class Isomme:
                                 return calculate_neck_nij(c_fz, c_mocy, oop=code_pattern.fine_location_1 == "OP")[4]
 
                 # VC
-                if code_pattern.main_location == "VCCR" and code_pattern.filter_class != "X":
-                    channel = self.get_channel(code_pattern.set(main_location="CHST",
-                                                                physical_dimension="DS"))
+                if code_pattern.main_location == "VCCR":
+                    channel = self.get_channel(code_pattern.set(main_location="CHST", physical_dimension="DS"))
                     if channel is not None:
-                        return calculate_chest_vc(channel)
+                        if code_pattern.filter_class == "X":
+                            return calculate_chest_vc(channel)[1]
+                        else:
+                            return calculate_chest_vc(channel)[0]
 
                 # Acetabulum Compression (Maximum of left and right)
                 if code_pattern.main_location == "ACTB" and code_pattern.fine_location_1 == "00" and code_pattern.fine_location_2 == "00" and code_pattern.physical_dimension == "FO" and code_pattern.direction == "R":

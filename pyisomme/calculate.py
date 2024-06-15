@@ -723,7 +723,10 @@ def calculate_neck_My_base(channel_My: Channel, channel_Fx: Channel, dz: float =
 
 
 @debug_logging(logger)
-def calculate_chest_vc(channel: Channel | None, scaling_factor: float = None, defo_constant: float = None, dummy: str = None):
+def calculate_chest_vc(channel: Channel | None,
+                       scaling_factor: float = None,
+                       defo_constant: float = None,
+                       dummy: str = None) -> tuple[Channel | None, Channel | None]:
     """
     References:
     - references/Euro-NCAP/tb-021-data-acquisition-and-injury-calculation-v402.pdf
@@ -735,7 +738,7 @@ def calculate_chest_vc(channel: Channel | None, scaling_factor: float = None, de
     :return:
     """
     if channel is None:
-        return None
+        return None, None
 
     channel = copy.deepcopy(channel).convert_unit("m")
 
@@ -788,19 +791,27 @@ def calculate_chest_vc(channel: Channel | None, scaling_factor: float = None, de
 
     vc = scaling_factor * v_t * c_t
 
-    new_code = channel.code.set(main_location="VCCR", physical_dimension="VE", direction="X")
-    new_unit = channel.unit / Unit("s")
-    new_data = pd.DataFrame(vc, index=t)
-    new_info = channel.info
-    new_info.update({
-        "Data source": "Calculation",
-    }).add({
-        ".Channel 001": channel.code,
-        ".Filter": channel.code.get_info().get("Filter Class"),
-        ".Scaling factor": scaling_factor,
-        ".Deformation constant": defo_constant})
+    channel_vc = Channel(code=channel.code.set(main_location="VCCR", physical_dimension="VE", direction="X"),
+                         data=pd.DataFrame(vc, index=t),
+                         unit=channel.unit / Unit("s"),
+                         info=channel.info.update({
+                             "Data source": "Calculation",
+                         }).add({
+                             ".Channel 001": channel.code,
+                             ".Filter": channel.code.filter_class,
+                             ".Scaling factor": scaling_factor,
+                             ".Deformation constant": defo_constant}))
 
-    return Channel(code=new_code, unit=new_unit, data=new_data, info=new_info)  # TODO: return calcualted channel, add subset t2
+    channel_vc_x = Channel(code=channel_vc.code.set(filter_class="X"),
+                           data=pd.DataFrame([np.max(channel_vc.get_data())], index=[channel.data.index[np.argmax(channel_vc.get_data())]]),
+                           unit=channel_vc.unit,
+                           info=channel_vc.info.add({
+                               ".Analysis start time": channel_vc.data.index[0],
+                               ".Analysis end time": channel_vc.data.index[-1],
+                               ".Time": channel.data.index[np.argmax(channel_vc.get_data())],
+                           }))
+
+    return channel_vc, channel_vc_x
 
 
 @debug_logging(logger)
