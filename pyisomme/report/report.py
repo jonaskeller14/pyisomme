@@ -7,7 +7,6 @@ from tqdm import tqdm
 from tqdm.contrib.logging import logging_redirect_tqdm
 import time
 import logging
-import numpy as np
 
 
 logger = logging.getLogger(__name__)
@@ -59,6 +58,7 @@ class Report:
         for isomme in self.isomme_list:
             print(isomme)
             print_subcriteria_results(self.criterion_master[isomme])
+        return self
 
     def __repr__(self):
         return f"Report(title='{self.title}', name='{self.name}')"
@@ -66,7 +66,7 @@ class Report:
     class Criterion_Master(Criterion):
         pass
 
-    def export_pptx(self, path, template: str = None) -> None:
+    def export_pptx(self, path, template: str = None):
         presentation = Presentation(template)
 
         with logging_redirect_tqdm():
@@ -83,3 +83,4 @@ class Report:
                 logger.critical(e)
                 time.sleep(1)
         logger.info(f"pptx successfully exported: {path}")
+        return self
