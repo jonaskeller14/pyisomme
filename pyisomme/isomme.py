@@ -95,18 +95,18 @@ class Isomme:
                 with open(path, "r", encoding="iso-8859-1") as mme_file:
                     self.test_info = parse_mme(mme_file.read())
             # CHN
-            chn_files = glob(str(path.parent.joinpath("**", "*.chn")), recursive=True)
-            if len(chn_files) == 0:
+            chn_paths = glob(str(path.parent.joinpath("**", "*.chn")), recursive=True)
+            if len(chn_paths) == 0:
                 logger.warning("No .chn file found.")
             else:
-                if len(chn_files) > 1:
+                if len(chn_paths) > 1:
                     logger.warning("Multiple .chn files found. First will be used, others ignored.")
-                chn_filepath = chn_files[0]
+                chn_path = chn_paths[0]
                 try:
-                    with open(chn_filepath, "r", encoding="utf-8") as chn_file:
+                    with open(chn_path, "r", encoding="utf-8") as chn_file:
                         self.channel_info = parse_chn(chn_file.read())
                 except UnicodeDecodeError:
-                    with open(chn_filepath, "r", encoding="iso-8859-1") as chn_file:
+                    with open(chn_path, "r", encoding="iso-8859-1") as chn_file:
                         self.channel_info = parse_chn(chn_file.read())
             # 001
             self.channels = []  # in case channel exist trough constructor
@@ -126,7 +126,7 @@ class Isomme:
                         if xxx is None:
                             raise Exception
                         xxx = xxx.groups()[0]
-                        xxx_paths = list(Path(chn_filepath).parent.glob(f"*.{xxx}"))
+                        xxx_paths = list(Path(chn_path).parent.glob(f"*.{xxx}"))
                         if len(xxx_paths) != 0:
                             xxx_path = xxx_paths[0]
                             try:
@@ -139,9 +139,12 @@ class Isomme:
                             logger.critical(f"Channel file '*.{xxx}' not found.")
 
         def read_from_folder(path: Path):
-            if len(list(path.glob("**/*.mme"))) > 1:
+            mme_paths = glob(str(path.joinpath("**", "*.mme")), recursive=True)
+            if len(mme_paths) == 0:
+                raise FileNotFoundError("Folder not containing any .mme/.MME file.")
+            elif len(mme_paths) > 1:
                 logger.warning("Multiple .mme files found. First will be used, others ignored.")
-            read_from_mme(Path(list(path.glob("**/*.mme"))[0]))
+            read_from_mme(Path(mme_paths[0]))
 
         def read_from_zip(path: Path):
             archive = zipfile.ZipFile(path, "r")
@@ -201,14 +204,16 @@ class Isomme:
                         logger.critical(f"Channel file '*.{xxx}' not found.")
 
         path = Path(path)
-        if path.suffix == ".mme":
+        if not path.exists():
+            raise FileNotFoundError(path)
+        elif path.is_file() and path.suffix.lower() == ".mme":
             read_from_mme(path)
-        elif path.is_dir and len(list(path.glob("**/*.mme"))) >= 1:
+        elif path.is_dir():
             read_from_folder(path)
-        elif path.suffix in (".zip",):
+        elif path.is_file() and path.suffix.lower() in (".zip",):
             read_from_zip(path)
         else:
-            raise FileNotFoundError("File not .zip or .mme or Folder not containing .mme file.")
+            raise NotImplementedError(f"Could not read path: {path}")
         logger.info(f"Reading '{path}' done. Number of channel: {len(self.channels)}")
         return self
 
