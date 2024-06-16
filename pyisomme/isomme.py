@@ -143,7 +143,7 @@ class Isomme:
             if len(mme_paths) == 0:
                 raise FileNotFoundError("Folder not containing any .mme/.MME file.")
             elif len(mme_paths) > 1:
-                logger.warning("Multiple .mme files found. First will be used, others ignored.")
+                raise Exception("Multiple .mme files found inside of the folder. Please specify the file path.")
             read_from_mme(Path(mme_paths[0]))
 
         def read_from_zip(path: Path):
