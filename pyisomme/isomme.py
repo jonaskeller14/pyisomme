@@ -13,7 +13,6 @@ import os
 import re
 from pathlib import Path
 import fnmatch
-from glob import glob
 import zipfile
 import logging
 import shutil
@@ -77,148 +76,185 @@ class Isomme:
                     continue
         return None
 
-    def read(self, path: str, *channel_code_patterns):
+    def read(self, path: str | Path, *channel_code_patterns) -> Isomme:
         """
         path must reference...
         - a zip which contains .mme-file
         - a folder which contains .mme-file
         - a .mme file
+        - a .chn file
+        - a .001/.002/.. file
         :param path:
         :return:
         """
-        def read_from_mme(path: Path):
-            # MME
-            self.test_number = path.stem
-            try:
-                with open(path, "r", encoding="utf-8") as mme_file:
-                    self.test_info = parse_mme(mme_file.read())
-            except UnicodeDecodeError:
-                with open(path, "r", encoding="iso-8859-1") as mme_file:
-                    self.test_info = parse_mme(mme_file.read())
-            # CHN
-            chn_paths = glob(str(path.parent.joinpath("**", "*.chn")), recursive=True)
-            if len(chn_paths) == 0:
-                logger.warning("No .chn file found.")
-            else:
-                if len(chn_paths) > 1:
-                    logger.warning("Multiple .chn files found. First will be used, others ignored.")
-                chn_path = chn_paths[0]
-                try:
-                    with open(chn_path, "r", encoding="utf-8") as chn_file:
-                        self.channel_info = parse_chn(chn_file.read())
-                except UnicodeDecodeError:
-                    with open(chn_path, "r", encoding="iso-8859-1") as chn_file:
-                        self.channel_info = parse_chn(chn_file.read())
-            # 001
-            self.channels = []  # in case channel exist trough constructor
-            with logging_redirect_tqdm():
-                for key in tqdm(fnmatch.filter(self.channel_info.keys(), "Name of channel *"), desc=f"Read Channel of {self.test_number}"):
-                    code = self.channel_info[key].split()[0].split("/")[0]
-                    if len(channel_code_patterns) == 0:
-                        skip = False
-                    else:
-                        skip = True
-                        for channel_code_pattern in channel_code_patterns:
-                            if fnmatch.fnmatch(code, channel_code_pattern):
-                                skip = False
-                                break
-                    if not skip:
-                        xxx = re.search("Name of channel (\d*)", key)
-                        if xxx is None:
-                            raise Exception
-                        xxx = xxx.groups()[0]
-                        xxx_paths = list(Path(chn_path).parent.glob(f"*.{xxx}"))
-                        if len(xxx_paths) != 0:
-                            xxx_path = xxx_paths[0]
-                            try:
-                                with open(xxx_path, "r", encoding="utf-8") as xxx_file:
-                                    self.channels.append(parse_xxx(xxx_file.read(), isomme=self))
-                            except UnicodeDecodeError:
-                                with open(xxx_path, "r", encoding="iso-8859-1") as xxx_file:
-                                    self.channels.append(parse_xxx(xxx_file.read(), isomme=self))
-                        else:
-                            logger.critical(f"Channel file '*.{xxx}' not found.")
+        path = Path(path).resolve()
 
-        def read_from_folder(path: Path):
-            mme_paths = glob(str(path.joinpath("**", "*.mme")), recursive=True)
-            if len(mme_paths) == 0:
-                raise FileNotFoundError("Folder not containing any .mme/.MME file.")
-            elif len(mme_paths) > 1:
-                raise Exception("Multiple .mme files found inside of the folder. Please specify the file path.")
-            read_from_mme(Path(mme_paths[0]))
-
-        def read_from_zip(path: Path):
-            archive = zipfile.ZipFile(path, "r")
-            # MME
-            for filepath in archive.namelist():
-                if fnmatch.fnmatch(filepath, "*.mme"):
-                    self.test_number = Path(filepath).stem
-                    with archive.open(filepath, "r") as mme_file:
-                        mme_content = mme_file.read()
-                        try:
-                            self.test_info = parse_mme(mme_content.decode("utf-8"))
-                        except UnicodeDecodeError:
-                            self.test_info = parse_mme(mme_content.decode("iso-8859-1"))
-                    break
-            if self.test_number is None:
-                logger.error("No .mme file found.")
-                self.test_number = path.stem
-            # CHN
-            for filepath in archive.namelist():
-                if fnmatch.fnmatch(filepath, "*.chn"):
-                    chn_filepath = filepath
-                    with archive.open(filepath, "r") as chn_file:
-                        chn_content = chn_file.read()
-                        try:
-                            self.channel_info = parse_chn(chn_content.decode("utf-8"))
-                        except UnicodeDecodeError:
-                            self.channel_info = parse_chn(chn_content.decode("iso-8859-1"))
-                    break
-            # 001
-            self.channels = []  # in case channel exist trough constructor
-            with logging_redirect_tqdm():
-                for key in tqdm(fnmatch.filter(self.channel_info.keys(), "Name of channel *"), desc=f"Read Channel of {self.test_number}"):
-                    code = self.channel_info[key].split()[0].split("/")[0]
-                    if len(channel_code_patterns) == 0:
-                        skip = False
-                    else:
-                        skip = True
-                        for channel_code_pattern in channel_code_patterns:
-                            if fnmatch.fnmatch(code, channel_code_pattern):
-                                skip = False
-                                break
-                    if not skip:
-                        xxx = re.search("Name of channel (\d*)", key)
-                        if xxx is None:
-                            raise Exception
-                        xxx = xxx.groups()[0]
-                        xxx_paths = fnmatch.filter(archive.namelist(), str(Path(chn_filepath).parent.joinpath(f"*.{xxx}")))
-                        if len(xxx_paths) != 0:
-                            xxx_path = xxx_paths[0]
-                            with archive.open(xxx_path, "r") as xxx_file:
-                                xxx_content = xxx_file.read()
-                                try:
-                                    self.channels.append(parse_xxx(xxx_content.decode("utf-8"), isomme=self))
-                                except UnicodeDecodeError:
-                                    self.channels.append(parse_xxx(xxx_content.decode("iso-8859-1"), isomme=self))
-                    else:
-                        logger.critical(f"Channel file '*.{xxx}' not found.")
-
-        path = Path(path)
         if not path.exists():
             raise FileNotFoundError(path)
         elif path.is_file() and path.suffix.lower() == ".mme":
-            read_from_mme(path)
+            self.read_from_mme(path, *channel_code_patterns)
         elif path.is_dir():
-            read_from_folder(path)
-        elif path.is_file() and path.suffix.lower() in (".zip",):
-            read_from_zip(path)
+            self.read_from_folder(path, *channel_code_patterns)
+        elif path.is_file() and path.suffix.lower() == ".zip":
+            self.read_from_zip(path, *channel_code_patterns)
+        elif path.is_file() and path.suffix.lower() == ".chn":
+            self.read_from_chn(path, *channel_code_patterns)
+        elif path.is_file() and re.fullmatch(r"\.\d+", path.suffix):
+            self.read_from_xxx(path, *channel_code_patterns)
         else:
             raise NotImplementedError(f"Could not read path: {path}")
         logger.info(f"Reading '{path}' done. Number of channel: {len(self.channels)}")
         return self
 
-    def write(self, path, *channel_code_patterns):
+    def read_from_mme(self, mme_path: Path, *channel_code_patterns) -> Isomme:
+        # MME
+        self.test_number = mme_path.stem
+        try:
+            with open(mme_path, "r", encoding="utf-8") as mme_file:
+                self.test_info = parse_mme(mme_file.read())
+        except UnicodeDecodeError:
+            with open(mme_path, "r", encoding="iso-8859-1") as mme_file:
+                self.test_info = parse_mme(mme_file.read())
+
+        # CHN
+        chn_paths = list(mme_path.parent.rglob(f"{self.test_number}.[cC][hH][nN]"))
+        if len(chn_paths) == 0:
+            raise FileNotFoundError("No .chn file found.")
+        elif len(chn_paths) > 1:
+            raise Exception(f"Multiple .chn file found. {chn_paths}")
+
+        chn_path = chn_paths[0]
+        try:
+            with open(chn_path, "r", encoding="utf-8") as chn_file:
+                self.channel_info = parse_chn(chn_file.read())
+        except UnicodeDecodeError:
+            with open(chn_path, "r", encoding="iso-8859-1") as chn_file:
+                self.channel_info = parse_chn(chn_file.read())
+
+        # 001
+        self.channels = []  # in case channel exist trough constructor, use extend()
+        with logging_redirect_tqdm():
+            for key in tqdm(fnmatch.filter(self.channel_info.keys(), "Name of channel *"), desc=f"Read Channel of {self.test_number}"):
+                code = self.channel_info[key].split()[0].split("/")[0]
+                if len(channel_code_patterns) == 0:
+                    skip = False
+                else:
+                    skip = True
+                    for channel_code_pattern in channel_code_patterns:
+                        if fnmatch.fnmatch(code, channel_code_pattern):
+                            skip = False
+                            break
+                if skip:
+                    continue
+
+                xxx = re.search(r"Name of channel (\d*)", key)
+                if xxx is None:
+                    raise Exception
+                xxx = xxx.groups()[0]
+                xxx_paths = list(Path(chn_path).parent.glob(f"{self.test_number}.{xxx}"))
+                if len(xxx_paths) == 0:
+                    logger.critical(f"Channel file '{self.test_number}.{xxx}' not found.")
+                    continue
+
+                xxx_path = xxx_paths[0]
+                try:
+                    with open(xxx_path, "r", encoding="utf-8") as xxx_file:
+                        self.channels.append(parse_xxx(xxx_file.read(), isomme=self))
+                except UnicodeDecodeError:
+                    with open(xxx_path, "r", encoding="iso-8859-1") as xxx_file:
+                        self.channels.append(parse_xxx(xxx_file.read(), isomme=self))
+        return self
+
+    def read_from_folder(self, folder_path: Path, *channel_code_patterns) -> Isomme:
+        mme_paths = list(folder_path.rglob("*.[mM][mM][eE]"))
+        if len(mme_paths) == 0:
+            raise FileNotFoundError("Folder not containing any .mme/.MME file.")
+        elif len(mme_paths) > 1:
+            raise Exception("Multiple .mme files found inside of the folder. Please specify the .mme-file path.")
+        return self.read_from_mme(mme_paths[0], *channel_code_patterns)
+
+    def read_from_chn(self, chn_path: Path, *channel_code_patterns) -> Isomme:
+        mme_paths = list(chn_path.parent.parent.glob("*.[mM][mM][eE]"))
+        if len(mme_paths) == 0:
+            raise FileNotFoundError("Parent Folder not containing any .mme file.")
+        return self.read_from_mme(mme_paths[0], *channel_code_patterns)
+
+    def read_from_xxx(self, xxx_path: Path, *channel_code_patterns) -> Isomme:
+        mme_paths = list(xxx_path.parent.parent.glob("*.[mM][mM][eE]"))
+        if len(mme_paths) == 0:
+            raise FileNotFoundError("Parent Folder not containing any .mme file.")
+        return self.read_from_mme(mme_paths[0], *channel_code_patterns)
+
+    def read_from_zip(self, zip_path: Path, *channel_code_patterns) -> Isomme:
+        archive = zipfile.ZipFile(zip_path, "r")
+
+        # MME
+        mme_paths = fnmatch.filter(archive.namelist(), "*.[mM][mM][eE]")
+        if len(mme_paths) == 0:
+            raise FileNotFoundError("No .mme file found.")
+        elif len(mme_paths) > 1:
+            raise Exception("Multiple .mme files found.")
+
+        mme_path = mme_paths[0]
+        self.test_number = Path(mme_path).stem
+
+        with archive.open(mme_path, "r") as mme_file:
+            mme_content = mme_file.read()
+            try:
+                self.test_info = parse_mme(mme_content.decode("utf-8"))
+            except UnicodeDecodeError:
+                self.test_info = parse_mme(mme_content.decode("iso-8859-1"))
+
+        # CHN
+        chn_paths = fnmatch.filter(archive.namelist(), f"*{self.test_number}.[cC][hH][nN]")
+        if len(chn_paths) == 0:
+            raise FileNotFoundError("No .chn file found.")
+        elif len(chn_paths) > 1:
+            raise Exception("Multiple .chn files found.")
+
+        chn_path = chn_paths[0]
+        with archive.open(chn_path, "r") as chn_file:
+            chn_content = chn_file.read()
+            try:
+                self.channel_info = parse_chn(chn_content.decode("utf-8"))
+            except UnicodeDecodeError:
+                self.channel_info = parse_chn(chn_content.decode("iso-8859-1"))
+
+        # 001
+        self.channels = []  # in case channel exist trough constructor
+        with logging_redirect_tqdm():
+            for key in tqdm(fnmatch.filter(self.channel_info.keys(), "Name of channel *"), desc=f"Read Channel of {self.test_number}"):
+                code = self.channel_info[key].split()[0].split("/")[0]
+                if len(channel_code_patterns) == 0:
+                    skip = False
+                else:
+                    skip = True
+                    for channel_code_pattern in channel_code_patterns:
+                        if fnmatch.fnmatch(code, channel_code_pattern):
+                            skip = False
+                            break
+                if skip:
+                    continue
+
+                xxx = re.search(r"Name of channel (\d*)", key)
+                if xxx is None:
+                    raise Exception
+                xxx = xxx.groups()[0]
+                xxx_paths = fnmatch.filter(archive.namelist(), str(Path(chn_path).parent.joinpath(f"*.{xxx}")))
+                if len(xxx_paths) == 0:
+                    logger.critical(f"Channel file '*.{xxx}' not found.")
+                    continue
+
+                xxx_path = xxx_paths[0]
+                with archive.open(xxx_path, "r") as xxx_file:
+                    xxx_content = xxx_file.read()
+                    try:
+                        self.channels.append(parse_xxx(xxx_content.decode("utf-8"), isomme=self))
+                    except UnicodeDecodeError:
+                        self.channels.append(parse_xxx(xxx_content.decode("iso-8859-1"), isomme=self))
+        return self
+
+    def write(self, path: str | Path, *channel_code_patterns) -> Isomme:
         """
         Write ISO-MME data to files.
         :param path: output path where to save the ISO-MME data (.mme, folder or .zip)
@@ -284,9 +320,10 @@ class Isomme:
 
         return self
 
-    def extend(self, *others):
+    def extend(self, *others) -> Isomme:
         """
-        Extend channel list with channels of other Isomme-object, with a single Channel-object or a list/tuple of Channel-objects.
+        Extend channel list with channels of other Isomme-object, with a single Channel-object or a list/tuple of
+        Channel-objects.
         Test- and Channel-Info of other Isomme-object will be ignored.
         :param others: Isomme-Object or Channel-object or list/tuple of Channel-objects
         :return: self
@@ -829,9 +866,9 @@ class Isomme:
             print(f"\t{(idx+1):03}\t{channel.code}")
 
 
-def read(*paths) -> list:
+def read(*paths) -> list[Isomme]:
     iso_list = []
     for path in paths:
-        for p in glob(path, recursive=True):
-            iso_list.append(Isomme().read(p))
+        for sub_path in Path().glob(path):
+            iso_list.append(Isomme().read(sub_path))
     return iso_list
