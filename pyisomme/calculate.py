@@ -31,7 +31,7 @@ def calculate_resultant(c1: Channel | None,
 
     new_channel = (c1 ** 2 + c2 ** 2 + c3 ** 2) ** (1 / 2)
     new_channel.info = c1.info.update({
-        "Data source": "Calculation",
+        "Data source": "calculation",
     }).add({
         f".Channel 00{idx}": channel.code for idx, channel in enumerate((c1, c2, c3), 1) if isinstance(channel, Channel)
     }).add({
@@ -103,9 +103,8 @@ def calculate_hic(channel: Channel, max_delta_t) -> Channel | None:
                               filter_class="X"),
         data=pd.DataFrame([res]),
         unit="1",
-        info=[("Data source", "Calculation"),
+        info=[("Data source", "calculation"),
               ("Name of the channel", f"HIC VALUE {max_delta_t * 1e3:.0f}"),
-              ("Data source", "Calculation"),
               ("Number of samples", 1),
               (".Start time", res_t1),
               (".End time", res_t2),
@@ -116,7 +115,7 @@ def calculate_hic(channel: Channel, max_delta_t) -> Channel | None:
 @debug_logging(logger)
 def calculate_xms(channel: Channel, min_delta_t: float = 3, method: str = "S") -> Channel | None:
     """
-    # TODO
+    Exceedance value (typical 3ms)
     :param channel:
     :param min_delta_t: in ms
     :param method: S (for single peak) or C (for cumulative)
@@ -169,7 +168,7 @@ def calculate_xms(channel: Channel, min_delta_t: float = 3, method: str = "S") -
                                 filter_class="X")
     new_info = channel.info
     new_info.update({
-        "Data source": "Calculation",
+        "Data source": "calculation",
     }).add({
         ".Analysis start time": np.min(time_array),
         ".Analysis end time": np.max(time_array),
@@ -239,7 +238,7 @@ def calculate_bric(c_av_x: Channel | None,
     return Channel(
         code=c_av_x.code.set(main_location="BRIC", physical_dimension="00", direction="0", filter_class="X"),
         data=pd.DataFrame([bric]),
-        info=[("Data source", "Calculation"),
+        info=[("Data source", "calculation"),
               (".Analysis start time", np.min([c_av_x.data.index, c_av_y.data.index, c_av_z.data.index])),
               (".Analysis end time", np.max([c_av_x.data.index, c_av_y.data.index, c_av_z.data.index])),
               (".Channel 001", c_av_x.code),
@@ -330,7 +329,7 @@ def calculate_damage(c_aa_x: Channel | None,
     damage_x = Channel(code=c_aa_x.code.set(fine_location_1="DA", fine_location_2="MA", direction="X"),
                        data=pd.DataFrame(beta * np.abs(sol.y[0]), index=sol.t),
                        unit=c_aa_x.unit,
-                       info={"Data source": "Calculation",
+                       info={"Data source": "calculation",
                              ".Channel 001": c_aa_x.code,
                              ".Channel 002": c_aa_y.code,
                              ".Channel 003": c_aa_z.code,
@@ -467,7 +466,7 @@ def calculate_neck_nij(c_fz: Channel,
     c_nij = Channel(code=c_fz.code.set(main_location="NIJC", fine_location_1="OP" if oop else "IP", fine_location_2="00", physical_dimension="00", direction="Y"),
                     data=data_ncf + data_nce + data_nte + data_nte,
                     unit="1",
-                    info={"Data source": "Calculation",
+                    info={"Data source": "calculation",
                           ".Fzcc": fz_c_crit,
                           ".Fzct": fz_t_crit,
                           ".Mycf": mocy_f_crit,
@@ -550,7 +549,7 @@ def calculate_neck_MOCx(channel_Mx: Channel, channel_Fy: Channel, d: float = Non
     channel.set_code(main_location="TMON")
     channel.set_unit("N*m")
     channel.info.update({
-        "Data source": "Calculation",
+        "Data source": "calculation",
     }).add({
         ".Channel 001": channel_Mx.code,
         ".Channel 002": channel_Fy.code,
@@ -601,7 +600,7 @@ def calculate_neck_MOCy(channel_My: Channel, channel_Fx: Channel, d: float = Non
     channel.set_code(main_location="TMON")
     channel.set_unit("N*m")
     channel.info.update({
-        "Data source": "Calculation",
+        "Data source": "calculation",
     }).add({
         ".Channel 001": channel_My.code,
         ".Channel 002": channel_Fx.code,
@@ -651,7 +650,7 @@ def calculate_neck_Mx_base(channel_Mx: Channel, channel_Fy: Channel, dz: float =
     channel.set_code(main_location="TMON")
     channel.set_unit("N*m")
     channel.info.update({
-        "Data source": "Calculation",
+        "Data source": "calculation",
     }).add({
         ".Channel 001": channel_Mx.code,
         ".Channel 002": channel_Fy.code,
@@ -701,7 +700,7 @@ def calculate_neck_My_base(channel_My: Channel, channel_Fx: Channel, dz: float =
     channel.set_unit("N*m")
     channel.set_code(main_location="TMON")
     channel.info.update({
-        "Data source": "Calculation",
+        "Data source": "calculation",
     }).add({
         ".Channel 001": channel_My.code,
         ".Channel 002": channel_Fx.code,
@@ -795,7 +794,7 @@ def calculate_chest_vc(channel: Channel | None,
                          data=pd.DataFrame(vc, index=t),
                          unit=channel.unit / Unit("s"),
                          info=channel.info.update({
-                             "Data source": "Calculation",
+                             "Data source": "calculation",
                          }).add({
                              ".Channel 001": channel.code,
                              ".Filter": channel.code.filter_class,
@@ -834,6 +833,7 @@ def calculate_iliac_force_drop(channel: Channel | None, delta_t: float = 0.001) 
                    data=pd.DataFrame(ifd, index=time_array),
                    unit=channel.unit,
                    info=channel.info.update({"Data source": "Calculation",}))
+                   info=channel.info.update({"Data source": "calculation",}))
 
 
 @debug_logging(logger)
@@ -869,7 +869,7 @@ def calculate_tibia_index(channel_MOX: Channel | None,
         code=channel_MOX.code.set(main_location="TIIN", physical_dimension="00", direction="0"),
         data=pd.DataFrame(t_i, index=time),
         unit="1",
-        info=[("Data source", "Calculation",),
+        info=[("Data source", "calculation",),
               (".Channel 001", channel_MOX.code),
               (".Channel 002", channel_MOY.code),
               (".hannel 003", channel_FOZ.code),])
@@ -928,13 +928,13 @@ def calculate_olc(c_v: Channel | None,
     c_olc_visual.info["OLC [g]"] = olc / 9.81
     c_olc_visual.info["t_1 [s]"] = t_1
     c_olc_visual.info["t_2 [s]"] = t_2
-    c_olc_visual.info["Data source"] = "Calculation"
+    c_olc_visual.info["Data source"] = "calculation"
 
     c_olc = Channel(
         code=c_v.code.set(fine_location_1="0O", fine_location_2="LC", filter_class="X"),
         data=pd.DataFrame([olc / 9.81]),
         unit=g0,
-        info=[("Data source", "Calculation",),
+        info=[("Data source", "calculation",),
               ("t_1 [s]", t_1),
               ("t_2 [s]", t_2)]
     )
