@@ -464,7 +464,7 @@ def calculate_neck_nij(c_fz: Channel,
     data_nte.iloc[is_tension * is_extension, 0] = fz[is_tension * is_extension] / fz_t_crit + mocy[is_tension * is_extension] / mocy_e_crit
 
     c_nij = Channel(code=c_fz.code.set(main_location="NIJC", fine_location_1="OP" if oop else "IP", fine_location_2="00", physical_dimension="00", direction="Y"),
-                    data=data_ncf + data_nce + data_nte + data_nte,
+                    data=pd.DataFrame(np.nansum([data_ncf, data_nce, data_nte, data_nte], axis=0), index=t),
                     unit="1",
                     info={"Data source": "calculation",
                           ".Fzcc": fz_c_crit,
