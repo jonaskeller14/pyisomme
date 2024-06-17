@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 from pyisomme.parsing import parse_mme, parse_chn, parse_xxx
-from pyisomme.channel import create_sample, Code
+from pyisomme.channel import create_sample
+from pyisomme.code import Code
 from pyisomme.calculate import *
 from pyisomme.utils import debug_logging
 from pyisomme.info import Info

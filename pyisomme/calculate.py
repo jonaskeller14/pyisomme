@@ -832,7 +832,6 @@ def calculate_iliac_force_drop(channel: Channel | None, delta_t: float = 0.001) 
     return Channel(code="????????????????",
                    data=pd.DataFrame(ifd, index=time_array),
                    unit=channel.unit,
-                   info=channel.info.update({"Data source": "Calculation",}))
                    info=channel.info.update({"Data source": "calculation",}))
 
 
