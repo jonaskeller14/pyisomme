@@ -798,7 +798,7 @@ class Isomme:
         return None
 
     @debug_logging(logger)
-    def get_channels(self, *code_patterns: str, filter: bool = True, calculate: bool = True, differentiate: bool = True, integrate: bool = True) -> list:
+    def get_channels(self, *code_patterns: str, filter: bool = True, calculate: bool = True, differentiate: bool = False, integrate: bool = False) -> list:
         """
         Get all channels by channel code patter. All Wildcards are supported.
         A list of all matching channels will be returned.
@@ -836,20 +836,25 @@ class Isomme:
 
             # 4. Differentiate
             if differentiate:
-                for channel in self.get_channels(code_pattern.integrate(), filter=filter, calculate=calculate, integrate=False):
-                    try:
+                try:
+                    for channel in self.get_channels(code_pattern.integrate(),
+                                                     filter=filter,
+                                                     calculate=calculate,
+                                                     integrate=False):
                         channel_list.append(channel.differentiate())
-                    except (AttributeError, NotImplementedError) as error:
-                        logger.debug(error)
-                        continue
+                except (AttributeError, NotImplementedError) as error:
+                    logger.debug(error)
 
             # 5. Integrate
             if integrate:
-                for channel in self.get_channels(code_pattern.differentiate(), filter=filter, calculate=calculate, differentiate=False):
-                    try:
+                try:
+                    for channel in self.get_channels(code_pattern.differentiate(),
+                                                     filter=filter,
+                                                     calculate=calculate,
+                                                     differentiate=False):
                         channel_list.append(channel.integrate())
-                    except (AttributeError, NotImplementedError) as error:
-                        logger.debug(error)
+                except (AttributeError, NotImplementedError) as error:
+                    logger.debug(error)
         return channel_list
 
     def add_sample_channel(self, *args, **kwargs) -> Isomme:
