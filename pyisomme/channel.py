@@ -112,7 +112,7 @@ class Channel:
         # Convert Filter-Class to cfc value
         if cfc is None:
             if filter_class == "0":
-                return copy.deepcopy(self)
+                cfc = np.inf
             elif filter_class == "A":
                 cfc = 1000
             elif filter_class == "B":
@@ -137,6 +137,16 @@ class Channel:
                 filter_class = "D"
             else:
                 filter_class = "S"
+
+        # Check if Channel is already filtered
+        if filter_class == "0":
+            return copy.deepcopy(self)
+        elif (filter_class == "A" and self.code.filter_class in ("A", "B", "C", "D") or
+              filter_class == "B" and self.code.filter_class in ("B", "C", "D") or
+              filter_class == "C" and self.code.filter_class in ("C", "D") or
+              filter_class == "D" and self.code.filter_class in ("D",)):
+            logger.warning("No filtering applied. Channel is already filtered.")
+            return copy.deepcopy(self)
 
         # Calculation
         if method == "ISO-6487":
