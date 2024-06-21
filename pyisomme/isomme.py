@@ -87,7 +87,7 @@ class Isomme:
         :param path:
         :return:
         """
-        path = Path(path).resolve()
+        path = Path(path).absolute()
 
         if not path.exists():
             raise FileNotFoundError(path)
