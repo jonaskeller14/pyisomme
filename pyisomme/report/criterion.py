@@ -41,3 +41,24 @@ class Criterion:
 
     def __repr__(self):
         return f"Criterion({self.name})"
+
+    def get_subcriterion(self, *criterion_types: Criterion) -> Criterion | None:
+        for criterion_type in criterion_types:
+            all_subcriteria = [getattr(self, attr) for attr in dir(self) if isinstance(getattr(self, attr), Criterion)]
+            for subcriterion in all_subcriteria:
+                if isinstance(subcriterion, criterion_type):
+                    return subcriterion
+                subsubcriterion = subcriterion.get_subcriterion(criterion_type)
+                if subsubcriterion is not None:
+                    return subsubcriterion
+        return None
+
+    def get_subcriteria(self, *criterion_types: Criterion) -> list[Criterion]:
+        subcriteria = []
+        for criterion_type in criterion_types:
+            all_subcriteria = [getattr(self, attr) for attr in dir(self) if isinstance(getattr(self, attr), Criterion)]
+            for subcriterion in all_subcriteria:
+                if isinstance(subcriterion, criterion_type):
+                    subcriteria.append(subcriterion)
+                subcriteria += subcriterion.get_subcriteria(criterion_type)
+        return subcriteria
