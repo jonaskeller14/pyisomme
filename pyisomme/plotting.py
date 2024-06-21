@@ -101,7 +101,7 @@ class Plot_Line(Plot):
 
                     data = copy.deepcopy(channel.convert_unit(y_units[ax]).data)
                     data.index *= 1000  # convert to ms
-                    ax.plot(data, c=color, label=isomme.test_number if len(channels) <= 1 else f"{isomme.test_number} {channel.code}", ls=self.linestyles[idx2])
+                    ax.plot(data, c=color, label=isomme.test_number if len(channels) <= 1 else f"{isomme.test_number} {channel.code}", ls=self.linestyles[idx2 % len(self.linestyles)])
                     if not ax.get_title():
                         ax.set_title(f"{channel.code}")
                     if not ax.get_xlabel():
