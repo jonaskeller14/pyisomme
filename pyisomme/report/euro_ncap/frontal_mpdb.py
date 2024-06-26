@@ -248,6 +248,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                             self.channel = self.isomme.get_channel(f"?{self.p}NECKUP00??MOYB")
                             self.value = np.min(self.channel.get_data(unit="Nm"))
                             self.rating = self.limits.get_limit_min_rating(self.channel)
+                            self.color = self.limits.get_limit_min_color(self.channel)
 
                     class Criterion_Fz_Tension(Criterion):
                         name = "Neck Fz tension"
@@ -270,6 +271,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                             self.channel = self.isomme.get_channel(f"?{self.p}NECKUP00??FOZA").convert_unit("kN")
                             self.value = np.max(self.channel.get_data())
                             self.rating = self.limits.get_limit_min_rating(self.channel)
+                            self.color = self.limits.get_limit_min_color(self.channel)
 
                     class Criterion_Fx_Shear(Criterion):
                         name = "Neck Fx shear"
@@ -299,6 +301,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                             self.channel = self.isomme.get_channel(f"?{self.p}NECKUP00??FOXA").convert_unit("kN")
                             self.value = self.channel.get_data()[np.argmax(np.abs(self.channel.get_data()))]
                             self.rating = self.limits.get_limit_min_rating(self.channel)
+                            self.color = self.limits.get_limit_min_color(self.channel)
 
             class Criterion_Chest_Abdomen(Criterion):
                 name = "Chest and Abdomen"
@@ -363,6 +366,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                             self.channel = self.isomme.get_channel(f"?{self.p}CHST0000??DSXC").convert_unit("mm")
                             self.value = np.min(self.channel.get_data())
                             self.rating = self.limits.get_limit_min_rating(self.channel)
+                            self.color = self.limits.get_limit_min_color(self.channel)
 
                 class Criterion_Abdomen(Criterion):
                     name = "Abdomen"
@@ -462,6 +466,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                             self.channel = self.isomme.get_channel(f"?{self.p}ACTB0000??FORB").convert_unit("kN")
                             self.value = np.min(self.channel.get_data())
                             self.rating = self.limits.get_limit_min_rating(self.channel)
+                            self.color = self.limits.get_limit_min_color(self.channel)
 
                 class Criterion_Femur(Criterion):
                     name = "Femur"
@@ -498,6 +503,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                             self.channel = self.isomme.get_channel(f"?{self.p}FEMR0000??FOZB").convert_unit("kN")
                             self.value = self.limits.get_limit_min_y(self.channel)
                             self.rating = self.limits.get_limit_min_rating(self.channel)
+                            self.color = self.limits.get_limit_min_color(self.channel)
 
                 class Criterion_Knee(Criterion):
                     name = "Knee"
@@ -534,6 +540,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                             self.channel = self.isomme.get_channel(f"?{self.p}KNSL0000??DSXB").convert_unit("mm")
                             self.value = np.min(self.channel.get_data())
                             self.rating = self.limits.get_limit_min_rating(self.channel)
+                            self.color = self.limits.get_limit_min_color(self.channel)
 
             class Criterion_LowerLeg_Foot_Ankle(Criterion):
                 name = "Lower Leg, Foot and Ankle"
@@ -578,6 +585,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                         self.channel = self.isomme.get_channel(f"?{self.p}TIIN0000??000B")
                         self.value = np.max(self.channel.get_data())
                         self.rating = self.limits.get_limit_min_rating(self.channel)
+                        self.color = self.limits.get_limit_min_color(self.channel)
 
                 class Criterion_Tibia_Compression(Criterion):
                     name = "Tibia Compression"
@@ -730,6 +738,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                             self.channel = self.isomme.get_channel(f"?{self.p}NECKUP00??FOXB").convert_unit("kN")
                             self.value = self.limits.get_limit_min_y(self.channel)
                             self.rating = self.limits.get_limit_min_rating(self.channel)
+                            self.color = self.limits.get_limit_min_color(self.channel)
 
                     class Criterion_Fz_Tension(Criterion):
                         def __init__(self, report, isomme, p):
@@ -750,6 +759,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                             self.channel = self.isomme.get_channel(f"?{self.p}NECKUP00??FOZB").convert_unit("kN")
                             self.value = self.limits.get_limit_min_y(self.channel)
                             self.rating = self.limits.get_limit_min_rating(self.channel)
+                            self.color = self.limits.get_limit_min_color(self.channel)
 
                     class Criterion_My_Extension(Criterion):
                         def __init__(self, report, isomme, p):
@@ -770,6 +780,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                             self.channel = self.isomme.get_channel(f"?{self.p}NECKUP00??MOYB").convert_unit("Nm")
                             self.value = np.min(self.channel.get_data())
                             self.rating = self.limits.get_limit_min_rating(self.channel)
+                            self.color = self.limits.get_limit_min_color(self.channel)
 
             class Criterion_Chest(Criterion):
                 name = "Chest"

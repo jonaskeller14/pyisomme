@@ -18,6 +18,7 @@ class Criterion:
     channel: Channel | None = None
     value: float = np.nan
     rating: float = np.nan
+    color: str | tuple = None
 
     def __init__(self, report, isomme: Isomme):
         self.report = report
