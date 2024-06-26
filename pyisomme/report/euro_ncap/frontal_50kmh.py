@@ -192,18 +192,19 @@ class EuroNCAP_Frontal_50kmh(Report):
                         self.p = p
 
                         self.extend_limit_list([
-                            Limit_G([f"?{self.p}HEAD003C??ACRA"], func=lambda x: 72.000, y_unit=Unit(g0), upper=True),
-                            Limit_A([f"?{self.p}HEAD003C??ACRA"], func=lambda x: 72.000, y_unit=Unit(g0), lower=True),
-                            Limit_M([f"?{self.p}HEAD003C??ACRA"], func=lambda x: 74.667, y_unit=Unit(g0), lower=True),
-                            Limit_W([f"?{self.p}HEAD003C??ACRA"], func=lambda x: 77.333, y_unit=Unit(g0), lower=True),
-                            Limit_P([f"?{self.p}HEAD003C??ACRA"], func=lambda x: 80.000, y_unit=Unit(g0)),
-                            Limit_C([f"?{self.p}HEAD003C??ACRA"], func=lambda x: 80.000, y_unit=Unit(g0), lower=True),
+                            Limit_G([f"?{self.p}HEAD??3C??ACR?"], func=lambda x: 72.000, y_unit=Unit(g0), upper=True),
+                            Limit_A([f"?{self.p}HEAD??3C??ACR?"], func=lambda x: 72.000, y_unit=Unit(g0), lower=True),
+                            Limit_M([f"?{self.p}HEAD??3C??ACR?"], func=lambda x: 74.667, y_unit=Unit(g0), lower=True),
+                            Limit_W([f"?{self.p}HEAD??3C??ACR?"], func=lambda x: 77.333, y_unit=Unit(g0), lower=True),
+                            Limit_P([f"?{self.p}HEAD??3C??ACR?"], func=lambda x: 80.000, y_unit=Unit(g0)),
+                            Limit_C([f"?{self.p}HEAD??3C??ACR?"], func=lambda x: 80.000, y_unit=Unit(g0), lower=True),
                         ])
 
                     def calculation(self):
                         self.channel = calculate_xms(self.isomme.get_channel(f"?{self.p}HEAD0000??ACRA", f"?{self.p}HEADCG00??ACRA"), 3, method="C")
                         self.value = self.channel.get_data(unit=g0)[0]
                         self.rating = np.interp(self.value, [72, 80], [4, 0], left=4, right=-np.inf)
+                        self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=True)
 
                 class Criterion_UnstableAirbagSteeringWheelContact(Criterion):
                     name = "Modifier for Unstable airbag/steering wheel contact"
