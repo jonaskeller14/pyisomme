@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 class Criterion:
-    name: str = None
+    name: str
     limits: Limits = None
     channel: Channel | None = None
     value: float = np.nan

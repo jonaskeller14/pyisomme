@@ -133,6 +133,8 @@ class EuroNCAP_Frontal_MPDB(Report):
                 ])
 
             class Criterion_Head_Neck(Criterion):
+                name = "Head & Neck"
+
                 steering_wheel_airbag_exists: bool = True
 
                 def __init__(self, report, isomme, p: int):
@@ -741,6 +743,8 @@ class EuroNCAP_Frontal_MPDB(Report):
                             self.color = self.limits.get_limit_min_color(self.channel)
 
                     class Criterion_Fz_Tension(Criterion):
+                        name = "Fz Tension"
+
                         def __init__(self, report, isomme, p):
                             super().__init__(report, isomme)
 
@@ -762,6 +766,8 @@ class EuroNCAP_Frontal_MPDB(Report):
                             self.color = self.limits.get_limit_min_color(self.channel)
 
                     class Criterion_My_Extension(Criterion):
+                        name = "My Extension"
+
                         def __init__(self, report, isomme, p):
                             super().__init__(report, isomme)
 
