@@ -79,8 +79,8 @@ class Report:
             try:
                 presentation.save(path)
                 break
-            except Exception as e:
+            except PermissionError as e:
                 logger.critical(e)
-                time.sleep(1)
+                time.sleep(3)
         logger.info(f"pptx successfully exported: {path}")
         return self
