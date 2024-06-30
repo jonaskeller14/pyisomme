@@ -11,7 +11,7 @@ import re
 logger = logging.getLogger(__name__)
 
 
-def parse_mme(text: str) -> list:
+def parse_mme(text: str) -> Info:
     lines = text.splitlines()
     info = Info([])
     for line in lines:
@@ -19,7 +19,7 @@ def parse_mme(text: str) -> list:
 
         if line == "":
             continue
-        match = re.fullmatch(r"(.*[^\s]+)\s*:(.*)", line)
+        match = re.fullmatch(r"(.*\S+)\s*:(.*)", line)
         if match is None:
             logger.error(f"Could not parse malformed line: '{line}'")
             continue
@@ -29,11 +29,11 @@ def parse_mme(text: str) -> list:
     return info
 
 
-def parse_chn(text: str) -> list:
+def parse_chn(text: str) -> Info:
     return parse_mme(text)
 
 
-def parse_xxx(text: str, isomme):
+def parse_xxx(text: str, isomme) -> Channel:
     lines = text.splitlines()
     info = Info([])
     start_data_idx = 0
@@ -42,7 +42,7 @@ def parse_xxx(text: str, isomme):
 
         if line == "":
             continue
-        match = re.fullmatch(r"(.*[^\s]+)\s*:(.*)", line)
+        match = re.fullmatch(r"(.*\S+)\s*:(.*)", line)
         if match is None:
             start_data_idx = idx
             break
@@ -80,7 +80,10 @@ def parse_xxx(text: str, isomme):
             if reference_channel is None:
                 logger.error(f"[{code}] Reference channel {reference_channel_code} not found.")
             else:
-                return Channel(code=code, data=pd.DataFrame(array, index=reference_channel.get_data()), unit=unit, info=info)
+                return Channel(code=code,
+                               data=pd.DataFrame(array, index=reference_channel.get_data()),
+                               unit=unit,
+                               info=info)
 
     elif time_of_first_sample is not None and sampling_interval is not None:
         logger.info(f"[{code}] Assume 'Reference channel' = 'implicit'")
@@ -96,7 +99,10 @@ def parse_xxx(text: str, isomme):
         if reference_channel is None:
             logger.error(f"[{code}] Reference channel not found.")
         else:
-            return Channel(code=code, data=pd.DataFrame(array, index=reference_channel.get_data()), unit=unit, info=info)
+            return Channel(code=code,
+                           data=pd.DataFrame(array, index=reference_channel.get_data()),
+                           unit=unit,
+                           info=info)
 
     logger.warning(f"[{code}] Reference channel type [implicit/explicit] unknown. Could not set index.")
     data = pd.DataFrame(array)
