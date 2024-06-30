@@ -160,32 +160,15 @@ class Limits:
         return np.nanmin(self.get_limit_ratings(channel, interpolate))
 
     def get_limit_colors(self, channel: Channel) -> list:
-        limits = limit_list_sort(self.find_limits(channel.code))
-        assert len(limits) > 0, "No limits found."
-        assert None not in [limit.rating for limit in limits], "All limits must have a value defined."
-        assert None not in [limit.color for limit in limits], "All limits must have a color defined."
-
-        channel_time = channel.data.index
-        channel_values = channel.data.values
-
-        limit_colors = []
-        for channel_time, channel_value in zip(channel_time, channel_values):
-            for limit in limits:
-                if limit.upper and channel_value < limit.get_data(channel_time, x_unit="s", y_unit=channel.unit):
-                    limit_colors.append(limit.color)
-                    break
-                if limit.lower and channel_value >= limit.get_data(channel_time, x_unit="s", y_unit=channel.unit):
-                    limit_colors.append(limit.color)
-                    break
-        return limit_colors
+        return [limit.color for limit in self.get_limits(channel)]
 
     def get_limit_min_color(self, channel: Channel):
-        limit_ratings = self.get_limit_ratings(channel, interpolate=False)
+        limit_ratings = self.get_limit_ratings(channel, interpolate=True)
         limit_colors = self.get_limit_colors(channel)
         return limit_colors[np.nanargmin(limit_ratings)]
 
     def get_limit_max_color(self, channel: Channel):
-        limit_ratings = self.get_limit_ratings(channel, interpolate=False)
+        limit_ratings = self.get_limit_ratings(channel, interpolate=True)
         limit_colors = self.get_limit_colors(channel)
         return limit_colors[np.nanargmax(limit_ratings)]
 
@@ -209,30 +192,21 @@ class Limits:
         diff = np.abs(channel.get_data() - limit_values)
         return idx_candidates[np.argmin(diff[idx_candidates])]
 
-    def get_limit_min_y(self, channel: Channel, unit=None):
+    def get_limit_min_y(self, channel: Channel, unit=None) -> float:
         idx = self.get_limit_min_idx(channel)
         return channel.get_data(unit=unit)[idx]
 
-    def get_limit_max_y(self, channel: Channel, unit=None):
+    def get_limit_max_y(self, channel: Channel, unit=None) -> float:
         idx = self.get_limit_max_idx(channel)
         return channel.get_data(unit=unit)[idx]
 
-    def get_limit_min_x(self, channel: Channel):
+    def get_limit_min_x(self, channel: Channel) -> float:
         idx = self.get_limit_min_idx(channel)
         return channel.data.index[idx]
 
-    def get_limit_max_x(self, channel: Channel):
+    def get_limit_max_x(self, channel: Channel) -> float:
         idx = self.get_limit_max_idx(channel)
         return channel.data.index[idx]
-
-    def add_sym_limits(self):
-        for limit in self.limit_list:
-            new_limit = copy.deepcopy(limit)
-            new_limit.upper = True if limit.lower else None
-            new_limit.lower = True if limit.upper else None
-            new_limit.func = lambda x: -1 * new_limit.func(x)
-
-            self.limit_list.append(new_limit)
 
     def __repr__(self):
         return f"Limits({self.name})"
