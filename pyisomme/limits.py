@@ -192,6 +192,12 @@ class Limits:
         diff = np.abs(channel.get_data() - limit_values)
         return idx_candidates[np.argmin(diff[idx_candidates])]
 
+        idx1 = np.nanargmin([diff_limits_higher_rating_min_max, diff_limits_lower_rating_min_min])
+        if idx1 == 0:
+            return idx_candidates[np.nanargmin(diff_limits_higher_rating_min[idx_candidates])]
+        else:
+            return idx_candidates[np.nanargmax(diff_limits_lower_rating_min[idx_candidates])]
+
     def get_limit_min_y(self, channel: Channel, unit=None) -> float:
         idx = self.get_limit_min_idx(channel)
         return channel.get_data(unit=unit)[idx]

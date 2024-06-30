@@ -45,6 +45,8 @@ class Criterion:
 
     def get_subcriterion(self, *criterion_types: Criterion) -> Criterion | None:
         for criterion_type in criterion_types:
+            if isinstance(self, criterion_type):
+                return self
             all_subcriteria = [getattr(self, attr) for attr in dir(self) if isinstance(getattr(self, attr), Criterion)]
             for subcriterion in all_subcriteria:
                 if isinstance(subcriterion, criterion_type):
@@ -57,6 +59,8 @@ class Criterion:
     def get_subcriteria(self, *criterion_types: Criterion) -> list[Criterion]:
         subcriteria = []
         for criterion_type in criterion_types:
+            if isinstance(self, criterion_type):
+                subcriteria.append(self)
             all_subcriteria = [getattr(self, attr) for attr in dir(self) if isinstance(getattr(self, attr), Criterion)]
             for subcriterion in all_subcriteria:
                 if isinstance(subcriterion, criterion_type):

@@ -19,6 +19,7 @@ class TestUnit(unittest.TestCase):
         pyisomme.Unit(1)
         pyisomme.Unit("1")
         pyisomme.Unit("")
+        assert pyisomme.Unit("°C") == pyisomme.Unit("Celsius") == pyisomme.Unit("deg_C")
         assert pyisomme.Unit("°") == pyisomme.Unit("deg")
         assert pyisomme.Unit("°/s2") == pyisomme.Unit("deg/s^2")
         assert pyisomme.Unit("°/s") == pyisomme.Unit("deg/s")
@@ -75,9 +76,11 @@ class TestIsomme(unittest.TestCase):
         pyisomme.Isomme(test_number="999", test_info=[], channels=[], channel_info=[])
 
     def test_read(self):
-        pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "11391"))
-        pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "11391", "11391.mme"))
-        pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "v11391ISO.zip"))
+        pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "11391"), "11HEAD*")
+        pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "11391", "11391.mme"), "11HEAD*")
+        pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "v11391ISO.zip"), "11HEAD*")
+        pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "11391", "Channel", "11391.chn"), "11HEAD*")
+        pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "11391", "Channel", "11391.001"), "11HEAD*")
 
     def test_get_test_info(self):
         isomme = pyisomme.Isomme(test_info=[("Laboratory test ref. number", "98/7707")])
@@ -242,6 +245,7 @@ class TestReport(unittest.TestCase):
             pyisomme.create_sample("11TRRILE03WSDSYP", y_range=(-30, 0), unit="mm"),
             pyisomme.create_sample("11ABRILE01WSDSYP", y_range=(-30, 0), unit="mm"),
             pyisomme.create_sample("11ABRILE02WSDSYP", y_range=(-30, 0), unit="mm"),
+            pyisomme.create_sample("11PUBC0000WSFOYB", y_range=(-3., 0), unit="kN"),
         ])
 
         report = pyisomme.report.euro_ncap.side_barrier.EuroNCAP_Side_Barrier([self.v1])
@@ -256,6 +260,7 @@ class TestReport(unittest.TestCase):
             pyisomme.create_sample("11TRRILE03WSDSYP", y_range=(-30, 0), unit="mm"),
             pyisomme.create_sample("11ABRILE01WSDSYP", y_range=(-30, 0), unit="mm"),
             pyisomme.create_sample("11ABRILE02WSDSYP", y_range=(-30, 0), unit="mm"),
+            pyisomme.create_sample("11PUBC0000WSFOYB", y_range=(2.0, 0), unit="kN"),
         ])
 
         report = pyisomme.report.euro_ncap.side_pole.EuroNCAP_Side_Pole([self.v1])
