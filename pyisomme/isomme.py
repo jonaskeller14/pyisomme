@@ -271,7 +271,7 @@ class Isomme:
             :return:
             """
             for name, value in info:
-                file.write(f"{name.ljust(29, ' ')}:{value}\n")
+                file.write(f"{name.ljust(29, ' ')}:{value if value is not None else 'NOVALUE'}\n")
             return file
 
         # Main
