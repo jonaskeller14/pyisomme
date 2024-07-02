@@ -303,7 +303,13 @@ class Isomme:
             for channel_idx, channel in enumerate(channels, 1):
                 channel_info[f"Name of channel {channel_idx:03}"] = channel.code + (f' / {channel.get_info("Name of the channel")}' if channel.get_info("Name of the channel") is not None else "")
                 with open(path.parent.joinpath("Channel", f"{path.stem}.{channel_idx:03}"), "w") as xxx_file:
-                    channel.info.update({"Channel code": channel.code})
+                    channel.info.update({"Channel code": channel.code,
+                                         "Number of samples": len(channel.data)})
+                    if channel.get_info("Reference channel", "") in ("implicit", ""):
+                        channel.info.update({
+                            "Time of first sample": channel.data.index[0],
+                            "Sampling interval": np.mean(np.diff(channel.data.index)),
+                        })
                     xxx_file = write_info(xxx_file, channel.info)
                     xxx_file.write(channel.data.to_string(header=False, index=False).replace(" ", ""))
 
