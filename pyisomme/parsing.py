@@ -19,7 +19,7 @@ def parse_mme(text: str) -> Info:
 
         if line == "":
             continue
-        match = re.fullmatch(r"(.*\S+)\s*:(.*)", line)
+        match = re.fullmatch(r"([^:]*\S+)\s*:(.*)", line)
         if match is None:
             logger.error(f"Could not parse malformed line: '{line}'")
             continue
@@ -42,7 +42,7 @@ def parse_xxx(text: str, isomme) -> Channel:
 
         if line == "":
             continue
-        match = re.fullmatch(r"(.*\S+)\s*:(.*)", line)
+        match = re.fullmatch(r"([^:]*\S+)\s*:(.*)", line)
         if match is None:
             start_data_idx = idx
             break
