@@ -5,6 +5,7 @@ import os
 import logging
 import pandas as pd
 import numpy as np
+import shutil
 
 
 logger = logging.getLogger(__name__)
@@ -81,6 +82,14 @@ class TestIsomme(unittest.TestCase):
         pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "v11391ISO.zip"), "11HEAD*")
         pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "11391", "Channel", "11391.chn"), "11HEAD*")
         pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "11391", "Channel", "11391.001"), "11HEAD*")
+
+    def test_write(self):
+        isomme = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "11391"), "11HEAD*")
+        shutil.rmtree("out/write")
+        isomme.write("out/write/01/v11391.mme")
+        isomme.write("out/write/02/v11391.zip")
+        isomme.write("out/write/03/v11391")
+        isomme.write("out/write/04/v11391.mme", "11HEAD??????ACX?")
 
     def test_get_test_info(self):
         isomme = pyisomme.Isomme(test_info=[("Laboratory test ref. number", "98/7707")])

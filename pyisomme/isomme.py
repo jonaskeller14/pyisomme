@@ -11,6 +11,7 @@ from tqdm import tqdm
 from tqdm.contrib.logging import logging_redirect_tqdm
 import os
 import re
+import copy
 from pathlib import Path
 import fnmatch
 import zipfile
@@ -274,10 +275,15 @@ class Isomme:
             return file
 
         # Main
+        channels = self.get_channels(*channel_code_patterns) if len(channel_code_patterns) != 0 else self.channels
+
         path = Path(path)
         if path.suffix == ".mme":
-            assert path.stem == self.test_number
+            if path.stem != self.test_number:
+                logger.warning("Test number does not match file stem. Not compliant with convention.")
+
             os.makedirs(path.parent, exist_ok=True)
+
             # MME
             with open(path, "w") as mme_file:
                 write_info(mme_file, self.test_info)
@@ -286,30 +292,30 @@ class Isomme:
             os.makedirs(path.parent.joinpath("Channel"), exist_ok=True)
 
             # Update Channel Info
-            for name in list(self.channel_info.keys()):
+            channel_info = copy.deepcopy(self.channel_info)
+            for info in channel_info[:]:
+                name, value = info
                 if "Name of channel" in name:
-                    del self.channel_info[name]
-            self.channel_info["Number of channels"] = len(self.channels)  # FIXME channel_code_patterns
+                    channel_info.remove(info)
+            channel_info.update({"Number of channels": len(channels)})
 
             # 001 - iterate over channels
-            for channel_idx, channel in enumerate(self.channels):
-                self.channel_info[f"Name of channel {(channel_idx+1):03}"] = channel.code + (f' / {channel.get_info("Name of the channel")}' if channel.get_info("Name of the channel") is not None else "")
-                with open(path.parent.joinpath("Channel", f"{self.test_number}.{(channel_idx+1):03}"), "w") as xxx_file:
-                    channel.info["Channel code"] = channel.code
+            for channel_idx, channel in enumerate(channels, 1):
+                channel_info[f"Name of channel {channel_idx:03}"] = channel.code + (f' / {channel.get_info("Name of the channel")}' if channel.get_info("Name of the channel") is not None else "")
+                with open(path.parent.joinpath("Channel", f"{path.stem}.{channel_idx:03}"), "w") as xxx_file:
+                    channel.info.update({"Channel code": channel.code})
                     xxx_file = write_info(xxx_file, channel.info)
                     xxx_file.write(channel.data.to_string(header=False, index=False).replace(" ", ""))
 
-            # TODO: channel files with higher idx than written
-
             # CHN
-            with open(path.parent.joinpath("Channel", f"{self.test_number}.chn"), "w") as chn_file:
-                write_info(chn_file, self.channel_info)
+            with open(path.parent.joinpath("Channel", f"{path.stem}.chn"), "w") as chn_file:
+                write_info(chn_file, channel_info)
 
         elif path.is_dir and path.suffix not in (".zip",):
             self.write(path.joinpath(f"{self.test_number}.mme"), *channel_code_patterns)
         elif path.suffix in (".zip",):
             # 1. write by folder
-            folder_path = path.parent.joinpath(self.test_number)  # foldername="<test_number>"
+            folder_path = path.parent.joinpath(path.stem)
             self.write(folder_path, *channel_code_patterns)
 
             # # 2. zip folder
