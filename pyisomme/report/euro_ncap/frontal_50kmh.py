@@ -169,16 +169,16 @@ class EuroNCAP_Frontal_50kmh(Report):
                         self.p = p
 
                         self.extend_limit_list([
-                            Limit_G([f"?{self.p}HICR??15??00RX"], func=lambda x: 500.000, y_unit=1, upper=True),
-                            Limit_A([f"?{self.p}HICR??15??00RX"], func=lambda x: 500.000, y_unit=1, lower=True),
-                            Limit_M([f"?{self.p}HICR??15??00RX"], func=lambda x: 566.667, y_unit=1, lower=True),
-                            Limit_W([f"?{self.p}HICR??15??00RX"], func=lambda x: 633.333, y_unit=1, lower=True),
-                            Limit_P([f"?{self.p}HICR??15??00RX"], func=lambda x: 700.000, y_unit=1),
-                            Limit_C([f"?{self.p}HICR??15??00RX"], func=lambda x: 700.000, y_unit=1, lower=True),
+                            Limit_G([f"?{self.p}HICR0015??00RX", f"?{self.p}HICRCG15??00RX"], func=lambda x: 500.000, y_unit=1, upper=True),
+                            Limit_A([f"?{self.p}HICR0015??00RX", f"?{self.p}HICRCG15??00RX"], func=lambda x: 500.000, y_unit=1, lower=True),
+                            Limit_M([f"?{self.p}HICR0015??00RX", f"?{self.p}HICRCG15??00RX"], func=lambda x: 566.667, y_unit=1, lower=True),
+                            Limit_W([f"?{self.p}HICR0015??00RX", f"?{self.p}HICRCG15??00RX"], func=lambda x: 633.333, y_unit=1, lower=True),
+                            Limit_P([f"?{self.p}HICR0015??00RX", f"?{self.p}HICRCG15??00RX"], func=lambda x: 700.000, y_unit=1),
+                            Limit_C([f"?{self.p}HICR0015??00RX", f"?{self.p}HICRCG15??00RX"], func=lambda x: 700.000, y_unit=1, lower=True),
                         ])
 
                     def calculation(self):
-                        self.channel = self.isomme.get_channel(f"?{self.p}HICR??15??00RX")
+                        self.channel = self.isomme.get_channel(f"?{self.p}HICR0015??00RX", f"?{self.p}HICRCG15??00RX")
                         self.value = self.channel.get_data()[0]
                         self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=True)
                         self.color = self.limits.get_limit_min_color(self.channel)
@@ -192,16 +192,16 @@ class EuroNCAP_Frontal_50kmh(Report):
                         self.p = p
 
                         self.extend_limit_list([
-                            Limit_G([f"?{self.p}HEAD??3C??ACR?"], func=lambda x: 72.000, y_unit=Unit(g0), upper=True),
-                            Limit_A([f"?{self.p}HEAD??3C??ACR?"], func=lambda x: 72.000, y_unit=Unit(g0), lower=True),
-                            Limit_M([f"?{self.p}HEAD??3C??ACR?"], func=lambda x: 74.667, y_unit=Unit(g0), lower=True),
-                            Limit_W([f"?{self.p}HEAD??3C??ACR?"], func=lambda x: 77.333, y_unit=Unit(g0), lower=True),
-                            Limit_P([f"?{self.p}HEAD??3C??ACR?"], func=lambda x: 80.000, y_unit=Unit(g0)),
-                            Limit_C([f"?{self.p}HEAD??3C??ACR?"], func=lambda x: 80.000, y_unit=Unit(g0), lower=True),
+                            Limit_G([f"?{self.p}HEAD003C??ACR?", f"?{self.p}HEADCG3C??ACR?"], func=lambda x: 72.000, y_unit=Unit(g0), upper=True),
+                            Limit_A([f"?{self.p}HEAD003C??ACR?", f"?{self.p}HEADCG3C??ACR?"], func=lambda x: 72.000, y_unit=Unit(g0), lower=True),
+                            Limit_M([f"?{self.p}HEAD003C??ACR?", f"?{self.p}HEADCG3C??ACR?"], func=lambda x: 74.667, y_unit=Unit(g0), lower=True),
+                            Limit_W([f"?{self.p}HEAD003C??ACR?", f"?{self.p}HEADCG3C??ACR?"], func=lambda x: 77.333, y_unit=Unit(g0), lower=True),
+                            Limit_P([f"?{self.p}HEAD003C??ACR?", f"?{self.p}HEADCG3C??ACR?"], func=lambda x: 80.000, y_unit=Unit(g0)),
+                            Limit_C([f"?{self.p}HEAD003C??ACR?", f"?{self.p}HEADCG3C??ACR?"], func=lambda x: 80.000, y_unit=Unit(g0), lower=True),
                         ])
 
                     def calculation(self):
-                        self.channel = self.isomme.get_channel(f"?{self.p}HEAD003C??ACRX",f"?{self.p}HEADCG3C??ACRX")
+                        self.channel = self.isomme.get_channel(f"?{self.p}HEAD003C??ACRX", f"?{self.p}HEADCG3C??ACRX")
                         self.value = self.channel.get_data(unit=g0)[0]
                         self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=True)
                         self.color = self.limits.get_limit_min_color(self.channel)
@@ -1058,11 +1058,11 @@ class EuroNCAP_Frontal_50kmh(Report):
 
         class Criterion_DoorOpeningDuringImpact(Criterion):
             name: str = "Door Opening During Impact"
-            door_opening_during_impact: bool = False
+            number_of_door_openings_during_impact: int = 0
 
             def calculation(self):
-                self.value = self.door_opening_during_impact
-                self.rating = -1 if self.door_opening_during_impact else 0
+                self.value = self.number_of_door_openings_during_impact
+                self.rating = -1 * self.number_of_door_openings_during_impact
 
     class Page_Driver_Result_Table(Page_Result_Table):
         name: str = "Driver Result Table"
