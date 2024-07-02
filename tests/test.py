@@ -184,7 +184,7 @@ class TestLimits(unittest.TestCase):
 
 
 class TestCalculate(unittest.TestCase):
-    v1 = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "11391"), "??TIBI*")
+    v1 = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "11391"), "??TIBI*", "??FEMR*")
 
     def test_calculate_damage(self):
         iso = pyisomme.Isomme(test_number="1234")
@@ -221,6 +221,11 @@ class TestCalculate(unittest.TestCase):
         assert self.v1.get_channel("?1TIINLEUP??000B") is not None
         assert self.v1.get_channel("?3TIINRILO??000B") is not None
 
+    def test_calculate_femur_impulse(self):
+        assert pyisomme.calculate_femur_impulse(self.v1.get_channel("??FEMR??????FOZ?")) is not None
+        assert self.v1.get_channel("??KTHCLE????IMZX") is not None
+        assert self.v1.get_channel("??KTHCRI????IMZX") is not None
+        assert self.v1.get_channel("??KTHC00????IMZX") is not None
 
 class TestReport(unittest.TestCase):
     v1 = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "11391"), "[!B][013]*")

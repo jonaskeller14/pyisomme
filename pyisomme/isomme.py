@@ -565,6 +565,23 @@ class Isomme:
                                        data=pd.DataFrame(values, index=time),
                                        unit=channel_left.unit)
 
+                # KTH
+                if code_pattern.main_location == "KTHC" and code_pattern.physical_dimension == "IM" and code_pattern.fine_location_1 == "00" and code_pattern.filter_class == "X":
+                    channel_left = self.get_channel(code_pattern.set(fine_location_1="LE"))
+                    channel_right = self.get_channel(code_pattern.set(fine_location_1="RI"))
+                    if None not in (channel_left, channel_right):
+                        idx_min = np.argmin([channel_left.get_data()[0], channel_right.get_data()[0]], axis=0)
+                        channel_min = [channel_left, channel_right][idx_min]
+                        return Channel(code=channel_min.code.set(fine_location_1="00"),
+                                       data=channel_min.data,
+                                       unit=channel_min.unit,
+                                       info=channel_min.info)
+
+                if code_pattern.main_location == "KTHC" and code_pattern.physical_dimension == "IM" and code_pattern.fine_location_1 != "00" and code_pattern.filter_class == "X":
+                    channel_foz = self.get_channel(code_pattern.set(main_location="FEMR", physical_dimension="FO", filter_class="B"))
+                    if channel_foz is not None:
+                        return calculate_femur_impulse(channel_foz)
+
                 # Femur Compression (Minimum of left and right)
                 if code_pattern.main_location == "FEMR" and code_pattern.fine_location_1 == "00" and code_pattern.fine_location_2 == "00" and code_pattern.physical_dimension == "FO" and code_pattern.direction == "Z":
                     channel_left = self.get_channel(code_pattern.set(fine_location_1="LE"))

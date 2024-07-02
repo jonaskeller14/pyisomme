@@ -9,7 +9,7 @@ import copy
 import logging
 import numpy as np
 import pandas as pd
-from scipy.integrate import solve_ivp
+from scipy.integrate import solve_ivp, trapezoid
 
 
 logger = logging.getLogger(__name__)
@@ -833,6 +833,33 @@ def calculate_iliac_force_drop(channel: Channel | None, delta_t: float = 0.001) 
                    data=pd.DataFrame(ifd, index=time_array),
                    unit=channel.unit,
                    info=channel.info.update({"Data source": "calculation",}))
+
+
+@debug_logging(logger)
+def calculate_femur_impulse(channel: Channel, y_end: float = -4050) -> Channel:
+    x = channel.data.index
+    y = channel.get_data(unit="N")
+
+    idx_min = np.argmin(y)
+    idx_start = np.nonzero((y >= 0) * (np.arange(len(x)) < idx_min))[0][-1]
+    if y[idx_min] >= y_end:
+        idx_end = idx_min
+    else:
+        idx_end = np.nonzero((y > y_end) * (np.arange(len(x)) > idx_min))[0][0]
+
+    data = trapezoid(y[idx_start:idx_end], x[idx_start:idx_end])
+
+    return Channel(code=channel.code.set(main_location="KTHC", physical_dimension="IM", filter_class="X"),
+                   data=pd.DataFrame([data]),
+                   unit=channel.unit * Unit("s"),
+                   info=channel.info.update({
+                       "Data source": "calculation",
+                   }).add({
+                       ".Channel 001": channel.code,
+                       ".Filter": channel.code.filter_class,
+                       ".Start time": x[idx_start],
+                       ".End time": x[idx_end],
+                   }))
 
 
 @debug_logging(logger)
