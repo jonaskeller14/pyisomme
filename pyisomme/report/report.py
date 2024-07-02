@@ -27,7 +27,8 @@ class Report:
         self.title = title
 
         if protocol is not None:
-            assert protocol in self.protocols.keys(), f"Protocol {protocol} not available. Available protocols: {list(self.protocols.keys())}"
+            assert protocol in self.protocols.keys(), \
+                f"Protocol {protocol} not available. Available protocols: {list(self.protocols.keys())}"
             self.protocol = protocol
 
         self.limits = {isomme: Limits(name=self.name, limit_list=[]) for isomme in isomme_list}
@@ -49,7 +50,9 @@ class Report:
 
     def print_results(self):
         def print_subcriteria_results(criterion, intend="\t"):
-            print(f"{intend}{criterion.name if criterion.name is not None else criterion.__class__.__name__}: Value={criterion.value:.5g} [{criterion.channel.unit if criterion.channel is not None else ''}] Rating={criterion.rating:.5g}")
+            print(f"{intend}{criterion.name if criterion.name is not None else criterion.__class__.__name__}: "
+                  f"Value={criterion.value:.5g} [{criterion.channel.unit if criterion.channel is not None else ''}] "
+                  f"Rating={criterion.rating:.5g}")
 
             subcriteria = [getattr(criterion, a) for a in dir(criterion) if isinstance(getattr(criterion, a), Criterion)]
             for subcriterion in subcriteria:
