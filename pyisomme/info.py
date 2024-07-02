@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, IO
 
 
 class Info(list):
@@ -55,7 +55,12 @@ class Info(list):
     def items(self) -> list:
         return self
 
-    def __contains__(self, key):
+    def write(self, file: IO) -> IO:
+        for name, value in self:
+            file.write(f"{name.ljust(29, ' ')}:{value if value is not None else 'NOVALUE'}\n")
+        return file
+
+    def __contains__(self, key) -> bool:
         for name, _ in self:
             if name == key:
                 return True

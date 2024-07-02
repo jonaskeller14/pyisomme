@@ -366,6 +366,19 @@ class Channel:
         new_channel += x_0
         return new_channel
 
+    def write(self, xxx_path):
+        with open(xxx_path, "w") as xxx_file:
+            self.info.update({"Channel code": self.code,
+                              "Number of samples": len(self.data)})
+            if self.get_info("Reference channel", "") in ("implicit", ""):
+                self.info.update({
+                    "Time of first sample": self.data.index[0],
+                    "Sampling interval": np.mean(np.diff(self.data.index)),
+                })
+            self.info.write(xxx_file)
+            xxx_file.write(self.data.to_string(header=False, index=False).replace(" ", ""))
+        return self
+
     def plot(self, *args, **kwargs) -> None:
         self.data.plot(*args, **kwargs).get_figure().show()
 

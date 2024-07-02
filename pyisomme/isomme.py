@@ -262,19 +262,6 @@ class Isomme:
         :param channel_code_patterns: (optional) only export specific channels identified by code-pattern
         :return:
         """
-        def write_info(file, info: list):
-            """
-            Pattern:
-            <NAME>    :<VALUE>
-            :param file:
-            :param info:
-            :return:
-            """
-            for name, value in info:
-                file.write(f"{name.ljust(29, ' ')}:{value if value is not None else 'NOVALUE'}\n")
-            return file
-
-        # Main
         channels = self.get_channels(*channel_code_patterns) if len(channel_code_patterns) != 0 else self.channels
 
         path = Path(path)
@@ -286,7 +273,7 @@ class Isomme:
 
             # MME
             with open(path, "w") as mme_file:
-                write_info(mme_file, self.test_info)
+                self.test_info.write(mme_file)
 
             # Channel-Folder
             os.makedirs(path.parent.joinpath("Channel"), exist_ok=True)
@@ -302,20 +289,11 @@ class Isomme:
             # 001 - iterate over channels
             for channel_idx, channel in enumerate(channels, 1):
                 channel_info[f"Name of channel {channel_idx:03}"] = channel.code + (f' / {channel.get_info("Name of the channel")}' if channel.get_info("Name of the channel") is not None else "")
-                with open(path.parent.joinpath("Channel", f"{path.stem}.{channel_idx:03}"), "w") as xxx_file:
-                    channel.info.update({"Channel code": channel.code,
-                                         "Number of samples": len(channel.data)})
-                    if channel.get_info("Reference channel", "") in ("implicit", ""):
-                        channel.info.update({
-                            "Time of first sample": channel.data.index[0],
-                            "Sampling interval": np.mean(np.diff(channel.data.index)),
-                        })
-                    xxx_file = write_info(xxx_file, channel.info)
-                    xxx_file.write(channel.data.to_string(header=False, index=False).replace(" ", ""))
+                channel.write(path.parent.joinpath("Channel", f"{path.stem}.{channel_idx:03}"))
 
             # CHN
             with open(path.parent.joinpath("Channel", f"{path.stem}.chn"), "w") as chn_file:
-                write_info(chn_file, channel_info)
+                channel_info.write(chn_file)
 
         elif path.is_dir and path.suffix not in (".zip",):
             self.write(path.joinpath(f"{self.test_number}.mme"), *channel_code_patterns)
