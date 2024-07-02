@@ -1,6 +1,5 @@
-from pyisomme.calculate import calculate_hic, calculate_xms
-from pyisomme.unit import Unit, g0
 from pyisomme.report.page import Page_Cover, Page_Plot_nxn
+from pyisomme.unit import g0
 from pyisomme.report.report import Report
 from pyisomme.report.criterion import Criterion
 from pyisomme.report.euro_ncap.limits import Limit_G, Limit_P, Limit_C, Limit_M, Limit_A, Limit_W
@@ -94,12 +93,12 @@ class EuroNCAP_Side_Pole(Report):
                     self.p = p
 
                     self.extend_limit_list([
-                        Limit_G([f"?{self.p}HICR0015??00RX"], func=lambda x: 700.000, y_unit=1, upper=True),
-                        Limit_C([f"?{self.p}HICR0015??00RX"], func=lambda x: 700.000, y_unit=1, lower=True),
+                        Limit_G([f"?{self.p}HICR0015??00RX", f"?{self.p}HICRCG15??00RX"], func=lambda x: 700.000, y_unit=1, upper=True),
+                        Limit_C([f"?{self.p}HICR0015??00RX", f"?{self.p}HICRCG15??00RX"], func=lambda x: 700.000, y_unit=1, lower=True),
                     ])
 
                 def calculation(self):
-                    self.channel = calculate_hic(self.isomme.get_channel(f"?{self.p}HEAD??00??ACRA"), 15)
+                    self.channel = self.isomme.get_channel(f"?{self.p}HICR0015??00RX", f"?{self.p}HICRCG15??00RX")
                     self.value = self.channel.get_data()[0]
                     self.rating = -np.inf if self.value >= 700 else 4
 
@@ -112,12 +111,12 @@ class EuroNCAP_Side_Pole(Report):
                     self.p = p
 
                     self.extend_limit_list([
-                        Limit_G([f"?{self.p}HEAD003C??ACRA"], func=lambda x: 80.000, y_unit=Unit(g0), upper=True),
-                        Limit_C([f"?{self.p}HEAD003C??ACRA"], func=lambda x: 80.000, y_unit=Unit(g0), lower=True),
+                        Limit_G([f"?{self.p}HEAD003C??ACRA"], func=lambda x: 80.000, y_unit=g0, upper=True),
+                        Limit_C([f"?{self.p}HEAD003C??ACRA"], func=lambda x: 80.000, y_unit=g0, lower=True),
                     ])
 
                 def calculation(self):
-                    self.channel = calculate_xms(self.isomme.get_channel(f"?{self.p}HEAD0000??ACRA", f"?{self.p}HEADCG00??ACRA"), 3, method="C")
+                    self.channel = self.isomme.get_channel(f"?{self.p}HEAD003C??ACRA", f"?{self.p}HEADCG3C??ACRA")
                     self.value = self.channel.get_data(unit=g0)[0]
                     self.rating = -np.inf if self.value >= 80.0 else 4
 
