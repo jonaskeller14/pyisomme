@@ -1,4 +1,3 @@
-from pyisomme.calculate import calculate_xms
 from pyisomme.unit import Unit, g0
 from pyisomme.limits import Limit
 from pyisomme.report.page import Page_Cover, Page_OLC, Page_Result_Table, Page_Plot_nxn, Page
@@ -202,7 +201,7 @@ class EuroNCAP_Frontal_50kmh(Report):
                         ])
 
                     def calculation(self):
-                        self.channel = calculate_xms(self.isomme.get_channel(f"?{self.p}HEAD0000??ACRA", f"?{self.p}HEADCG00??ACRA"), 3, method="C")
+                        self.channel = self.isomme.get_channel(f"?{self.p}HEAD003C??ACRX",f"?{self.p}HEADCG3C??ACRX")
                         self.value = self.channel.get_data(unit=g0)[0]
                         self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=True)
                         self.color = self.limits.get_limit_min_color(self.channel)
