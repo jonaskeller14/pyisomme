@@ -438,7 +438,7 @@ class Isomme:
                 # xms
                 if fnmatch.fnmatch(code_pattern.fine_location_2, "[0-9][CS]") and code_pattern.filter_class == "X":
                     channel = self.get_channel(code_pattern.set(fine_location_2="00",
-                                                                filter_class="?"))
+                                                                filter_class="A"))
                     if channel is not None:
                         return calculate_xms(channel, min_delta_t=int(code_pattern.fine_location_2[0]), method=code_pattern.fine_location_2[1])
 
@@ -739,7 +739,7 @@ class Isomme:
                                 return (channel_dcz - channel_dcz.get_data(t=0)).set_code(physical_dimension="DS")
 
                 # WorldSid Dummy Chest/Abdomen Displacement (Minimum of individual IR-TRACC displacment)
-                if code_pattern.main_location == "TRRI" and code_pattern.fine_location_2 == "00" and code_pattern.fine_location_3 == "WS" and code_pattern.physical_dimension == "DS":
+                if code_pattern.main_location == "TRRI" and code_pattern.fine_location_2 == "00" and code_pattern.fine_location_3 in ("WS", "??") and code_pattern.physical_dimension == "DS":
                     channel_01 = self.get_channel(code_pattern.set(fine_location_2="01"))
                     channel_02 = self.get_channel(code_pattern.set(fine_location_2="02"))
                     channel_03 = self.get_channel(code_pattern.set(fine_location_2="03"))
@@ -749,7 +749,7 @@ class Isomme:
                         return Channel(code=code_pattern,
                                        data=pd.DataFrame(values, index=time),
                                        unit=channel_01.unit)
-                if code_pattern.main_location == "ABRI" and code_pattern.fine_location_2 == "00" and code_pattern.fine_location_3 == "WS" and code_pattern.physical_dimension == "DS":
+                if code_pattern.main_location == "ABRI" and code_pattern.fine_location_2 == "00" and code_pattern.fine_location_3 in ("WS", "??") and code_pattern.physical_dimension == "DS":
                     channel_01 = self.get_channel(code_pattern.set(fine_location_2="01"))
                     channel_02 = self.get_channel(code_pattern.set(fine_location_2="02"))
                     if None not in (channel_01, channel_02):
@@ -760,7 +760,7 @@ class Isomme:
                                        unit=channel_01.unit)
 
                 # WorldSid Dummy Rib IR-TRACC Lateral Length and Absolute/Lateral Displacement
-                if code_pattern.main_location in ("TRRI", "ABRI") and code_pattern.fine_location_3 == "WS":
+                if code_pattern.main_location in ("TRRI", "ABRI") and code_pattern.fine_location_3 in ("WS", "??"):
                     if code_pattern.physical_dimension == "DC" and code_pattern.direction == "Y":
                         channel_dc0 = self.get_channel(code_pattern.set(physical_dimension="DC", direction="0"))
                         channel_anz = self.get_channel(code_pattern.set(physical_dimension="AN", direction="Z"))
@@ -842,7 +842,7 @@ class Isomme:
             # 3. Calculate Channel
             if calculate:
                 channel = self.get_channel(code_pattern)
-                if channel is not None:
+                if channel is not None and channel not in channel_list:
                     channel_list.append(channel)
 
             # 4. Differentiate
