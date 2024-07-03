@@ -330,20 +330,24 @@ class Isomme:
                 raise NotImplementedError(f"Could not extend Isomme with type {type(other)}")
         return self
 
-    def delete_duplicates(self, filterclass_duplicates: bool = False):
+    def delete_duplicates(self, filter_class_duplicates: bool = False):
         """
         Delete channel duplicates (same channel code). The last added one will be deleted first.
-        :param filterclass_duplicates: Delete redundant channels and only keep channels with the least amount of filtering applied
+        :param filter_class_duplicates: Delete redundant channels and only keep channels with the least amount of filtering applied
         :return: self
         """
-        code_list = [channel.code for channel in self.channels]
-        for idx in reversed(range(len(code_list))):
-            code = code_list[idx]
-            if code_list.count(code) > 1:
-                self.channels.pop(idx)
-                code_list.pop(idx)
-        if filterclass_duplicates:
-            pass  # TODO
+        for code in {channel.code for channel in self.channels}:
+            channels = self.get_channels(code, calculate=False, filter=False, differentiate=False, integrate=False)
+            for channel in channels[1:]:
+                self.channels.remove(channel)
+
+        if filter_class_duplicates:
+            for code in {channel.code for channel in self.channels}:
+                channels = self.get_channels(code.set(filter_class="?"), calculate=False, filter=False, differentiate=False, integrate=False)
+                sort_seq = "0XAEPBF2CG3DHQLVS"
+                sort_map = {filter_class: sort_seq.index(filter_class) for filter_class in sort_seq}
+                for channel in sorted(channels, key=lambda channel: sort_map.get(channel.code.filter_class, float('inf')))[1:]:
+                    self.channels.remove(channel)
         return self
 
     def __eq__(self, other):

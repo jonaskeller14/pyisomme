@@ -115,6 +115,20 @@ class TestIsomme(unittest.TestCase):
         isomme_1.extend(channel_list)
         assert len(isomme_1.channels) == 6
 
+    def test_delete_duplicates(self):
+        isomme = pyisomme.Isomme(channels=[
+            pyisomme.Channel(code="11HEAD0000H3ACXA", data=pd.DataFrame([1])),
+            pyisomme.Channel(code="11HEAD0000H3ACYA", data=pd.DataFrame([2])),
+            pyisomme.Channel(code="11HEAD0000H3ACZA", data=pd.DataFrame([3])),
+            pyisomme.Channel(code="11HEAD0000H3ACXA", data=pd.DataFrame([4])),
+            pyisomme.Channel(code="11HEAD0000H3ACX0", data=pd.DataFrame([5])),
+            pyisomme.Channel(code="11HEAD0000H3ACXP", data=pd.DataFrame([6])),
+        ])
+        isomme.delete_duplicates()
+        assert len(isomme.channels) == 5
+        isomme.delete_duplicates(filter_class_duplicates=True)
+        assert len(isomme.channels) == 3 and "11HEAD0000H3ACX0" in [c.code for c in isomme.channels]
+
 
 class TestCode(unittest.TestCase):
     def test_init(self):
