@@ -107,21 +107,22 @@ class Limits:
     def get_limits(self, channel: Channel) -> list[Limit]:
         limits = limit_list_sort(self.find_limits(channel.code))
         assert len(limits) > 0, "No limits found."
-        assert None not in [limit.rating for limit in limits], "All limits must have a value defined."
 
         channel_times = channel.data.index
-        channel_values = channel.data.values
+        channel_values = channel.get_data()
 
-        limit_list = []
-        limit_data = {limit: limit.get_data(channel_times, x_unit="s", y_unit=channel.unit) for limit in limits}
-        for idx, (channel_time, channel_value) in enumerate(zip(channel_times, channel_values)):
-            for limit, data in limit_data.items():
-                if limit.upper and channel_value < data[idx]:
-                    limit_list.append(limit)
-                    break
-                if limit.lower and channel_value >= data[idx]:
-                    limit_list.append(limit)
-                    break
+        limit_data = np.array([limit.get_data(channel_times, x_unit="s", y_unit=channel.unit) for limit in limits])
+        limit_matching = np.zeros_like(limit_data, dtype=bool)
+
+        for idx, (limit, data) in enumerate(zip(limits, limit_data)):
+            limit_matching[idx, :] = (channel_values == data) + ((limit.upper is True) * (channel_values < data)) + ((limit.lower is True) * (channel_values > data))
+
+        diff = np.abs(limit_data - channel_values)
+        diff[~limit_matching] = np.inf
+
+        limit_idx = np.argmin(diff, axis=0)
+        limit_list = list(np.array(limits)[limit_idx])
+
         return limit_list
 
     def get_limit_max(self, channel: Channel) -> Limit:
