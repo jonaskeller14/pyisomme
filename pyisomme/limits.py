@@ -230,21 +230,45 @@ def limit_list_sort(limit_list: list[Limit], sym=False) -> list:
                                                  -1 if limit.upper else 1 if limit.lower else 0))
 
 
-def limit_list_unique(limit_list: list[Limit], x, x_unit, y_unit) -> list:
+def limit_list_unique(limit_list: list[Limit],
+                      x,
+                      x_unit,
+                      y_unit,
+                      compare_code_patterns: bool = False,
+                      compare_func: bool = True,
+                      compare_x_unit: bool = False,
+                      compare_y_unit: bool = False,
+                      compare_name: bool = True,
+                      compare_rating: bool = False,
+                      compare_upper: bool = True,
+                      compare_lower: bool = True) -> list[Limit]:
     filtered_limit_list = []
     for limit in limit_list:
         add = True
         for filtered_limit in filtered_limit_list:
-            # Same data?
-            if not np.all(limit.get_data(x, x_unit=x_unit, y_unit=y_unit) == filtered_limit.get_data(x, x_unit=x_unit, y_unit=y_unit)):
+            if compare_code_patterns and limit.code_patterns != filtered_limit.code_patterns:
                 continue
 
-            # Both upper or both lower?
-            if limit.upper != filtered_limit.upper or limit.lower != filtered_limit.lower:
+            if compare_func and not np.all(limit.get_data(x, x_unit=x_unit, y_unit=y_unit) == filtered_limit.get_data(x, x_unit=x_unit, y_unit=y_unit)):
                 continue
 
-            if limit.name != filtered_limit.name:
-                raise ValueError(f"Multiple limits with same data but different names: {limit.name} and {filtered_limit.name}")
+            if compare_x_unit and limit.x_unit != filtered_limit.x_unit:
+                continue
+
+            if compare_y_unit and limit.y_unit != filtered_limit.y_unit:
+                continue
+
+            if compare_upper and limit.upper != filtered_limit.upper:
+                continue
+
+            if compare_lower and limit.lower != filtered_limit.lower:
+                continue
+
+            if compare_rating and limit.rating != filtered_limit.rating:
+                continue
+
+            if compare_name and limit.name != filtered_limit.name:
+                continue
 
             add = False
         if add:
