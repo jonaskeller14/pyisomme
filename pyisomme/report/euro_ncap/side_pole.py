@@ -100,7 +100,7 @@ class EuroNCAP_Side_Pole(Report):
                 def calculation(self):
                     self.channel = self.isomme.get_channel(f"?{self.p}HICR0015??00RX", f"?{self.p}HICRCG15??00RX")
                     self.value = self.channel.get_data()[0]
-                    self.rating = -np.inf if self.value >= 700 else 4
+                    self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
 
             class Criterion_Head_a3ms(Criterion):
                 name = "Head a3ms"
@@ -111,14 +111,14 @@ class EuroNCAP_Side_Pole(Report):
                     self.p = p
 
                     self.extend_limit_list([
-                        Limit_G([f"?{self.p}HEAD003C??ACRA"], func=lambda x: 80.000, y_unit=g0, upper=True),
-                        Limit_C([f"?{self.p}HEAD003C??ACRA"], func=lambda x: 80.000, y_unit=g0, lower=True),
+                        Limit_G([f"?{self.p}HEAD003C??ACR?", f"?{self.p}HEADCG3C??ACR?"], func=lambda x: 80.000, y_unit=g0, upper=True),
+                        Limit_C([f"?{self.p}HEAD003C??ACR?", f"?{self.p}HEADCG3C??ACR?"], func=lambda x: 80.000, y_unit=g0, lower=True),
                     ])
 
                 def calculation(self):
-                    self.channel = self.isomme.get_channel(f"?{self.p}HEAD003C??ACRA", f"?{self.p}HEADCG3C??ACRA")
+                    self.channel = self.isomme.get_channel(f"?{self.p}HEAD003C??ACRX", f"?{self.p}HEADCG3C??ACRX")
                     self.value = self.channel.get_data(unit=g0)[0]
-                    self.rating = -np.inf if self.value >= 80.0 else 4
+                    self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
 
             class Criterion_DirectHeadContactWithThePole(Criterion):
                 name = "Direct head contact with the pole"
