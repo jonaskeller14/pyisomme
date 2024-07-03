@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-import copy
 import fnmatch
 import re
 from collections.abc import Iterable
 import logging
+from typing import Callable
 import numpy as np
 
 from pyisomme import Channel, Code
@@ -18,6 +18,13 @@ class Limit:
     name: str = None
     rating: float
     color: str = "black"
+    code_patterns: list[str]
+    func: Callable
+    x_unit: str | Unit
+    y_unit: str | Unit
+    lower: bool
+    upper: bool
+    rating: float
 
     def __init__(self, code_patterns: list, func, color: str = None, linestyle: str = "-", name: str = None, rating: float = None, lower: bool = None, upper: bool = None, x_unit="s", y_unit=None):
         self.code_patterns: list = code_patterns
@@ -39,7 +46,7 @@ class Limit:
         self.x_unit = x_unit
         self.y_unit = y_unit
 
-    def get_data(self, x, x_unit, y_unit):
+    def get_data(self, x, x_unit, y_unit) -> float | np.ndarray:
         # Convert x
         if x_unit is not None:
             if self.x_unit is not None:
@@ -172,7 +179,7 @@ class Limits:
         limit_colors = self.get_limit_colors(channel)
         return limit_colors[np.nanargmax(limit_ratings)]
 
-    def get_limit_min_idx(self, channel: Channel):
+    def get_limit_min_idx(self, channel: Channel) -> int:
         limit_ratings = np.array(self.get_limit_ratings(channel, interpolate=True))
         idx_candidates = np.nonzero(np.min(limit_ratings) == limit_ratings)[0]
 
@@ -219,7 +226,8 @@ class Limits:
 
 
 def limit_list_sort(limit_list: list[Limit], sym=False) -> list:
-    return sorted(limit_list, key=lambda limit: (limit.func(0) if not sym else np.abs(limit.func(0)), 0 if limit.upper and limit.lower else -1 if limit.upper else 1 if limit.lower else 0))
+    return sorted(limit_list, key=lambda limit: (limit.func(0) if not sym else np.abs(limit.func(0)),
+                                                 -1 if limit.upper else 1 if limit.lower else 0))
 
 
 def limit_list_unique(limit_list: list[Limit], x, x_unit, y_unit) -> list:
