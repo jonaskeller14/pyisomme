@@ -722,10 +722,10 @@ def calculate_neck_My_base(channel_My: Channel, channel_Fx: Channel, dz: float =
 
 
 @debug_logging(logger)
-def calculate_chest_vc(channel: Channel | None,
-                       scaling_factor: float = None,
-                       defo_constant: float = None,
-                       dummy: str = None) -> tuple[Channel | None, Channel | None]:
+def calculate_vc(channel: Channel | None,
+                 scaling_factor: float = None,
+                 defo_constant: float = None,
+                 dummy: str = None) -> tuple[Channel | None, Channel | None]:
     """
     References:
     - references/Euro-NCAP/tb-021-data-acquisition-and-injury-calculation-v402.pdf
@@ -734,6 +734,7 @@ def calculate_chest_vc(channel: Channel | None,
     :param channel:
     :param scaling_factor:
     :param defo_constant: in unit m
+    :param dummy: Dummy type
     :return:
     """
     if channel is None:
@@ -744,7 +745,7 @@ def calculate_chest_vc(channel: Channel | None,
     if scaling_factor is None or defo_constant is None:
         if dummy is None:
             dummy = channel.code.fine_location_3
-        assert dummy in ("BS", "E2", "ER", "H3", "HF", "HM", "S2", "WF", "WS", "Y6", "Y7", "YA"), f"Dummy {dummy} not supported by {calculate_chest_vc.__name__}"
+        assert dummy in ("BS", "E2", "ER", "H3", "HF", "HM", "S2", "WF", "WS", "Y6", "Y7", "YA"), f"Dummy {dummy} not supported by {calculate_vc.__name__}"
 
         if scaling_factor is None:
             scaling_factor = {
@@ -776,7 +777,7 @@ def calculate_chest_vc(channel: Channel | None,
                 "Y6": 0.122,
                 "Y7": 0.143,
                 "YA": 0.166,
-            }[dummy] # unit: m
+            }[dummy]  # unit: m
 
     c_t = channel.get_data() / defo_constant
 
@@ -790,7 +791,7 @@ def calculate_chest_vc(channel: Channel | None,
 
     vc = scaling_factor * v_t * c_t
 
-    channel_vc = Channel(code=channel.code.set(main_location="VCCR", physical_dimension="VE", direction="X"),
+    channel_vc = Channel(code=channel.code.set(main_location="VCCR" if channel.code.main_location == "CHST" else "VCAR" if channel.code.main_location == "ABDO" else "VC??", physical_dimension="VE"),
                          data=pd.DataFrame(vc, index=t),
                          unit=channel.unit / Unit("s"),
                          info=channel.info.update({
@@ -802,7 +803,7 @@ def calculate_chest_vc(channel: Channel | None,
                              ".Deformation constant": defo_constant}))
 
     channel_vc_x = Channel(code=channel_vc.code.set(filter_class="X"),
-                           data=pd.DataFrame([np.max(channel_vc.get_data())], index=[channel.data.index[np.argmax(channel_vc.get_data())]]),
+                           data=pd.DataFrame([np.max(np.abs(channel_vc.get_data()))], index=[channel.data.index[np.argmax(np.abs(channel_vc.get_data()))]]),
                            unit=channel_vc.unit,
                            info=channel_vc.info.add({
                                ".Analysis start time": channel_vc.data.index[0],
