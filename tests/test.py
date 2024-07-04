@@ -268,6 +268,8 @@ class TestReport(unittest.TestCase):
 
     def test_EuroNCAP_Side_Barrier(self):
         self.v1.extend([
+            pyisomme.create_sample("11SHLDLE00WSFOY0", y_range=(-4, 3), unit="kN"),
+            pyisomme.create_sample("11SHLDRI00WSFOY0", y_range=(1, 2), unit="kN"),
             pyisomme.create_sample("11TRRILE01WSDSYP", y_range=(-30, 0), unit="mm"),
             pyisomme.create_sample("11TRRILE02WSDSYP", y_range=(-30, 0), unit="mm"),
             pyisomme.create_sample("11TRRILE03WSDSYP", y_range=(-30, 0), unit="mm"),
@@ -283,6 +285,8 @@ class TestReport(unittest.TestCase):
 
     def test_EuroNCAP_Side_Pole(self):
         self.v1.extend([
+            pyisomme.create_sample("11SHLDLE00WSFOY0", y_range=(-4, 3), unit="kN"),
+            pyisomme.create_sample("11SHLDRI00WSFOY0", y_range=(1, 2), unit="kN"),
             pyisomme.create_sample("11TRRILE01WSDSYP", y_range=(-30, 0), unit="mm"),
             pyisomme.create_sample("11TRRILE02WSDSYP", y_range=(-30, 0), unit="mm"),
             pyisomme.create_sample("11TRRILE03WSDSYP", y_range=(-30, 0), unit="mm"),
