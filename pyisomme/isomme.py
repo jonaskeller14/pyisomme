@@ -704,7 +704,7 @@ class Isomme:
                     if None not in channels and all(channel.code.fine_location_3 in ("TH", "T3", "00", "??") for channel in channels):
                         time = time_intersect(*channels)
                         values = np.min([channel.get_data(t=time, unit=channels[0].unit) for channel in channels], axis=0)
-                        return Channel(code=code_pattern,
+                        return Channel(code=channels[0].code.set(fine_location_1="00", fine_location_2="00"),
                                        data=pd.DataFrame(values, index=time),
                                        unit=channels[0].unit)
                 if code_pattern.main_location == "ABDO" and code_pattern.fine_location_1 == "00" and code_pattern.fine_location_2 == "00" and code_pattern.physical_dimension == "DS":
@@ -712,7 +712,7 @@ class Isomme:
                     if None not in channels and all(channel.code.fine_location_3 in ("TH", "T3", "00", "??") for channel in channels):
                         time = time_intersect(*channels)
                         values = np.min([channel.get_data(t=time, unit=channels[0].unit) for channel in channels], axis=0)
-                        return Channel(code=code_pattern,
+                        return Channel(code=channels[0].code.set(fine_location_1="00", fine_location_2="00"),
                                        data=pd.DataFrame(values, index=time),
                                        unit=channels[0].unit)
 
@@ -722,28 +722,34 @@ class Isomme:
                     if code_pattern.physical_dimension == "DC":
                         delta = 15.65 if code_pattern.fine_location_2 == "UP" else -15.65 if code_pattern.fine_location_2 == "LO" else 0  # [mm]
                         if code_pattern.direction == "X":
-                            channel_dc0 = self.get_channel(code_pattern.set(physical_dimension="DC", direction="0"))
+                            channel_dc0 = self.get_channel(code_pattern.set(direction="0"))
                             channel_any = self.get_channel(code_pattern.set(physical_dimension="AN", direction="Y"))
                             channel_anz = self.get_channel(code_pattern.set(physical_dimension="AN", direction="Z"))
                             if None not in (channel_dc0, channel_any, channel_anz):
                                 time = time_intersect(channel_dc0, channel_any, channel_anz)
                                 values = delta * np.sin((channel_any).get_data(t=time, unit="rad")) + channel_dc0.get_data(t=time, unit="mm") * np.cos(channel_any.get_data(t=time, unit="rad")) * np.cos(channel_anz.get_data(t=time, unit="rad"))
-                                return Channel(code=code_pattern, data=pd.DataFrame(values, index=time), unit="mm")
+                                return Channel(code=channel_dc0.code.set(direction="X"),
+                                               data=pd.DataFrame(values, index=time),
+                                               unit="mm")
                         if code_pattern.direction == "Y":
-                            channel_dc0 = self.get_channel(code_pattern.set(physical_dimension="DC", direction="0"))
+                            channel_dc0 = self.get_channel(code_pattern.set(direction="0"))
                             channel_anz = self.get_channel(code_pattern.set(physical_dimension="AN", direction="Z"))
                             if None not in (channel_dc0, channel_anz):
                                 time = time_intersect(channel_dc0, channel_anz)
                                 values = channel_dc0.get_data(t=time, unit="mm") * np.sin(channel_anz.get_data(t=time, unit="rad"))
-                                return Channel(code=code_pattern, data=pd.DataFrame(values, index=time), unit="mm")
+                                return Channel(code=channel_dc0.code.set(direction="Y"),
+                                               data=pd.DataFrame(values, index=time),
+                                               unit="mm")
                         if code_pattern.direction == "Z":
-                            channel_dc0 = self.get_channel(code_pattern.set(physical_dimension="DC", direction="0"))
+                            channel_dc0 = self.get_channel(code_pattern.set(direction="0"))
                             channel_any = self.get_channel(code_pattern.set(physical_dimension="AN", direction="Y"))
                             channel_anz = self.get_channel(code_pattern.set(physical_dimension="AN", direction="Z"))
                             if None not in (channel_dc0, channel_any, channel_anz):
                                 time = time_intersect(channel_dc0, channel_any, channel_anz)
                                 values = delta * np.cos((channel_any).get_data(t=time, unit="rad")) - channel_dc0.get_data(t=time, unit="mm") * np.sin(channel_any.get_data(t=time, unit="rad")) * np.cos(channel_anz.get_data(t=time, unit="rad"))
-                                return Channel(code=code_pattern, data=pd.DataFrame(values, index=time), unit="mm")
+                                return Channel(code=channel_dc0.code.set(direction="Z"),
+                                               data=pd.DataFrame(values, index=time),
+                                               unit="mm")
                     if code_pattern.physical_dimension == "DS":
                         if code_pattern.direction == "0":
                             channel_dc0 = self.get_channel(code_pattern.set(physical_dimension="DC"))
@@ -770,18 +776,18 @@ class Isomme:
                     if None not in (channel_01, channel_02, channel_03):
                         time = time_intersect(channel_01, channel_02, channel_03)
                         values = np.min([channel.get_data(t=time, unit=channel_01.unit) for channel in (channel_01, channel_02, channel_03)], axis=0)
-                        return Channel(code=code_pattern,
+                        return Channel(code=channel_01.code.set(fine_location_2="00"),
                                        data=pd.DataFrame(values, index=time),
-                                       unit=channel_01.unit)
+                                       unit=channel_01.unit,)  # TODO: info
                 if code_pattern.main_location == "ABRI" and code_pattern.fine_location_2 == "00" and code_pattern.fine_location_3 in ("WS", "??") and code_pattern.physical_dimension == "DS":
                     channel_01 = self.get_channel(code_pattern.set(fine_location_2="01"))
                     channel_02 = self.get_channel(code_pattern.set(fine_location_2="02"))
                     if None not in (channel_01, channel_02):
                         time = time_intersect(channel_01, channel_02)
                         values = np.min([channel.get_data(t=time, unit=channel_01.unit) for channel in (channel_01, channel_02)], axis=0)
-                        return Channel(code=code_pattern,
+                        return Channel(code=channel_01.code.set(fine_location_2="00"),
                                        data=pd.DataFrame(values, index=time),
-                                       unit=channel_01.unit)
+                                       unit=channel_01.unit)  # TODO info
 
                 # WorldSid Dummy Rib IR-TRACC Lateral Length and Absolute/Lateral Displacement
                 if code_pattern.main_location in ("TRRI", "ABRI") and code_pattern.fine_location_3 in ("WS", "??"):
