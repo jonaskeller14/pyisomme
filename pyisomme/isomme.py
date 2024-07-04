@@ -553,8 +553,14 @@ class Isomme:
                         channel = self.get_channel(code_pattern.set(main_location="CHST", physical_dimension="DS", filter_class="C"))
                         if channel is not None:
                             return calculate_vc(channel)[1]
+                        channel = self.get_channel(code_pattern.set(main_location="TRRI", physical_dimension="DS", filter_class="C"))
+                        if channel is not None:
+                            return calculate_vc(channel)[1]
                     else:
                         channel = self.get_channel(code_pattern.set(main_location="CHST", physical_dimension="DS"))
+                        if channel is not None:
+                            return calculate_vc(channel)[0]
+                        channel = self.get_channel(code_pattern.set(main_location="TRRI", physical_dimension="DS"))
                         if channel is not None:
                             return calculate_vc(channel)[0]
 
@@ -563,8 +569,14 @@ class Isomme:
                         channel = self.get_channel(code_pattern.set(main_location="ABDO", physical_dimension="DS", filter_class="C"))
                         if channel is not None:
                             return calculate_vc(channel)[1]
+                        channel = self.get_channel(code_pattern.set(main_location="ABRI", physical_dimension="DS", filter_class="C"))
+                        if channel is not None:
+                            return calculate_vc(channel)[1]
                     else:
                         channel = self.get_channel(code_pattern.set(main_location="ABDO", physical_dimension="DS"))
+                        if channel is not None:
+                            return calculate_vc(channel)[0]
+                        channel = self.get_channel(code_pattern.set(main_location="ABRI", physical_dimension="DS"))
                         if channel is not None:
                             return calculate_vc(channel)[0]
 
