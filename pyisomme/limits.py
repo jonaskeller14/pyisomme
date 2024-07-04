@@ -227,8 +227,10 @@ class Limits:
 
 
 def limit_list_sort(limit_list: list[Limit], sym=False) -> list:
-    return sorted(limit_list, key=lambda limit: (limit.func(0) if not sym else np.abs(limit.func(0)),
-                                                 -1 if limit.upper else 1 if limit.lower else 0))
+    if sym:
+        return sorted(limit_list, key=lambda limit: (np.abs(limit.func(0)), -1 if limit.upper and limit.func(0) >= 0 else 1 if limit.lower and limit.func(0) >= 0 else 1 if limit.upper and limit.func(0) < 0 else -1 if limit.lower and limit.func(0) < 0 else 0))
+    else:
+        return sorted(limit_list, key=lambda limit: (limit.func(0), -1 if limit.upper else 1 if limit.lower else 0))
 
 
 def limit_list_unique(limit_list: list[Limit],

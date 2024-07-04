@@ -34,6 +34,7 @@ class EuroNCAP_Side_Barrier(Report):
             self.Page_Rating_Table(self),
             self.Page_Values_Table(self),
             EuroNCAP_Side_Pole.Page_Head_Acceleration(self),
+            EuroNCAP_Side_Pole.Page_Shoulder_Lateral_Force(self),
             EuroNCAP_Side_Pole.Page_Chest_Lateral_Compression(self),
             EuroNCAP_Side_Pole.Page_Chest_Lateral_VC(self),
             EuroNCAP_Side_Pole.Page_Abdomen_Lateral_Compression(self),
@@ -103,14 +104,17 @@ class EuroNCAP_Side_Barrier(Report):
 
                 self.criterion_chest_lateral_compression = self.Criterion_Chest_Lateral_Compression(self.report, self.isomme, p=self.p)
                 self.criterion_chest_lateral_vc = self.Criterion_Chest_Lateral_VC(self.report, self.isomme, p=self.p)
+                self.criterion_shoulder_lateral_force = self.Criterion_Shoulder_Lateral_Force(self.report, self.isomme, p=self.p)
 
             def calculation(self) -> None:
                 self.criterion_chest_lateral_compression.calculate()
                 self.criterion_chest_lateral_vc.calculate()
+                self.criterion_shoulder_lateral_force.calculate()
 
                 self.rating = np.min([
                     self.criterion_chest_lateral_compression.rating,
                     self.criterion_chest_lateral_vc.rating,
+                    self.criterion_shoulder_lateral_force.rating,
                 ])
 
             class Criterion_Chest_Lateral_Compression(Criterion):
@@ -137,6 +141,9 @@ class EuroNCAP_Side_Barrier(Report):
                     self.color = self.limits.get_limit_min_color(self.channel)
 
             class Criterion_Chest_Lateral_VC(EuroNCAP_Side_Pole.Criterion_Master.Criterion_Chest.Criterion_Chest_Lateral_VC):
+                pass
+
+            class Criterion_Shoulder_Lateral_Force(EuroNCAP_Side_Pole.Criterion_Master.Criterion_Chest.Criterion_Shoulder_Lateral_Force):
                 pass
 
         class Criterion_Abdomen(Criterion):

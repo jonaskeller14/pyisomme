@@ -547,6 +547,18 @@ class Isomme:
                             elif code_pattern.fine_location_2 == "TE":
                                 return calculate_neck_nij(c_fz, c_mocy, oop=code_pattern.fine_location_1 == "OP")[4]
 
+                # Shoulder Lateral Force (Y) (min/max of left and right)
+                if code_pattern.main_location == "SHLD" and code_pattern.fine_location_1 == "00" and code_pattern.physical_dimension == "FO" and code_pattern.direction == "Y":
+                    channel_left = self.get_channel(code_pattern.set(fine_location_1="LE"))
+                    channel_right = self.get_channel(code_pattern.set(fine_location_1="RI"))
+                    if None not in (channel_left, channel_right):
+                        t = time_intersect(channel_left, channel_right)
+                        y = np.array([channel_left.get_data(t=t), channel_right.get_data(t=t, unit=channel_left.unit)])
+                        return Channel(code=channel_left.code.set(fine_location_1="00"),
+                                       data=pd.DataFrame(y[np.argmax(np.abs(y), axis=0), np.arange(y.shape[1])], index=t),
+                                       unit=channel_left.unit,
+                                       info=channel_left.info)
+
                 # Viscous Criterion (Chest and Abdomen) (min/max of fine_location_1=LE and fine_location_1=RI)
                 if code_pattern.main_location in ("VCCR", "VCAR"):
                     if code_pattern.fine_location_1 == "00":

@@ -35,6 +35,7 @@ class EuroNCAP_Side_Pole(Report):
             self.Page_Values_Table(self),
 
             self.Page_Head_Acceleration(self),
+            self.Page_Shoulder_Lateral_Force(self),
             self.Page_Chest_Lateral_Compression(self),
             self.Page_Chest_Lateral_VC(self),
             self.Page_Abdomen_Lateral_Compression(self),
@@ -148,14 +149,17 @@ class EuroNCAP_Side_Pole(Report):
 
                 self.criterion_chest_lateral_compression = self.Criterion_Chest_Lateral_Compression(self.report, self.isomme, p=self.p)
                 self.criterion_chest_lateral_vc = self.Criterion_Chest_Lateral_VC(self.report, self.isomme, p=self.p)
+                self.criterion_shoulder_lateral_force = self.Criterion_Shoulder_Lateral_Force(self.report, self.isomme, p=self.p)
 
             def calculation(self) -> None:
                 self.criterion_chest_lateral_compression.calculate()
                 self.criterion_chest_lateral_vc.calculate()
+                self.criterion_shoulder_lateral_force.calculate()
 
                 self.rating = np.min([
                     self.criterion_chest_lateral_compression.rating,
                     self.criterion_chest_lateral_vc.rating,
+                    self.criterion_shoulder_lateral_force.rating,
                 ])
 
             class Criterion_Chest_Lateral_Compression(Criterion):
@@ -197,6 +201,26 @@ class EuroNCAP_Side_Pole(Report):
 
                 def calculation(self) -> None:
                     self.channel = self.isomme.get_channel(f"?{self.p}VCCR??00??VEYC")
+                    self.value = self.channel.get_data()[np.argmax(np.abs(self.channel.get_data()))]
+                    self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
+                    self.color = self.limits.get_limit_min_color(self.channel)
+
+            class Criterion_Shoulder_Lateral_Force(Criterion):
+                name = "Modifier Shoulder Lateral Force"
+
+                def __init__(self, report, isomme, p):
+                    super().__init__(report, isomme)
+
+                    self.p = p
+
+                    self.extend_limit_list([
+                        Limit_P([f"?{self.p}SHLD0000??FOY?", f"?{self.p}SHLDLE00??FOY?", f"?{self.p}SHLDRI00??FOY?"], func=lambda x: -3, y_unit="kN", upper=True),
+                        Limit_G([f"?{self.p}SHLD0000??FOY?", f"?{self.p}SHLDLE00??FOY?", f"?{self.p}SHLDRI00??FOY?"], func=lambda x: -3, y_unit="kN", lower=True),
+                        Limit_P([f"?{self.p}SHLD0000??FOY?", f"?{self.p}SHLDLE00??FOY?", f"?{self.p}SHLDRI00??FOY?"], func=lambda x: 3., y_unit="kN", lower=True),
+                    ])
+
+                def calculation(self) -> None:
+                    self.channel = self.isomme.get_channel(f"?{self.p}SHLD0000??FOYB").convert_unit("kN")
                     self.value = self.channel.get_data()[np.argmax(np.abs(self.channel.get_data()))]
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                     self.color = self.limits.get_limit_min_color(self.channel)
@@ -321,6 +345,7 @@ class EuroNCAP_Side_Pole(Report):
                 self.report.Criterion_Master.Criterion_Head.Criterion_Head_a3ms,
                 self.report.Criterion_Master.Criterion_Chest.Criterion_Chest_Lateral_Compression,
                 self.report.Criterion_Master.Criterion_Chest.Criterion_Chest_Lateral_VC,
+                self.report.Criterion_Master.Criterion_Chest.Criterion_Shoulder_Lateral_Force,
                 self.report.Criterion_Master.Criterion_Abdomen.Criterion_Abdomen_Lateral_Compression,
                 self.report.Criterion_Master.Criterion_Abdomen.Criterion_Abdomen_Lateral_VC,
                 self.report.Criterion_Master.Criterion_Pelvis.Criterion_Pubic_Symphysis_Force,
@@ -343,6 +368,7 @@ class EuroNCAP_Side_Pole(Report):
                 self.report.Criterion_Master.Criterion_Head.Criterion_Head_a3ms,
                 self.report.Criterion_Master.Criterion_Chest.Criterion_Chest_Lateral_Compression,
                 self.report.Criterion_Master.Criterion_Chest.Criterion_Chest_Lateral_VC,
+                self.report.Criterion_Master.Criterion_Chest.Criterion_Shoulder_Lateral_Force,
                 self.report.Criterion_Master.Criterion_Abdomen.Criterion_Abdomen_Lateral_Compression,
                 self.report.Criterion_Master.Criterion_Abdomen.Criterion_Abdomen_Lateral_VC,
                 self.report.Criterion_Master.Criterion_Pelvis.Criterion_Pubic_Symphysis_Force,
@@ -414,6 +440,18 @@ class EuroNCAP_Side_Pole(Report):
                                       [f"?{self.report.criterion_master[isomme].p}VCCRRI02??DSYC"],
                                       [f"?{self.report.criterion_master[isomme].p}VCCRLE03??DSYC"],
                                       [f"?{self.report.criterion_master[isomme].p}VCCRRI04??DSYC"]] for isomme in self.report.isomme_list}
+
+    class Page_Shoulder_Lateral_Force(Page_Plot_nxn):
+        name = "Shoulder Lateral Force"
+        title = "Shoulder Lateral Force"
+        nrows = 1
+        ncols = 2
+        sharey = True
+
+        def __init__(self, report):
+            super().__init__(report)
+            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p}SHLDLE00??FOYC"],
+                                      [f"?{self.report.criterion_master[isomme].p}SHLDRI00??FOYC"]] for isomme in self.report.isomme_list}
 
     class Page_Abdomen_Lateral_Compression(Page_Plot_nxn):
         name: str = "Abdomen Lateral Compression"
