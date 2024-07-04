@@ -1,4 +1,4 @@
-from pyisomme.report.page import Page_Cover, Page_OLC, Page_Plot_nxn
+from pyisomme.report.page import Page_Cover, Page_OLC, Page_Plot_nxn, Page_Criterion_Values_Table, Page_Criterion_Rating_Table, Page_Criterion_Values_Chart
 from pyisomme.report.report import Report
 from pyisomme.limits import Limit
 from pyisomme.calculate import calculate_olc
@@ -27,6 +27,9 @@ class EuroNCAP_Frontal_MPDB(Report):
         self.pages = [
             Page_Cover(self),
 
+            self.Page_Driver_Result_Values_Chart(self),
+            self.Page_Driver_Rating_Table(self),
+            self.Page_Driver_Values_Table(self),
             EuroNCAP_Frontal_50kmh.Page_Driver_Head_Acceleration(self),
             self.Page_Driver_Head_Damage(self),
             EuroNCAP_Frontal_50kmh.Page_Driver_Neck_Load(self),
@@ -37,6 +40,9 @@ class EuroNCAP_Frontal_MPDB(Report):
             self.Page_Driver_Tibia_Compression(self),
             self.Page_Driver_Tibia_Index(self),
 
+            self.Page_Passenger_Result_Values_Chart(self),
+            self.Page_Passenger_Rating_Table(self),
+            self.Page_Passenger_Values_Table(self),
             self.Page_Passenger_Head_Acceleration(self),
             self.Page_Passenger_Neck_Load(self),
             self.Page_Passenger_Chest_Deflection(self),
@@ -921,6 +927,79 @@ class EuroNCAP_Frontal_MPDB(Report):
             class Criterion_BO_Modifier(Criterion):
                 pass
 
+    class Page_Driver_Result_Values_Chart(Page_Criterion_Values_Chart):
+        name = "Driver Result Values Chart"
+        title = "Driver Result"
+
+        def __init__(self, report):
+            super().__init__(report)
+
+            criteria_types = [
+                EuroNCAP_Frontal_50kmh.Criterion_Master.Criterion_Driver.Criterion_Head.Criterion_HIC_15,
+                EuroNCAP_Frontal_50kmh.Criterion_Master.Criterion_Driver.Criterion_Head.Criterion_Head_a3ms,
+                self.report.Criterion_Master.Criterion_Driver.Criterion_Head_Neck.Criterion_Head.Criterion_DAMAGE,
+                self.report.Criterion_Master.Criterion_Driver.Criterion_Head_Neck.Criterion_Neck.Criterion_My_Extension,
+                self.report.Criterion_Master.Criterion_Driver.Criterion_Head_Neck.Criterion_Neck.Criterion_Fz_Tension,
+                self.report.Criterion_Master.Criterion_Driver.Criterion_Head_Neck.Criterion_Neck.Criterion_Fx_Shear,
+                self.report.Criterion_Master.Criterion_Driver.Criterion_Chest_Abdomen.Criterion_Chest.Criterion_Chest_Compression,
+                self.report.Criterion_Master.Criterion_Driver.Criterion_Chest_Abdomen.Criterion_Abdomen.Criterion_Abdomen_Compression,
+                self.report.Criterion_Master.Criterion_Driver.Criterion_Knee_Femur_Pelvis.Criterion_Pelvis.Criterion_Acetabulum_Force,
+                self.report.Criterion_Master.Criterion_Driver.Criterion_Knee_Femur_Pelvis.Criterion_Femur.Criterion_Femur_Compression,
+                self.report.Criterion_Master.Criterion_Driver.Criterion_Knee_Femur_Pelvis.Criterion_Knee.Criterion_Knee_Slider_Compression,
+                self.report.Criterion_Master.Criterion_Driver.Criterion_LowerLeg_Foot_Ankle.Criterion_Tibia_Index,
+                self.report.Criterion_Master.Criterion_Driver.Criterion_LowerLeg_Foot_Ankle.Criterion_Tibia_Compression,
+            ]
+
+            self.criteria = {isomme: [
+                self.report.criterion_master[isomme].criterion_driver.get_subcriterion(criterion_type)
+                for criterion_type in criteria_types] for isomme in self.report.isomme_list}
+
+    class Page_Driver_Rating_Table(Page_Criterion_Rating_Table):
+        name = "Driver Rating Table"
+        title = "Driver Rating"
+
+        def __init__(self, report):
+            super().__init__(report)
+
+            criteria_types = [
+                self.report.Criterion_Master.Criterion_Driver.Criterion_Head_Neck,
+                self.report.Criterion_Master.Criterion_Driver.Criterion_Chest_Abdomen,
+                self.report.Criterion_Master.Criterion_Driver.Criterion_Knee_Femur_Pelvis,
+                self.report.Criterion_Master.Criterion_Driver.Criterion_LowerLeg_Foot_Ankle,
+                self.report.Criterion_Master.Criterion_Driver,
+            ]
+
+            self.criteria = {isomme: [
+                self.report.criterion_master[isomme].get_subcriterion(criterion_type)
+                for criterion_type in criteria_types] for isomme in self.report.isomme_list}
+
+    class Page_Driver_Values_Table(Page_Criterion_Values_Table):
+        name = "Driver Values Table"
+        title = "Driver Values"
+
+        def __init__(self, report):
+            super().__init__(report)
+
+            criteria_types = [
+                EuroNCAP_Frontal_50kmh.Criterion_Master.Criterion_Driver.Criterion_Head.Criterion_HIC_15,
+                EuroNCAP_Frontal_50kmh.Criterion_Master.Criterion_Driver.Criterion_Head.Criterion_Head_a3ms,
+                self.report.Criterion_Master.Criterion_Driver.Criterion_Head_Neck.Criterion_Head.Criterion_DAMAGE,
+                self.report.Criterion_Master.Criterion_Driver.Criterion_Head_Neck.Criterion_Neck.Criterion_My_Extension,
+                self.report.Criterion_Master.Criterion_Driver.Criterion_Head_Neck.Criterion_Neck.Criterion_Fz_Tension,
+                self.report.Criterion_Master.Criterion_Driver.Criterion_Head_Neck.Criterion_Neck.Criterion_Fx_Shear,
+                self.report.Criterion_Master.Criterion_Driver.Criterion_Chest_Abdomen.Criterion_Chest.Criterion_Chest_Compression,
+                self.report.Criterion_Master.Criterion_Driver.Criterion_Chest_Abdomen.Criterion_Abdomen.Criterion_Abdomen_Compression,
+                self.report.Criterion_Master.Criterion_Driver.Criterion_Knee_Femur_Pelvis.Criterion_Pelvis.Criterion_Acetabulum_Force,
+                self.report.Criterion_Master.Criterion_Driver.Criterion_Knee_Femur_Pelvis.Criterion_Femur.Criterion_Femur_Compression,
+                self.report.Criterion_Master.Criterion_Driver.Criterion_Knee_Femur_Pelvis.Criterion_Knee.Criterion_Knee_Slider_Compression,
+                self.report.Criterion_Master.Criterion_Driver.Criterion_LowerLeg_Foot_Ankle.Criterion_Tibia_Index,
+                self.report.Criterion_Master.Criterion_Driver.Criterion_LowerLeg_Foot_Ankle.Criterion_Tibia_Compression,
+            ]
+
+            self.criteria = {isomme: [
+                self.report.criterion_master[isomme].criterion_driver.get_subcriterion(criterion_type)
+                for criterion_type in criteria_types] for isomme in self.report.isomme_list}
+
     class Page_Driver_Head_Damage(Page_Plot_nxn):
         name = "Driver Head DAMAGE"
         title = "Driver Head DAMAGE"
@@ -999,6 +1078,74 @@ class EuroNCAP_Frontal_MPDB(Report):
             super().__init__(report)
             self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_driver}KNSLLE00??DSXB"],
                                       [f"?{self.report.criterion_master[isomme].p_driver}KNSLRI00??DSXB"]]for isomme in self.report.isomme_list}
+
+    class Page_Passenger_Result_Values_Chart(Page_Criterion_Values_Chart):
+        name = "Passenger Result Values Chart"
+        title = "Passenger Result"
+
+        def __init__(self, report):
+            super().__init__(report)
+
+            criteria_types = [
+                EuroNCAP_Frontal_50kmh.Criterion_Master.Criterion_Driver.Criterion_Head.Criterion_HIC_15,
+                EuroNCAP_Frontal_50kmh.Criterion_Master.Criterion_Driver.Criterion_Head.Criterion_Head_a3ms,
+                self.report.Criterion_Master.Criterion_Passenger.Criterion_Head_Neck.Criterion_Neck.Criterion_My_Extension,
+                self.report.Criterion_Master.Criterion_Passenger.Criterion_Head_Neck.Criterion_Neck.Criterion_Fz_Tension,
+                self.report.Criterion_Master.Criterion_Passenger.Criterion_Head_Neck.Criterion_Neck.Criterion_Fx_Shear,
+                self.report.Criterion_Master.Criterion_Passenger.Criterion_Chest.Criterion_Chest_Compression,
+                self.report.Criterion_Master.Criterion_Driver.Criterion_Knee_Femur_Pelvis.Criterion_Femur.Criterion_Femur_Compression,
+                self.report.Criterion_Master.Criterion_Driver.Criterion_Knee_Femur_Pelvis.Criterion_Knee.Criterion_Knee_Slider_Compression,
+                self.report.Criterion_Master.Criterion_Driver.Criterion_LowerLeg_Foot_Ankle.Criterion_Tibia_Index,
+                self.report.Criterion_Master.Criterion_Driver.Criterion_LowerLeg_Foot_Ankle.Criterion_Tibia_Compression,
+            ]
+
+            self.criteria = {isomme: [
+                self.report.criterion_master[isomme].criterion_passenger.get_subcriterion(criterion_type)
+                for criterion_type in criteria_types] for isomme in self.report.isomme_list}
+
+    class Page_Passenger_Rating_Table(Page_Criterion_Rating_Table):
+        name: str = "Passenger Rating Table"
+        title: str = "Passenger Rating"
+        table_content: dict
+
+        def __init__(self, report):
+            super().__init__(report)
+
+            criteria_types = [
+                self.report.Criterion_Master.Criterion_Passenger.Criterion_Head_Neck,
+                self.report.Criterion_Master.Criterion_Passenger.Criterion_Chest,
+                self.report.Criterion_Master.Criterion_Passenger.Criterion_Knee_Femur_Pelvis,
+                self.report.Criterion_Master.Criterion_Passenger.Criterion_LowerLeg,
+                self.report.Criterion_Master.Criterion_Passenger,
+            ]
+
+            self.criteria = {isomme: [
+                self.report.criterion_master[isomme].get_subcriterion(criterion_type)
+                for criterion_type in criteria_types] for isomme in self.report.isomme_list}
+
+    class Page_Passenger_Values_Table(Page_Criterion_Values_Table):
+        name: str = "Passenger Values Table"
+        title: str = "Passenger Values"
+
+        def __init__(self, report):
+            super().__init__(report)
+
+            criteria_types = [
+                EuroNCAP_Frontal_50kmh.Criterion_Master.Criterion_Driver.Criterion_Head.Criterion_HIC_15,
+                EuroNCAP_Frontal_50kmh.Criterion_Master.Criterion_Driver.Criterion_Head.Criterion_Head_a3ms,
+                self.report.Criterion_Master.Criterion_Passenger.Criterion_Head_Neck.Criterion_Neck.Criterion_My_Extension,
+                self.report.Criterion_Master.Criterion_Passenger.Criterion_Head_Neck.Criterion_Neck.Criterion_Fz_Tension,
+                self.report.Criterion_Master.Criterion_Passenger.Criterion_Head_Neck.Criterion_Neck.Criterion_Fx_Shear,
+                self.report.Criterion_Master.Criterion_Passenger.Criterion_Chest.Criterion_Chest_Compression,
+                self.report.Criterion_Master.Criterion_Driver.Criterion_Knee_Femur_Pelvis.Criterion_Femur.Criterion_Femur_Compression,
+                self.report.Criterion_Master.Criterion_Driver.Criterion_Knee_Femur_Pelvis.Criterion_Knee.Criterion_Knee_Slider_Compression,
+                self.report.Criterion_Master.Criterion_Driver.Criterion_LowerLeg_Foot_Ankle.Criterion_Tibia_Index,
+                self.report.Criterion_Master.Criterion_Driver.Criterion_LowerLeg_Foot_Ankle.Criterion_Tibia_Compression,
+            ]
+
+            self.criteria = {isomme: [
+                self.report.criterion_master[isomme].criterion_passenger.get_subcriterion(criterion_type)
+                for criterion_type in criteria_types] for isomme in self.report.isomme_list}
 
     class Page_Passenger_Head_Acceleration(Page_Plot_nxn):
         name: str = "Passenger Head Acceleration"

@@ -30,9 +30,14 @@ class EuroNCAP_Side_Barrier(Report):
         self.pages = [
             Page_Cover(self),
 
+            self.Page_Values_Chart(self),
+            self.Page_Rating_Table(self),
+            self.Page_Values_Table(self),
             EuroNCAP_Side_Pole.Page_Head_Acceleration(self),
             EuroNCAP_Side_Pole.Page_Chest_Lateral_Compression(self),
+            EuroNCAP_Side_Pole.Page_Chest_Lateral_VC(self),
             EuroNCAP_Side_Pole.Page_Abdomen_Lateral_Compression(self),
+            EuroNCAP_Side_Pole.Page_Abdomen_Lateral_VC(self),
             EuroNCAP_Side_Pole.Page_Pubic_Symphysis_Force(self),
         ]
 
@@ -43,10 +48,10 @@ class EuroNCAP_Side_Barrier(Report):
         def __init__(self, report, isomme):
             super().__init__(report, isomme)
 
-            self.criterion_head = self.Criterion_Head(report, isomme, p=self.p)
-            self.criterion_chest = self.Criterion_Chest(report, isomme, p=self.p)
-            self.criterion_abdomen = self.Criterion_Abdomen(report, isomme, p=self.p)
-            self.criterion_pelvis = self.Criterion_Pelvis(report, isomme, p=self.p)
+            self.criterion_head = self.Criterion_Head(self.report, self.isomme, p=self.p)
+            self.criterion_chest = self.Criterion_Chest(self.report, self.isomme, p=self.p)
+            self.criterion_abdomen = self.Criterion_Abdomen(self.report, self.isomme, p=self.p)
+            self.criterion_pelvis = self.Criterion_Pelvis(self.report, self.isomme, p=self.p)
 
         def calculation(self):
             self.criterion_head.calculate()
@@ -70,8 +75,8 @@ class EuroNCAP_Side_Barrier(Report):
 
                 self.p = p
 
-                self.criterion_hic_15 = EuroNCAP_Frontal_50kmh.Criterion_Master.Criterion_Driver.Criterion_Head.Criterion_HIC_15(report, isomme, p=self.p)
-                self.criterion_head_a3ms = EuroNCAP_Frontal_50kmh.Criterion_Master.Criterion_Driver.Criterion_Head.Criterion_Head_a3ms(report, isomme, p=self.p)
+                self.criterion_hic_15 = self.Criterion_HIC_15(self.report, self.isomme, p=self.p)
+                self.criterion_head_a3ms = self.Criterion_Head_a3ms(self.report, self.isomme, p=self.p)
 
             def calculation(self):
                 self.criterion_hic_15.calculate()
@@ -82,6 +87,12 @@ class EuroNCAP_Side_Barrier(Report):
                     self.criterion_head_a3ms.rating,
                 ])
 
+            class Criterion_HIC_15(EuroNCAP_Frontal_50kmh.Criterion_Master.Criterion_Driver.Criterion_Head.Criterion_HIC_15):
+                pass
+
+            class Criterion_Head_a3ms(EuroNCAP_Frontal_50kmh.Criterion_Master.Criterion_Driver.Criterion_Head.Criterion_Head_a3ms):
+                pass
+
         class Criterion_Chest(Criterion):
             name = "Chest"
 
@@ -90,12 +101,17 @@ class EuroNCAP_Side_Barrier(Report):
 
                 self.p = p
 
-                self.criterion_chest_lateral_compression = self.Criterion_Chest_Lateral_Compression(report, isomme, p=self.p)
+                self.criterion_chest_lateral_compression = self.Criterion_Chest_Lateral_Compression(self.report, self.isomme, p=self.p)
+                self.criterion_chest_lateral_vc = self.Criterion_Chest_Lateral_VC(self.report, self.isomme, p=self.p)
 
             def calculation(self) -> None:
                 self.criterion_chest_lateral_compression.calculate()
+                self.criterion_chest_lateral_vc.calculate()
 
-                self.rating = self.criterion_chest_lateral_compression.rating
+                self.rating = np.min([
+                    self.criterion_chest_lateral_compression.rating,
+                    self.criterion_chest_lateral_vc.rating,
+                ])
 
             class Criterion_Chest_Lateral_Compression(Criterion):
                 name = "Chest Lateral Compression"
@@ -118,6 +134,10 @@ class EuroNCAP_Side_Barrier(Report):
                     self.channel = self.isomme.get_channel(f"?{self.p}TRRI??00??DSYC").convert_unit("mm")
                     self.value = np.min(self.channel.get_data())
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=True)
+                    self.color = self.limits.get_limit_min_color(self.channel)
+
+            class Criterion_Chest_Lateral_VC(EuroNCAP_Side_Pole.Criterion_Master.Criterion_Chest.Criterion_Chest_Lateral_VC):
+                pass
 
         class Criterion_Abdomen(Criterion):
             name = "Abdomen"
@@ -127,12 +147,23 @@ class EuroNCAP_Side_Barrier(Report):
 
                 self.p = p
 
-                self.criterion_abdomen_lateral_compression = EuroNCAP_Side_Pole.Criterion_Master.Criterion_Abdomen.Criterion_Abdomen_Lateral_Compression(report, isomme, p=self.p)
+                self.criterion_abdomen_lateral_compression = self.Criterion_Abdomen_Lateral_Compression(self.report, self.isomme, p=self.p)
+                self.criterion_abdomen_lateral_vc = self.Criterion_Abdomen_Lateral_VC(self.report, self.isomme, p=self.p)
 
             def calculation(self) -> None:
                 self.criterion_abdomen_lateral_compression.calculate()
+                self.criterion_abdomen_lateral_vc.calculate()
 
-                self.rating = self.criterion_abdomen_lateral_compression.rating
+                self.rating = np.min([
+                    self.criterion_abdomen_lateral_compression.rating,
+                    self.criterion_abdomen_lateral_vc.rating
+                ])
+
+            class Criterion_Abdomen_Lateral_Compression(EuroNCAP_Side_Pole.Criterion_Master.Criterion_Abdomen.Criterion_Abdomen_Lateral_Compression):
+                pass
+
+            class Criterion_Abdomen_Lateral_VC(EuroNCAP_Side_Pole.Criterion_Master.Criterion_Abdomen.Criterion_Abdomen_Lateral_VC):
+                pass
 
         class Criterion_Pelvis(Criterion):
             name = "Pelvis"
@@ -142,9 +173,21 @@ class EuroNCAP_Side_Barrier(Report):
 
                 self.p = p
 
-                self.criterion_pubic_symphysis_force = EuroNCAP_Side_Pole.Criterion_Master.Criterion_Pelvis.Criterion_Pubic_Symphysis_Force(report, isomme, p=self.p)
+                self.criterion_pubic_symphysis_force = self.Criterion_Pubic_Symphysis_Force(self.report, self.isomme, p=self.p)
 
             def calculation(self) -> None:
                 self.criterion_pubic_symphysis_force.calculate()
 
                 self.rating = self.criterion_pubic_symphysis_force.rating
+
+            class Criterion_Pubic_Symphysis_Force(EuroNCAP_Side_Pole.Criterion_Master.Criterion_Pelvis.Criterion_Pubic_Symphysis_Force):
+                pass
+
+    class Page_Values_Chart(EuroNCAP_Side_Pole.Page_Values_Chart):
+        pass
+
+    class Page_Values_Table(EuroNCAP_Side_Pole.Page_Values_Table):
+        pass
+
+    class Page_Rating_Table(EuroNCAP_Side_Pole.Page_Rating_Table):
+        pass
