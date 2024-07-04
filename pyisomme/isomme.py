@@ -354,7 +354,7 @@ class Isomme:
         return self.test_number == other.test_number
 
     def __ne__(self, other):
-        return not __eq__(self, other)
+        return not self.__eq__(other)
 
     def __repr__(self):
         return f"Isomme({self.test_number})"
