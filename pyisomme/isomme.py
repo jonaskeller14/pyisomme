@@ -265,7 +265,7 @@ class Isomme:
         channels = self.get_channels(*channel_code_patterns) if len(channel_code_patterns) != 0 else self.channels
 
         path = Path(path)
-        if path.suffix == ".mme":
+        if path.suffix.lower() == ".mme":
             if path.stem != self.test_number:
                 logger.warning("Test number does not match file stem. Not compliant with convention.")
 
@@ -296,9 +296,9 @@ class Isomme:
             with open(path.parent.joinpath("Channel", f"{path.stem}.chn"), "w") as chn_file:
                 channel_info.write(chn_file)
 
-        elif path.is_dir and path.suffix not in (".zip",):
+        elif path.is_dir():
             self.write(path.joinpath(f"{self.test_number}.mme"), *channel_code_patterns)
-        elif path.suffix in (".zip",):
+        elif path.suffix.lower() == ".zip":
             # 1. write by folder
             folder_path = path.parent.joinpath(path.stem)
             self.write(folder_path, *channel_code_patterns)
@@ -308,6 +308,8 @@ class Isomme:
 
             # # 3. remove unzipped folder
             shutil.rmtree(folder_path)
+        else:
+            raise NotImplementedError(f"{path.suffix} is not supported. Only .mme/folder/.zip are supported.")
 
         return self
 
