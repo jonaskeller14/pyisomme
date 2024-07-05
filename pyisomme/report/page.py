@@ -10,6 +10,7 @@ import os
 import matplotlib.pyplot as plt
 from matplotlib.colors import to_rgb
 import numpy as np
+import io
 
 
 class Page:
@@ -223,9 +224,9 @@ class Page_Criterion_Values_Chart(Page):
         ax.get_yaxis().set_visible(False)
         ax.legend()
 
-        fig.savefig("tmp.png", transparent=True)
-        slide.shapes.add_picture("tmp.png", left=left, top=top, height=height)
-        os.remove("tmp.png")
+        image_steam = io.BytesIO()
+        fig.savefig(image_steam, transparent=True)
+        slide.shapes.add_picture(image_steam, left=left, top=top, height=height)
 
 
 class Page_Plot_nxn(Page):
@@ -256,11 +257,10 @@ class Page_Plot_nxn(Page):
         figsize_x = figsize_y * float(width) / float(height)
 
         fig = Plot_Line(self.channels, nrows=self.nrows, ncols=self.ncols, sharey=self.sharey, limits=self.report.limits, figsize=(figsize_x, figsize_y)).fig
-        fig.savefig("tmp.png", transparent=True)
 
-        slide.shapes.add_picture("tmp.png", left=left, top=top, height=height)
-
-        os.remove("tmp.png")
+        image_steam = io.BytesIO()
+        fig.savefig(image_steam, transparent=True)
+        slide.shapes.add_picture(image_steam, left=left, top=top, height=height)
 
 
 class Page_OLC(Page_Plot_nxn):
