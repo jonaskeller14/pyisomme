@@ -925,6 +925,17 @@ class Isomme:
                         if channel_dc is not None:
                             return (channel_dc - channel_dc.get_data(t=0)).set_code(physical_dimension="DS")
 
+                if code_pattern.main_location == "FOOT" and code_pattern.physical_dimension == "AC" and code_pattern.direction == "R":
+                    channel_left = self.get_channel(code_pattern.set(fine_location_1="LE"))
+                    channel_right = self.get_channel(code_pattern.set(fine_location_1="RI"))
+                    if None not in (channel_left, channel_right):
+                        t = time_intersect(channel_left, channel_right)
+                        values = np.max([channel_left.get_data(t), channel_right.get_data(t, unit=channel_left.unit)], axis=0)
+                        return Channel(code=channel_left.code.set(fine_location_1="00"),
+                                       data=pd.DataFrame(values, index=t),
+                                       unit=channel_left.unit,
+                                       info=channel_left.info)
+
                 # OLC
                 if code_pattern.fine_location_1 == "0O" and code_pattern.fine_location_2 == "LC" and code_pattern.physical_dimension == "VE":
                     tmp = code_pattern.set(fine_location_1="??", fine_location_2="??")
