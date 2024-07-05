@@ -92,15 +92,15 @@ class Isomme:
 
         if not path.exists():
             raise FileNotFoundError(path)
-        elif path.is_file() and path.suffix.lower() == ".mme":
+        elif path.suffix.lower() == ".mme":
             self.read_from_mme(path, *channel_code_patterns)
-        elif path.is_dir():
+        elif path.suffix == "":
             self.read_from_folder(path, *channel_code_patterns)
-        elif path.is_file() and path.suffix.lower() == ".zip":
+        elif path.suffix.lower() == ".zip":
             self.read_from_zip(path, *channel_code_patterns)
-        elif path.is_file() and path.suffix.lower() == ".chn":
+        elif path.suffix.lower() == ".chn":
             self.read_from_chn(path, *channel_code_patterns)
-        elif path.is_file() and re.fullmatch(r"\.\d+", path.suffix):
+        elif re.fullmatch(r"\.\d+", path.suffix):
             self.read_from_xxx(path, *channel_code_patterns)
         else:
             raise NotImplementedError(f"Could not read path: {path}")
@@ -296,7 +296,7 @@ class Isomme:
             with open(path.parent.joinpath("Channel", f"{path.stem}.chn"), "w") as chn_file:
                 channel_info.write(chn_file)
 
-        elif path.is_dir():
+        elif path.suffix == "":
             self.write(path.joinpath(f"{self.test_number}.mme"), *channel_code_patterns)
         elif path.suffix.lower() == ".zip":
             # 1. write by folder
