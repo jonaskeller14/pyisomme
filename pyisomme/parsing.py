@@ -69,7 +69,7 @@ def parse_xxx(text: str, isomme) -> Channel:
             logger.error(f"[{code}] Sampling interval not found.")
         else:
             n = len(array)
-            time_array = np.linspace(time_of_first_sample, n * sampling_interval, n)
+            time_array = np.linspace(time_of_first_sample, time_of_first_sample + (n-1) * sampling_interval, n)
             return Channel(code, pd.DataFrame(array, index=time_array), unit=unit, info=info)
 
     elif info.get("Reference channel") == "explicit":
