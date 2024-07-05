@@ -366,6 +366,20 @@ class Channel:
         new_channel += x_0
         return new_channel
 
+    def adjust_to_range(self, target_range: tuple = (-45, 45), unit="deg") -> Channel:
+        angle_0 = self.get_data(t=0, unit=unit)
+
+        old_offset = None
+        offset = 0
+        while old_offset != offset:
+            old_offset = offset
+            if target_range[-1] < angle_0 + offset:
+                offset -= (target_range[-1] - target_range[0])
+            if angle_0 + offset < target_range[0]:
+                offset += (target_range[-1] - target_range[0])
+
+        return self + offset
+
     def write(self, xxx_path):
         with open(xxx_path, "w") as xxx_file:
             self.info.update({"Channel code": self.code,

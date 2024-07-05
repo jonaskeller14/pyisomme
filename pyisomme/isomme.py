@@ -847,7 +847,9 @@ class Isomme:
                             channel_anz = self.get_channel(code_pattern.set(physical_dimension="AN", direction="Z"))
                             if None not in (channel_dc0, channel_any, channel_anz):
                                 time = time_intersect(channel_dc0, channel_any, channel_anz)
-                                values = delta * np.sin((channel_any).get_data(t=time, unit="rad")) + channel_dc0.get_data(t=time, unit="mm") * np.cos(channel_any.get_data(t=time, unit="rad")) * np.cos(channel_anz.get_data(t=time, unit="rad"))
+                                channel_any = channel_any.adjust_to_range(target_range=(-45, 45), unit="deg")
+                                channel_anz = channel_anz.adjust_to_range(target_range=(-45, 45), unit="deg")
+                                values = delta * np.sin(channel_any.get_data(t=time, unit="rad")) + channel_dc0.get_data(t=time, unit="mm") * np.cos(channel_any.get_data(t=time, unit="rad")) * np.cos(channel_anz.get_data(t=time, unit="rad"))
                                 return Channel(code=channel_dc0.code.set(direction="X"),
                                                data=pd.DataFrame(values, index=time),
                                                unit="mm")
@@ -856,6 +858,7 @@ class Isomme:
                             channel_anz = self.get_channel(code_pattern.set(physical_dimension="AN", direction="Z"))
                             if None not in (channel_dc0, channel_anz):
                                 time = time_intersect(channel_dc0, channel_anz)
+                                channel_anz = channel_anz.adjust_to_range(target_range=(-45, 45), unit="deg")
                                 values = channel_dc0.get_data(t=time, unit="mm") * np.sin(channel_anz.get_data(t=time, unit="rad"))
                                 return Channel(code=channel_dc0.code.set(direction="Y"),
                                                data=pd.DataFrame(values, index=time),
@@ -866,6 +869,8 @@ class Isomme:
                             channel_anz = self.get_channel(code_pattern.set(physical_dimension="AN", direction="Z"))
                             if None not in (channel_dc0, channel_any, channel_anz):
                                 time = time_intersect(channel_dc0, channel_any, channel_anz)
+                                channel_any = channel_any.adjust_to_range(target_range=(-45, 45), unit="deg")
+                                channel_anz = channel_anz.adjust_to_range(target_range=(-45, 45), unit="deg")
                                 values = delta * np.cos((channel_any).get_data(t=time, unit="rad")) - channel_dc0.get_data(t=time, unit="mm") * np.sin(channel_any.get_data(t=time, unit="rad")) * np.cos(channel_anz.get_data(t=time, unit="rad"))
                                 return Channel(code=channel_dc0.code.set(direction="Z"),
                                                data=pd.DataFrame(values, index=time),
@@ -915,10 +920,12 @@ class Isomme:
                         channel_dc0 = self.get_channel(code_pattern.set(physical_dimension="DC", direction="0"))
                         channel_anz = self.get_channel(code_pattern.set(physical_dimension="AN", direction="Z"))
                         if None not in (channel_dc0, channel_anz):
-                            time_array = time_intersect(channel_dc0, channel_anz)
+                            t = time_intersect(channel_dc0, channel_anz)
+                            channel_anz = channel_anz.adjust_to_range(target_range=(-45, 45), unit="deg")
+                            values = channel_dc0.get_data(t=t) * np.cos(channel_anz.get_data(t=t, unit="rad"))
                             return Channel(
-                                code=channel_dc0.code.set(physical_dimension="DS"),
-                                data=pd.DataFrame(channel_dc0.get_data(t=time_array) * np.sin(channel_anz.get_data(t=time_array, unit="rad")), index=time_array),
+                                code=channel_dc0.code.set(physical_dimension="DS", direction="Y"),
+                                data=pd.DataFrame(values, index=t),
                                 unit=channel_dc0.unit,
                                 info=channel_dc0.info
                             )
