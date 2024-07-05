@@ -57,7 +57,7 @@ class Info(list):
 
     def write(self, file: IO) -> IO:
         for name, value in self:
-            file.write(f"{name.ljust(29, ' ')}:{value if value is not None else 'NOVALUE'}\n")
+            file.write(f"{name.ljust(28, ' ')}:{value if value is not None else 'NOVALUE'}\n")
         return file
 
     def __contains__(self, key) -> bool:
