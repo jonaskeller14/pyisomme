@@ -615,6 +615,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                         self.channel = self.isomme.get_channel(f"?{self.p}TIBI0000??FOZB").convert_unit("kN")
                         self.value = np.min(self.channel.get_data())
                         self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=True)
+                        self.color = self.limits.get_limit_min_color(self.channel)
 
                 class Criterion_Pedal_Rearward_Displacement(Criterion):
                     name = "Pedal Rearward Displacement"
@@ -841,6 +842,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                         self.channel = self.isomme.get_channel(f"?{self.p}CHST0003??DSXC", f"?{self.p}CHST0000??DSXC").convert_unit("mm")
                         self.value = np.min(self.channel.get_data())
                         self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=True)
+                        self.color = self.limits.get_limit_min_color(self.channel)
 
             class Criterion_Knee_Femur_Pelvis(Criterion):
                 name = "Knee, Femur and Pelvis"
