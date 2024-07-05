@@ -287,9 +287,10 @@ class Isomme:
             channel_info.update({"Number of channels": len(channels)})
 
             # 001 - iterate over channels
-            for channel_idx, channel in enumerate(channels, 1):
-                channel_info[f"Name of channel {channel_idx:03}"] = channel.code + (f' / {channel.get_info("Name of the channel")}' if channel.get_info("Name of the channel") is not None else "")
-                channel.write(path.parent.joinpath("Channel", f"{path.stem}.{channel_idx:03}"))
+            with logging_redirect_tqdm():
+                for channel_idx, channel in tqdm(enumerate(channels, 1), desc=f"Write Channel of {self.test_number}", total=len(channels)):
+                    channel_info[f"Name of channel {channel_idx:03}"] = channel.code + (f' / {channel.get_info("Name of the channel")}' if channel.get_info("Name of the channel") is not None else "")
+                    channel.write(path.parent.joinpath("Channel", f"{path.stem}.{channel_idx:03}"))
 
             # CHN
             with open(path.parent.joinpath("Channel", f"{path.stem}.chn"), "w") as chn_file:
