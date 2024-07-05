@@ -375,6 +375,14 @@ class Channel:
                     "Time of first sample": self.data.index[0],
                     "Sampling interval": np.mean(np.diff(self.data.index)),
                 })
+            if len(self.get_data()) > 1:
+                self.info.update({
+                    "First global maximum value": np.max(self.get_data()),
+                    "Time of maximum value": self.data.index[np.argmax(self.get_data())],
+                    "First global minimum value": np.min(self.get_data()),
+                    "Time of minimum value": self.data.index[np.argmin(self.get_data())],
+                })
+
             self.info.write(xxx_file)
             xxx_file.write(self.data.to_string(header=False, index=False).replace(" ", ""))
         return self
