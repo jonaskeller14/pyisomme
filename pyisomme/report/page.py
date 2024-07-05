@@ -2,11 +2,9 @@ from __future__ import annotations
 
 from pyisomme import Channel, Isomme
 from pyisomme.limits import limit_list_sort
-from pyisomme.plotting import Plot_Line
+from pyisomme.plotting import Plot_Line, Plot
 from pyisomme.report.criterion import Criterion
 
-from pptx.dml.color import RGBColor
-import os
 import matplotlib.pyplot as plt
 from matplotlib.colors import to_rgb
 import numpy as np
@@ -47,7 +45,6 @@ class Page_Cover(Page):
 
 
 class Page_Criterion_Values_Table(Page):
-    # TODO: matplotlib table
     name: str
     title: str
     criteria: dict[Isomme, list[Criterion]]
@@ -69,37 +66,47 @@ class Page_Criterion_Values_Table(Page):
         sp = slide.placeholders[1].element
         sp.getparent().remove(sp)
 
-        shapes = slide.shapes
+        figsize_y = 8
+        figsize_x = figsize_y * float(width) / float(height)
 
-        rows = len(list(self.criteria.values())[0]) + 1
-        cols = 1 + len(self.report.isomme_list)
+        fig, ax = plt.subplots(figsize=(figsize_x, figsize_y), layout="constrained")
 
-        shape = shapes.add_table(rows, cols, left, top, width, height)
-        table = shape.table
+        # hide axes
+        fig.patch.set_visible(False)
+        ax.axis('off')
+        ax.axis('tight')
 
-        tbl = shape._element.graphic.graphicData.tbl
-        tbl[0][-1].text = '{5940675A-B579-460E-94D1-54222C63F5DA}'
-
-        # write column headings
-        for idx, isomme in enumerate(self.report.isomme_list):
-            table.cell(0, idx+1).text = isomme.test_number
-            table.cell(0, idx+1).fill.solid()
-            table.cell(0, idx+1).fill.fore_color.rgb = RGBColor(200, 200, 200)
-
-        # write body cells
+        cell_text = np.full((len(list(self.criteria.values())[0]), len(self.report.isomme_list)), np.nan).tolist()
+        cell_colors = np.zeros_like(cell_text).tolist()
         for idx_isomme, isomme in enumerate(self.report.isomme_list):
             for idx_criterion, criterion in enumerate(self.criteria[isomme]):
-                if idx_isomme == 0:
-                    table.cell(idx_criterion+1, 0).text = f"{criterion.name} [{criterion.channel.unit if criterion.channel is not None else np.nan}]"
-                table.cell(idx_criterion+1, idx_isomme+1).text = f"{criterion.value:.4g}"
+                cell_text[idx_criterion][idx_isomme] = f"{criterion.value:.4g}"
+                cell_colors[idx_criterion][idx_isomme] = (*to_rgb(criterion.color), 0.5) if criterion.color is not None else (0,0,0,0)
 
-                if criterion.color is not None:
-                    table.cell(idx_criterion+1, idx_isomme+1).fill.solid()
-                    table.cell(idx_criterion+1, idx_isomme+1).fill.fore_color.rgb = RGBColor(*[int(255 * x) for x in to_rgb(criterion.color)])
+        row_labels = [f"{criterion.name} [{criterion.channel.unit if criterion.channel is not None else np.nan}]" for criterion in self.criteria[self.report.isomme_list[0]]]
+
+        col_labels = [isomme.test_number for isomme in self.report.isomme_list]
+        col_colors = [mcolor for mcolor in list(Plot.colors)[:len(self.report.isomme_list)]]
+
+        table = ax.table(cellText=cell_text,
+                         cellColours=cell_colors,
+                         cellLoc="center",
+                         rowLabels=row_labels,
+                         colLabels=col_labels,
+                         loc="center")
+        table.scale(1, 3)
+        table.set_fontsize(20)
+        for idx, col_color in enumerate(col_colors):
+            table[0, idx].get_text().set_color(col_color)
+            table[0, idx].get_text().set_fontweight("bold")
+
+        image_steam = io.BytesIO()
+        fig.savefig(image_steam, transparent=True)
+        fig.tight_layout()
+        slide.shapes.add_picture(image_steam, left=left, top=top, height=height)
 
 
 class Page_Criterion_Rating_Table(Page):
-    # TODO matplotlib table
     name: str
     title: str
     criteria: dict[Isomme, list[Criterion]]
@@ -121,33 +128,44 @@ class Page_Criterion_Rating_Table(Page):
         sp = slide.placeholders[1].element
         sp.getparent().remove(sp)
 
-        shapes = slide.shapes
+        figsize_y = 8
+        figsize_x = figsize_y * float(width) / float(height)
 
-        rows = len(list(self.criteria.values())[0]) + 1
-        cols = 1 + len(self.report.isomme_list)
+        fig, ax = plt.subplots(figsize=(figsize_x, figsize_y), layout="constrained")
 
-        shape = shapes.add_table(rows, cols, left, top, width, height)
-        table = shape.table
+        # hide axes
+        fig.patch.set_visible(False)
+        ax.axis('off')
+        ax.axis('tight')
 
-        tbl = shape._element.graphic.graphicData.tbl
-        tbl[0][-1].text = '{5940675A-B579-460E-94D1-54222C63F5DA}'
-
-        # write column headings
-        for idx, isomme in enumerate(self.report.isomme_list):
-            table.cell(0, idx+1).text = isomme.test_number
-            table.cell(0, idx+1).fill.solid()
-            table.cell(0, idx+1).fill.fore_color.rgb = RGBColor(200, 200, 200)
-
-        # write body cells
+        cell_text = np.full((len(list(self.criteria.values())[0]), len(self.report.isomme_list)), np.nan).tolist()
+        cell_colors = np.zeros_like(cell_text).tolist()
         for idx_isomme, isomme in enumerate(self.report.isomme_list):
             for idx_criterion, criterion in enumerate(self.criteria[isomme]):
-                if idx_isomme == 0:
-                    table.cell(idx_criterion+1, 0).text = f"{criterion.name}"
-                table.cell(idx_criterion+1, idx_isomme+1).text = f"{criterion.rating:.2g}"
+                cell_text[idx_criterion][idx_isomme] = f"{criterion.rating:.4g}"
+                cell_colors[idx_criterion][idx_isomme] = (*to_rgb(criterion.color), 0.5) if criterion.color is not None else (0,0,0,0)
 
-                if criterion.color is not None:
-                    table.cell(idx_criterion+1, idx_isomme+1).fill.solid()
-                    table.cell(idx_criterion+1, idx_isomme+1).fill.fore_color.rgb = RGBColor(*[int(255 * x) for x in to_rgb(criterion.color)])
+        row_labels = [f"{criterion.name}" for criterion in self.criteria[self.report.isomme_list[0]]]
+
+        col_labels = [isomme.test_number for isomme in self.report.isomme_list]
+        col_colors = [mcolor for mcolor in list(Plot.colors)[:len(self.report.isomme_list)]]
+
+        table = ax.table(cellText=cell_text,
+                         cellColours=cell_colors,
+                         cellLoc="center",
+                         rowLabels=row_labels,
+                         colLabels=col_labels,
+                         loc="center")
+        table.scale(1, 3)
+        table.set_fontsize(20)
+        for idx, col_color in enumerate(col_colors):
+            table[0, idx].get_text().set_color(col_color)
+            table[0, idx].get_text().set_fontweight("bold")
+
+        image_steam = io.BytesIO()
+        fig.tight_layout()
+        fig.savefig(image_steam, transparent=True)
+        slide.shapes.add_picture(image_steam, left=left, top=top, height=height)
 
 
 class Page_Criterion_Values_Chart(Page):
