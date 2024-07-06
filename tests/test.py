@@ -77,11 +77,13 @@ class TestIsomme(unittest.TestCase):
         pyisomme.Isomme(test_number="999", test_info=[], channels=[], channel_info=[])
 
     def test_read(self):
-        pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "11391"), "11HEAD*")
-        pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "11391", "11391.mme"), "11HEAD*")
-        pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "v11391ISO.zip"), "11HEAD*")
-        pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "11391", "Channel", "11391.chn"), "11HEAD*")
-        pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "11391", "Channel", "11391.001"), "11HEAD*")
+        pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "11391"), "11HEAD??????ACX?")
+        pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "11391", "11391.mme"), "11HEAD??????ACX?")
+        pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "v11391ISO.zip"), "11HEAD??????ACX?")
+        pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "11391", "Channel", "11391.chn"), "11HEAD??????ACX?")
+        pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "11391", "Channel", "11391.001"), "11HEAD??????ACX?")
+        pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "11391.tar"), "11HEAD??????ACX?")
+        pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "11391.tar.gz"), "11HEAD??????ACX?")
 
     def test_write(self):
         isomme = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "11391"), "11HEAD*")
