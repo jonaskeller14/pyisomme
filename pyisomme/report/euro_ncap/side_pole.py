@@ -12,11 +12,6 @@ import numpy as np
 logger = logging.getLogger(__name__)
 
 
-# TODO:
-#   - Add pages
-#   - Add Modifier
-#   - Add tests
-
 class EuroNCAP_Side_Pole(Report):
     name = "Euro NCAP | Pole Side Impact at 32 km/h"
     protocol = "9.3"

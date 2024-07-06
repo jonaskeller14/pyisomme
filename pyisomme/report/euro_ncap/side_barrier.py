@@ -12,11 +12,6 @@ import numpy as np
 logger = logging.getLogger(__name__)
 
 
-# TODO:
-#   - Add pages
-#   - Add Modifier
-#   - Add tests
-
 class EuroNCAP_Side_Barrier(Report):
     name = "Euro NCAP | Barrier Side Impact (AE-MDB) at 60 km/h"
     protocol = "9.3"

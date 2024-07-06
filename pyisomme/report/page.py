@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import to_rgb
 import numpy as np
 import io
+from typing import Callable
 
 
 class Page:
@@ -41,10 +42,12 @@ class Page_Cover(Page):
         slide.placeholders[1].text = self.subtitle
 
 
-class Page_Criterion_Values_Table(Page):
+class Page_Criterion_Table(Page):
     name: str
     title: str
     criteria: dict[Isomme, list[Criterion]]
+    row_label: Callable
+    cell_text: Callable
 
     def __init__(self, report):
         super().__init__(report)
@@ -77,10 +80,10 @@ class Page_Criterion_Values_Table(Page):
         cell_colors = np.zeros_like(cell_text).tolist()
         for idx_isomme, isomme in enumerate(self.report.isomme_list):
             for idx_criterion, criterion in enumerate(self.criteria[isomme]):
-                cell_text[idx_criterion][idx_isomme] = f"{criterion.value:.4g}"
+                cell_text[idx_criterion][idx_isomme] = self.cell_text(criterion)
                 cell_colors[idx_criterion][idx_isomme] = (*to_rgb(criterion.color), 0.5) if criterion.color is not None else (0,0,0,0)
 
-        row_labels = [f"{criterion.name} [{criterion.channel.unit if criterion.channel is not None else np.nan}]" for criterion in self.criteria[self.report.isomme_list[0]]]
+        row_labels = [self.row_label(criterion) for criterion in self.criteria[self.report.isomme_list[0]]]
 
         col_labels = [isomme.test_number for isomme in self.report.isomme_list]
         col_colors = [mcolor for mcolor in list(Plot.colors)[:len(self.report.isomme_list)]]
@@ -102,65 +105,14 @@ class Page_Criterion_Values_Table(Page):
         slide.shapes.add_picture(image_steam, left=left, top=top, height=height)
 
 
-class Page_Criterion_Rating_Table(Page):
-    name: str
-    title: str
-    criteria: dict[Isomme, list[Criterion]]
+class Page_Criterion_Values_Table(Page_Criterion_Table):
+    row_label = staticmethod(lambda criterion: f"{criterion.name} [{criterion.channel.unit if criterion.channel is not None else np.nan}]")
+    cell_text = staticmethod(lambda criterion: f"{criterion.value:.4g}")
 
-    def __init__(self, report):
-        super().__init__(report)
-        self.criteria = {}
 
-    def construct(self, presentation):
-        title_slide_layout = presentation.slide_layouts[1]
-        slide = presentation.slides.add_slide(title_slide_layout)
-        slide.shapes.title.text = self.title
-
-        top = slide.placeholders[1].top
-        left = slide.placeholders[1].left
-        height = slide.placeholders[1].height
-        width = slide.placeholders[1].width
-
-        sp = slide.placeholders[1].element
-        sp.getparent().remove(sp)
-
-        figsize_y = 8
-        figsize_x = figsize_y * float(width) / float(height)
-
-        fig, ax = plt.subplots(figsize=(figsize_x, figsize_y), layout="constrained")
-
-        # hide axes
-        fig.patch.set_visible(False)
-        ax.axis('off')
-        ax.axis('tight')
-
-        cell_text = np.full((len(list(self.criteria.values())[0]), len(self.report.isomme_list)), np.nan).tolist()
-        cell_colors = np.zeros_like(cell_text).tolist()
-        for idx_isomme, isomme in enumerate(self.report.isomme_list):
-            for idx_criterion, criterion in enumerate(self.criteria[isomme]):
-                cell_text[idx_criterion][idx_isomme] = f"{criterion.rating:.4g}"
-                cell_colors[idx_criterion][idx_isomme] = (*to_rgb(criterion.color), 0.5) if criterion.color is not None else (0,0,0,0)
-
-        row_labels = [f"{criterion.name}" for criterion in self.criteria[self.report.isomme_list[0]]]
-
-        col_labels = [isomme.test_number for isomme in self.report.isomme_list]
-        col_colors = [mcolor for mcolor in list(Plot.colors)[:len(self.report.isomme_list)]]
-
-        table = ax.table(cellText=cell_text,
-                         cellColours=cell_colors,
-                         cellLoc="center",
-                         rowLabels=row_labels,
-                         colLabels=col_labels,
-                         loc="center")
-        table.scale(1, 3)
-        table.set_fontsize(20)
-        for idx, col_color in enumerate(col_colors):
-            table[0, idx].get_text().set_color(col_color)
-            table[0, idx].get_text().set_fontweight("bold")
-
-        image_steam = io.BytesIO()
-        fig.savefig(image_steam, transparent=True, bbox_inches='tight')
-        slide.shapes.add_picture(image_steam, left=left, top=top, height=height)
+class Page_Criterion_Rating_Table(Page_Criterion_Table):
+    row_label = staticmethod(lambda criterion: f"{criterion.name}")
+    cell_text = staticmethod(lambda criterion: f"{criterion.rating:.1f}")
 
 
 class Page_Criterion_Values_Chart(Page):
