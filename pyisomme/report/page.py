@@ -17,9 +17,6 @@ class Page:
     def __init__(self, report):
         self.report = report
 
-    def set(self):
-        pass
-
     def construct(self, presentation):
         pass
 
@@ -101,8 +98,7 @@ class Page_Criterion_Values_Table(Page):
             table[0, idx].get_text().set_fontweight("bold")
 
         image_steam = io.BytesIO()
-        fig.savefig(image_steam, transparent=True)
-        fig.tight_layout()
+        fig.savefig(image_steam, transparent=True, bbox_inches='tight')
         slide.shapes.add_picture(image_steam, left=left, top=top, height=height)
 
 
@@ -163,8 +159,7 @@ class Page_Criterion_Rating_Table(Page):
             table[0, idx].get_text().set_fontweight("bold")
 
         image_steam = io.BytesIO()
-        fig.tight_layout()
-        fig.savefig(image_steam, transparent=True)
+        fig.savefig(image_steam, transparent=True, bbox_inches='tight')
         slide.shapes.add_picture(image_steam, left=left, top=top, height=height)
 
 
@@ -243,7 +238,7 @@ class Page_Criterion_Values_Chart(Page):
         ax.legend()
 
         image_steam = io.BytesIO()
-        fig.savefig(image_steam, transparent=True)
+        fig.savefig(image_steam, transparent=True, bbox_inches='tight')
         slide.shapes.add_picture(image_steam, left=left, top=top, height=height)
 
 
@@ -277,7 +272,7 @@ class Page_Plot_nxn(Page):
         fig = Plot_Line(self.channels, nrows=self.nrows, ncols=self.ncols, sharey=self.sharey, limits=self.report.limits, figsize=(figsize_x, figsize_y)).fig
 
         image_steam = io.BytesIO()
-        fig.savefig(image_steam, transparent=True)
+        fig.savefig(image_steam, transparent=True, bbox_inches='tight')
         slide.shapes.add_picture(image_steam, left=left, top=top, height=height)
 
 
