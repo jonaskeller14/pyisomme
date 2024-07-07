@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 class Plot:
     colors = mcolors.TABLEAU_COLORS.values()
-    linestyles = ("-", "--", "-.", ":")
+    linestyles: list = ["-", "--", "-.", ":", (0, (10, 3)), (0, (5, 1)), ]
     isomme_list: list
     figsize: tuple
     fig: plt.Figure
@@ -25,13 +25,17 @@ class Plot:
         self.isomme_list = isomme_list
         self.figsize = figsize
 
+    def show(self, *args, **kwargs):
+        plt.show(*args, **kwargs)
+        return self
+
 
 class Plot_Line(Plot):
     channels: dict[Isomme, list[list[Channel]]]
     nrows: int = 1
     ncols: int = 1
     sharex: bool
-    sharey: bool
+    sharey: bool | str
     limits: dict[Isomme, Limits] | None = None
 
     def __init__(self,
@@ -141,7 +145,7 @@ class Plot_Line(Plot):
 
     def plot_line_limits(self, ax, limit_list, xlim, x_unit, y_unit, label=False):
         x = np.linspace(*xlim, 1000)
-
+        # TODO: replace infinity values with ylim values to get vertical lines
         limit_list = limit_list_sort(limit_list)
         limit_list = limit_list_unique(limit_list, x=x, x_unit=x_unit, y_unit=y_unit)
 
@@ -212,8 +216,3 @@ class Plot_Line(Plot):
                 logger.warning(f"Label of {limit} not visible.")
                 continue
             ax.text(x0, limit.get_data(x0, x_unit=x_unit, y_unit=y_unit), limit.name, color="black", bbox={"facecolor": limit.color, "edgecolor": "black", "linewidth": 1}, verticalalignment="top" if limit.upper else "bottom" if limit.lower else "center")
-
-
-class Plot_Values(Plot):
-    pass
-    # TODO: plot_limits (t=0) und werte als linien
