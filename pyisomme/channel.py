@@ -404,6 +404,22 @@ class Channel:
     def plot(self, *args, **kwargs) -> None:
         self.data.plot(*args, **kwargs).get_figure().show()
 
+    def scale_y(self, factor: float) -> Channel:
+        self.data *= factor
+        return self
+
+    def scale_x(self, factor: float) -> Channel:
+        self.data = pd.DataFrame(self.data.values, index=self.data.index * factor)
+        return self
+
+    def offset_y(self, offset: float) -> Channel:
+        self.data += offset
+        return self
+
+    def offset_x(self, offset: float) -> Channel:
+        self.data = pd.DataFrame(self.data.values, index=self.data.index + offset)
+        return self
+
     # Operator methods
     def __eq__(self, other):
         if isinstance(other, Channel):
