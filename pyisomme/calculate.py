@@ -401,7 +401,7 @@ def calculate_neck_nij(c_fz: Channel,
         dummy = dummys[0]
 
         if oop:
-            assert dummy in ("HF", ...), f"Dummy {dummy} not supported by {calculate_neck_nij.__name__}"
+            assert dummy in ("HF",), f"Dummy {dummy} not supported by {calculate_neck_nij.__name__}"
 
             if fz_t_crit is None:
                 fz_t_crit = {
