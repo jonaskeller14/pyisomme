@@ -146,3 +146,16 @@ class Code(str):
                 logger.debug(f"{element.get('name')} of '{self}' not valid.")
                 return False
         return True
+
+
+def combine_codes(*codes: str | Code) -> Code:
+    if len (codes) == 0:
+        return Code("????????????????")
+
+    comnbined_code = Code(codes[0])
+    for code in codes[1:]:
+        code = Code(code)
+        for idx, (code_char, comnbined_code_char) in enumerate(zip(code, comnbined_code)):
+            if code_char != comnbined_code_char:
+                comnbined_code = Code(f"{comnbined_code[:idx]}?{comnbined_code[idx+1:]}")
+    return comnbined_code

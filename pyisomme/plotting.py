@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pyisomme.limits import Limits, limit_list_unique, limit_list_sort
 from pyisomme.channel import Channel
+from pyisomme.code import combine_codes
 from pyisomme.isomme import Isomme
 
 import copy
@@ -42,8 +43,8 @@ class Plot_Line(Plot):
                  channels: dict[Isomme, list[list[Channel | str]]],
                  nrows: int = None,
                  ncols: int = None,
-                 xlim: tuple = None,
-                 ylim: tuple = None,
+                 xlim: tuple[float | int, float | int] = None,
+                 ylim: tuple[float | int, float | int] = None,
                  sharex: bool = True,
                  sharey: bool = False,
                  figsize: tuple = (10, 10),
@@ -108,6 +109,8 @@ class Plot_Line(Plot):
                     ax.plot(data, c=color, label=isomme.test_number if len(channels) <= 1 else f"{isomme.test_number} {channel.code}", ls=self.linestyles[idx2 % len(self.linestyles)])
                     if not ax.get_title():
                         ax.set_title(f"{channel.code}")
+                    else:
+                        ax.set_title(combine_codes(ax.get_title(), channel.code))
                     if not ax.get_xlabel():
                         ax.set_xlabel('Time [ms]')
                     if not ax.get_ylabel():
