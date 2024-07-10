@@ -146,6 +146,10 @@ class TestCode(unittest.TestCase):
         with self.assertRaises(AssertionError):
             pyisomme.Code("11HEAD0000H3ACX*")
 
+    def test_combine_codes(self):
+        assert pyisomme.code.combine_codes("11HEAD0000H3ACXA", "11HEAD0000H3ACXB") == "11HEAD0000H3ACX?"
+        assert pyisomme.code.combine_codes("11HEAD0000H3ACXA", "11HEAD0000H3ACXB", "11HEAD0000H3DSXB", "11HEAD0000H3ACXA") == "11HEAD0000H3??X?"
+
 
 class TestChannel(unittest.TestCase):
     def test_init(self):
