@@ -65,6 +65,16 @@ def main():
         report.calculate()
         report.export_pptx(options.report_path)
 
+    if options.command == "plot":
+        isomme_list = [pyisomme.Isomme().read(input_path, *options.codes) for input_path in options.input_paths]
+        xlim = tuple([float(x) for x in options.xlim.split()]) if options.xlim is not None else None
+        ylim = tuple([float(y) for y in options.ylim.split()]) if options.ylim is not None else None
+        n = slice(None) if options.n == "*" else slice(None, int(options.n))
+
+        pyisomme.Plot_Line({isomme: [isomme.get_channels(*options.codes)[n]] for isomme in isomme_list},
+                           xlim=xlim,
+                           ylim=ylim).show()
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -121,6 +131,25 @@ if __name__ == "__main__":
     report_parser.add_argument(nargs="+",
                                dest="input_paths",
                                help="ISO-MME Path (.mme/folder/.zip/.tar/.tar.gz/...)")
+
+    plot_parser = command_parsers.add_parser("plot", help="Plot Channels")
+    plot_parser.add_argument(nargs="+",
+                             dest="input_paths",
+                             help="ISO-MME Path (.mme/folder/.zip/.tar/.tar.gz/...)")
+    plot_parser.add_argument("-c", "--codes",
+                             nargs="*",
+                             dest="codes",
+                             help="Channel Code Patterns to select Channel to plot")
+    plot_parser.add_argument("-n", "--n-channels",  # TODO: Add choices int or "*"
+                             default="*",
+                             dest="n",
+                             help="Number of channels to plot (default is all=*)")
+    plot_parser.add_argument("-x", "--xlim",
+                             dest="xlim",
+                             help="X-Axis Range")
+    plot_parser.add_argument("-y", "--ylim",
+                             dest="ylim",
+                             help="Y-Axis Range")
 
     options = parser.parse_args()
 
