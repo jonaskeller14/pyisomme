@@ -28,13 +28,13 @@ class EuroNCAP_Side_Barrier(Report):
             self.Page_Values_Chart(self),
             self.Page_Rating_Table(self),
             self.Page_Values_Table(self),
-            EuroNCAP_Side_Pole.Page_Head_Acceleration(self),
-            EuroNCAP_Side_Pole.Page_Shoulder_Lateral_Force(self),
-            EuroNCAP_Side_Pole.Page_Chest_Lateral_Compression(self),
-            EuroNCAP_Side_Pole.Page_Chest_Lateral_VC(self),
-            EuroNCAP_Side_Pole.Page_Abdomen_Lateral_Compression(self),
-            EuroNCAP_Side_Pole.Page_Abdomen_Lateral_VC(self),
-            EuroNCAP_Side_Pole.Page_Pubic_Symphysis_Force(self),
+            self.Page_Head_Acceleration(self),
+            self.Page_Shoulder_Lateral_Force(self),
+            self.Page_Chest_Lateral_Compression(self),
+            self.Page_Chest_Lateral_VC(self),
+            self.Page_Abdomen_Lateral_Compression(self),
+            self.Page_Abdomen_Lateral_VC(self),
+            self.Page_Pubic_Symphysis_Force(self),
         ]
 
     class Criterion_Master(Criterion):
@@ -192,4 +192,25 @@ class EuroNCAP_Side_Barrier(Report):
         pass
 
     class Page_Rating_Table(EuroNCAP_Side_Pole.Page_Rating_Table):
+        pass
+
+    class Page_Head_Acceleration(EuroNCAP_Side_Pole.Page_Head_Acceleration):
+        pass
+
+    class Page_Shoulder_Lateral_Force (EuroNCAP_Side_Pole.Page_Shoulder_Lateral_Force):
+        pass
+
+    class Page_Chest_Lateral_Compression(EuroNCAP_Side_Pole.Page_Chest_Lateral_Compression):
+        pass
+
+    class Page_Chest_Lateral_VC(EuroNCAP_Side_Pole.Page_Chest_Lateral_VC):
+        pass
+
+    class Page_Abdomen_Lateral_Compression(EuroNCAP_Side_Pole.Page_Abdomen_Lateral_Compression):
+        pass
+
+    class Page_Abdomen_Lateral_VC(EuroNCAP_Side_Pole.Page_Abdomen_Lateral_VC):
+        pass
+
+    class Page_Pubic_Symphysis_Force(EuroNCAP_Side_Pole.Page_Pubic_Symphysis_Force):
         pass

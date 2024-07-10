@@ -75,7 +75,7 @@ class Report:
         with logging_redirect_tqdm():
             for page_number, page in enumerate(tqdm(self.pages, desc="Construct Pages")):
                 logger.info(f"{page_number}:{page.name}")
-                page.__init__(self)  # update. report could be changed since init
+                page.__init__(page.report)  # update. report could be changed since init  # TODO: TEST!
                 page.construct(presentation)
 
         while True:
@@ -87,3 +87,14 @@ class Report:
                 time.sleep(3)
         logger.info(f"pptx successfully exported: {path}")
         return self
+
+class MetaReport(Report):
+    reports: list[Report]
+
+    def calculate(self):
+        for report in self.reports:
+            report.calculate()
+
+    def print_results(self):
+        for report in self.reports:
+            report.print_results()

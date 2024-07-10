@@ -306,10 +306,20 @@ class TestReport(unittest.TestCase):
         report.export_pptx("out/EuroNCAP_Side_Pole.pptx")
         report.print_results()
 
+    def test_EuroNCAP(self):
+        report = pyisomme.report.euro_ncap.euro_ncap.EuroNCAP(
+            frontal_50kmh=[[self.v1]],
+            frontal_mpdb=[[self.v2]],
+            side_pole=[[self.v3]],
+            side_barrier=[[self.v1]],
+        )
+        report.calculate()
+        report.export_pptx("out/EuroNCAP.pptx")
+        report.print_results()
+
+
 class TestPlotting(unittest.TestCase):
-    v1 = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "11391"), "11NECKUP????FO??", "11TIBI*FO*")
-    v2 = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "14084"), "11NECKUP????FO??", "11TIBI*FO*")
-    v3 = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "14065"), "11NECKUP????FO??", "11TIBI*FO*")
+    pass
 
 
 class TestCorrelation(unittest.TestCase):

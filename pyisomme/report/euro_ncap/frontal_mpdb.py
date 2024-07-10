@@ -30,12 +30,12 @@ class EuroNCAP_Frontal_MPDB(Report):
             self.Page_Driver_Result_Values_Chart(self),
             self.Page_Driver_Rating_Table(self),
             self.Page_Driver_Values_Table(self),
-            EuroNCAP_Frontal_50kmh.Page_Driver_Head_Acceleration(self),
+            self.Page_Driver_Head_Acceleration(self),
             self.Page_Driver_Head_Damage(self),
-            EuroNCAP_Frontal_50kmh.Page_Driver_Neck_Load(self),
+            self.Page_Driver_Neck_Load(self),
             self.Page_Driver_Chest_Compression(self),
             self.Page_Driver_Abdomen_Compression(self),
-            EuroNCAP_Frontal_50kmh.Page_Driver_Femur_Axial_Force(self),
+            self.Page_Driver_Femur_Axial_Force(self),
             self.Page_Driver_Knee_Slider_Compression(self),
             self.Page_Driver_Tibia_Compression(self),
             self.Page_Driver_Tibia_Index(self),
@@ -1002,6 +1002,9 @@ class EuroNCAP_Frontal_MPDB(Report):
                 self.report.criterion_master[isomme].criterion_driver.get_subcriterion(criterion_type)
                 for criterion_type in criteria_types] for isomme in self.report.isomme_list}
 
+    class Page_Driver_Head_Acceleration(EuroNCAP_Frontal_50kmh.Page_Driver_Head_Acceleration):
+        pass
+
     class Page_Driver_Head_Damage(Page_Plot_nxn):
         name = "Driver Head DAMAGE"
         title = "Driver Head DAMAGE"
@@ -1015,6 +1018,9 @@ class EuroNCAP_Frontal_MPDB(Report):
                                       [f"?{self.report.criterion_master[isomme].p_driver}HEADDAMA??AAYA"],
                                       [f"?{self.report.criterion_master[isomme].p_driver}HEADDAMA??AAZA"],
                                       [f"?{self.report.criterion_master[isomme].p_driver}HEADDAMA??AARA"]] for isomme in self.report.isomme_list}
+
+    class Page_Driver_Neck_Load(EuroNCAP_Frontal_50kmh.Page_Driver_Neck_Load):
+        pass
 
     class Page_Driver_Chest_Compression(Page_Plot_nxn):
         name = "Driver Chest Compression"
@@ -1040,6 +1046,9 @@ class EuroNCAP_Frontal_MPDB(Report):
             super().__init__(report)
             self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_driver}ABDOLE00??DSXC"],
                                       [f"?{self.report.criterion_master[isomme].p_driver}ABDORI00??DSXC"]] for isomme in self.report.isomme_list}
+
+    class Page_Driver_Femur_Axial_Force(EuroNCAP_Frontal_50kmh.Page_Driver_Femur_Axial_Force):
+        pass
 
     class Page_Driver_Tibia_Compression(Page_Plot_nxn):
         name = "Driver Tibia Compression"
