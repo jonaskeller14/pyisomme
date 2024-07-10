@@ -10,6 +10,7 @@ from pyisomme.info import Info
 from tqdm import tqdm
 from tqdm.contrib.logging import logging_redirect_tqdm
 import os
+import glob
 import re
 import copy
 from pathlib import Path
@@ -81,7 +82,7 @@ class Isomme:
     def read(self, path: str | Path, *channel_code_patterns) -> Isomme:
         """
         path must reference...
-        - a zip which contains .mme-file
+        - a .zip/.tar/.tar.gz which contains .mme-file
         - a folder which contains .mme-file
         - a .mme file
         - a .chn file
@@ -387,7 +388,7 @@ class Isomme:
             shutil.make_archive(folder_path, 'tar.gz', folder_path)
             shutil.rmtree(folder_path)
         else:
-            raise NotImplementedError(f"{path.suffix} is not supported. Only .mme/folder/.zip are supported.")
+            raise NotImplementedError(f"{path.suffix} is not supported. Only .mme/folder/.zip/.tar/.tar.gz are supported.")
 
         return self
 
@@ -466,7 +467,7 @@ class Isomme:
     def get_channel(self, *code_patterns: str, filter: bool = True, calculate: bool = True, differentiate=True, integrate=True) -> Channel | None:
         """
         Get channel by channel code pattern.
-        First match will be returned, although multiple matches may exist.
+        First match will be returned, although multiple matches could exist.
         If channel does not exist, it will be created through filtering and calculations if possible.
         :param code_patterns:
         :param filter: create channel by filtering if channel does not exist yet
@@ -1128,9 +1129,17 @@ class Isomme:
             print(f"\t{(idx+1):03}\t{channel.code}")
 
 
-def read(*paths) -> list[Isomme]:
-    iso_list = []
+def read(*paths, channel_code_patterns: list = None, recursive: bool = True) -> list[Isomme]:
+    all_paths = []
     for path in paths:
-        for sub_path in Path().glob(path):
-            iso_list.append(Isomme().read(sub_path))
+        all_paths += glob.glob(path, recursive=recursive)
+    all_paths = set(all_paths)
+
+    channel_code_patterns = [] if channel_code_patterns is None else channel_code_patterns
+
+    iso_list = []
+    with logging_redirect_tqdm():
+        for path in tqdm(all_paths, desc="Reading"):
+            iso_list.append(Isomme().read(path, *channel_code_patterns))
+
     return iso_list
