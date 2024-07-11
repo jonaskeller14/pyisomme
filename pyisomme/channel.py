@@ -416,6 +416,9 @@ class Channel:
         self.data += offset
         return self
 
+    def auto_offset(self, t: float = 0) -> Channel:
+        return self.offset_y(offset=self.get_data(t=t))
+
     def offset_x(self, offset: float) -> Channel:
         self.data = pd.DataFrame(self.data.values, index=self.data.index + offset)
         return self
