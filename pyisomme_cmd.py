@@ -66,7 +66,10 @@ def main():
         report.export_pptx(options.report_path)
 
     if options.command == "plot":
-        isomme_list = [pyisomme.Isomme().read(input_path, *options.codes) for input_path in options.input_paths]
+        if options.calculate:
+            isomme_list = [pyisomme.Isomme().read(input_path) for input_path in options.input_paths]
+        else:
+            isomme_list = [pyisomme.Isomme().read(input_path, *options.codes) for input_path in options.input_paths]
         xlim = tuple([float(x) for x in options.xlim.split()]) if options.xlim is not None else None
         ylim = tuple([float(y) for y in options.ylim.split()]) if options.ylim is not None else None
         n = slice(None) if options.n == "*" else slice(None, int(options.n))
@@ -140,6 +143,10 @@ if __name__ == "__main__":
                              nargs="*",
                              dest="codes",
                              help="Channel Code Patterns to select Channel to plot")
+    plot_parser.add_argument("--calculate",
+                             action="store_true",
+                             dest="calculate",
+                             help="Plot calculated Channel.")
     plot_parser.add_argument("-n", "--n-channels",  # TODO: Add choices int or "*"
                              default="*",
                              dest="n",
