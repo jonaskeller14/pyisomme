@@ -378,14 +378,14 @@ class Isomme:
             shutil.make_archive(str(path.parent.joinpath(path.stem)), 'zip', str(folder_path))
             shutil.rmtree(folder_path)
         elif path.suffix.lower() == ".tar":
-            folder_path = str(path.name).removesuffix(".tar")
+            folder_path = path.parent.joinpath(path.stem)
             self.write(folder_path, *channel_code_patterns)
             shutil.make_archive(folder_path, 'tar', folder_path)
             shutil.rmtree(folder_path)
         elif len(path.suffixes) >= 2 and path.suffixes[-1].lower() == ".gz" and path.suffixes[-2].lower() == ".tar":
-            folder_path = str(path.name).removesuffix(".tar.gz")
+            folder_path = str(path).removesuffix(".tar.gz")
             self.write(folder_path, *channel_code_patterns)
-            shutil.make_archive(folder_path, 'tar.gz', folder_path)
+            shutil.make_archive(folder_path, 'gztar', folder_path)
             shutil.rmtree(folder_path)
         else:
             raise NotImplementedError(f"{path.suffix} is not supported. Only .mme/folder/.zip/.tar/.tar.gz are supported.")
