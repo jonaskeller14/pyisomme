@@ -88,6 +88,7 @@ class EuroNCAP_Frontal_50kmh(Report):
             self.rating = np.interp(self.rating, [0, 8], [0, 8], left=0, right=np.nan)
 
             # Modifier
+            self.criterion_door_opening_during_impact.calculate()
             self.rating += self.criterion_door_opening_during_impact.rating
 
         class Criterion_Driver(Criterion):
