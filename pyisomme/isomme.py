@@ -525,9 +525,10 @@ class Isomme:
                         return calculate_xms(channel, min_delta_t=int(code_pattern.fine_location_2[0]), method=code_pattern.fine_location_2[1])
 
                 # Damage
-                if code_pattern.fine_location_1 == "DA" and code_pattern.fine_location_2 == "MA":
+                if code_pattern.fine_location_1 == "DA" and code_pattern.fine_location_2 == "MA" and code_pattern.physical_dimension == "AA":
                     if code_pattern.filter_class == "X":
-                        channel_xyz = [self.get_channel(code_pattern.set(fine_location_1="00", fine_location_2="00", direction=direction, filter_class="A")) for direction in "XYZ"]
+                        channel_xyz = [self.get_channel(code_pattern.set(fine_location_1="00", fine_location_2="00", direction=direction, filter_class="A"),
+                                                        code_pattern.set(fine_location_1="CG", fine_location_2="00", direction=direction, filter_class="A")) for direction in "XYZ"]
                         if None not in channel_xyz:
                             if code_pattern.direction == "X":
                                 return calculate_damage(*channel_xyz)[4]
@@ -538,7 +539,8 @@ class Isomme:
                             if code_pattern.direction == "R":
                                 return calculate_damage(*channel_xyz)[7]
                     else:
-                        channel_xyz = [self.get_channel(code_pattern.set(fine_location_1="00", fine_location_2="00", direction=direction, filter_class=code_pattern.filter_class)) for direction in "XYZ"]
+                        channel_xyz = [self.get_channel(code_pattern.set(fine_location_1="00", fine_location_2="00", direction=direction),
+                                                        code_pattern.set(fine_location_1="CG", fine_location_2="00", direction=direction)) for direction in "XYZ"]
                         if None not in channel_xyz:
                             if code_pattern.direction == "X":
                                 return calculate_damage(*channel_xyz)[0]

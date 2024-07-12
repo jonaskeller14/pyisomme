@@ -212,6 +212,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                             self.channel = self.isomme.get_channel(f"?{self.p}HEADDAMA??AARA")
                             self.value = np.max(self.channel.get_data())
                             self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
+                            self.color = self.limits.get_limit_min_color(self.channel)
 
                 class Criterion_Neck(Criterion):
                     name = "Neck"
