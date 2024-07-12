@@ -31,6 +31,7 @@ class EuroNCAP_Frontal_MPDB(Report):
             self.Page_Driver_Result_Values_Chart(self),
             self.Page_Driver_Rating_Table(self),
             self.Page_Driver_Values_Table(self),
+            self.Page_Driver_Belt(self),
             self.Page_Driver_Head_Acceleration(self),
             self.Page_Driver_Head_Damage(self),
             self.Page_Driver_Neck_Load(self),
@@ -44,6 +45,7 @@ class EuroNCAP_Frontal_MPDB(Report):
             self.Page_Passenger_Result_Values_Chart(self),
             self.Page_Passenger_Rating_Table(self),
             self.Page_Passenger_Values_Table(self),
+            self.Page_Passenger_Belt(self),
             self.Page_Passenger_Head_Acceleration(self),
             self.Page_Passenger_Neck_Load(self),
             self.Page_Passenger_Chest_Deflection(self),
@@ -964,6 +966,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                 self.report.Criterion_Master.Criterion_Driver.Criterion_Head_Neck.Criterion_Neck.Criterion_My_Extension,
                 self.report.Criterion_Master.Criterion_Driver.Criterion_Head_Neck.Criterion_Neck.Criterion_Fz_Tension,
                 self.report.Criterion_Master.Criterion_Driver.Criterion_Head_Neck.Criterion_Neck.Criterion_Fx_Shear,
+                EuroNCAP_Frontal_50kmh.Criterion_Master.Criterion_Driver.Criterion_Chest.Criterion_ShoulderBeltLoad,
                 self.report.Criterion_Master.Criterion_Driver.Criterion_Chest_Abdomen.Criterion_Chest.Criterion_Chest_Compression,
                 self.report.Criterion_Master.Criterion_Driver.Criterion_Chest_Abdomen.Criterion_Abdomen.Criterion_Abdomen_Compression,
                 self.report.Criterion_Master.Criterion_Driver.Criterion_Knee_Femur_Pelvis.Criterion_Pelvis.Criterion_Acetabulum_Force,
@@ -1010,6 +1013,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                 self.report.Criterion_Master.Criterion_Driver.Criterion_Head_Neck.Criterion_Neck.Criterion_My_Extension,
                 self.report.Criterion_Master.Criterion_Driver.Criterion_Head_Neck.Criterion_Neck.Criterion_Fz_Tension,
                 self.report.Criterion_Master.Criterion_Driver.Criterion_Head_Neck.Criterion_Neck.Criterion_Fx_Shear,
+                EuroNCAP_Frontal_50kmh.Criterion_Master.Criterion_Driver.Criterion_Chest.Criterion_ShoulderBeltLoad,
                 self.report.Criterion_Master.Criterion_Driver.Criterion_Chest_Abdomen.Criterion_Chest.Criterion_Chest_Compression,
                 self.report.Criterion_Master.Criterion_Driver.Criterion_Chest_Abdomen.Criterion_Abdomen.Criterion_Abdomen_Compression,
                 self.report.Criterion_Master.Criterion_Driver.Criterion_Knee_Femur_Pelvis.Criterion_Pelvis.Criterion_Acetabulum_Force,
@@ -1022,6 +1026,9 @@ class EuroNCAP_Frontal_MPDB(Report):
             self.criteria = {isomme: [
                 self.report.criterion_master[isomme].criterion_driver.get_subcriterion(criterion_type)
                 for criterion_type in criteria_types] for isomme in self.report.isomme_list}
+
+    class Page_Driver_Belt(EuroNCAP_Frontal_50kmh.Page_Driver_Belt):
+        pass
 
     class Page_Driver_Head_Acceleration(EuroNCAP_Frontal_50kmh.Page_Driver_Head_Acceleration):
         pass
@@ -1124,6 +1131,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                 self.report.Criterion_Master.Criterion_Passenger.Criterion_Head_Neck.Criterion_Neck.Criterion_My_Extension,
                 self.report.Criterion_Master.Criterion_Passenger.Criterion_Head_Neck.Criterion_Neck.Criterion_Fz_Tension,
                 self.report.Criterion_Master.Criterion_Passenger.Criterion_Head_Neck.Criterion_Neck.Criterion_Fx_Shear,
+                EuroNCAP_Frontal_50kmh.Criterion_Master.Criterion_Driver.Criterion_Chest.Criterion_ShoulderBeltLoad,
                 self.report.Criterion_Master.Criterion_Passenger.Criterion_Chest.Criterion_Chest_Compression,
                 self.report.Criterion_Master.Criterion_Driver.Criterion_Knee_Femur_Pelvis.Criterion_Femur.Criterion_Femur_Compression,
                 self.report.Criterion_Master.Criterion_Driver.Criterion_Knee_Femur_Pelvis.Criterion_Knee.Criterion_Knee_Slider_Compression,
@@ -1168,6 +1176,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                 self.report.Criterion_Master.Criterion_Passenger.Criterion_Head_Neck.Criterion_Neck.Criterion_My_Extension,
                 self.report.Criterion_Master.Criterion_Passenger.Criterion_Head_Neck.Criterion_Neck.Criterion_Fz_Tension,
                 self.report.Criterion_Master.Criterion_Passenger.Criterion_Head_Neck.Criterion_Neck.Criterion_Fx_Shear,
+                EuroNCAP_Frontal_50kmh.Criterion_Master.Criterion_Driver.Criterion_Chest.Criterion_ShoulderBeltLoad,
                 self.report.Criterion_Master.Criterion_Passenger.Criterion_Chest.Criterion_Chest_Compression,
                 self.report.Criterion_Master.Criterion_Driver.Criterion_Knee_Femur_Pelvis.Criterion_Femur.Criterion_Femur_Compression,
                 self.report.Criterion_Master.Criterion_Driver.Criterion_Knee_Femur_Pelvis.Criterion_Knee.Criterion_Knee_Slider_Compression,
@@ -1178,6 +1187,22 @@ class EuroNCAP_Frontal_MPDB(Report):
             self.criteria = {isomme: [
                 self.report.criterion_master[isomme].criterion_passenger.get_subcriterion(criterion_type)
                 for criterion_type in criteria_types] for isomme in self.report.isomme_list}
+
+    class Page_Passenger_Belt(Page_Plot_nxn):
+        name: str = "Passenger Belt"
+        title: str = "Passenger Belt"
+        nrows: int = 3
+        ncols: int = 2
+        sharey: bool = False
+
+        def __init__(self, report):
+            super().__init__(report)
+            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_passenger}SEBE000[30]B1FO[X0]C"],
+                                      [f"?{self.report.criterion_master[isomme].p_passenger}SEBE000[30]B2FO[X0]C"],
+                                      [f"?{self.report.criterion_master[isomme].p_passenger}SEBE000[30]B3FO[X0]C"],
+                                      [f"?{self.report.criterion_master[isomme].p_passenger}SEBE000[30]B4FO[X0]C"],
+                                      [f"?{self.report.criterion_master[isomme].p_passenger}SEBE000[30]B5FO[X0]C"],
+                                      [f"?{self.report.criterion_master[isomme].p_passenger}SEBE000[30]B6FO[X0]C"]] for isomme in self.report.isomme_list}
 
     class Page_Passenger_Head_Acceleration(Page_Plot_nxn):
         name: str = "Passenger Head Acceleration"
