@@ -4,13 +4,6 @@ import logging
 import pyisomme
 
 
-logging.basicConfig(level=logging.WARNING)
-
-# TODO: plot 1.mme 2.mme code=11HEAD????H3ACXA code=11HEADCG??H3ACXA
-# TODO: diff
-# TODO: set 1.mme code=11HEAD* position=3
-# TODO: list 11HEAD*
-
 REPORTS = [
     pyisomme.report.euro_ncap.frontal_mpdb.EuroNCAP_Frontal_MPDB,
     pyisomme.report.euro_ncap.frontal_50kmh.EuroNCAP_Frontal_50kmh,
@@ -62,7 +55,15 @@ def main():
             channel.scale_x(options.scale_x)
             channel.offset_x(options.offset_x)
 
-        merged_isomme.write(options.output_path)
+        if options.append:
+            try:
+                existing_isomme = pyisomme.Isomme().read(options.output_path)
+                existing_isomme.extend(merged_isomme)
+                existing_isomme.write(options.output_path)
+            except Exception:
+                merged_isomme.write(options.output_path)
+        else:
+            merged_isomme.write(options.output_path)
 
     if options.command == "report":
         isomme_list = [pyisomme.Isomme().read(input_path) for input_path in options.input_paths]
@@ -135,6 +136,7 @@ if __name__ == "__main__":
     merge_parser.add_argument("--offset-x", default=0, dest="offset_x")
     merge_parser.add_argument("--offset-y", default=0, dest="offset_y")
     merge_parser.add_argument("--auto-offset-y", action="store_true", dest="auto_offset_y")
+    merge_parser.add_argument("--append", action="store_true", dest="append", help="Append channels to ISO-MME if output_path exists")
 
     report_parser = command_parsers.add_parser("report", help="Create a Report")
     report_parser.add_argument(dest="report_name",
