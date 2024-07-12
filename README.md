@@ -22,3 +22,6 @@
 - [Plotting](docs/plotting.ipynb)
 
 - [Report](docs/report.ipynb)
+
+## Limitations
+Only test-info (.mme), channel-info (.chn) and channel data files (.001/.002/...) are supported. All other files (videos, photos, txt-files) will be ignored when reading and writing.
