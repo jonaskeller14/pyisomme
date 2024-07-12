@@ -10,7 +10,7 @@ import shutil
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(module)-12s %(levelname)-8s %(message)s',
-                    datefmt='%m/%d/%Y %I:%M:%S', level=logging.INFO)
+                    datefmt='%m/%d/%Y %I:%M:%S', level=logging.WARNING)
 
 
 class TestUnit(unittest.TestCase):
