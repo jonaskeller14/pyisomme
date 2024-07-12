@@ -9,6 +9,7 @@ REPORTS = [
     pyisomme.report.euro_ncap.frontal_50kmh.EuroNCAP_Frontal_50kmh,
     pyisomme.report.euro_ncap.side_barrier.EuroNCAP_Side_Barrier,
     pyisomme.report.euro_ncap.side_pole.EuroNCAP_Side_Pole,
+    pyisomme.report.euro_ncap.side_farside.EuroNCAP_Side_FarSide,
 ]
 
 
@@ -155,6 +156,7 @@ if __name__ == "__main__":
     plot_parser.add_argument("-c", "--codes",
                              nargs="*",
                              dest="codes",
+                             default=[],
                              help="Channel Code Patterns to select Channel to plot")
     plot_parser.add_argument("--calculate",
                              action="store_true",

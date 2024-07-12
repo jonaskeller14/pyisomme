@@ -306,6 +306,16 @@ class TestReport(unittest.TestCase):
         report.export_pptx("out/EuroNCAP_Side_Pole.pptx")
         report.print_results()
 
+    def test_EuroNCAP_Side_FarSide(self):
+        for channel in self.v1.channels:
+            if channel.code.main_location == "NECK" and channel.code.fine_location_3 in ("00", "??"):
+                channel.set_code(fine_location_3="WS")
+
+        report = pyisomme.report.euro_ncap.EuroNCAP_Side_FarSide([self.v1])
+        report.calculate()
+        report.export_pptx("out/EuroNCAP_Side_FarSide.pptx")
+        report.print_results()
+
     def test_EuroNCAP(self):
         report = pyisomme.report.euro_ncap.euro_ncap.EuroNCAP(
             frontal_50kmh=[[self.v1]],
