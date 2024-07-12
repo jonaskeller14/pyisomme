@@ -24,6 +24,7 @@ class EuroNCAP_Frontal_50kmh(Report):
 
         self.pages = [
             Page_Cover(self),
+            self.Page_Rating_Table(self),
             self.Page_Driver_Result_Values_Chart(self),
             self.Page_Driver_Rating_Table(self),
             self.Page_Driver_Values_Table(self),
@@ -1067,6 +1068,25 @@ class EuroNCAP_Frontal_50kmh(Report):
             def calculation(self):
                 self.value = self.number_of_door_openings_during_impact
                 self.rating = -1 * self.number_of_door_openings_during_impact
+
+    class Page_Rating_Table(Page_Criterion_Rating_Table):
+        name = "Rating"
+        title = "Rating"
+
+        def __init__(self, report):
+            super().__init__(report)
+
+            criteria_types = [
+                self.report.Criterion_Master.Criterion_Driver,
+                self.report.Criterion_Master.Criterion_Front_Passenger,
+                self.report.Criterion_Master.Criterion_Rear_Passenger,
+                self.report.Criterion_Master.Criterion_DoorOpeningDuringImpact,
+                self.report.Criterion_Master,
+            ]
+
+            self.criteria = {isomme: [
+                self.report.criterion_master[isomme].get_subcriterion(criterion_type)
+                for criterion_type in criteria_types] for isomme in self.report.isomme_list}
 
     class Page_Driver_Result_Values_Chart(Page_Criterion_Values_Chart):
         name = "Driver Result Values Chart"
