@@ -55,6 +55,12 @@ def main():
                              physical_dimension=options.physical_dimension,
                              direction=options.direction,
                              filter_class=options.filter_class)
+            if options.auto_offset_y:
+                channel.auto_offset_y()
+            channel.scale_y(options.scale_y)
+            channel.offset_y(options.offset_y)
+            channel.scale_x(options.scale_x)
+            channel.offset_x(options.offset_x)
 
         merged_isomme.write(options.output_path)
 
@@ -124,6 +130,11 @@ if __name__ == "__main__":
     merge_parser.add_argument("--set-physical-dimension", dest="physical_dimension")
     merge_parser.add_argument("--set-direction", dest="direction")
     merge_parser.add_argument("--set-filter-class", dest="filter_class")
+    merge_parser.add_argument("--scale-x", default=1, dest="scale_x")
+    merge_parser.add_argument("--scale-y", default=1, dest="scale_y")
+    merge_parser.add_argument("--offset-x", default=0, dest="offset_x")
+    merge_parser.add_argument("--offset-y", default=0, dest="offset_y")
+    merge_parser.add_argument("--auto-offset-y", action="store_true", dest="auto_offset_y")
 
     report_parser = command_parsers.add_parser("report", help="Create a Report")
     report_parser.add_argument(dest="report_name",
