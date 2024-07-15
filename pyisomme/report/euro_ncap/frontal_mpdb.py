@@ -412,6 +412,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                             self.channel = self.isomme.get_channel(f"?{self.p}ABDO0000??DSXC").convert_unit("mm")
                             self.value = np.min(self.channel.get_data())
                             self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
+                            self.color = self.limits.get_limit_min_color(self.channel)
 
             class Criterion_Knee_Femur_Pelvis(Criterion):
                 name = "Knee, Femur and Pelvis"
@@ -1133,6 +1134,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                 self.report.Criterion_Master.Criterion_Passenger.Criterion_Head_Neck.Criterion_Neck.Criterion_Fx_Shear,
                 EuroNCAP_Frontal_50kmh.Criterion_Master.Criterion_Driver.Criterion_Chest.Criterion_ShoulderBeltLoad,
                 self.report.Criterion_Master.Criterion_Passenger.Criterion_Chest.Criterion_Chest_Compression,
+                EuroNCAP_Frontal_50kmh.Criterion_Master.Criterion_Driver.Criterion_Chest.Criterion_Chest_VC,
                 self.report.Criterion_Master.Criterion_Driver.Criterion_Knee_Femur_Pelvis.Criterion_Femur.Criterion_Femur_Compression,
                 self.report.Criterion_Master.Criterion_Driver.Criterion_Knee_Femur_Pelvis.Criterion_Knee.Criterion_Knee_Slider_Compression,
                 self.report.Criterion_Master.Criterion_Driver.Criterion_LowerLeg_Foot_Ankle.Criterion_Tibia_Index,
@@ -1178,6 +1180,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                 self.report.Criterion_Master.Criterion_Passenger.Criterion_Head_Neck.Criterion_Neck.Criterion_Fx_Shear,
                 EuroNCAP_Frontal_50kmh.Criterion_Master.Criterion_Driver.Criterion_Chest.Criterion_ShoulderBeltLoad,
                 self.report.Criterion_Master.Criterion_Passenger.Criterion_Chest.Criterion_Chest_Compression,
+                EuroNCAP_Frontal_50kmh.Criterion_Master.Criterion_Driver.Criterion_Chest.Criterion_Chest_VC,
                 self.report.Criterion_Master.Criterion_Driver.Criterion_Knee_Femur_Pelvis.Criterion_Femur.Criterion_Femur_Compression,
                 self.report.Criterion_Master.Criterion_Driver.Criterion_Knee_Femur_Pelvis.Criterion_Knee.Criterion_Knee_Slider_Compression,
                 self.report.Criterion_Master.Criterion_Driver.Criterion_LowerLeg_Foot_Ankle.Criterion_Tibia_Index,
