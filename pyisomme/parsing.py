@@ -106,6 +106,7 @@ def parse_xxx(text: str, isomme) -> Channel:
 
     logger.warning(f"[{code}] Reference channel type [implicit/explicit] unknown. Could not set index.")
     data = pd.DataFrame(array)
+    data = data[~data.index.duplicated(keep='first')].sort_index()
     return Channel(code, data, unit=unit, info=info)
 
 
