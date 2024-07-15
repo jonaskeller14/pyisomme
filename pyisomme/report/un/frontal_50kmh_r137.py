@@ -15,9 +15,10 @@ logger = logging.getLogger(__name__)
 
 class UN_Frontal_50kmh_R137(Report):
     name = ""
-    protocol = "Revision 2"
+    protocol = "12.09.2023"
     protocols = {
-        "Revision 2": "Revision 2 (22.06.2016) [references/UN-R137/R137e.pdf]"
+        "22.06.2016": "Revision 2 (22.06.2016) [references/UN-R137/R137e.pdf]",
+        "12.09.2023": "Revision 2 (19.09.2023) [references/UN-R137/B04.80k7388018sqd01x91957452w3utcf63832377452.pdf]"
     }
 
     def __init__(self, *args, **kwargs):
@@ -277,7 +278,7 @@ class UN_Frontal_50kmh_R137(Report):
                 self.criterion_neck_fz_tension = self.Criterion_Neck_Fz_tension(report, isomme, p=self.p)
                 self.criterion_neck_fx_shear = self.Criterion_Neck_Fx_shear(report, isomme, p=self.p)
                 self.criterion_neck_my_extension = self.report.Criterion_Master.Criterion_Driver.Criterion_Neck_My_extension(report, isomme, p=self.p)
-                self.criterion_chest_deflection = self.report.Criterion_Master.Criterion_Driver.Criterion_Chest_Deflection(report, isomme, p=self.p)
+                self.criterion_chest_deflection = self.Criterion_Chest_Deflection(report, isomme, p=self.p)
                 self.criterion_chest_vc = self.report.Criterion_Master.Criterion_Driver.Criterion_Chest_VC(report, isomme, p=self.p)
                 self.criterion_femur_compression = self.Criterion_Femur_Compression(report, isomme, p=self.p)
 
@@ -339,6 +340,25 @@ class UN_Frontal_50kmh_R137(Report):
                     self.channel = self.isomme.get_channel(f"?{self.p}NECKUP00??FOXA").convert_unit("kN")
                     self.value = self.channel.get_data(unit="kN")[np.argmax(np.abs(self.channel.get_data()))]
                     self.rating = self.limits.get_limit_min_rating(self.channel)
+                    self.color = self.limits.get_limit_min_color(self.channel)
+
+            class Criterion_Chest_Deflection(Criterion):
+                name = "Chest Deflection"
+
+                def __init__(self, report, isomme, p):
+                    super().__init__(report, isomme)
+
+                    self.p = p
+
+                    self.extend_limit_list([
+                        Limit_Fail([f"?{self.p}CHST000[03]??DSX?"], func=lambda x: -42 if self.report.protocol == "22.06.2016" else -34, y_unit="mm", upper=True),
+                        Limit_Pass([f"?{self.p}CHST000[03]??DSX?"], func=lambda x: -42 if self.report.protocol == "22.06.2016" else -34, y_unit="mm", lower=True),
+                    ])
+
+                def calculation(self):
+                    self.channel = self.isomme.get_channel(f"?{self.p}CHST0003??DSXC", f"?{self.p}CHST0000??DSXC").convert_unit("mm")
+                    self.value = np.min(self.channel.get_data())
+                    self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=True)
                     self.color = self.limits.get_limit_min_color(self.channel)
 
             class Criterion_Femur_Compression(Criterion):
@@ -446,7 +466,7 @@ class UN_Frontal_50kmh_R137(Report):
                 self.report.Criterion_Master.Criterion_Passenger.Criterion_Neck_Fz_tension,
                 self.report.Criterion_Master.Criterion_Passenger.Criterion_Neck_Fx_shear,
                 self.report.Criterion_Master.Criterion_Driver.Criterion_Neck_My_extension,
-                self.report.Criterion_Master.Criterion_Driver.Criterion_Chest_Deflection,
+                self.report.Criterion_Master.Criterion_Passenger.Criterion_Chest_Deflection,
                 self.report.Criterion_Master.Criterion_Driver.Criterion_Chest_VC,
                 self.report.Criterion_Master.Criterion_Passenger.Criterion_Femur_Compression,
             ]
@@ -468,7 +488,7 @@ class UN_Frontal_50kmh_R137(Report):
                 self.report.Criterion_Master.Criterion_Passenger.Criterion_Neck_Fz_tension,
                 self.report.Criterion_Master.Criterion_Passenger.Criterion_Neck_Fx_shear,
                 self.report.Criterion_Master.Criterion_Driver.Criterion_Neck_My_extension,
-                self.report.Criterion_Master.Criterion_Driver.Criterion_Chest_Deflection,
+                self.report.Criterion_Master.Criterion_Passenger.Criterion_Chest_Deflection,
                 self.report.Criterion_Master.Criterion_Driver.Criterion_Chest_VC,
                 self.report.Criterion_Master.Criterion_Passenger.Criterion_Femur_Compression,
             ]
