@@ -56,6 +56,10 @@ def main():
             channel.scale_x(options.scale_x)
             channel.offset_x(options.offset_x)
 
+        if options.crop:
+            x_min, x_max = options.crop().replace("-", " ").replace("..", " ").strip().split()
+            merged_isomme.crop(float(x_min), float(x_max))
+
         if options.append:
             try:
                 existing_isomme = pyisomme.Isomme().read(options.output_path)
@@ -68,6 +72,11 @@ def main():
 
     if options.command == "report":
         isomme_list = [pyisomme.Isomme().read(input_path) for input_path in options.input_paths]
+
+        if options.crop:
+            for isomme in isomme_list:
+                x_min, x_max = options.crop().replace("-", " ").replace("..", " ").strip().split()
+                isomme.crop(float(x_min), float(x_max))
 
         report = {report.__name__: report for report in REPORTS}[options.report_name](isomme_list)
         report.calculate()
@@ -138,6 +147,9 @@ if __name__ == "__main__":
     merge_parser.add_argument("--offset-y", default=0, dest="offset_y")
     merge_parser.add_argument("--auto-offset-y", action="store_true", dest="auto_offset_y")
     merge_parser.add_argument("--append", action="store_true", dest="append", help="Append channels to ISO-MME if output_path exists")
+    merge_parser.add_argument("--crop",
+                              dest="crop",
+                              help="Crop ISO-MME channels to x-min to x-max e.g. (--crop=0.0 - 0.15)")
 
     report_parser = command_parsers.add_parser("report", help="Create a Report")
     report_parser.add_argument(dest="report_name",
@@ -151,6 +163,9 @@ if __name__ == "__main__":
     report_parser.add_argument("--template",
                                dest="template",
                                help="Path to Template (.pptx)")
+    report_parser.add_argument("--crop",
+                               dest="crop",
+                               help="Crop ISO-MME channels to x-min to x-max e.g. (--crop=0.0 - 0.15)")
 
     plot_parser = command_parsers.add_parser("plot", help="Plot Channels")
     plot_parser.add_argument(nargs="+",

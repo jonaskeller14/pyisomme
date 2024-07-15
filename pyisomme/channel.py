@@ -423,6 +423,10 @@ class Channel:
         self.data = pd.DataFrame(self.data.values, index=self.data.index + offset)
         return self
 
+    def crop(self, x_min: float, x_max: float) -> Channel:
+        self.data = self.data.truncate(before=x_min, after=x_max)
+        return self
+
     # Operator methods
     def __eq__(self, other):
         if isinstance(other, Channel):
