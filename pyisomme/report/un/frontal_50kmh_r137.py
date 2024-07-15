@@ -18,7 +18,7 @@ class UN_Frontal_50kmh_R137(Report):
     protocol = "12.09.2023"
     protocols = {
         "22.06.2016": "Revision 2 (22.06.2016) [references/UN-R137/R137e.pdf]",
-        "12.09.2023": "Revision 2 (19.09.2023) [references/UN-R137/B04.80k7388018sqd01x91957452w3utcf63832377452.pdf]"
+        "12.09.2023": "Revision 2 (12.09.2023) [references/UN-R137/B04.80k7388018sqd01x91957452w3utcf63832377452.pdf]"
     }
 
     def __init__(self, *args, **kwargs):
