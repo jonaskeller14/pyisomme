@@ -71,7 +71,7 @@ def main():
 
         report = {report.__name__: report for report in REPORTS}[options.report_name](isomme_list)
         report.calculate()
-        report.export_pptx(options.report_path)
+        report.export_pptx(options.report_path, template=options.template)
 
     if options.command == "plot":
         if options.calculate:
@@ -148,6 +148,9 @@ if __name__ == "__main__":
     report_parser.add_argument(nargs="+",
                                dest="input_paths",
                                help="ISO-MME Path (.mme/folder/.zip/.tar/.tar.gz/...)")
+    report_parser.add_argument("--template",
+                               dest="template",
+                               help="Path to Template (.pptx)")
 
     plot_parser = command_parsers.add_parser("plot", help="Plot Channels")
     plot_parser.add_argument(nargs="+",
