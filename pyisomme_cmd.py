@@ -103,7 +103,7 @@ if __name__ == "__main__":
 
     parser.add_argument("-v", "--verbose", action="store_true", dest="verbose", help="Verbose mode")
 
-    command_parsers = parser.add_subparsers(dest="command")
+    command_parsers = parser.add_subparsers(dest="command", required=True)
 
     list_parser = command_parsers.add_parser("list")
     list_parser.add_argument(nargs="+",
