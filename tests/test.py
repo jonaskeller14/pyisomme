@@ -351,6 +351,24 @@ class TestReport(unittest.TestCase):
         report.export_pptx("out/UN_Frontal_56kmh_ODB_R94.pptx")
         report.print_results()
 
+    def test_UN_Side_Pole_R135(self):
+        self.v1.extend([
+            pyisomme.create_sample("11SHLDLE00WSFOY0", y_range=(-4, 3), unit="kN"),
+            pyisomme.create_sample("11SHLDRI00WSFOY0", y_range=(1, 2), unit="kN"),
+            pyisomme.create_sample("11TRRILE01WSDCRP", y_range=(-30, 0), unit="mm"),
+            pyisomme.create_sample("11TRRILE02WSDCRP", y_range=(-30, 0), unit="mm"),
+            pyisomme.create_sample("11TRRILE03WSDCRP", y_range=(-5, -50), unit="mm"),
+            pyisomme.create_sample("11ABRILE01WSDCRP", y_range=(-30, 0), unit="mm"),
+            pyisomme.create_sample("11ABRILE02WSDCRP", y_range=(-60, 0), unit="mm"),
+            pyisomme.create_sample("11PUBC0000WSFOYB", y_range=(2.0, 0), unit="kN"),
+            pyisomme.create_sample("11THSP1200WSACR0", y_range=(100, 200), unit="m/s^2"),
+        ])
+
+        report = pyisomme.report.un.side_pole_r135.UN_Side_Pole_R135([self.v1])
+        report.calculate()
+        report.export_pptx("out/UN_Side_Pole_R135.pptx")
+        report.print_results()
+
 class TestPlotting(unittest.TestCase):
     pass
 
