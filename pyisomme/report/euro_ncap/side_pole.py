@@ -191,6 +191,7 @@ class EuroNCAP_Side_Pole(Report):
                     self.extend_limit_list([
                         Limit_P([f"?{self.p}VCCR??????VEYC"], func=lambda x: -1, y_unit="m/s", upper=True),
                         Limit_G([f"?{self.p}VCCR??????VEYC"], func=lambda x: -1, y_unit="m/s", lower=True),
+                        Limit_G([f"?{self.p}VCCR??????VEYC"], func=lambda x: 1, y_unit="m/s", upper=True),
                         Limit_P([f"?{self.p}VCCR??????VEYC"], func=lambda x: 1, y_unit="m/s", lower=True),
                     ])
 
@@ -211,6 +212,7 @@ class EuroNCAP_Side_Pole(Report):
                     self.extend_limit_list([
                         Limit_P([f"?{self.p}SHLD0000??FOY?", f"?{self.p}SHLDLE00??FOY?", f"?{self.p}SHLDRI00??FOY?"], func=lambda x: -3, y_unit="kN", upper=True),
                         Limit_G([f"?{self.p}SHLD0000??FOY?", f"?{self.p}SHLDLE00??FOY?", f"?{self.p}SHLDRI00??FOY?"], func=lambda x: -3, y_unit="kN", lower=True),
+                        Limit_G([f"?{self.p}SHLD0000??FOY?", f"?{self.p}SHLDLE00??FOY?", f"?{self.p}SHLDRI00??FOY?"], func=lambda x: 3, y_unit="kN", upper=True),
                         Limit_P([f"?{self.p}SHLD0000??FOY?", f"?{self.p}SHLDLE00??FOY?", f"?{self.p}SHLDRI00??FOY?"], func=lambda x: 3., y_unit="kN", lower=True),
                     ])
 
@@ -274,6 +276,7 @@ class EuroNCAP_Side_Pole(Report):
                     self.extend_limit_list([
                         Limit_P([f"?{self.p}VCAR??????VEYC"], func=lambda x: -1, y_unit="m/s", upper=True),
                         Limit_G([f"?{self.p}VCAR??????VEYC"], func=lambda x: -1, y_unit="m/s", lower=True),
+                        Limit_G([f"?{self.p}VCAR??????VEYC"], func=lambda x: 1, y_unit="m/s", upper=True),
                         Limit_P([f"?{self.p}VCAR??????VEYC"], func=lambda x: 1, y_unit="m/s", lower=True),
                     ])
 
@@ -394,8 +397,8 @@ class EuroNCAP_Side_Pole(Report):
 
 
     class Page_Head_Acceleration(Page_Plot_nxn):
-        name: str = "Driver Head Acceleration"
-        title: str = "Driver Head Acceleration"
+        name: str = "Head Acceleration"
+        title: str = "Head Acceleration"
         nrows: int = 2
         ncols: int = 2
         sharey: bool = True

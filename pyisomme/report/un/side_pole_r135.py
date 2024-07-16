@@ -116,6 +116,7 @@ class UN_Side_Pole_R135(Report):
                     self.extend_limit_list([
                         Limit_Fail([f"?{self.p}SHLD0000??FOY?", f"?{self.p}SHLDLE00??FOY?", f"?{self.p}SHLDRI00??FOY?"], func=lambda x: -3, y_unit="kN", upper=True),
                         Limit_Pass([f"?{self.p}SHLD0000??FOY?", f"?{self.p}SHLDLE00??FOY?", f"?{self.p}SHLDRI00??FOY?"], func=lambda x: -3, y_unit="kN", lower=True),
+                        Limit_Pass([f"?{self.p}SHLD0000??FOY?", f"?{self.p}SHLDLE00??FOY?", f"?{self.p}SHLDRI00??FOY?"], func=lambda x: 3, y_unit="kN", upper=True),
                         Limit_Fail([f"?{self.p}SHLD0000??FOY?", f"?{self.p}SHLDLE00??FOY?", f"?{self.p}SHLDRI00??FOY?"], func=lambda x: 3., y_unit="kN", lower=True),
                     ])
 
@@ -193,6 +194,7 @@ class UN_Side_Pole_R135(Report):
                     self.extend_limit_list([
                         Limit_Fail([f"?{self.p}PUBC0000??FOY?"], func=lambda x: -3.36, y_unit="kN", upper=True),
                         Limit_Pass([f"?{self.p}PUBC0000??FOY?"], func=lambda x: -3.36, y_unit="kN", lower=True),
+                        Limit_Pass([f"?{self.p}PUBC0000??FOY?"], func=lambda x: 3.36, y_unit="kN", upper=True),
                         Limit_Fail([f"?{self.p}PUBC0000??FOY?"], func=lambda x: 3.36, y_unit="kN", lower=True),
                     ])
 

@@ -153,9 +153,10 @@ class UN_Frontal_56kmh_ODB_R94(Report):
                     self.p = p
 
                     self.extend_limit_list([
-                        Limit_Fail([f"?{self.p}NECKUP00??FOX?"], func=lambda x: np.interp(x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1]), x_unit="ms", y_unit="kN", lower=True),
-                        Limit_Pass([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -np.interp(x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1]), x_unit="ms", y_unit="kN", lower=True),
                         Limit_Fail([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -np.interp(x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1]), x_unit="ms", y_unit="kN", upper=True),
+                        Limit_Pass([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -np.interp(x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1]), x_unit="ms", y_unit="kN", lower=True),
+                        Limit_Pass([f"?{self.p}NECKUP00??FOX?"], func=lambda x: np.interp(x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1]), x_unit="ms", y_unit="kN", upper=True),
+                        Limit_Fail([f"?{self.p}NECKUP00??FOX?"], func=lambda x: np.interp(x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1]), x_unit="ms", y_unit="kN", lower=True),
                     ])
 
                 def calculation(self):
@@ -330,9 +331,10 @@ class UN_Frontal_56kmh_ODB_R94(Report):
                     self.p = p
 
                     self.extend_limit_list([
-                        Limit_Fail([f"?{self.p}NECKUP00??FOX?"], func=lambda x: np.interp(x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1]), x_unit="ms", y_unit="kN", lower=True),
-                        Limit_Pass([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -np.interp(x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1]), x_unit="ms", y_unit="kN", lower=True),
                         Limit_Fail([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -np.interp(x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1]), x_unit="ms", y_unit="kN", upper=True),
+                        Limit_Pass([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -np.interp(x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1]), x_unit="ms", y_unit="kN", lower=True),
+                        Limit_Pass([f"?{self.p}NECKUP00??FOX?"], func=lambda x: np.interp(x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1]), x_unit="ms", y_unit="kN", upper=True),
+                        Limit_Fail([f"?{self.p}NECKUP00??FOX?"], func=lambda x: np.interp(x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1]), x_unit="ms", y_unit="kN", lower=True),
                     ])
 
                 def calculation(self):

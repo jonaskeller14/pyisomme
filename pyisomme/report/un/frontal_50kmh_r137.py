@@ -178,6 +178,7 @@ class UN_Frontal_50kmh_R137(Report):
 
                     self.extend_limit_list([
                         Limit_Fail([f"?{self.p}NECKUP00??FOX?"], func=lambda x: 3.1, y_unit="kN", lower=True),
+                        Limit_Pass([f"?{self.p}NECKUP00??FOX?"], func=lambda x: 3.1, y_unit="kN", upper=True),
                         Limit_Pass([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -3.1, y_unit="kN", lower=True),
                         Limit_Fail([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -3.1, y_unit="kN", upper=True),
                     ])
@@ -236,6 +237,7 @@ class UN_Frontal_50kmh_R137(Report):
 
                     self.extend_limit_list([
                         Limit_Fail([f"?{self.p}VCCR000[03]??VEX?"], func=lambda x: -1, y_unit="m/s", upper=True),
+                        Limit_Pass([f"?{self.p}VCCR000[03]??VEX?"], func=lambda x: -1, y_unit="m/s", lower=True),
                         Limit_Pass([f"?{self.p}VCCR000[03]??VEX?"], func=lambda x: 1, y_unit="m/s", upper=True),
                         Limit_Fail([f"?{self.p}VCCR000[03]??VEX?"], func=lambda x: 1, y_unit="m/s", lower=True),
                     ])
@@ -332,6 +334,7 @@ class UN_Frontal_50kmh_R137(Report):
 
                     self.extend_limit_list([
                         Limit_Fail([f"?{self.p}NECKUP00??FOX?"], func=lambda x: 2.9, y_unit="kN", lower=True),
+                        Limit_Pass([f"?{self.p}NECKUP00??FOX?"], func=lambda x: 2.9, y_unit="kN", upper=True),
                         Limit_Pass([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -2.9, y_unit="kN", lower=True),
                         Limit_Fail([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -2.9, y_unit="kN", upper=True),
                     ])
