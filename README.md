@@ -4,10 +4,10 @@
 - Read/write ISO-MME (compressed/uncompressed)
 - Modify Channel and calculate Injury Risk Values (HIC, a3ms, DAMAGE, OLC, BrIC, NIJ, ...)
 - Plot Curves and compare multiple ISO-MMEs
-- Create PowerPoint Reports (Euro-NCAP, ...)
+- Create PowerPoint Reports (Euro-NCAP, UN-R137, UN-R94)
 - Display Limit bars in plots
 - Compare performance of left-hand-drive vehicle with right-hand-drive vehicle
-- Command line tool script for fast and easy use [pyisomme_cmd.py](pyisomme_cmd.py)
+- Command line tool script for fast and easy use [pyisomme_cmd.py](pyisomme_cmd.py) (list, merge, rename, plot, report, ...)
 
 ## Examples
 - [Read ISO-MME](docs/isomme_read.ipynb)
