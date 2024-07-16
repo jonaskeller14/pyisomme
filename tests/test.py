@@ -339,6 +339,18 @@ class TestReport(unittest.TestCase):
         report.export_pptx("out/UN_Frontal_50kmh_R137.pptx")
         report.print_results()
 
+    def test_UN_Frontal_56kmh_ODB_R94(self):
+        for channel in self.v1.channels + self.v2.channels:
+            if channel.code.position == "1":
+                channel.set_code(fine_location_3="H3")
+            if channel.code.position == "3":
+                channel.set_code(fine_location_3="H3")
+
+        report = pyisomme.report.un.frontal_56kmh_odb_r94.UN_Frontal_56kmh_ODB_R94([self.v1, self.v2])
+        report.calculate()
+        report.export_pptx("out/UN_Frontal_56kmh_ODB_R94.pptx")
+        report.print_results()
+
 class TestPlotting(unittest.TestCase):
     pass
 

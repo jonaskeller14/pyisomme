@@ -11,6 +11,7 @@ REPORTS = [
     pyisomme.report.euro_ncap.side_pole.EuroNCAP_Side_Pole,
     pyisomme.report.euro_ncap.side_farside.EuroNCAP_Side_FarSide,
     pyisomme.report.un.frontal_50kmh_r137.UN_Frontal_50kmh_R137,
+    pyisomme.report.un.frontal_56kmh_odb_r94.UN_Frontal_56kmh_ODB_R94,
 ]
 
 

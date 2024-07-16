@@ -1,1 +1,2 @@
 from pyisomme.report.un.frontal_50kmh_r137 import UN_Frontal_50kmh_R137
+from pyisomme.report.un.frontal_56kmh_odb_r94 import UN_Frontal_56kmh_ODB_R94
