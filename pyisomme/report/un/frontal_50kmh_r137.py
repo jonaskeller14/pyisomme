@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 class UN_Frontal_50kmh_R137(Report):
-    name = ""
+    name = "UN-R137 | Frontal-Impact against ODB with 40 % Overlap at 56 km/h"
     protocol = "12.09.2023"
     protocols = {
         "22.06.2016": "Revision 2 (22.06.2016) [references/UN-R137/R137e.pdf]",

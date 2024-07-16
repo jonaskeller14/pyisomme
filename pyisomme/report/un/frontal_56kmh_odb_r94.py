@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 class UN_Frontal_56kmh_ODB_R94(Report):
-    name = ""
+    name = "UN-R94 | Frontal-Impact against Rigid Wall with 100 % Overlap at 50 km/h"
     protocol = "29.12.2022"
     protocols = {
         "29.12.2022": "Revision 4 (29.12.2022) [references/UN-R94/B04.ckg738531jagx232x0m74928e357ft63809066928.pdf]",
