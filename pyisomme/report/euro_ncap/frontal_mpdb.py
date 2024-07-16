@@ -253,7 +253,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                                 Limit_M([f"?{self.p}NECKUP00??MOY?"], func=lambda x: -47, y_unit="Nm", upper=True),
                                 Limit_W([f"?{self.p}NECKUP00??MOY?"], func=lambda x: -52, y_unit="Nm", upper=True),
                                 Limit_P([f"?{self.p}NECKUP00??MOY?"], func=lambda x: -57, y_unit="Nm"),
-                                Limit_C([f"?{self.p}NECKUP00??MOYB"], func=lambda x: -57, y_unit="Nm", upper=True),
+                                Limit_C([f"?{self.p}NECKUP00??MOY?"], func=lambda x: -57, y_unit="Nm", upper=True),
                             ])
 
                         def calculation(self):
@@ -550,7 +550,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                             ])
 
                         def calculation(self):
-                            self.channel = self.isomme.get_channel(f"?{self.p}KNSL0000??DSXB").convert_unit("mm")
+                            self.channel = self.isomme.get_channel(f"?{self.p}KNSL0000??DSXC").convert_unit("mm")
                             self.value = np.min(self.channel.get_data())
                             self.rating = self.limits.get_limit_min_rating(self.channel)
                             self.color = self.limits.get_limit_min_color(self.channel)
@@ -749,7 +749,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                             ])
 
                         def calculation(self):
-                            self.channel = self.isomme.get_channel(f"?{self.p}NECKUP00??FOXB").convert_unit("kN")
+                            self.channel = self.isomme.get_channel(f"?{self.p}NECKUP00??FOXA").convert_unit("kN")
                             self.value = self.limits.get_limit_min_y(self.channel)
                             self.rating = self.limits.get_limit_min_rating(self.channel)
                             self.color = self.limits.get_limit_min_color(self.channel)
@@ -772,7 +772,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                             ])
 
                         def calculation(self) -> None:
-                            self.channel = self.isomme.get_channel(f"?{self.p}NECKUP00??FOZB").convert_unit("kN")
+                            self.channel = self.isomme.get_channel(f"?{self.p}NECKUP00??FOZA").convert_unit("kN")
                             self.value = self.limits.get_limit_min_y(self.channel)
                             self.rating = self.limits.get_limit_min_rating(self.channel)
                             self.color = self.limits.get_limit_min_color(self.channel)
@@ -1116,8 +1116,8 @@ class EuroNCAP_Frontal_MPDB(Report):
 
         def __init__(self, report):
             super().__init__(report)
-            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_driver}KNSLLE00??DSXB"],
-                                      [f"?{self.report.criterion_master[isomme].p_driver}KNSLRI00??DSXB"]]for isomme in self.report.isomme_list}
+            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_driver}KNSLLE00??DSXC"],
+                                      [f"?{self.report.criterion_master[isomme].p_driver}KNSLRI00??DSXC"]]for isomme in self.report.isomme_list}
 
     class Page_Passenger_Result_Values_Chart(Page_Criterion_Values_Chart):
         name = "Passenger Result Values Chart"
@@ -1228,8 +1228,8 @@ class EuroNCAP_Frontal_MPDB(Report):
         def __init__(self, report):
             super().__init__(report)
             self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_passenger}NECKUP00??MOYB"],
-                                      [f"?{self.report.criterion_master[isomme].p_passenger}NECKUP00??FOZB"],
-                                      [f"?{self.report.criterion_master[isomme].p_passenger}NECKUP00??FOXB"]] for isomme in self.report.isomme_list}
+                                      [f"?{self.report.criterion_master[isomme].p_passenger}NECKUP00??FOZA"],
+                                      [f"?{self.report.criterion_master[isomme].p_passenger}NECKUP00??FOXA"]] for isomme in self.report.isomme_list}
 
     class Page_Passenger_Chest_Deflection(Page_Plot_nxn):
         name: str = "Passenger Chest Deflection"
@@ -1263,8 +1263,8 @@ class EuroNCAP_Frontal_MPDB(Report):
 
         def __init__(self, report):
             super().__init__(report)
-            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_passenger}KNSLLE00??DSXB"],
-                                      [f"?{self.report.criterion_master[isomme].p_passenger}KNSLRI00??DSXB"]]for isomme in self.report.isomme_list}
+            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_passenger}KNSLLE00??DSXC"],
+                                      [f"?{self.report.criterion_master[isomme].p_passenger}KNSLRI00??DSXC"]]for isomme in self.report.isomme_list}
 
     class Page_Passenger_Tibia_Compression(Page_Plot_nxn):
         name = "Passenger Tibia Compression"
