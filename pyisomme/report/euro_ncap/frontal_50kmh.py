@@ -726,7 +726,7 @@ class EuroNCAP_Frontal_50kmh(Report):
 
                     def calculation(self):
                         self.channel = self.isomme.get_channel(f"?{self.p}NECKUP00??MOYB")
-                        self.value = np.abs(np.min(self.channel.get_data(unit="Nm")))
+                        self.value = np.min(self.channel.get_data(unit="Nm"))
                         self.rating = self.limits.get_limit_min_rating(self.channel)
                         self.color = self.limits.get_limit_min_color(self.channel)
 
@@ -966,7 +966,7 @@ class EuroNCAP_Frontal_50kmh(Report):
 
                     def calculation(self):
                         self.channel = self.isomme.get_channel(f"?{self.p}NECKUP00??MOYB")
-                        self.value = np.abs(np.min(self.channel.get_data(unit="Nm")))
+                        self.value = np.min(self.channel.get_data(unit="Nm"))
                         self.rating = self.limits.get_limit_min_rating(self.channel)
                         # Reduce max. rating for rear passenger
                         self.rating = np.min([2, self.rating])
