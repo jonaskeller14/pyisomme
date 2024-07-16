@@ -221,7 +221,7 @@ class UN_Frontal_50kmh_R137(Report):
                     ])
 
                 def calculation(self):
-                    self.channel = self.isomme.get_channel(f"?{self.p}CHST0003??DSXC", f"?{self.p}CHST0000??DSXC").convert_unit("mm")
+                    self.channel = self.isomme.get_channel(f"?{self.p}CHST0000??DSXC").convert_unit("mm")
                     self.value = np.min(self.channel.get_data())
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=True)
                     self.color = self.limits.get_limit_min_color(self.channel)
@@ -356,7 +356,7 @@ class UN_Frontal_50kmh_R137(Report):
                     ])
 
                 def calculation(self):
-                    self.channel = self.isomme.get_channel(f"?{self.p}CHST0003??DSXC", f"?{self.p}CHST0000??DSXC").convert_unit("mm")
+                    self.channel = self.isomme.get_channel(f"?{self.p}CHST0000??DSXC").convert_unit("mm")
                     self.value = np.min(self.channel.get_data())
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=True)
                     self.color = self.limits.get_limit_min_color(self.channel)
