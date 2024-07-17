@@ -1155,9 +1155,34 @@ class Isomme:
         for idx, channel in enumerate(self.channels):
             print(f"\t{(idx+1):03}\t{channel.code}")
 
-    def crop(self, x_min: float = None, x_max: float = None) -> Isomme:
+    def scale_y(self, *args, **kwargs) -> Isomme:
         for channel in self.channels:
-            channel.crop(x_min=x_min, x_max=x_max)
+            channel.scale_y(*args, **kwargs)
+        return self
+
+    def scale_x(self, *args, **kwargs) -> Isomme:
+        for channel in self.channels:
+            channel.scale_x(*args, **kwargs)
+        return self
+
+    def offset_y(self, *args, **kwargs) -> Isomme:
+        for channel in self.channels:
+            channel.offset_y(*args, **kwargs)
+        return self
+
+    def auto_offset_y(self, *args, **kwargs) -> Isomme:
+        for channel in self.channels:
+            channel.auto_offset_y(*args, **kwargs)
+        return self
+
+    def offset_x(self, *args, **kwargs) -> Isomme:
+        for channel in self.channels:
+            channel.offset_x(*args, **kwargs)
+        return self
+
+    def crop(self, *args, **kwargs) -> Isomme:
+        for channel in self.channels:
+            channel.crop(*args, **kwargs)
         return self
 
 
