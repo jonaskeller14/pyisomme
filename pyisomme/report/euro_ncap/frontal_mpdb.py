@@ -918,7 +918,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                     super().__init__(report, isomme)
 
                     self.extend_limit_list([
-                        Limit([f"M?MBAR0OLC??VEX?"], func=lambda x: 25, y_unit=g0, name="No Modifier applied", rating=0, upper=True),
+                        Limit([f"M?MBAR0OLC??VEX?"], func=lambda x: 25, y_unit=g0, name="0 pt. Modifier", rating=0, upper=True),
                         Limit([f"M?MBAR0OLC??VEX?"], func=lambda x: 25, y_unit=g0, name="-2..0 pt. Modifier", rating=0, lower=True),
                         Limit([f"M?MBAR0OLC??VEX?"], func=lambda x: 40, y_unit=g0, name="-2 pt. Modifier", rating=-2, lower=True),
                     ])

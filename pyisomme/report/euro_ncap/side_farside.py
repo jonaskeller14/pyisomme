@@ -381,9 +381,9 @@ class EuroNCAP_Side_FarSide(Report):
                     self.p = p
 
                     self.extend_limit_list([
-                        Limit([f"?{self.p}PUBC0000??FOY?"], func=lambda x: -2.8, y_unit="kN", upper=True, color="red", rating=-4, name="-4pt. modifier"),
-                        Limit([f"?{self.p}PUBC0000??FOY?"], func=lambda x: 2.8, y_unit="kN", upper=True, color="green", rating=0, name="No modifier applied"),
-                        Limit([f"?{self.p}PUBC0000??FOY?"], func=lambda x: 2.8, y_unit="kN", lower=True, color="red", rating=-4, name="-4pt. modifier"),
+                        Limit([f"?{self.p}PUBC0000??FOY?"], func=lambda x: -2.8, y_unit="kN", upper=True, color="red", rating=-4, name="-4 pt. Modifier"),
+                        Limit([f"?{self.p}PUBC0000??FOY?"], func=lambda x: 2.8, y_unit="kN", upper=True, color="green", rating=0, name="0 pt. Modifier"),
+                        Limit([f"?{self.p}PUBC0000??FOY?"], func=lambda x: 2.8, y_unit="kN", lower=True, color="red", rating=-4, name="-4 pt. Modifier"),
                     ])
 
                 def calculation(self):
@@ -401,9 +401,9 @@ class EuroNCAP_Side_FarSide(Report):
                     self.p = p
 
                     self.extend_limit_list([
-                        Limit([f"?{self.p}LUSP0000??FOY?"], func=lambda x: -2, y_unit="kN", upper=True, color="red", rating=-4, name="-4pt. modifier"),
-                        Limit([f"?{self.p}LUSP0000??FOY?"], func=lambda x: 2, y_unit="kN", upper=True, color="green", rating=0, name="No modifier applied"),
-                        Limit([f"?{self.p}LUSP0000??FOY?"], func=lambda x: 2, y_unit="kN", lower=True, color="red", rating=-4, name="-4pt. modifier"),
+                        Limit([f"?{self.p}LUSP0000??FOY?"], func=lambda x: -2, y_unit="kN", upper=True, color="red", rating=-4, name="-4 pt. Modifier"),
+                        Limit([f"?{self.p}LUSP0000??FOY?"], func=lambda x: 2, y_unit="kN", upper=True, color="green", rating=0, name="0 pt. Modifier"),
+                        Limit([f"?{self.p}LUSP0000??FOY?"], func=lambda x: 2, y_unit="kN", lower=True, color="red", rating=-4, name="-4 pt. Modifier"),
                     ])
 
                 def calculation(self):
@@ -421,9 +421,9 @@ class EuroNCAP_Side_FarSide(Report):
                     self.p = p
 
                     self.extend_limit_list([
-                        Limit([f"?{self.p}LUSP0000??FOZ?"], func=lambda x: -3.5, y_unit="kN", upper=True, color="red", rating=-4, name="-4pt. modifier"),
-                        Limit([f"?{self.p}LUSP0000??FOZ?"], func=lambda x: 3.5, y_unit="kN", upper=True, color="green", rating=0, name="No modifier applied"),
-                        Limit([f"?{self.p}LUSP0000??FOZ?"], func=lambda x: 3.5, y_unit="kN", lower=True, color="red", rating=-4, name="-4pt. modifier"),
+                        Limit([f"?{self.p}LUSP0000??FOZ?"], func=lambda x: -3.5, y_unit="kN", upper=True, color="red", rating=-4, name="-4 pt. Modifier"),
+                        Limit([f"?{self.p}LUSP0000??FOZ?"], func=lambda x: 3.5, y_unit="kN", upper=True, color="green", rating=0, name="0 pt. Modifier"),
+                        Limit([f"?{self.p}LUSP0000??FOZ?"], func=lambda x: 3.5, y_unit="kN", lower=True, color="red", rating=-4, name="-4 pt. Modifier"),
                     ])
 
                 def calculation(self):
@@ -441,9 +441,9 @@ class EuroNCAP_Side_FarSide(Report):
                     self.p = p
 
                     self.extend_limit_list([
-                        Limit([f"?{self.p}LUSP0000??MOX?"], func=lambda x: -120, y_unit="Nm", upper=True, color="red", rating=-4, name="-4pt. modifier"),
-                        Limit([f"?{self.p}LUSP0000??MOX?"], func=lambda x: 120, y_unit="Nm", upper=True, color="green", rating=0, name="No modifier applied"),
-                        Limit([f"?{self.p}LUSP0000??MOX?"], func=lambda x: 120, y_unit="Nm", lower=True, color="red", rating=-4, name="-4pt. modifier"),
+                        Limit([f"?{self.p}LUSP0000??MOX?"], func=lambda x: -120, y_unit="Nm", upper=True, color="red", rating=-4, name="-4 pt. Modifier"),
+                        Limit([f"?{self.p}LUSP0000??MOX?"], func=lambda x: 120, y_unit="Nm", upper=True, color="green", rating=0, name="0 pt. Modifier"),
+                        Limit([f"?{self.p}LUSP0000??MOX?"], func=lambda x: 120, y_unit="Nm", lower=True, color="red", rating=-4, name="-4 pt. Modifier"),
                     ])
 
                 def calculation(self):
