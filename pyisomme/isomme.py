@@ -1155,7 +1155,7 @@ class Isomme:
         for idx, channel in enumerate(self.channels):
             print(f"\t{(idx+1):03}\t{channel.code}")
 
-    def crop(self, x_min: float, x_max: float) -> Isomme:
+    def crop(self, x_min: float = None, x_max: float = None) -> Isomme:
         for channel in self.channels:
             channel.crop(x_min=x_min, x_max=x_max)
         return self
