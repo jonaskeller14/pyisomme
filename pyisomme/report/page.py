@@ -187,7 +187,11 @@ class Page_Criterion_Values_Chart(Page):
 
         plt.xticks(rotation=30, ha='right')
         ax.get_yaxis().set_visible(False)
-        ax.legend()
+
+        # Legend (Delete duplicates)
+        handles, labels = ax.get_legend_handles_labels()
+        by_label = dict(zip(labels, handles))
+        ax.legend(by_label.values(), by_label.keys(), bbox_to_anchor=(1, 1), loc='upper left')
 
         image_steam = io.BytesIO()
         fig.savefig(image_steam, transparent=True, bbox_inches='tight')
