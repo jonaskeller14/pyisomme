@@ -329,6 +329,73 @@ class Isomme:
                             self.channels.append(parse_xxx(xxx_content.decode("iso-8859-1"), isomme=self))
             return self
 
+    def write_mme(self, path: str | Path, *channel_code_patterns) -> Isomme:
+        channels = self.get_channels(*channel_code_patterns) if len(channel_code_patterns) != 0 else self.channels
+        path = Path(path)
+
+        if path.stem != self.test_number:
+            logger.warning("Test number does not match file stem. Not compliant with convention.")
+
+        os.makedirs(path.parent, exist_ok=True)
+
+        # MME
+        with open(path, "w") as mme_file:
+            self.test_info.write(mme_file)
+
+        # Channel-Folder
+        os.makedirs(path.parent.joinpath("Channel"), exist_ok=True)
+
+        # Update Channel Info
+        channel_info = copy.deepcopy(self.channel_info)
+        for info in channel_info[:]:
+            name, value = info
+            if "Name of channel" in name:
+                channel_info.remove(info)
+        channel_info.update({"Number of channels": len(channels)})
+
+        # 001 - iterate over channels
+        with logging_redirect_tqdm():
+            for channel_idx, channel in tqdm(enumerate(channels, 1), desc=f"Write Channel of {self.test_number}",
+                                             total=len(channels)):
+                channel_info[f"Name of channel {channel_idx:03}"] = channel.code + (
+                    f' / {channel.get_info("Name of the channel")}' if channel.get_info(
+                        "Name of the channel") is not None else "")
+                channel.write(path.parent.joinpath("Channel", f"{path.stem}.{channel_idx:03}"))
+
+        # CHN
+        with open(path.parent.joinpath("Channel", f"{path.stem}.chn"), "w") as chn_file:
+            channel_info.write(chn_file)
+        return self
+
+    def write_folder(self, path: str | Path, *channel_code_patterns) -> Isomme:
+        path = Path(path)
+        self.write_mme(path.joinpath(f"{self.test_number}.mme"), *channel_code_patterns)
+        return self
+
+    def write_zip(self, path: str | Path, *channel_code_patterns) -> Isomme:
+        path = Path(path)
+        folder_path = path.parent.joinpath(path.stem)
+        self.write_folder(folder_path, *channel_code_patterns)
+        shutil.make_archive(str(folder_path), 'zip', str(folder_path))
+        shutil.rmtree(folder_path)
+        return self
+
+    def write_tar(self, path: str | Path, *channel_code_patterns) -> Isomme:
+        path = Path(path)
+        folder_path = path.parent.joinpath(path.stem)
+        self.write(folder_path, *channel_code_patterns)
+        shutil.make_archive(str(folder_path), 'tar', folder_path)
+        shutil.rmtree(folder_path)
+        return self
+
+    def write_tar_gz(self, path: str | Path, *channel_code_patterns) -> Isomme:
+        path = Path(path)
+        folder_path = str(path).removesuffix(".tar.gz")
+        self.write(folder_path, *channel_code_patterns)
+        shutil.make_archive(folder_path, 'gztar', folder_path)
+        shutil.rmtree(folder_path)
+        return self
+
     def write(self, path: str | Path, *channel_code_patterns) -> Isomme:
         """
         Write ISO-MME data to files.
@@ -336,61 +403,19 @@ class Isomme:
         :param channel_code_patterns: (optional) only export specific channels identified by code-pattern
         :return:
         """
-        channels = self.get_channels(*channel_code_patterns) if len(channel_code_patterns) != 0 else self.channels
-
         path = Path(path)
         if path.suffix.lower() == ".mme":
-            if path.stem != self.test_number:
-                logger.warning("Test number does not match file stem. Not compliant with convention.")
-
-            os.makedirs(path.parent, exist_ok=True)
-
-            # MME
-            with open(path, "w") as mme_file:
-                self.test_info.write(mme_file)
-
-            # Channel-Folder
-            os.makedirs(path.parent.joinpath("Channel"), exist_ok=True)
-
-            # Update Channel Info
-            channel_info = copy.deepcopy(self.channel_info)
-            for info in channel_info[:]:
-                name, value = info
-                if "Name of channel" in name:
-                    channel_info.remove(info)
-            channel_info.update({"Number of channels": len(channels)})
-
-            # 001 - iterate over channels
-            with logging_redirect_tqdm():
-                for channel_idx, channel in tqdm(enumerate(channels, 1), desc=f"Write Channel of {self.test_number}", total=len(channels)):
-                    channel_info[f"Name of channel {channel_idx:03}"] = channel.code + (f' / {channel.get_info("Name of the channel")}' if channel.get_info("Name of the channel") is not None else "")
-                    channel.write(path.parent.joinpath("Channel", f"{path.stem}.{channel_idx:03}"))
-
-            # CHN
-            with open(path.parent.joinpath("Channel", f"{path.stem}.chn"), "w") as chn_file:
-                channel_info.write(chn_file)
-
+            return self.write_mme(path, *channel_code_patterns)
         elif path.suffix == "":
-            self.write(path.joinpath(f"{self.test_number}.mme"), *channel_code_patterns)
+            return self.write_folder(path, *channel_code_patterns)
         elif path.suffix.lower() == ".zip":
-            folder_path = path.parent.joinpath(path.stem)
-            self.write(folder_path, *channel_code_patterns)
-            shutil.make_archive(str(path.parent.joinpath(path.stem)), 'zip', str(folder_path))
-            shutil.rmtree(folder_path)
+            return self.write_zip(path, *channel_code_patterns)
         elif path.suffix.lower() == ".tar":
-            folder_path = path.parent.joinpath(path.stem)
-            self.write(folder_path, *channel_code_patterns)
-            shutil.make_archive(folder_path, 'tar', folder_path)
-            shutil.rmtree(folder_path)
+            return self.write_tar(path, *channel_code_patterns)
         elif len(path.suffixes) >= 2 and path.suffixes[-1].lower() == ".gz" and path.suffixes[-2].lower() == ".tar":
-            folder_path = str(path).removesuffix(".tar.gz")
-            self.write(folder_path, *channel_code_patterns)
-            shutil.make_archive(folder_path, 'gztar', folder_path)
-            shutil.rmtree(folder_path)
+            return self.write_tar_gz(path, *channel_code_patterns)
         else:
             raise NotImplementedError(f"{path.suffix} is not supported. Only .mme/folder/.zip/.tar/.tar.gz are supported.")
-
-        return self
 
     def extend(self, *others) -> Isomme:
         """
