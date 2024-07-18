@@ -76,17 +76,17 @@ class Page_Criterion_Table(Page):
         ax.axis('off')
         ax.axis('tight')
 
-        cell_text = np.full((len(list(self.criteria.values())[0]), len(self.report.isomme_list)), np.nan).tolist()
+        cell_text = np.full((len(list(self.criteria.values())[0]), len(list(self.criteria.keys()))), np.nan).tolist()
         cell_colors = np.zeros_like(cell_text).tolist()
-        for idx_isomme, isomme in enumerate(self.report.isomme_list):
+        for idx_isomme, isomme in enumerate(self.criteria.keys()):
             for idx_criterion, criterion in enumerate(self.criteria[isomme]):
                 cell_text[idx_criterion][idx_isomme] = self.cell_text(criterion)
                 cell_colors[idx_criterion][idx_isomme] = (*to_rgb(criterion.color), 0.5) if criterion.color is not None else (0,0,0,0)
 
-        row_labels = [self.row_label(criterion) for criterion in self.criteria[self.report.isomme_list[0]]]
+        row_labels = [self.row_label(criterion) for criterion in self.criteria[list(self.criteria.keys())[0]]]
 
-        col_labels = [isomme.test_number for isomme in self.report.isomme_list]
-        col_colors = [mcolor for mcolor in list(Plot.colors)[:len(self.report.isomme_list)]]
+        col_labels = [isomme.test_number for isomme in self.criteria.keys()]
+        col_colors = [mcolor for mcolor in list(Plot.colors)[:len(self.criteria.keys())]]
 
         table = ax.table(cellText=cell_text,
                          cellColours=cell_colors,
