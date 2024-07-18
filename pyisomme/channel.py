@@ -90,7 +90,7 @@ class Channel:
         self.unit = Unit(new_unit)
         return self
 
-    def cfc(self, value: int | str, method="ISO-6487") -> Channel:
+    def cfc(self, value: int | str, method="ISO-6487", return_copy: bool = True) -> Channel:
         """
         Apply a filter to smooth curves.
         REFERENCES:
@@ -98,6 +98,7 @@ class Channel:
         - Annex A of references/ISO-6487/ISO-6487-2015.pdf
         :param value:
         :param method:
+        :param return_copy:
         :return:
         """
         if isinstance(value, str):
@@ -140,13 +141,13 @@ class Channel:
 
         # Check if Channel is already filtered
         if filter_class == "0":
-            return copy.deepcopy(self)
+            return copy.deepcopy(self) if not return_copy else self
         elif (filter_class == "A" and self.code.filter_class in ("A", "B", "C", "D") or
               filter_class == "B" and self.code.filter_class in ("B", "C", "D") or
               filter_class == "C" and self.code.filter_class in ("C", "D") or
               filter_class == "D" and self.code.filter_class in ("D",)):
             logger.warning("No filtering applied. Channel is already filtered.")
-            return copy.deepcopy(self)
+            return copy.deepcopy(self) if not return_copy else self
 
         # Calculation
         if method == "ISO-6487":
@@ -222,12 +223,18 @@ class Channel:
             info = self.info
             info.update({"Channel frequency class": cfc})
 
-            return Channel(
-                code=self.code.set(filter_class=filter_class),
-                data=data,
-                unit=self.unit,
-                info=info
-            )
+            if return_copy:
+                return Channel(
+                    code=self.code.set(filter_class=filter_class),
+                    data=data,
+                    unit=self.unit,
+                    info=info
+                )
+            else:
+                self.code = self.code.set(filter_class=filter_class)
+                self.data = data
+                self.info = info
+                return self
 
         elif method == "SAE-J211-1":
             input_values = self.get_data()
@@ -275,12 +282,18 @@ class Channel:
             info = self.info
             info.update({"Channel frequency class": cfc})
 
-            return Channel(
-                code=self.code.set(filter_class=filter_class),
-                data=data,
-                unit=self.unit,
-                info=info
-            )
+            if return_copy:
+                return Channel(
+                    code=self.code.set(filter_class=filter_class),
+                    data=data,
+                    unit=self.unit,
+                    info=info
+                )
+            else:
+                self.code = self.code.set(filter_class=filter_class)
+                self.data = data
+                self.info = info
+                return self
         else:
             raise NotImplementedError
 

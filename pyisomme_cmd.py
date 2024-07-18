@@ -59,6 +59,9 @@ def main():
             channel.scale_x(options.scale_x)
             channel.offset_x(options.offset_x)
 
+            if options.cfc is not None:
+                channel.cfc(options.cfc, return_copy=False)
+
         if options.crop:
             x_min, x_max = options.crop().replace("-", " ").replace("..", " ").strip().split()
             merged_isomme.crop(float(x_min), float(x_max))
@@ -125,6 +128,7 @@ if __name__ == "__main__":
     merge_parser.add_argument("-c", "--codes",
                               nargs="*",
                               dest="codes",
+                              default=[],
                               help="Channel Code Patterns to filter ISO-MMEs")
     merge_parser.add_argument("--delete-duplicates",
                               action="store_true",
@@ -153,6 +157,7 @@ if __name__ == "__main__":
     merge_parser.add_argument("--crop",
                               dest="crop",
                               help="Crop ISO-MME channels to x-min to x-max e.g. (--crop=0.0 - 0.15)")
+    merge_parser.add_argument("--cfc", dest="cfc")
 
     report_parser = command_parsers.add_parser("report", help="Create a Report")
     report_parser.add_argument(dest="report_name",
