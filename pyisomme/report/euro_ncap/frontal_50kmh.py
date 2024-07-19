@@ -399,7 +399,7 @@ class EuroNCAP_Frontal_50kmh(Report):
                     self.criterion_chest_deflection = self.Criterion_Chest_Deflection(report, isomme, p)
                     self.criterion_chest_vc = self.Criterion_Chest_VC(report, isomme, p)
                     self.criterion_SteeringWheelContact = self.Criterion_SteeringWheelContact(report, isomme, p)
-                    self.criterion_ShoulderBeltLoad = self.Criterion_ShoulderBeltLoad(report, isomme, p)
+                    self.criterion_shoulder_belt_load = self.Criterion_ShoulderBeltLoad(report, isomme, p)
 
                 def calculation(self):
                     self.criterion_chest_deflection.calculate()
@@ -410,9 +410,9 @@ class EuroNCAP_Frontal_50kmh(Report):
 
                     # Modifier
                     self.criterion_SteeringWheelContact.calculate()
-                    self.criterion_ShoulderBeltLoad.calculate()
+                    self.criterion_shoulder_belt_load.calculate()
                     self.rating += np.sum([self.criterion_SteeringWheelContact.rating,
-                                           self.criterion_ShoulderBeltLoad.rating])
+                                           self.criterion_shoulder_belt_load.rating])
 
                 class Criterion_Chest_Deflection(Criterion):
                     name = "Chest Deflection"
@@ -486,7 +486,7 @@ class EuroNCAP_Frontal_50kmh(Report):
                             Limit([f"?{self.p}SEBE????B3FO[X0]?"], name="-2 pt. Modifier", func=lambda x: 6.0, y_unit="kN", lower=True, color="red", rating=-2)
                         ])
 
-                    def calculate(self):
+                    def calculation(self) -> None:
                         self.channel = self.isomme.get_channel(f"?{self.p}SEBE????B3FO[X0]D")
                         self.value = np.max(self.channel.get_data(unit="kN"))
                         self.rating = self.limits.get_limit_min_rating(self.channel)

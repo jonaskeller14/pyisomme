@@ -784,11 +784,17 @@ class Isomme:
                         channel = self.get_channel(code_pattern.set(main_location="TRRI", physical_dimension="DS", filter_class="C"))
                         if channel is not None:
                             return calculate_vc(channel)[1]
+                        channel = self.get_channel(code_pattern.set(main_location="RIBS", physical_dimension="DS", filter_class="C"))
+                        if channel is not None:
+                            return calculate_vc(channel)[1]
                     else:
                         channel = self.get_channel(code_pattern.set(main_location="CHST", physical_dimension="DS"))
                         if channel is not None:
                             return calculate_vc(channel)[0]
                         channel = self.get_channel(code_pattern.set(main_location="TRRI", physical_dimension="DS"))
+                        if channel is not None:
+                            return calculate_vc(channel)[0]
+                        channel = self.get_channel(code_pattern.set(main_location="RIBS", physical_dimension="DS"))
                         if channel is not None:
                             return calculate_vc(channel)[0]
 
@@ -1042,6 +1048,32 @@ class Isomme:
                         if channel_dc is not None:
                             return (channel_dc - channel_dc.get_data(t=0)).set_code(physical_dimension="DS")
 
+                # ES-2 / ES-2re Rib Deflection (Min. of upper/middle/lower)
+                if code_pattern.main_location == "RIBS" and code_pattern.fine_location_2 == "00" and code_pattern.physical_dimension == "DS" and code_pattern.direction == "Y":
+                    channel_up = self.get_channel(code_pattern.set(fine_location_2="UP"))
+                    channel_mi = self.get_channel(code_pattern.set(fine_location_2="MI"))
+                    channel_lo = self.get_channel(code_pattern.set(fine_location_2="LO"))
+                    if None not in (channel_up, channel_mi, channel_lo):
+                        t = time_intersect(channel_up, channel_mi, channel_lo)
+                        values = np.min([channel_up.get_data(t), channel_mi.get_data(t, unit=channel_up.unit), channel_lo.get_data(t, unit=channel_up.unit)], axis=0)
+                        return Channel(code=channel_up.code.set(fine_location_2="00"),
+                                       data=pd.DataFrame(values, index=t),
+                                       unit=channel_up.unit,
+                                       info=channel_up.info)
+                # ES-2 / ES-2re Abdomen Force (Min. of front/middle/rear)
+                if code_pattern.main_location == "ABDO" and code_pattern.fine_location_2 == "00" and code_pattern.physical_dimension == "FO" and code_pattern.direction == "Y":
+                    channel_re = self.get_channel(code_pattern.set(fine_location_2="RE"))
+                    channel_mi = self.get_channel(code_pattern.set(fine_location_2="MI"))
+                    channel_fr = self.get_channel(code_pattern.set(fine_location_2="FR"))
+                    if None not in (channel_re, channel_mi, channel_fr):
+                        t = time_intersect(channel_re, channel_mi, channel_fr)
+                        values = np.min([channel_re.get_data(t), channel_mi.get_data(t, unit=channel_re.unit), channel_fr.get_data(t, unit=channel_re.unit)], axis=0)
+                        return Channel(code=channel_re.code.set(fine_location_2="00"),
+                                       data=pd.DataFrame(values, index=t),
+                                       unit=channel_re.unit,
+                                       info=channel_re.info)
+
+                # Foot Resultant Acceleration (Max. of left and right)
                 if code_pattern.main_location == "FOOT" and code_pattern.physical_dimension == "AC" and code_pattern.direction == "R":
                     channel_left = self.get_channel(code_pattern.set(fine_location_1="LE"))
                     channel_right = self.get_channel(code_pattern.set(fine_location_1="RI"))
