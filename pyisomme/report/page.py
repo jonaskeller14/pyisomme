@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from pyisomme import Channel, Isomme
 from pyisomme.limits import limit_list_sort
-from pyisomme.plotting import Plot_Line, Plot
+from pyisomme.plotting import Plot_Line, Plot, Plot_Table, Plot_Line_Table
 from pyisomme.report.criterion import Criterion
+from pyisomme.unit import Unit, g0
 
 import matplotlib.pyplot as plt
 from matplotlib.colors import to_rgb
@@ -69,13 +70,6 @@ class Page_Criterion_Table(Page):
         figsize_y = 8
         figsize_x = figsize_y * float(width) / float(height)
 
-        fig, ax = plt.subplots(figsize=(figsize_x, figsize_y), layout="constrained")
-
-        # hide axes
-        fig.patch.set_visible(False)
-        ax.axis('off')
-        ax.axis('tight')
-
         cell_text = np.full((len(list(self.criteria.values())[0]), len(list(self.criteria.keys()))), np.nan).tolist()
         cell_colors = np.zeros_like(cell_text).tolist()
         for idx_isomme, isomme in enumerate(self.criteria.keys()):
@@ -88,17 +82,15 @@ class Page_Criterion_Table(Page):
         col_labels = [isomme.test_number for isomme in self.criteria.keys()]
         col_colors = [mcolor for mcolor in list(Plot.colors)[:len(self.criteria.keys())]]
 
-        table = ax.table(cellText=cell_text,
-                         cellColours=cell_colors,
-                         cellLoc="center",
-                         rowLabels=row_labels,
-                         colLabels=col_labels,
-                         loc="center")
-        table.scale(1, 3)
-        table.set_fontsize(20)
-        for idx, col_color in enumerate(col_colors):
-            table[0, idx].get_text().set_color(col_color)
-            table[0, idx].get_text().set_fontweight("bold")
+        fig = Plot_Table(cell_texts=[cell_text],
+                         cell_colors=[cell_colors],
+                         row_labels=[row_labels],
+                         col_labels=[col_labels],
+                         col_labels_colors=[col_colors],
+                         col_labels_fontweight="bold",
+                         nrows=1,
+                         ncols=1,
+                         figsize=(figsize_x, figsize_y)).fig
 
         image_steam = io.BytesIO()
         fig.savefig(image_steam, transparent=True, bbox_inches='tight')
@@ -199,12 +191,65 @@ class Page_Criterion_Values_Chart(Page):
 
 
 class Page_Plot_nxn(Page):
-    name: str
-    title: str
+    title: str = None
     channels: dict[Isomme, list[list[Channel | str]]]
     nrows: int = 1
     ncols: int = 1
+    sharex: bool = False
     sharey: bool = False
+    xlim: tuple[float | int, float | int] = None
+    ylim: tuple[float | int, float | int] = None
+
+    def __init__(self, report):
+        super().__init__(report)
+        if self.title is None:
+            self.title = self.name
+
+    def construct(self, presentation):
+        title_slide_layout = presentation.slide_layouts[1]
+        slide = presentation.slides.add_slide(title_slide_layout)
+        slide.shapes.title.text = self.title
+
+        top = slide.placeholders[1].top
+        left = slide.placeholders[1].left
+        height = slide.placeholders[1].height
+        width = slide.placeholders[1].width
+
+        sp = slide.placeholders[1].element
+        sp.getparent().remove(sp)
+
+        figsize_y = 8
+        figsize_x = figsize_y * float(width) / float(height)
+
+        fig = Plot_Line(self.channels,
+                        nrows=self.nrows,
+                        ncols=self.ncols,
+                        sharex=self.sharex,
+                        sharey=self.sharey,
+                        xlim=self.xlim,
+                        ylim=self.ylim,
+                        limits=self.report.limits,
+                        figsize=(figsize_x, figsize_y)).fig
+
+        image_steam = io.BytesIO()
+        fig.savefig(image_steam, transparent=True, bbox_inches='tight')
+        slide.shapes.add_picture(image_steam, left=left, top=top, height=height)
+
+
+class Page_Line_Table(Page):
+    channels: dict[Isomme, list[list[Channel | str]]]
+    cell_texts: list[np.ndarray | list[list, ...]]
+    row_labels: list[np.ndarray | list]
+    col_labels: list[np.ndarray | list]
+    cell_colors: list[np.ndarray | list[list, ...]] = None,
+    col_labels_colors: list[np.ndarray | list] = None,
+    col_labels_fontweight: str = None,
+    nrows: int = 1
+    ncols: int = 1
+    sharex: bool = False
+    sharey: bool = False
+    xlim: tuple[float | int, float | int] = None
+    ylim: tuple[float | int, float | int] = None
 
     def __init__(self, report):
         super().__init__(report)
@@ -225,21 +270,35 @@ class Page_Plot_nxn(Page):
         figsize_y = 8
         figsize_x = figsize_y * float(width) / float(height)
 
-        fig = Plot_Line(self.channels, nrows=self.nrows, ncols=self.ncols, sharey=self.sharey, limits=self.report.limits, figsize=(figsize_x, figsize_y)).fig
+        fig = Plot_Line_Table(channels=self.channels,
+                              cell_texts=self.cell_texts,
+                              row_labels=self.row_labels,
+                              col_labels=self.col_labels,
+                              nrows=self.nrows,
+                              ncols=self.ncols,
+                              sharex=self.sharex,
+                              sharey=self.sharey,
+                              xlim=self.xlim,
+                              ylim=self.ylim,
+                              limits=self.report.limits,
+                              figsize=(figsize_x, figsize_y)).fig
 
         image_steam = io.BytesIO()
         fig.savefig(image_steam, transparent=True, bbox_inches='tight')
         slide.shapes.add_picture(image_steam, left=left, top=top, height=height)
 
 
-class Page_OLC(Page_Plot_nxn):
-    name: str = "OLC"
-    title: str = "Occupant Load Criterion (OLC)"
-    channels: dict
+class Page_OLC(Page_Line_Table):
+    name = "OLC"
+    title = "Occupant Load Criterion (OLC)"
     nrows: int = 1
-    ncols: int = 1
+    ncols: int = 2
 
     def __init__(self, report):
         super().__init__(report)
-        self.channels = {isomme: [[isomme.get_channel("14BPIL??????VEXA", "10SEATLERE??VEXA"),
-                                   isomme.get_channel("14BPIL0OLC??VEXA", "10SEAT0OLC??VEXA")]] for isomme in self.report.isomme_list}
+
+        self.channels = {isomme: [[isomme.get_channel("10VEHCCG00??VEXA", "14BPIL??????VEXA", "10SEATLERE??VEXA"),
+                                   isomme.get_channel("10VEH0OLC??VEXA", "14BPIL0OLC??VEXA", "10SEAT0OLC??VEXA")]] for isomme in self.report.isomme_list}
+        self.cell_texts = [[[f'{isomme.get_channel("10VEH0OLC??VEXX", "14BPIL0OLC??VEXX", "10SEAT0OLC??VEXX").get_data(unit=Unit(g0))[0] if isomme.get_channel("14BPIL0OLC??VEXX", "10SEAT0OLC??VEXX") is not None else np.nan:.2f}'] for isomme in self.report.isomme_list]]
+        self.col_labels = [["OLC [g]"]]
+        self.row_labels = [[isomme.test_number for isomme in self.report.isomme_list]]
