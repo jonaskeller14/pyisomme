@@ -447,14 +447,16 @@ class Isomme:
             channels = self.get_channels(code, calculate=False, filter=False, differentiate=False, integrate=False)
             for channel in channels[1:]:
                 self.channels.remove(channel)
+                logger.debug(f"Removed duplicate Channel: {channel.code}")
 
         if filter_class_duplicates:
             for code in {channel.code for channel in self.channels}:
-                channels = self.get_channels(code.set(filter_class="?"), calculate=False, filter=False, differentiate=False, integrate=False)
+                channels = self.get_channels(code[:-1].replace("?", "[?]") + "?", calculate=False, filter=False, differentiate=False, integrate=False)
                 sort_seq = "0XAEPBF2CG3DHQLVS"
                 sort_map = {filter_class: sort_seq.index(filter_class) for filter_class in sort_seq}
-                for channel in sorted(channels, key=lambda channel: sort_map.get(channel.code.filter_class, float('inf')))[1:]:
+                for channel in sorted(channels, key=lambda c: sort_map.get(c.code.filter_class, float('inf')))[1:]:
                     self.channels.remove(channel)
+                    logger.debug(f"Removed duplicate filter Channel: {channel.code}")
         return self
 
     def __eq__(self, other):
