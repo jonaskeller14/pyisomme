@@ -791,7 +791,7 @@ def calculate_vc(channel: Channel | None,
 
     vc = scaling_factor * v_t * c_t
 
-    channel_vc = Channel(code=channel.code.set(main_location="VCCR" if channel.code.main_location in ("CHST", "TRRI") else "VCAR" if channel.code.main_location in ("ABDO", "ABRI") else "VC??", physical_dimension="VE"),
+    channel_vc = Channel(code=channel.code.set(main_location="VCCR" if channel.code.main_location in ("CHST", "TRRI", "RIBS") else "VCAR" if channel.code.main_location in ("ABDO", "ABRI") else "VC??", physical_dimension="VE"),
                          data=pd.DataFrame(vc, index=t),
                          unit=channel.unit / Unit("s"),
                          info=channel.info.update({
