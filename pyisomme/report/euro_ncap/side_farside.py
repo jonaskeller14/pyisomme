@@ -459,26 +459,22 @@ class EuroNCAP_Side_FarSide(Report):
         def __init__(self, report):
             super().__init__(report)
 
-            criteria_types = [
-                self.report.Criterion_Master.Criterion_Head.Criterion_HIC_15,
-                self.report.Criterion_Master.Criterion_Head.Criterion_Head_a3ms,
-                self.report.Criterion_Master.Criterion_Neck.Criterion_Upper_Neck.Criterion_Tension_Fz,
-                self.report.Criterion_Master.Criterion_Neck.Criterion_Upper_Neck.Criterion_Lateral_Flexion_MxOC,
-                self.report.Criterion_Master.Criterion_Neck.Criterion_Upper_Neck.Criterion_Extension_MyOC,
-                self.report.Criterion_Master.Criterion_Neck.Criterion_Lower_Neck.Criterion_Tension_Fz,
-                self.report.Criterion_Master.Criterion_Neck.Criterion_Lower_Neck.Criterion_Lateral_Flexion_Mx,
-                self.report.Criterion_Master.Criterion_Neck.Criterion_Lower_Neck.Criterion_Extension_My_Base,
-                self.report.Criterion_Master.Criterion_Chest_Abdomen.Criterion_Chest_Lateral_Compression,
-                self.report.Criterion_Master.Criterion_Chest_Abdomen.Criterion_Abdomen_Lateral_Compression,
-                self.report.Criterion_Master.Criterion_Pelvis_Lumbar_Modifier.Criterion_Pubic_Symphysis,
-                self.report.Criterion_Master.Criterion_Pelvis_Lumbar_Modifier.Criterion_Lumbar_Fy,
-                self.report.Criterion_Master.Criterion_Pelvis_Lumbar_Modifier.Criterion_Lumbar_Fz,
-                self.report.Criterion_Master.Criterion_Pelvis_Lumbar_Modifier.Criterion_Lumbar_Mx,
-            ]
-
             self.criteria = {isomme: [
-                self.report.criterion_overall[isomme].get_subcriterion(criterion_type)
-                for criterion_type in criteria_types] for isomme in self.report.isomme_list}
+                self.report.criterion_overall[isomme].criterion_head.criterion_hic_15,
+                self.report.criterion_overall[isomme].criterion_head.criterion_head_a3ms,
+                self.report.criterion_overall[isomme].criterion_neck.criterion_upper_neck.criterion_tension_fz,
+                self.report.criterion_overall[isomme].criterion_neck.criterion_upper_neck.criterion_lateral_flexion_mxoc,
+                self.report.criterion_overall[isomme].criterion_neck.criterion_upper_neck.criterion_extension_myoc,
+                self.report.criterion_overall[isomme].criterion_neck.criterion_lower_neck.criterion_tension_fz,
+                self.report.criterion_overall[isomme].criterion_neck.criterion_lower_neck.criterion_lateral_flexion_mx,
+                self.report.criterion_overall[isomme].criterion_neck.criterion_lower_neck.criterion_extension_my_base,
+                self.report.criterion_overall[isomme].criterion_chest_abdomen.criterion_chest_lateral_compression,
+                self.report.criterion_overall[isomme].criterion_chest_abdomen.criterion_abdomen_lateral_compression,
+                self.report.criterion_overall[isomme].criterion_pelvis_lumbar_modifier.criterion_pubic_symphysis,
+                self.report.criterion_overall[isomme].criterion_pelvis_lumbar_modifier.criterion_lumbar_fy,
+                self.report.criterion_overall[isomme].criterion_pelvis_lumbar_modifier.criterion_lumbar_fz,
+                self.report.criterion_overall[isomme].criterion_pelvis_lumbar_modifier.criterion_lumbar_mx,
+            ] for isomme in self.report.isomme_list}
 
     class Page_Values_Table(Page_Criterion_Values_Table):
         name = "Values Table"
@@ -487,26 +483,22 @@ class EuroNCAP_Side_FarSide(Report):
         def __init__(self, report):
             super().__init__(report)
 
-            criteria_types = [
-                self.report.Criterion_Master.Criterion_Head.Criterion_HIC_15,
-                self.report.Criterion_Master.Criterion_Head.Criterion_Head_a3ms,
-                self.report.Criterion_Master.Criterion_Neck.Criterion_Upper_Neck.Criterion_Tension_Fz,
-                self.report.Criterion_Master.Criterion_Neck.Criterion_Upper_Neck.Criterion_Lateral_Flexion_MxOC,
-                self.report.Criterion_Master.Criterion_Neck.Criterion_Upper_Neck.Criterion_Extension_MyOC,
-                self.report.Criterion_Master.Criterion_Neck.Criterion_Lower_Neck.Criterion_Tension_Fz,
-                self.report.Criterion_Master.Criterion_Neck.Criterion_Lower_Neck.Criterion_Lateral_Flexion_Mx,
-                self.report.Criterion_Master.Criterion_Neck.Criterion_Lower_Neck.Criterion_Extension_My_Base,
-                self.report.Criterion_Master.Criterion_Chest_Abdomen.Criterion_Chest_Lateral_Compression,
-                self.report.Criterion_Master.Criterion_Chest_Abdomen.Criterion_Abdomen_Lateral_Compression,
-                self.report.Criterion_Master.Criterion_Pelvis_Lumbar_Modifier.Criterion_Pubic_Symphysis,
-                self.report.Criterion_Master.Criterion_Pelvis_Lumbar_Modifier.Criterion_Lumbar_Fy,
-                self.report.Criterion_Master.Criterion_Pelvis_Lumbar_Modifier.Criterion_Lumbar_Fz,
-                self.report.Criterion_Master.Criterion_Pelvis_Lumbar_Modifier.Criterion_Lumbar_Mx,
-            ]
-
             self.criteria = {isomme: [
-                self.report.criterion_overall[isomme].get_subcriterion(criterion_type)
-                for criterion_type in criteria_types] for isomme in self.report.isomme_list}
+                self.report.criterion_overall[isomme].criterion_head.criterion_hic_15,
+                self.report.criterion_overall[isomme].criterion_head.criterion_head_a3ms,
+                self.report.criterion_overall[isomme].criterion_neck.criterion_upper_neck.criterion_tension_fz,
+                self.report.criterion_overall[isomme].criterion_neck.criterion_upper_neck.criterion_lateral_flexion_mxoc,
+                self.report.criterion_overall[isomme].criterion_neck.criterion_upper_neck.criterion_extension_myoc,
+                self.report.criterion_overall[isomme].criterion_neck.criterion_lower_neck.criterion_tension_fz,
+                self.report.criterion_overall[isomme].criterion_neck.criterion_lower_neck.criterion_lateral_flexion_mx,
+                self.report.criterion_overall[isomme].criterion_neck.criterion_lower_neck.criterion_extension_my_base,
+                self.report.criterion_overall[isomme].criterion_chest_abdomen.criterion_chest_lateral_compression,
+                self.report.criterion_overall[isomme].criterion_chest_abdomen.criterion_abdomen_lateral_compression,
+                self.report.criterion_overall[isomme].criterion_pelvis_lumbar_modifier.criterion_pubic_symphysis,
+                self.report.criterion_overall[isomme].criterion_pelvis_lumbar_modifier.criterion_lumbar_fy,
+                self.report.criterion_overall[isomme].criterion_pelvis_lumbar_modifier.criterion_lumbar_fz,
+                self.report.criterion_overall[isomme].criterion_pelvis_lumbar_modifier.criterion_lumbar_mx,
+            ] for isomme in self.report.isomme_list}
 
     class Page_Rating_Table(Page_Criterion_Rating_Table):
         name: str = "Rating Table"
@@ -515,17 +507,14 @@ class EuroNCAP_Side_FarSide(Report):
         def __init__(self, report):
             super().__init__(report)
 
-            criteria_types = [
-                self.report.Criterion_Master.Criterion_Head,
-                self.report.Criterion_Master.Criterion_Neck.Criterion_Upper_Neck,
-                self.report.Criterion_Master.Criterion_Neck.Criterion_Lower_Neck,
-                self.report.Criterion_Master.Criterion_Chest_Abdomen,
-                self.report.Criterion_Master,
-            ]
-
             self.criteria = {isomme: [
-                self.report.criterion_overall[isomme].get_subcriterion(criterion_type)
-                for criterion_type in criteria_types] for isomme in self.report.isomme_list}
+                self.report.criterion_overall[isomme].criterion_head,
+                self.report.criterion_overall[isomme].criterion_neck.criterion_upper_neck,
+                self.report.criterion_overall[isomme].criterion_neck.criterion_lower_neck,
+                self.report.criterion_overall[isomme].criterion_chest_abdomen,
+                self.report.criterion_overall[isomme].criterion_pelvis_lumbar_modifier,
+                self.report.criterion_overall[isomme],
+            ] for isomme in self.report.isomme_list}
 
     class Page_Head_Acceleration(EuroNCAP_Side_Pole.Page_Head_Acceleration):
         pass

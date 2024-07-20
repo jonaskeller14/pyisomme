@@ -338,20 +338,16 @@ class EuroNCAP_Side_Pole(Report):
         def __init__(self, report):
             super().__init__(report)
 
-            criteria_types = [
-                self.report.Criterion_Overall.Criterion_Head.Criterion_HIC_15,
-                self.report.Criterion_Overall.Criterion_Head.Criterion_Head_a3ms,
-                self.report.Criterion_Overall.Criterion_Chest.Criterion_Chest_Lateral_Compression,
-                self.report.Criterion_Overall.Criterion_Chest.Criterion_Chest_Lateral_VC,
-                self.report.Criterion_Overall.Criterion_Chest.Criterion_Shoulder_Lateral_Force,
-                self.report.Criterion_Overall.Criterion_Abdomen.Criterion_Abdomen_Lateral_Compression,
-                self.report.Criterion_Overall.Criterion_Abdomen.Criterion_Abdomen_Lateral_VC,
-                self.report.Criterion_Overall.Criterion_Pelvis.Criterion_Pubic_Symphysis_Force,
-            ]
-
             self.criteria = {isomme: [
-                self.report.criterion_overall[isomme].get_subcriterion(criterion_type)
-                for criterion_type in criteria_types] for isomme in self.report.isomme_list}
+                self.report.criterion_overall[isomme].criterion_head.criterion_hic_15,
+                self.report.criterion_overall[isomme].criterion_head.criterion_head_a3ms,
+                self.report.criterion_overall[isomme].criterion_chest.criterion_chest_lateral_compression,
+                self.report.criterion_overall[isomme].criterion_chest.criterion_chest_lateral_vc,
+                self.report.criterion_overall[isomme].criterion_chest.criterion_shoulder_lateral_force,
+                self.report.criterion_overall[isomme].criterion_abdomen.criterion_abdomen_lateral_compression,
+                self.report.criterion_overall[isomme].criterion_abdomen.criterion_abdomen_lateral_vc,
+                self.report.criterion_overall[isomme].criterion_pelvis.criterion_pubic_symphysis_force,
+            ] for isomme in self.report.isomme_list}
 
 
     class Page_Values_Table(Page_Criterion_Values_Table):
@@ -361,20 +357,16 @@ class EuroNCAP_Side_Pole(Report):
         def __init__(self, report):
             super().__init__(report)
 
-            criteria_types = [
-                self.report.Criterion_Overall.Criterion_Head.Criterion_HIC_15,
-                self.report.Criterion_Overall.Criterion_Head.Criterion_Head_a3ms,
-                self.report.Criterion_Overall.Criterion_Chest.Criterion_Chest_Lateral_Compression,
-                self.report.Criterion_Overall.Criterion_Chest.Criterion_Chest_Lateral_VC,
-                self.report.Criterion_Overall.Criterion_Chest.Criterion_Shoulder_Lateral_Force,
-                self.report.Criterion_Overall.Criterion_Abdomen.Criterion_Abdomen_Lateral_Compression,
-                self.report.Criterion_Overall.Criterion_Abdomen.Criterion_Abdomen_Lateral_VC,
-                self.report.Criterion_Overall.Criterion_Pelvis.Criterion_Pubic_Symphysis_Force,
-            ]
-
             self.criteria = {isomme: [
-                self.report.criterion_overall[isomme].get_subcriterion(criterion_type)
-                for criterion_type in criteria_types] for isomme in self.report.isomme_list}
+                self.report.criterion_overall[isomme].criterion_head.criterion_hic_15,
+                self.report.criterion_overall[isomme].criterion_head.criterion_head_a3ms,
+                self.report.criterion_overall[isomme].criterion_chest.criterion_chest_lateral_compression,
+                self.report.criterion_overall[isomme].criterion_chest.criterion_chest_lateral_vc,
+                self.report.criterion_overall[isomme].criterion_chest.criterion_shoulder_lateral_force,
+                self.report.criterion_overall[isomme].criterion_abdomen.criterion_abdomen_lateral_compression,
+                self.report.criterion_overall[isomme].criterion_abdomen.criterion_abdomen_lateral_vc,
+                self.report.criterion_overall[isomme].criterion_pelvis.criterion_pubic_symphysis_force,
+            ] for isomme in self.report.isomme_list}
 
     class Page_Rating_Table(Page_Criterion_Rating_Table):
         name: str = "Rating Table"
@@ -383,18 +375,13 @@ class EuroNCAP_Side_Pole(Report):
         def __init__(self, report):
             super().__init__(report)
 
-            criteria_types = [
-                self.report.Criterion_Overall.Criterion_Head,
-                self.report.Criterion_Overall.Criterion_Chest,
-                self.report.Criterion_Overall.Criterion_Abdomen,
-                self.report.Criterion_Overall.Criterion_Pelvis,
-                self.report.Criterion_Overall,
-            ]
-
             self.criteria = {isomme: [
-                self.report.criterion_overall[isomme].get_subcriterion(criterion_type)
-                for criterion_type in criteria_types] for isomme in self.report.isomme_list}
-
+                self.report.criterion_overall[isomme].criterion_head,
+                self.report.criterion_overall[isomme].criterion_chest,
+                self.report.criterion_overall[isomme].criterion_abdomen,
+                self.report.criterion_overall[isomme].criterion_pelvis,
+                self.report.criterion_overall[isomme],
+            ] for isomme in self.report.isomme_list}
 
     class Page_Head_Acceleration(Page_Plot_nxn):
         name: str = "Head Acceleration"

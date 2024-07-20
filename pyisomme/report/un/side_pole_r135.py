@@ -211,18 +211,14 @@ class UN_Side_Pole_R135(Report):
         def __init__(self, report):
             super().__init__(report)
 
-            criteria_types = [
-                self.report.Criterion_Master.Criterion_Dummy.Criterion_HIC_36,
-                self.report.Criterion_Master.Criterion_Dummy.Criterion_Shoulder_Lateral_Force,
-                self.report.Criterion_Master.Criterion_Dummy.Criterion_Chest_Resultant_Compression,
-                self.report.Criterion_Master.Criterion_Dummy.Criterion_Abdomen_Resultant_Compression,
-                self.report.Criterion_Master.Criterion_Dummy.Criterion_Spine_T12_a3ms,
-                self.report.Criterion_Master.Criterion_Dummy.Criterion_Pubic_Symphysis_Force,
-            ]
-
             self.criteria = {isomme: [
-                self.report.criterion_overall[isomme].get_subcriterion(criterion_type)
-                for criterion_type in criteria_types] for isomme in self.report.isomme_list}
+                self.report.criterion_overall[isomme].criterion_dummy.criterion_hic_36,
+                self.report.criterion_overall[isomme].criterion_dummy.criterion_shoulder_lateral_force,
+                self.report.criterion_overall[isomme].criterion_dummy.criterion_chest_resultant_compression,
+                self.report.criterion_overall[isomme].criterion_dummy.criterion_abdomen_resultant_compression,
+                self.report.criterion_overall[isomme].criterion_dummy.criterion_spine_t12_a3ms,
+                self.report.criterion_overall[isomme].criterion_dummy.criterion_pubic_symphysis_force,
+            ] for isomme in self.report.isomme_list}
 
 
     class Page_Values_Table(Page_Criterion_Values_Table):
@@ -232,18 +228,14 @@ class UN_Side_Pole_R135(Report):
         def __init__(self, report):
             super().__init__(report)
 
-            criteria_types = [
-                self.report.Criterion_Master.Criterion_Dummy.Criterion_HIC_36,
-                self.report.Criterion_Master.Criterion_Dummy.Criterion_Shoulder_Lateral_Force,
-                self.report.Criterion_Master.Criterion_Dummy.Criterion_Chest_Resultant_Compression,
-                self.report.Criterion_Master.Criterion_Dummy.Criterion_Abdomen_Resultant_Compression,
-                self.report.Criterion_Master.Criterion_Dummy.Criterion_Spine_T12_a3ms,
-                self.report.Criterion_Master.Criterion_Dummy.Criterion_Pubic_Symphysis_Force,
-            ]
-
             self.criteria = {isomme: [
-                self.report.criterion_master[isomme].get_subcriterion(criterion_type)
-                for criterion_type in criteria_types] for isomme in self.report.isomme_list}
+                self.report.criterion_overall[isomme].criterion_dummy.criterion_hic_36,
+                self.report.criterion_overall[isomme].criterion_dummy.criterion_shoulder_lateral_force,
+                self.report.criterion_overall[isomme].criterion_dummy.criterion_chest_resultant_compression,
+                self.report.criterion_overall[isomme].criterion_dummy.criterion_abdomen_resultant_compression,
+                self.report.criterion_overall[isomme].criterion_dummy.criterion_spine_t12_a3ms,
+                self.report.criterion_overall[isomme].criterion_dummy.criterion_pubic_symphysis_force,
+            ] for isomme in self.report.isomme_list}
 
     class Page_Head_Acceleration(EuroNCAP_Side_Pole.Page_Head_Acceleration):
         pass
