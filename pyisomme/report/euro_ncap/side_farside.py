@@ -41,8 +41,8 @@ class EuroNCAP_Side_FarSide(Report):
             self.Page_Pubic_Symphysis_Force(self),
         ]
 
-    class Criterion_Master(Criterion):
-        name = "Master"
+    class Criterion_Overall(Criterion):
+        name = "Overall"
         p: int = 1
 
         def __init__(self, report, isomme):
@@ -108,12 +108,12 @@ class EuroNCAP_Side_FarSide(Report):
                 ])
 
                 # Downscaling
-                self.rating = self.rating / 4 * self.report.criterion_master[self.isomme].criterion_head_excursion.max_head_score
+                self.rating = self.rating / 4 * self.report.criterion_overall[self.isomme].criterion_head_excursion.max_head_score
 
-            class Criterion_HIC_15(EuroNCAP_Frontal_50kmh.Criterion_Master.Criterion_Driver.Criterion_Head.Criterion_HIC_15):
+            class Criterion_HIC_15(EuroNCAP_Frontal_50kmh.Criterion_Overall.Criterion_Driver.Criterion_Head.Criterion_HIC_15):
                 pass
 
-            class Criterion_Head_a3ms(EuroNCAP_Frontal_50kmh.Criterion_Master.Criterion_Driver.Criterion_Head.Criterion_Head_a3ms):
+            class Criterion_Head_a3ms(EuroNCAP_Frontal_50kmh.Criterion_Overall.Criterion_Driver.Criterion_Head.Criterion_Head_a3ms):
                 pass
 
         class Criterion_Neck(Criterion):
@@ -137,7 +137,7 @@ class EuroNCAP_Side_FarSide(Report):
                 ])
 
                 # Downscaling
-                self.rating = self.rating / 4 * self.report.criterion_master[self.isomme].criterion_head_excursion.max_neck_score
+                self.rating = self.rating / 4 * self.report.criterion_overall[self.isomme].criterion_head_excursion.max_neck_score
 
             class Criterion_Upper_Neck(Criterion):
                 name = "Upper_Neck"
@@ -338,12 +338,12 @@ class EuroNCAP_Side_FarSide(Report):
                 ])
 
                 # Downscaling
-                self.rating = self.rating / 4 * self.report.criterion_master[self.isomme].criterion_head_excursion.max_chest_score
+                self.rating = self.rating / 4 * self.report.criterion_overall[self.isomme].criterion_head_excursion.max_chest_score
 
-            class Criterion_Chest_Lateral_Compression(EuroNCAP_Side_Barrier.Criterion_Master.Criterion_Chest.Criterion_Chest_Lateral_Compression):
+            class Criterion_Chest_Lateral_Compression(EuroNCAP_Side_Barrier.Criterion_Overall.Criterion_Chest.Criterion_Chest_Lateral_Compression):
                 pass
 
-            class Criterion_Abdomen_Lateral_Compression(EuroNCAP_Side_Pole.Criterion_Master.Criterion_Abdomen.Criterion_Abdomen_Lateral_Compression):
+            class Criterion_Abdomen_Lateral_Compression(EuroNCAP_Side_Pole.Criterion_Overall.Criterion_Abdomen.Criterion_Abdomen_Lateral_Compression):
                 pass
 
         class Criterion_Pelvis_Lumbar_Modifier(Criterion):
@@ -477,7 +477,7 @@ class EuroNCAP_Side_FarSide(Report):
             ]
 
             self.criteria = {isomme: [
-                self.report.criterion_master[isomme].get_subcriterion(criterion_type)
+                self.report.criterion_overall[isomme].get_subcriterion(criterion_type)
                 for criterion_type in criteria_types] for isomme in self.report.isomme_list}
 
     class Page_Values_Table(Page_Criterion_Values_Table):
@@ -505,7 +505,7 @@ class EuroNCAP_Side_FarSide(Report):
             ]
 
             self.criteria = {isomme: [
-                self.report.criterion_master[isomme].get_subcriterion(criterion_type)
+                self.report.criterion_overall[isomme].get_subcriterion(criterion_type)
                 for criterion_type in criteria_types] for isomme in self.report.isomme_list}
 
     class Page_Rating_Table(Page_Criterion_Rating_Table):
@@ -524,7 +524,7 @@ class EuroNCAP_Side_FarSide(Report):
             ]
 
             self.criteria = {isomme: [
-                self.report.criterion_master[isomme].get_subcriterion(criterion_type)
+                self.report.criterion_overall[isomme].get_subcriterion(criterion_type)
                 for criterion_type in criteria_types] for isomme in self.report.isomme_list}
 
     class Page_Head_Acceleration(EuroNCAP_Side_Pole.Page_Head_Acceleration):
@@ -538,9 +538,9 @@ class EuroNCAP_Side_FarSide(Report):
 
         def __init__(self, report):
             super().__init__(report)
-            self.channels = {isomme: [[self.report.criterion_master[isomme].criterion_neck.criterion_upper_neck.criterion_tension_fz.channel],
-                                      [self.report.criterion_master[isomme].criterion_neck.criterion_upper_neck.criterion_lateral_flexion_mxoc.channel],
-                                      [self.report.criterion_master[isomme].criterion_neck.criterion_upper_neck.criterion_extension_myoc.channel]] for isomme in self.report.isomme_list}
+            self.channels = {isomme: [[self.report.criterion_overall[isomme].criterion_neck.criterion_upper_neck.criterion_tension_fz.channel],
+                                      [self.report.criterion_overall[isomme].criterion_neck.criterion_upper_neck.criterion_lateral_flexion_mxoc.channel],
+                                      [self.report.criterion_overall[isomme].criterion_neck.criterion_upper_neck.criterion_extension_myoc.channel]] for isomme in self.report.isomme_list}
 
     class Page_Lower_Neck(Page_Plot_nxn):
         name = "Lower Neck"
@@ -550,9 +550,9 @@ class EuroNCAP_Side_FarSide(Report):
 
         def __init__(self, report):
             super().__init__(report)
-            self.channels = {isomme: [[self.report.criterion_master[isomme].criterion_neck.criterion_lower_neck.criterion_tension_fz.channel],
-                                      [self.report.criterion_master[isomme].criterion_neck.criterion_lower_neck.criterion_lateral_flexion_mx.channel],
-                                      [self.report.criterion_master[isomme].criterion_neck.criterion_lower_neck.criterion_extension_my_base.channel]] for isomme in self.report.isomme_list}
+            self.channels = {isomme: [[self.report.criterion_overall[isomme].criterion_neck.criterion_lower_neck.criterion_tension_fz.channel],
+                                      [self.report.criterion_overall[isomme].criterion_neck.criterion_lower_neck.criterion_lateral_flexion_mx.channel],
+                                      [self.report.criterion_overall[isomme].criterion_neck.criterion_lower_neck.criterion_extension_my_base.channel]] for isomme in self.report.isomme_list}
 
     class Page_Chest_Lateral_Compression(EuroNCAP_Side_Pole.Page_Chest_Lateral_Compression):
         pass
@@ -568,9 +568,9 @@ class EuroNCAP_Side_FarSide(Report):
 
         def __init__(self, report):
             super().__init__(report)
-            self.channels = {isomme: [[self.report.criterion_master[isomme].criterion_pelvis_lumbar_modifier.criterion_lumbar_fy.channel],
-                                      [self.report.criterion_master[isomme].criterion_pelvis_lumbar_modifier.criterion_lumbar_fz.channel],
-                                      [self.report.criterion_master[isomme].criterion_pelvis_lumbar_modifier.criterion_lumbar_mx.channel]] for isomme in self.report.isomme_list}
+            self.channels = {isomme: [[self.report.criterion_overall[isomme].criterion_pelvis_lumbar_modifier.criterion_lumbar_fy.channel],
+                                      [self.report.criterion_overall[isomme].criterion_pelvis_lumbar_modifier.criterion_lumbar_fz.channel],
+                                      [self.report.criterion_overall[isomme].criterion_pelvis_lumbar_modifier.criterion_lumbar_mx.channel]] for isomme in self.report.isomme_list}
 
     class Page_Pubic_Symphysis_Force(EuroNCAP_Side_Pole.Page_Pubic_Symphysis_Force):
         pass

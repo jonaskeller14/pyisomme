@@ -37,8 +37,8 @@ class EuroNCAP_Side_Barrier(Report):
             self.Page_Pubic_Symphysis_Force(self),
         ]
 
-    class Criterion_Master(Criterion):
-        name = "Master"
+    class Criterion_Overall(Criterion):
+        name = "Overall"
         p: int = 1
 
         def __init__(self, report, isomme):
@@ -83,10 +83,10 @@ class EuroNCAP_Side_Barrier(Report):
                     self.criterion_head_a3ms.rating,
                 ])
 
-            class Criterion_HIC_15(EuroNCAP_Frontal_50kmh.Criterion_Master.Criterion_Driver.Criterion_Head.Criterion_HIC_15):
+            class Criterion_HIC_15(EuroNCAP_Frontal_50kmh.Criterion_Overall.Criterion_Driver.Criterion_Head.Criterion_HIC_15):
                 pass
 
-            class Criterion_Head_a3ms(EuroNCAP_Frontal_50kmh.Criterion_Master.Criterion_Driver.Criterion_Head.Criterion_Head_a3ms):
+            class Criterion_Head_a3ms(EuroNCAP_Frontal_50kmh.Criterion_Overall.Criterion_Driver.Criterion_Head.Criterion_Head_a3ms):
                 pass
 
         class Criterion_Chest(Criterion):
@@ -135,10 +135,10 @@ class EuroNCAP_Side_Barrier(Report):
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=True)
                     self.color = self.limits.get_limit_min_color(self.channel)
 
-            class Criterion_Chest_Lateral_VC(EuroNCAP_Side_Pole.Criterion_Master.Criterion_Chest.Criterion_Chest_Lateral_VC):
+            class Criterion_Chest_Lateral_VC(EuroNCAP_Side_Pole.Criterion_Overall.Criterion_Chest.Criterion_Chest_Lateral_VC):
                 pass
 
-            class Criterion_Shoulder_Lateral_Force(EuroNCAP_Side_Pole.Criterion_Master.Criterion_Chest.Criterion_Shoulder_Lateral_Force):
+            class Criterion_Shoulder_Lateral_Force(EuroNCAP_Side_Pole.Criterion_Overall.Criterion_Chest.Criterion_Shoulder_Lateral_Force):
                 pass
 
         class Criterion_Abdomen(Criterion):
@@ -161,10 +161,10 @@ class EuroNCAP_Side_Barrier(Report):
                     self.criterion_abdomen_lateral_vc.rating
                 ])
 
-            class Criterion_Abdomen_Lateral_Compression(EuroNCAP_Side_Pole.Criterion_Master.Criterion_Abdomen.Criterion_Abdomen_Lateral_Compression):
+            class Criterion_Abdomen_Lateral_Compression(EuroNCAP_Side_Pole.Criterion_Overall.Criterion_Abdomen.Criterion_Abdomen_Lateral_Compression):
                 pass
 
-            class Criterion_Abdomen_Lateral_VC(EuroNCAP_Side_Pole.Criterion_Master.Criterion_Abdomen.Criterion_Abdomen_Lateral_VC):
+            class Criterion_Abdomen_Lateral_VC(EuroNCAP_Side_Pole.Criterion_Overall.Criterion_Abdomen.Criterion_Abdomen_Lateral_VC):
                 pass
 
         class Criterion_Pelvis(Criterion):
@@ -182,7 +182,7 @@ class EuroNCAP_Side_Barrier(Report):
 
                 self.rating = self.criterion_pubic_symphysis_force.rating
 
-            class Criterion_Pubic_Symphysis_Force(EuroNCAP_Side_Pole.Criterion_Master.Criterion_Pelvis.Criterion_Pubic_Symphysis_Force):
+            class Criterion_Pubic_Symphysis_Force(EuroNCAP_Side_Pole.Criterion_Overall.Criterion_Pelvis.Criterion_Pubic_Symphysis_Force):
                 pass
 
     class Page_Values_Chart(EuroNCAP_Side_Pole.Page_Values_Chart):

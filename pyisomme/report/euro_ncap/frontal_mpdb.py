@@ -59,8 +59,8 @@ class EuroNCAP_Frontal_MPDB(Report):
             self.Page_OLC_Trolley(self)
         ]
 
-    class Criterion_Master(Criterion):
-        name: str = "Master"
+    class Criterion_Overall(Criterion):
+        name: str = "Overall"
         p_driver: int = 1
         p_passenger: int = 3
 
@@ -75,7 +75,7 @@ class EuroNCAP_Frontal_MPDB(Report):
             self.criterion_driver = self.Criterion_Driver(report, isomme, p=self.p_driver)
             self.criterion_passenger = self.Criterion_Passenger(report, isomme, p=self.p_passenger)
 
-            self.criterion_door_opening_during_impact = EuroNCAP_Frontal_50kmh.Criterion_Master.Criterion_DoorOpeningDuringImpact(report, isomme)
+            self.criterion_door_opening_during_impact = EuroNCAP_Frontal_50kmh.Criterion_Overall.Criterion_DoorOpeningDuringImpact(report, isomme)
             self.criterion_compatibility_modifier = self.Criterion_Compatibility_Modifier(report, isomme)
 
         def calculation(self):
@@ -175,8 +175,8 @@ class EuroNCAP_Frontal_MPDB(Report):
 
                         self.p = p
 
-                        self.criterion_hic_15 = EuroNCAP_Frontal_50kmh.Criterion_Master.Criterion_Driver.Criterion_Head.Criterion_HIC_15(report, isomme, p=self.p)
-                        self.criterion_head_a3ms = EuroNCAP_Frontal_50kmh.Criterion_Master.Criterion_Driver.Criterion_Head.Criterion_Head_a3ms(report, isomme, p=self.p)
+                        self.criterion_hic_15 = EuroNCAP_Frontal_50kmh.Criterion_Overall.Criterion_Driver.Criterion_Head.Criterion_HIC_15(report, isomme, p=self.p)
+                        self.criterion_head_a3ms = EuroNCAP_Frontal_50kmh.Criterion_Overall.Criterion_Driver.Criterion_Head.Criterion_Head_a3ms(report, isomme, p=self.p)
                         self.criterion_damage = self.Criterion_DAMAGE(self.report, self.isomme, p=self.p)
 
                     def calculation(self):
@@ -346,7 +346,7 @@ class EuroNCAP_Frontal_MPDB(Report):
 
                         self.criterion_chest_compression = self.Criterion_Chest_Compression(report, isomme, p=self.p)
 
-                        self.criterion_shoulder_belt_load = EuroNCAP_Frontal_50kmh.Criterion_Master.Criterion_Driver.Criterion_Chest.Criterion_ShoulderBeltLoad(report, isomme, p=self.p)
+                        self.criterion_shoulder_belt_load = EuroNCAP_Frontal_50kmh.Criterion_Overall.Criterion_Driver.Criterion_Chest.Criterion_ShoulderBeltLoad(report, isomme, p=self.p)
 
                     def calculation(self):
                         self.criterion_chest_compression.calculate()
@@ -426,7 +426,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                     self.criterion_femur = self.Criterion_Femur(report, isomme, p=self.p)
                     self.criterion_knee = self.Criterion_Knee(report, isomme, p=self.p)
 
-                    self.criterion_submarining = EuroNCAP_Frontal_50kmh.Criterion_Master.Criterion_Driver.Criterion_Femur.Criterion_Submarining(report, isomme, p=self.p)
+                    self.criterion_submarining = EuroNCAP_Frontal_50kmh.Criterion_Overall.Criterion_Driver.Criterion_Femur.Criterion_Submarining(report, isomme, p=self.p)
 
                 def calculation(self):
                     self.criterion_pelvis.calculate()
@@ -689,8 +689,8 @@ class EuroNCAP_Frontal_MPDB(Report):
 
                         self.p = p
 
-                        self.criterion_hic_15 = EuroNCAP_Frontal_50kmh.Criterion_Master.Criterion_Driver.Criterion_Head.Criterion_HIC_15(report, isomme, p=self.p)
-                        self.criterion_head_a3ms = EuroNCAP_Frontal_50kmh.Criterion_Master.Criterion_Driver.Criterion_Head.Criterion_Head_a3ms(report, isomme, p=self.p)
+                        self.criterion_hic_15 = EuroNCAP_Frontal_50kmh.Criterion_Overall.Criterion_Driver.Criterion_Head.Criterion_HIC_15(report, isomme, p=self.p)
+                        self.criterion_head_a3ms = EuroNCAP_Frontal_50kmh.Criterion_Overall.Criterion_Driver.Criterion_Head.Criterion_Head_a3ms(report, isomme, p=self.p)
 
                     def calculation(self):
                         self.criterion_hic_15.calculate()
@@ -809,9 +809,9 @@ class EuroNCAP_Frontal_MPDB(Report):
                     self.p = p
 
                     self.criterion_chest_compression = self.Criterion_Chest_Compression(report, isomme, p)
-                    self.criterion_chest_vc = EuroNCAP_Frontal_50kmh.Criterion_Master.Criterion_Driver.Criterion_Chest.Criterion_Chest_VC(report, isomme, p)
+                    self.criterion_chest_vc = EuroNCAP_Frontal_50kmh.Criterion_Overall.Criterion_Driver.Criterion_Chest.Criterion_Chest_VC(report, isomme, p)
 
-                    self.criterion_shoulder_belt_load = EuroNCAP_Frontal_50kmh.Criterion_Master.Criterion_Driver.Criterion_Chest.Criterion_ShoulderBeltLoad(report, isomme, p=self.p)
+                    self.criterion_shoulder_belt_load = EuroNCAP_Frontal_50kmh.Criterion_Overall.Criterion_Driver.Criterion_Chest.Criterion_ShoulderBeltLoad(report, isomme, p=self.p)
 
                 def calculation(self) -> None:
                     self.criterion_chest_compression.calculate()
@@ -857,8 +857,8 @@ class EuroNCAP_Frontal_MPDB(Report):
 
                     self.p = p
 
-                    self.criterion_femur_compression = self.report.Criterion_Master.Criterion_Driver.Criterion_Knee_Femur_Pelvis.Criterion_Femur.Criterion_Femur_Compression(report, isomme, p)
-                    self.criterion_knee_slider_compression = self.report.Criterion_Master.Criterion_Driver.Criterion_Knee_Femur_Pelvis.Criterion_Knee.Criterion_Knee_Slider_Compression(report, isomme, p)
+                    self.criterion_femur_compression = self.report.Criterion_Overall.Criterion_Driver.Criterion_Knee_Femur_Pelvis.Criterion_Femur.Criterion_Femur_Compression(report, isomme, p)
+                    self.criterion_knee_slider_compression = self.report.Criterion_Overall.Criterion_Driver.Criterion_Knee_Femur_Pelvis.Criterion_Knee.Criterion_Knee_Slider_Compression(report, isomme, p)
 
                 def calculation(self):
                     self.criterion_femur_compression.calculate()
@@ -877,8 +877,8 @@ class EuroNCAP_Frontal_MPDB(Report):
 
                     self.p = p
 
-                    self.criterion_tibia_index = self.report.Criterion_Master.Criterion_Driver.Criterion_LowerLeg_Foot_Ankle.Criterion_Tibia_Index(report, isomme, p=self.p)
-                    self.criterion_tibia_compression = self.report.Criterion_Master.Criterion_Driver.Criterion_LowerLeg_Foot_Ankle.Criterion_Tibia_Compression(report, isomme, p=self.p)
+                    self.criterion_tibia_index = self.report.Criterion_Overall.Criterion_Driver.Criterion_LowerLeg_Foot_Ankle.Criterion_Tibia_Index(report, isomme, p=self.p)
+                    self.criterion_tibia_compression = self.report.Criterion_Overall.Criterion_Driver.Criterion_LowerLeg_Foot_Ankle.Criterion_Tibia_Compression(report, isomme, p=self.p)
 
                 def calculation(self):
                     self.criterion_tibia_index.calculate()
@@ -942,8 +942,8 @@ class EuroNCAP_Frontal_MPDB(Report):
             super().__init__(report)
 
             criteria_types = [
-                self.report.Criterion_Master.Criterion_Driver,
-                self.report.Criterion_Master.Criterion_Passenger,
+                self.report.Criterion_Overall.Criterion_Driver,
+                self.report.Criterion_Overall.Criterion_Passenger,
                 self.report.Criterion_Master.Criterion_Compatibility_Modifier,
                 self.report.Criterion_Master,
             ]

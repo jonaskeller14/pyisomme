@@ -58,8 +58,8 @@ class EuroNCAP_Frontal_50kmh(Report):
             Page_OLC(self),
         ]
 
-    class Criterion_Master(Criterion):
-        name = "Master"
+    class Criterion_Overall(Criterion):
+        name = "Overall"
         p_driver: int = 1
         p_front_passenger: int = 3
         p_rear_passenger: int = 6
@@ -143,7 +143,7 @@ class EuroNCAP_Frontal_50kmh(Report):
                     self.criterion_ExceedingForwardExcursionLine = self.Criterion_ExceedingForwardExcursionLine(report, isomme, p=self.p)
 
                 def calculation(self):
-                    if self.report.criterion_master[self.isomme].criterion_driver.steering_wheel_airbag_exists:
+                    if self.report.criterion_overall[self.isomme].criterion_driver.steering_wheel_airbag_exists:
                         if np.max(np.abs(self.isomme.get_channel(f"?{self.p}HEAD??00??ACRA").get_data(unit=g0))) > 80:
                             logger.info(f"Hard Head contact assumed for p={self.p} in {self.isomme}")
                             self.hard_contact = True
@@ -264,7 +264,7 @@ class EuroNCAP_Frontal_50kmh(Report):
                         self.p = p
 
                     def calculation(self):
-                        is_driver = self.report.criterion_master[self.isomme].p_driver == self.p
+                        is_driver = self.report.criterion_overall[self.isomme].p_driver == self.p
 
                         if is_driver:
                             rearwards_percent = self.displacement_steering_column_rearwards / 100
@@ -305,7 +305,7 @@ class EuroNCAP_Frontal_50kmh(Report):
                     self.criterion_fz_tension.calculate()
                     self.criterion_fx_shear.calculate()
 
-                    if not self.report.criterion_master[self.isomme].criterion_driver.steering_wheel_airbag_exists:
+                    if not self.report.criterion_overall[self.isomme].criterion_driver.steering_wheel_airbag_exists:
                         self.rating = 0
                     else:
                         self.rating = np.min([
@@ -473,7 +473,7 @@ class EuroNCAP_Frontal_50kmh(Report):
                         self.p = p
 
                     def calculation(self):
-                        is_driver = self.report.criterion_master[self.isomme].p_driver == self.p
+                        is_driver = self.report.criterion_overall[self.isomme].p_driver == self.p
                         self.rating = -1 if is_driver and self.steering_wheel_contact else 0
 
                 class Criterion_ShoulderBeltLoad(Criterion):
@@ -624,8 +624,8 @@ class EuroNCAP_Frontal_50kmh(Report):
 
                     self.p = p
 
-                    self.criterion_hic_15 = self.report.Criterion_Master.Criterion_Driver.Criterion_Head.Criterion_HIC_15(report, isomme, p=self.p)
-                    self.criterion_head_a3ms = self.report.Criterion_Master.Criterion_Driver.Criterion_Head.Criterion_Head_a3ms(report, isomme, p=self.p)
+                    self.criterion_hic_15 = self.report.Criterion_Overall.Criterion_Driver.Criterion_Head.Criterion_HIC_15(report, isomme, p=self.p)
+                    self.criterion_head_a3ms = self.report.Criterion_Overall.Criterion_Driver.Criterion_Head.Criterion_Head_a3ms(report, isomme, p=self.p)
                     self.criterion_HazardousAirbagDeployment = self.Criterion_HazardousAirbagDeployment(report, isomme, p=self.p)
                     self.criterion_IncorrectAirbagDeployment = self.Criterion_IncorrectAirbagDeployment(report, isomme, p=self.p)
                     self.criterion_ExceedingForwardExcursionLine = self.Criterion_ExceedingForwardExcursionLine(report, isomme, p=self.p)
@@ -791,9 +791,9 @@ class EuroNCAP_Frontal_50kmh(Report):
 
                     self.p = p
 
-                    self.criterion_chest_deflection = self.report.Criterion_Master.Criterion_Driver.Criterion_Chest.Criterion_Chest_Deflection(report, isomme, p)
-                    self.criterion_chest_vc = self.report.Criterion_Master.Criterion_Driver.Criterion_Chest.Criterion_Chest_VC(report, isomme, p)
-                    self.criterion_shoulder_belt_load = self.report.Criterion_Master.Criterion_Driver.Criterion_Chest.Criterion_ShoulderBeltLoad(report, isomme, p)
+                    self.criterion_chest_deflection = self.report.Criterion_Overall.Criterion_Driver.Criterion_Chest.Criterion_Chest_Deflection(report, isomme, p)
+                    self.criterion_chest_vc = self.report.Criterion_Overall.Criterion_Driver.Criterion_Chest.Criterion_Chest_VC(report, isomme, p)
+                    self.criterion_shoulder_belt_load = self.report.Criterion_Overall.Criterion_Driver.Criterion_Chest.Criterion_ShoulderBeltLoad(report, isomme, p)
 
                 def calculation(self):
                     self.criterion_chest_deflection.calculate()
@@ -814,7 +814,7 @@ class EuroNCAP_Frontal_50kmh(Report):
 
                     self.p = p
 
-                    self.criterion_femur_axial_force = self.report.Criterion_Master.Criterion_Driver.Criterion_Femur.Criterion_Femur_Axial_Force(report, isomme, p=self.p)
+                    self.criterion_femur_axial_force = self.report.Criterion_Overall.Criterion_Driver.Criterion_Femur.Criterion_Femur_Axial_Force(report, isomme, p=self.p)
 
                 def calculation(self):
                     self.criterion_femur_axial_force.calculate()
@@ -855,8 +855,8 @@ class EuroNCAP_Frontal_50kmh(Report):
 
                     self.p = p
 
-                    self.criterion_hic_15 = self.report.Criterion_Master.Criterion_Driver.Criterion_Head.Criterion_HIC_15(report, isomme, p=self.p)
-                    self.criterion_head_a3ms = self.report.Criterion_Master.Criterion_Driver.Criterion_Head.Criterion_Head_a3ms(report, isomme, p=self.p)
+                    self.criterion_hic_15 = self.report.Criterion_Overall.Criterion_Driver.Criterion_Head.Criterion_HIC_15(report, isomme, p=self.p)
+                    self.criterion_head_a3ms = self.report.Criterion_Overall.Criterion_Driver.Criterion_Head.Criterion_Head_a3ms(report, isomme, p=self.p)
                     self.criterion_HazardousAirbagDeployment = self.Criterion_HazardousAirbagDeployment(report, isomme, p=self.p)
                     self.criterion_IncorrectAirbagDeployment = self.Criterion_IncorrectAirbagDeployment(report, isomme, p=self.p)
                     self.criterion_ExceedingForwardExcursionLine = self.Criterion_ExceedingForwardExcursionLine(report, isomme, p=self.p)
@@ -1034,9 +1034,9 @@ class EuroNCAP_Frontal_50kmh(Report):
 
                     self.p = p
 
-                    self.criterion_chest_deflection = self.report.Criterion_Master.Criterion_Driver.Criterion_Chest.Criterion_Chest_Deflection(report, isomme, p)
-                    self.criterion_chest_vc = self.report.Criterion_Master.Criterion_Driver.Criterion_Chest.Criterion_Chest_VC(report, isomme, p)
-                    self.criterion_shoulder_belt_load = self.report.Criterion_Master.Criterion_Driver.Criterion_Chest.Criterion_ShoulderBeltLoad(report, isomme, p)
+                    self.criterion_chest_deflection = self.report.Criterion_Overall.Criterion_Driver.Criterion_Chest.Criterion_Chest_Deflection(report, isomme, p)
+                    self.criterion_chest_vc = self.report.Criterion_Overall.Criterion_Driver.Criterion_Chest.Criterion_Chest_VC(report, isomme, p)
+                    self.criterion_shoulder_belt_load = self.report.Criterion_Overall.Criterion_Driver.Criterion_Chest.Criterion_ShoulderBeltLoad(report, isomme, p)
 
                 def calculation(self):
                     self.criterion_chest_deflection.calculate()
@@ -1057,8 +1057,8 @@ class EuroNCAP_Frontal_50kmh(Report):
 
                     self.p = p
 
-                    self.criterion_femur_axial_force = self.report.Criterion_Master.Criterion_Driver.Criterion_Femur.Criterion_Femur_Axial_Force(report, isomme, p=self.p)
-                    self.criterion_submarining = self.report.Criterion_Master.Criterion_Driver.Criterion_Femur.Criterion_Submarining(report, isomme, p=self.p)
+                    self.criterion_femur_axial_force = self.report.Criterion_Overall.Criterion_Driver.Criterion_Femur.Criterion_Femur_Axial_Force(report, isomme, p=self.p)
+                    self.criterion_submarining = self.report.Criterion_Overall.Criterion_Driver.Criterion_Femur.Criterion_Submarining(report, isomme, p=self.p)
 
                 def calculation(self):
                     self.criterion_femur_axial_force.calculate()
@@ -1084,11 +1084,11 @@ class EuroNCAP_Frontal_50kmh(Report):
             super().__init__(report)
 
             self.criteria = {isomme: [
-                self.report.criterion_master[isomme].criterion_driver,
-                self.report.criterion_master[isomme].criterion_front_passenger,
-                self.report.criterion_master[isomme].criterion_rear_passenger,
-                self.report.criterion_master[isomme].criterion_door_opening_during_impact,
-                self.report.criterion_master[isomme],
+                self.report.criterion_overall[isomme].criterion_driver,
+                self.report.criterion_overall[isomme].criterion_front_passenger,
+                self.report.criterion_overall[isomme].criterion_rear_passenger,
+                self.report.criterion_overall[isomme].criterion_door_opening_during_impact,
+                self.report.criterion_overall[isomme],
             ] for isomme in self.report.isomme_list}
 
     class Page_Driver_Result_Values_Chart(Page_Criterion_Values_Chart):
@@ -1099,16 +1099,16 @@ class EuroNCAP_Frontal_50kmh(Report):
             super().__init__(report)
 
             self.criteria = {isomme: [
-                self.report.criterion_master[isomme].criterion_driver.criterion_head.criterion_hic_15,
-                self.report.criterion_master[isomme].criterion_driver.criterion_head.criterion_head_a3ms,
-                self.report.criterion_master[isomme].criterion_driver.criterion_neck.criterion_my_extension,
-                self.report.criterion_master[isomme].criterion_driver.criterion_neck.criterion_fz_tension,
-                self.report.criterion_master[isomme].criterion_driver.criterion_neck.criterion_fx_shear,
-                self.report.criterion_master[isomme].criterion_driver.criterion_chest.criterion_shoulder_belt_load,
-                self.report.criterion_master[isomme].criterion_driver.criterion_chest.criterion_chest_deflection,
-                self.report.criterion_master[isomme].criterion_driver.criterion_chest.criterion_chest_vc,
-                self.report.criterion_master[isomme].criterion_driver.criterion_femur.criterion_femur_axial_force.criterion_femur_axial_force_left,
-                self.report.criterion_master[isomme].criterion_driver.criterion_femur.criterion_femur_axial_force.criterion_femur_axial_force_right,
+                self.report.criterion_overall[isomme].criterion_driver.criterion_head.criterion_hic_15,
+                self.report.criterion_overall[isomme].criterion_driver.criterion_head.criterion_head_a3ms,
+                self.report.criterion_overall[isomme].criterion_driver.criterion_neck.criterion_my_extension,
+                self.report.criterion_overall[isomme].criterion_driver.criterion_neck.criterion_fz_tension,
+                self.report.criterion_overall[isomme].criterion_driver.criterion_neck.criterion_fx_shear,
+                self.report.criterion_overall[isomme].criterion_driver.criterion_chest.criterion_shoulder_belt_load,
+                self.report.criterion_overall[isomme].criterion_driver.criterion_chest.criterion_chest_deflection,
+                self.report.criterion_overall[isomme].criterion_driver.criterion_chest.criterion_chest_vc,
+                self.report.criterion_overall[isomme].criterion_driver.criterion_femur.criterion_femur_axial_force.criterion_femur_axial_force_left,
+                self.report.criterion_overall[isomme].criterion_driver.criterion_femur.criterion_femur_axial_force.criterion_femur_axial_force_right,
             ] for isomme in self.report.isomme_list}
 
     class Page_Driver_Values_Table(Page_Criterion_Values_Table):
@@ -1119,16 +1119,16 @@ class EuroNCAP_Frontal_50kmh(Report):
             super().__init__(report)
 
             self.criteria = {isomme: [
-                self.report.criterion_master[isomme].criterion_driver.criterion_head.criterion_hic_15,
-                self.report.criterion_master[isomme].criterion_driver.criterion_head.criterion_head_a3ms,
-                self.report.criterion_master[isomme].criterion_driver.criterion_neck.criterion_my_extension,
-                self.report.criterion_master[isomme].criterion_driver.criterion_neck.criterion_fz_tension,
-                self.report.criterion_master[isomme].criterion_driver.criterion_neck.criterion_fx_shear,
-                self.report.criterion_master[isomme].criterion_driver.criterion_chest.criterion_shoulder_belt_load,
-                self.report.criterion_master[isomme].criterion_driver.criterion_chest.criterion_chest_deflection,
-                self.report.criterion_master[isomme].criterion_driver.criterion_chest.criterion_chest_vc,
-                self.report.criterion_master[isomme].criterion_driver.criterion_femur.criterion_femur_axial_force.criterion_femur_axial_force_left,
-                self.report.criterion_master[isomme].criterion_driver.criterion_femur.criterion_femur_axial_force.criterion_femur_axial_force_right,
+                self.report.criterion_overall[isomme].criterion_driver.criterion_head.criterion_hic_15,
+                self.report.criterion_overall[isomme].criterion_driver.criterion_head.criterion_head_a3ms,
+                self.report.criterion_overall[isomme].criterion_driver.criterion_neck.criterion_my_extension,
+                self.report.criterion_overall[isomme].criterion_driver.criterion_neck.criterion_fz_tension,
+                self.report.criterion_overall[isomme].criterion_driver.criterion_neck.criterion_fx_shear,
+                self.report.criterion_overall[isomme].criterion_driver.criterion_chest.criterion_shoulder_belt_load,
+                self.report.criterion_overall[isomme].criterion_driver.criterion_chest.criterion_chest_deflection,
+                self.report.criterion_overall[isomme].criterion_driver.criterion_chest.criterion_chest_vc,
+                self.report.criterion_overall[isomme].criterion_driver.criterion_femur.criterion_femur_axial_force.criterion_femur_axial_force_left,
+                self.report.criterion_overall[isomme].criterion_driver.criterion_femur.criterion_femur_axial_force.criterion_femur_axial_force_right,
             ] for isomme in self.report.isomme_list}
 
     class Page_Driver_Rating_Table(Page_Criterion_Rating_Table):
@@ -1139,11 +1139,11 @@ class EuroNCAP_Frontal_50kmh(Report):
             super().__init__(report)
 
             self.criteria = {isomme: [
-                self.report.criterion_master[isomme].criterion_driver.criterion_head,
-                self.report.criterion_master[isomme].criterion_driver.criterion_neck,
-                self.report.criterion_master[isomme].criterion_driver.criterion_chest,
-                self.report.criterion_master[isomme].criterion_driver.criterion_femur,
-                self.report.criterion_master[isomme].criterion_driver,
+                self.report.criterion_overall[isomme].criterion_driver.criterion_head,
+                self.report.criterion_overall[isomme].criterion_driver.criterion_neck,
+                self.report.criterion_overall[isomme].criterion_driver.criterion_chest,
+                self.report.criterion_overall[isomme].criterion_driver.criterion_femur,
+                self.report.criterion_overall[isomme].criterion_driver,
             ] for isomme in self.report.isomme_list}
 
     class Page_Driver_Belt(Page_Plot_nxn):
@@ -1155,9 +1155,9 @@ class EuroNCAP_Frontal_50kmh(Report):
 
         def __init__(self, report):
             super().__init__(report)
-            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_driver}SEBE000[30]B1FO[X0]C"],
-                                      [f"?{self.report.criterion_master[isomme].p_driver}SEBE000[30]B2FO[X0]C"],
-                                      [f"?{self.report.criterion_master[isomme].p_driver}SEBE000[30]B3FO[X0]C"],
+            self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p_driver}SEBE000[30]B1FO[X0]C"],
+                                      [f"?{self.report.criterion_overall[isomme].p_driver}SEBE000[30]B2FO[X0]C"],
+                                      [f"?{self.report.criterion_overall[isomme].p_driver}SEBE000[30]B3FO[X0]C"],
                                       [f"?{self.report.criterion_master[isomme].p_driver}SEBE000[30]B4FO[X0]C"],
                                       [f"?{self.report.criterion_master[isomme].p_driver}SEBE000[30]B5FO[X0]C"],
                                       [f"?{self.report.criterion_master[isomme].p_driver}SEBE000[30]B6FO[X0]C"]] for isomme in self.report.isomme_list}

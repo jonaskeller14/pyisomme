@@ -35,7 +35,7 @@ class UN_Side_Pole_R135(Report):
             self.Page_Pubic_Symphysis_Force(self),
         ]
 
-    class Criterion_Master(Criterion):
+    class Criterion_Overall(Criterion):
         name = "Master"
         p: int = 1
 
@@ -221,7 +221,7 @@ class UN_Side_Pole_R135(Report):
             ]
 
             self.criteria = {isomme: [
-                self.report.criterion_master[isomme].get_subcriterion(criterion_type)
+                self.report.criterion_overall[isomme].get_subcriterion(criterion_type)
                 for criterion_type in criteria_types] for isomme in self.report.isomme_list}
 
 

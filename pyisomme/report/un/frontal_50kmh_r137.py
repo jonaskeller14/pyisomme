@@ -43,8 +43,8 @@ class UN_Frontal_50kmh_R137(Report):
             self.Page_Passenger_Femur_Axial_Force(self),
         ]
 
-    class Criterion_Master(Criterion):
-        name = "Master"
+    class Criterion_Overall(Criterion):
+        name = "Overall"
         p_driver: int = 1
         p_passenger: int = 3
 
@@ -275,13 +275,13 @@ class UN_Frontal_50kmh_R137(Report):
 
                 self.p = p
 
-                self.criterion_hpc36 = self.report.Criterion_Master.Criterion_Driver.Criterion_HPC36(report, isomme, p=self.p)
-                self.criterion_head_a3ms = self.report.Criterion_Master.Criterion_Driver.Criterion_Head_a3ms(report, isomme, p=self.p)
+                self.criterion_hpc36 = self.report.Criterion_Overall.Criterion_Driver.Criterion_HPC36(report, isomme, p=self.p)
+                self.criterion_head_a3ms = self.report.Criterion_Overall.Criterion_Driver.Criterion_Head_a3ms(report, isomme, p=self.p)
                 self.criterion_neck_fz_tension = self.Criterion_Neck_Fz_tension(report, isomme, p=self.p)
                 self.criterion_neck_fx_shear = self.Criterion_Neck_Fx_shear(report, isomme, p=self.p)
-                self.criterion_neck_my_extension = self.report.Criterion_Master.Criterion_Driver.Criterion_Neck_My_extension(report, isomme, p=self.p)
+                self.criterion_neck_my_extension = self.report.Criterion_Overall.Criterion_Driver.Criterion_Neck_My_extension(report, isomme, p=self.p)
                 self.criterion_chest_deflection = self.Criterion_Chest_Deflection(report, isomme, p=self.p)
-                self.criterion_chest_vc = self.report.Criterion_Master.Criterion_Driver.Criterion_Chest_VC(report, isomme, p=self.p)
+                self.criterion_chest_vc = self.report.Criterion_Overall.Criterion_Driver.Criterion_Chest_VC(report, isomme, p=self.p)
                 self.criterion_femur_compression = self.Criterion_Femur_Compression(report, isomme, p=self.p)
 
             def calculation(self) -> None:
@@ -398,7 +398,7 @@ class UN_Frontal_50kmh_R137(Report):
             ]
 
             self.criteria = {isomme: [
-                self.report.criterion_master[isomme].get_subcriterion(criterion_type)
+                self.report.criterion_overall[isomme].get_subcriterion(criterion_type)
                 for criterion_type in criteria_types] for isomme in self.report.isomme_list}
 
     class Page_Driver_Result_Values_Chart(Page_Criterion_Values_Chart):
@@ -420,7 +420,7 @@ class UN_Frontal_50kmh_R137(Report):
             ]
 
             self.criteria = {isomme: [
-                self.report.criterion_master[isomme].criterion_driver.get_subcriterion(criterion_type)
+                self.report.criterion_overall[isomme].criterion_driver.get_subcriterion(criterion_type)
                 for criterion_type in criteria_types] for isomme in self.report.isomme_list}
 
     class Page_Driver_Values_Table(Page_Criterion_Values_Table):
@@ -442,7 +442,7 @@ class UN_Frontal_50kmh_R137(Report):
             ]
 
             self.criteria = {isomme: [
-                self.report.criterion_master[isomme].criterion_driver.get_subcriterion(criterion_type)
+                self.report.criterion_overall[isomme].criterion_driver.get_subcriterion(criterion_type)
                 for criterion_type in criteria_types] for isomme in self.report.isomme_list}
 
     class Page_Driver_Head_Acceleration(EuroNCAP_Frontal_50kmh.Page_Driver_Head_Acceleration):
@@ -476,7 +476,7 @@ class UN_Frontal_50kmh_R137(Report):
             ]
 
             self.criteria = {isomme: [
-                self.report.criterion_master[isomme].criterion_passenger.get_subcriterion(criterion_type)
+                self.report.criterion_overall[isomme].criterion_passenger.get_subcriterion(criterion_type)
                 for criterion_type in criteria_types] for isomme in self.report.isomme_list}
 
     class Page_Passenger_Values_Table(Page_Criterion_Values_Table):
@@ -498,7 +498,7 @@ class UN_Frontal_50kmh_R137(Report):
             ]
 
             self.criteria = {isomme: [
-                self.report.criterion_master[isomme].criterion_passenger.get_subcriterion(criterion_type)
+                self.report.criterion_overall[isomme].criterion_passenger.get_subcriterion(criterion_type)
                 for criterion_type in criteria_types] for isomme in self.report.isomme_list}
 
     class Page_Passenger_Head_Acceleration(EuroNCAP_Frontal_MPDB.Page_Passenger_Head_Acceleration):

@@ -17,7 +17,7 @@ class Report:
     title: str = None
     isomme_list: list = None
     limits: dict = None
-    criterion_master: dict = None
+    criterion_overall: dict = None
     pages: list
     protocol: str
     protocols: dict = {}
@@ -33,9 +33,9 @@ class Report:
 
         self.limits = {isomme: Limits(name=self.name, limit_list=[]) for isomme in isomme_list}
 
-        self.criterion_master = {}
-        for isomme in isomme_list:
-            self.criterion_master[isomme] = self.Criterion_Master(self, isomme)
+        self.criterion_overall = {}
+        for isomme in self.isomme_list:
+            self.criterion_overall[isomme] = self.Criterion_Overall(self, isomme)
 
         self.pages = [
             Page_Cover(self),
@@ -45,7 +45,7 @@ class Report:
         with logging_redirect_tqdm():
             for isomme in tqdm(self.isomme_list, desc="Calculate Report"):
                 logger.info(f"Calculate Criteria for {isomme}")
-                self.criterion_master[isomme].calculate()
+                self.criterion_overall[isomme].calculate()
         return self
 
     def print_results(self):
@@ -60,13 +60,13 @@ class Report:
 
         for isomme in self.isomme_list:
             print(isomme)
-            print_subcriteria_results(self.criterion_master[isomme])
+            print_subcriteria_results(self.criterion_overall[isomme])
         return self
 
     def __repr__(self):
         return f"Report(title='{self.title}', name='{self.name}')"
 
-    class Criterion_Master(Criterion):
+    class Criterion_Overall(Criterion):
         pass
 
     def export_pptx(self, path, template: str = None):

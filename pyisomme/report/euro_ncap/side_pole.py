@@ -38,8 +38,8 @@ class EuroNCAP_Side_Pole(Report):
             self.Page_Pubic_Symphysis_Force(self),
         ]
 
-    class Criterion_Master(Criterion):
-        name = "Master"
+    class Criterion_Overall(Criterion):
+        name = "Overall"
         p: int = 1
 
         def __init__(self, report, isomme):
@@ -339,18 +339,18 @@ class EuroNCAP_Side_Pole(Report):
             super().__init__(report)
 
             criteria_types = [
-                self.report.Criterion_Master.Criterion_Head.Criterion_HIC_15,
-                self.report.Criterion_Master.Criterion_Head.Criterion_Head_a3ms,
-                self.report.Criterion_Master.Criterion_Chest.Criterion_Chest_Lateral_Compression,
-                self.report.Criterion_Master.Criterion_Chest.Criterion_Chest_Lateral_VC,
-                self.report.Criterion_Master.Criterion_Chest.Criterion_Shoulder_Lateral_Force,
-                self.report.Criterion_Master.Criterion_Abdomen.Criterion_Abdomen_Lateral_Compression,
-                self.report.Criterion_Master.Criterion_Abdomen.Criterion_Abdomen_Lateral_VC,
-                self.report.Criterion_Master.Criterion_Pelvis.Criterion_Pubic_Symphysis_Force,
+                self.report.Criterion_Overall.Criterion_Head.Criterion_HIC_15,
+                self.report.Criterion_Overall.Criterion_Head.Criterion_Head_a3ms,
+                self.report.Criterion_Overall.Criterion_Chest.Criterion_Chest_Lateral_Compression,
+                self.report.Criterion_Overall.Criterion_Chest.Criterion_Chest_Lateral_VC,
+                self.report.Criterion_Overall.Criterion_Chest.Criterion_Shoulder_Lateral_Force,
+                self.report.Criterion_Overall.Criterion_Abdomen.Criterion_Abdomen_Lateral_Compression,
+                self.report.Criterion_Overall.Criterion_Abdomen.Criterion_Abdomen_Lateral_VC,
+                self.report.Criterion_Overall.Criterion_Pelvis.Criterion_Pubic_Symphysis_Force,
             ]
 
             self.criteria = {isomme: [
-                self.report.criterion_master[isomme].get_subcriterion(criterion_type)
+                self.report.criterion_overall[isomme].get_subcriterion(criterion_type)
                 for criterion_type in criteria_types] for isomme in self.report.isomme_list}
 
 
@@ -362,18 +362,18 @@ class EuroNCAP_Side_Pole(Report):
             super().__init__(report)
 
             criteria_types = [
-                self.report.Criterion_Master.Criterion_Head.Criterion_HIC_15,
-                self.report.Criterion_Master.Criterion_Head.Criterion_Head_a3ms,
-                self.report.Criterion_Master.Criterion_Chest.Criterion_Chest_Lateral_Compression,
-                self.report.Criterion_Master.Criterion_Chest.Criterion_Chest_Lateral_VC,
-                self.report.Criterion_Master.Criterion_Chest.Criterion_Shoulder_Lateral_Force,
-                self.report.Criterion_Master.Criterion_Abdomen.Criterion_Abdomen_Lateral_Compression,
-                self.report.Criterion_Master.Criterion_Abdomen.Criterion_Abdomen_Lateral_VC,
-                self.report.Criterion_Master.Criterion_Pelvis.Criterion_Pubic_Symphysis_Force,
+                self.report.Criterion_Overall.Criterion_Head.Criterion_HIC_15,
+                self.report.Criterion_Overall.Criterion_Head.Criterion_Head_a3ms,
+                self.report.Criterion_Overall.Criterion_Chest.Criterion_Chest_Lateral_Compression,
+                self.report.Criterion_Overall.Criterion_Chest.Criterion_Chest_Lateral_VC,
+                self.report.Criterion_Overall.Criterion_Chest.Criterion_Shoulder_Lateral_Force,
+                self.report.Criterion_Overall.Criterion_Abdomen.Criterion_Abdomen_Lateral_Compression,
+                self.report.Criterion_Overall.Criterion_Abdomen.Criterion_Abdomen_Lateral_VC,
+                self.report.Criterion_Overall.Criterion_Pelvis.Criterion_Pubic_Symphysis_Force,
             ]
 
             self.criteria = {isomme: [
-                self.report.criterion_master[isomme].get_subcriterion(criterion_type)
+                self.report.criterion_overall[isomme].get_subcriterion(criterion_type)
                 for criterion_type in criteria_types] for isomme in self.report.isomme_list}
 
     class Page_Rating_Table(Page_Criterion_Rating_Table):
@@ -384,15 +384,15 @@ class EuroNCAP_Side_Pole(Report):
             super().__init__(report)
 
             criteria_types = [
-                self.report.Criterion_Master.Criterion_Head,
-                self.report.Criterion_Master.Criterion_Chest,
-                self.report.Criterion_Master.Criterion_Abdomen,
-                self.report.Criterion_Master.Criterion_Pelvis,
-                self.report.Criterion_Master,
+                self.report.Criterion_Overall.Criterion_Head,
+                self.report.Criterion_Overall.Criterion_Chest,
+                self.report.Criterion_Overall.Criterion_Abdomen,
+                self.report.Criterion_Overall.Criterion_Pelvis,
+                self.report.Criterion_Overall,
             ]
 
             self.criteria = {isomme: [
-                self.report.criterion_master[isomme].get_subcriterion(criterion_type)
+                self.report.criterion_overall[isomme].get_subcriterion(criterion_type)
                 for criterion_type in criteria_types] for isomme in self.report.isomme_list}
 
 
@@ -405,7 +405,7 @@ class EuroNCAP_Side_Pole(Report):
 
         def __init__(self, report):
             super().__init__(report)
-            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p}HEAD??????AC{xyzr}A"] for xyzr in "XYZR"] for isomme in self.report.isomme_list}
+            self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p}HEAD??????AC{xyzr}A"] for xyzr in "XYZR"] for isomme in self.report.isomme_list}
 
     class Page_Chest_Lateral_Compression(Page_Plot_nxn):
         name: str = "Chest Lateral Compression"
@@ -416,12 +416,12 @@ class EuroNCAP_Side_Pole(Report):
 
         def __init__(self, report):
             super().__init__(report)
-            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p}TRRILE01??DSYC"],
-                                      [f"?{self.report.criterion_master[isomme].p}TRRIRI01??DSYC"],
-                                      [f"?{self.report.criterion_master[isomme].p}TRRILE02??DSYC"],
-                                      [f"?{self.report.criterion_master[isomme].p}TRRIRI02??DSYC"],
-                                      [f"?{self.report.criterion_master[isomme].p}TRRILE03??DSYC"],
-                                      [f"?{self.report.criterion_master[isomme].p}TRRIRI04??DSYC"]] for isomme in self.report.isomme_list}
+            self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p}TRRILE01??DSYC"],
+                                      [f"?{self.report.criterion_overall[isomme].p}TRRIRI01??DSYC"],
+                                      [f"?{self.report.criterion_overall[isomme].p}TRRILE02??DSYC"],
+                                      [f"?{self.report.criterion_overall[isomme].p}TRRIRI02??DSYC"],
+                                      [f"?{self.report.criterion_overall[isomme].p}TRRILE03??DSYC"],
+                                      [f"?{self.report.criterion_overall[isomme].p}TRRIRI04??DSYC"]] for isomme in self.report.isomme_list}
 
     class Page_Chest_Lateral_VC(Page_Plot_nxn):
         name: str = "Chest Lateral VC"
@@ -432,12 +432,12 @@ class EuroNCAP_Side_Pole(Report):
 
         def __init__(self, report):
             super().__init__(report)
-            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p}VCCRLE01??DSYC"],
-                                      [f"?{self.report.criterion_master[isomme].p}VCCRRI01??DSYC"],
-                                      [f"?{self.report.criterion_master[isomme].p}VCCRLE02??DSYC"],
-                                      [f"?{self.report.criterion_master[isomme].p}VCCRRI02??DSYC"],
-                                      [f"?{self.report.criterion_master[isomme].p}VCCRLE03??DSYC"],
-                                      [f"?{self.report.criterion_master[isomme].p}VCCRRI04??DSYC"]] for isomme in self.report.isomme_list}
+            self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p}VCCRLE01??DSYC"],
+                                      [f"?{self.report.criterion_overall[isomme].p}VCCRRI01??DSYC"],
+                                      [f"?{self.report.criterion_overall[isomme].p}VCCRLE02??DSYC"],
+                                      [f"?{self.report.criterion_overall[isomme].p}VCCRRI02??DSYC"],
+                                      [f"?{self.report.criterion_overall[isomme].p}VCCRLE03??DSYC"],
+                                      [f"?{self.report.criterion_overall[isomme].p}VCCRRI04??DSYC"]] for isomme in self.report.isomme_list}
 
     class Page_Shoulder_Lateral_Force(Page_Plot_nxn):
         name = "Shoulder Lateral Force"
@@ -448,8 +448,8 @@ class EuroNCAP_Side_Pole(Report):
 
         def __init__(self, report):
             super().__init__(report)
-            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p}SHLDLE00??FOYC"],
-                                      [f"?{self.report.criterion_master[isomme].p}SHLDRI00??FOYC"]] for isomme in self.report.isomme_list}
+            self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p}SHLDLE00??FOYC"],
+                                      [f"?{self.report.criterion_overall[isomme].p}SHLDRI00??FOYC"]] for isomme in self.report.isomme_list}
 
     class Page_Abdomen_Lateral_Compression(Page_Plot_nxn):
         name: str = "Abdomen Lateral Compression"
@@ -460,10 +460,10 @@ class EuroNCAP_Side_Pole(Report):
 
         def __init__(self, report):
             super().__init__(report)
-            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p}ABRILE01??DSYC"],
-                                      [f"?{self.report.criterion_master[isomme].p}ABRIRI01??DSYC"],
-                                      [f"?{self.report.criterion_master[isomme].p}ABRILE02??DSYC"],
-                                      [f"?{self.report.criterion_master[isomme].p}ABRIRI03??DSYC"]] for isomme in self.report.isomme_list}
+            self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p}ABRILE01??DSYC"],
+                                      [f"?{self.report.criterion_overall[isomme].p}ABRIRI01??DSYC"],
+                                      [f"?{self.report.criterion_overall[isomme].p}ABRILE02??DSYC"],
+                                      [f"?{self.report.criterion_overall[isomme].p}ABRIRI03??DSYC"]] for isomme in self.report.isomme_list}
 
     class Page_Abdomen_Lateral_VC(Page_Plot_nxn):
         name: str = "Abdomen Lateral VC"
@@ -474,10 +474,10 @@ class EuroNCAP_Side_Pole(Report):
 
         def __init__(self, report):
             super().__init__(report)
-            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p}VCARLE01??VEYC"],
-                                      [f"?{self.report.criterion_master[isomme].p}VCARRI01??VEYC"],
-                                      [f"?{self.report.criterion_master[isomme].p}VCARLE02??VEYC"],
-                                      [f"?{self.report.criterion_master[isomme].p}VCARRI03??VEYC"]] for isomme in self.report.isomme_list}
+            self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p}VCARLE01??VEYC"],
+                                      [f"?{self.report.criterion_overall[isomme].p}VCARRI01??VEYC"],
+                                      [f"?{self.report.criterion_overall[isomme].p}VCARLE02??VEYC"],
+                                      [f"?{self.report.criterion_overall[isomme].p}VCARRI03??VEYC"]] for isomme in self.report.isomme_list}
 
     class Page_Pubic_Symphysis_Force(Page_Plot_nxn):
         name: str = "Pubic Symphysis Force"
@@ -485,4 +485,4 @@ class EuroNCAP_Side_Pole(Report):
 
         def __init__(self, report):
             super().__init__(report)
-            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p}PUBC0000??FOYB"]] for isomme in self.report.isomme_list}
+            self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p}PUBC0000??FOYB"]] for isomme in self.report.isomme_list}

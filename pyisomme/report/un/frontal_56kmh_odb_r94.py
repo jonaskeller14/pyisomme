@@ -47,7 +47,7 @@ class UN_Frontal_56kmh_ODB_R94(Report):
             self.Page_Passenger_Tibia_Index(self),
         ]
 
-    class Criterion_Master(Criterion):
+    class Criterion_Overall(Criterion):
         name = "Master"
         p_driver: int = 1
         p_passenger: int = 3
@@ -443,7 +443,7 @@ class UN_Frontal_56kmh_ODB_R94(Report):
             ]
 
             self.criteria = {isomme: [
-                self.report.criterion_master[isomme].get_subcriterion(criterion_type)
+                self.report.criterion_overall[isomme].get_subcriterion(criterion_type)
                 for criterion_type in criteria_types] for isomme in self.report.isomme_list}
 
     class Page_Driver_Result_Values_Chart(Page_Criterion_Values_Chart):
@@ -468,7 +468,7 @@ class UN_Frontal_56kmh_ODB_R94(Report):
             ]
 
             self.criteria = {isomme: [
-                self.report.criterion_master[isomme].criterion_driver.get_subcriterion(criterion_type)
+                self.report.criterion_overall[isomme].criterion_driver.get_subcriterion(criterion_type)
                 for criterion_type in criteria_types] for isomme in self.report.isomme_list}
 
     class Page_Driver_Values_Table(Page_Criterion_Values_Table):
@@ -493,7 +493,7 @@ class UN_Frontal_56kmh_ODB_R94(Report):
             ]
 
             self.criteria = {isomme: [
-                self.report.criterion_master[isomme].criterion_driver.get_subcriterion(criterion_type)
+                self.report.criterion_overall[isomme].criterion_driver.get_subcriterion(criterion_type)
                 for criterion_type in criteria_types] for isomme in self.report.isomme_list}
 
     class Page_Driver_Head_Acceleration(EuroNCAP_Frontal_50kmh.Page_Driver_Head_Acceleration):
