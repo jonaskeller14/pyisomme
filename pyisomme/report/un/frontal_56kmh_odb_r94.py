@@ -48,7 +48,7 @@ class UN_Frontal_56kmh_ODB_R94(Report):
         ]
 
     class Criterion_Overall(Criterion):
-        name = "Master"
+        name = "Overall"
         p_driver: int = 1
         p_passenger: int = 3
 
@@ -119,10 +119,10 @@ class UN_Frontal_56kmh_ODB_R94(Report):
                     self.criterion_knee_slider_compression.rating
                 ])
 
-            class Criterion_HPC36(UN_Frontal_50kmh_R137.Criterion_Master.Criterion_Driver.Criterion_HPC36):
+            class Criterion_HPC36(UN_Frontal_50kmh_R137.Criterion_Overall.Criterion_Driver.Criterion_HPC36):
                 pass
 
-            class Criterion_Head_a3ms(UN_Frontal_50kmh_R137.Criterion_Master.Criterion_Driver.Criterion_Head_a3ms):
+            class Criterion_Head_a3ms(UN_Frontal_50kmh_R137.Criterion_Overall.Criterion_Driver.Criterion_Head_a3ms):
                 pass
 
             class Criterion_Neck_Fz_tension(Criterion):
@@ -165,13 +165,13 @@ class UN_Frontal_56kmh_ODB_R94(Report):
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                     self.color = self.limits.get_limit_min_color(self.channel)
 
-            class Criterion_Neck_My_extension(UN_Frontal_50kmh_R137.Criterion_Master.Criterion_Driver.Criterion_Neck_My_extension):
+            class Criterion_Neck_My_extension(UN_Frontal_50kmh_R137.Criterion_Overall.Criterion_Driver.Criterion_Neck_My_extension):
                 pass
 
-            class Criterion_Chest_Deflection(UN_Frontal_50kmh_R137.Criterion_Master.Criterion_Driver.Criterion_Chest_Deflection):
+            class Criterion_Chest_Deflection(UN_Frontal_50kmh_R137.Criterion_Overall.Criterion_Driver.Criterion_Chest_Deflection):
                 pass
 
-            class Criterion_Chest_VC(UN_Frontal_50kmh_R137.Criterion_Master.Criterion_Driver.Criterion_Chest_VC):
+            class Criterion_Chest_VC(UN_Frontal_50kmh_R137.Criterion_Overall.Criterion_Driver.Criterion_Chest_VC):
                 pass
 
             class Criterion_Femur_Compression(Criterion):
@@ -297,10 +297,10 @@ class UN_Frontal_56kmh_ODB_R94(Report):
                     self.criterion_knee_slider_compression.rating
                 ])
 
-            class Criterion_HPC36(UN_Frontal_50kmh_R137.Criterion_Master.Criterion_Driver.Criterion_HPC36):
+            class Criterion_HPC36(UN_Frontal_50kmh_R137.Criterion_Overall.Criterion_Driver.Criterion_HPC36):
                 pass
 
-            class Criterion_Head_a3ms(UN_Frontal_50kmh_R137.Criterion_Master.Criterion_Driver.Criterion_Head_a3ms):
+            class Criterion_Head_a3ms(UN_Frontal_50kmh_R137.Criterion_Overall.Criterion_Driver.Criterion_Head_a3ms):
                 pass
 
             class Criterion_Neck_Fz_tension(Criterion):
@@ -343,13 +343,13 @@ class UN_Frontal_56kmh_ODB_R94(Report):
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                     self.color = self.limits.get_limit_min_color(self.channel)
 
-            class Criterion_Neck_My_extension(UN_Frontal_50kmh_R137.Criterion_Master.Criterion_Driver.Criterion_Neck_My_extension):
+            class Criterion_Neck_My_extension(UN_Frontal_50kmh_R137.Criterion_Overall.Criterion_Driver.Criterion_Neck_My_extension):
                 pass
 
-            class Criterion_Chest_Deflection(UN_Frontal_50kmh_R137.Criterion_Master.Criterion_Driver.Criterion_Chest_Deflection):
+            class Criterion_Chest_Deflection(UN_Frontal_50kmh_R137.Criterion_Overall.Criterion_Driver.Criterion_Chest_Deflection):
                 pass
 
-            class Criterion_Chest_VC(UN_Frontal_50kmh_R137.Criterion_Master.Criterion_Driver.Criterion_Chest_VC):
+            class Criterion_Chest_VC(UN_Frontal_50kmh_R137.Criterion_Overall.Criterion_Driver.Criterion_Chest_VC):
                 pass
 
             class Criterion_Femur_Compression(Criterion):

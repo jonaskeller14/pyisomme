@@ -13,6 +13,7 @@ REPORTS = [
     pyisomme.report.un.frontal_50kmh_r137.UN_Frontal_50kmh_R137,
     pyisomme.report.un.frontal_56kmh_odb_r94.UN_Frontal_56kmh_ODB_R94,
     pyisomme.report.un.side_pole_r135.UN_Side_Pole_R135,
+    pyisomme.report.un.side_barrier_r95.UN_Side_Barrier_R95,
 ]
 
 
