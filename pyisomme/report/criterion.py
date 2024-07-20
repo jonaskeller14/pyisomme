@@ -19,6 +19,7 @@ class Criterion:
     value: float = np.nan
     rating: float = np.nan
     color: str | tuple = None
+    status: bool = None
 
     def __init__(self, report, isomme: Isomme):
         self.report = report
@@ -33,8 +34,10 @@ class Criterion:
         try:
             logger.debug(f"Calculate {self}")
             self.calculation()
+            self.status = True
         except Exception as error_message:
             logger.exception(f"{self}:{error_message}")
+            self.status = False
 
     @abstractmethod
     def calculation(self) -> None:
