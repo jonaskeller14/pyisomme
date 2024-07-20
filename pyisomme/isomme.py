@@ -672,6 +672,146 @@ class Isomme:
 
                 # Viscous Criterion (Chest and Abdomen) (min/max of fine_location_1=LE and fine_location_1=RI)
                 if code_pattern.main_location in ("VCCR", "VCAR"):
+                    # Viscous Criterion (Chest and Abdomen)
+                    if code_pattern.main_location == "VCCR":
+                        if code_pattern.filter_class == "X":
+                            channel = self.get_channel(code_pattern.set(main_location="CHST", physical_dimension="DS", filter_class="C"))
+                            if channel is not None:
+                                return calculate_vc(channel)[1]
+                            channel = self.get_channel(code_pattern.set(main_location="TRRI", physical_dimension="DS", filter_class="C"))
+                            if channel is not None:
+                                return calculate_vc(channel)[1]
+                            channel = self.get_channel(code_pattern.set(main_location="RIBS", physical_dimension="DS", filter_class="C"))
+                            if channel is not None:
+                                return calculate_vc(channel)[1]
+                        else:
+                            channel = self.get_channel(code_pattern.set(main_location="CHST", physical_dimension="DS"))
+                            if channel is not None:
+                                return calculate_vc(channel)[0]
+                            channel = self.get_channel(code_pattern.set(main_location="TRRI", physical_dimension="DS"))
+                            if channel is not None:
+                                return calculate_vc(channel)[0]
+                            channel = self.get_channel(code_pattern.set(main_location="RIBS", physical_dimension="DS"))
+                            if channel is not None:
+                                return calculate_vc(channel)[0]
+
+                        if code_pattern.fine_location_2 == "00":
+                            if code_pattern.filter_class == "X":
+                                channel_up = self.get_channel(code_pattern.set(fine_location_2="UP"))
+                                channel_mi = self.get_channel(code_pattern.set(fine_location_2="MI"))
+                                channel_lo = self.get_channel(code_pattern.set(fine_location_2="LO"))
+                                if None not in (channel_up, channel_mi, channel_lo):
+                                    t = time_intersect(channel_up, channel_mi, channel_lo)
+                                    values = np.array([channel_up.get_data(t=t),
+                                                       channel_mi.get_data(t=t, unit=channel_up.unit),
+                                                       channel_lo.get_data(t=t, unit=channel_up.unit)])
+                                    idx_max_abs = np.argmax(np.abs(values), axis=0)
+                                    new_values = values[idx_max_abs, np.arange(values.shape[1])]
+                                    return Channel(code=channel_up.code.set(fine_location_2="00"),
+                                                   data=pd.DataFrame(new_values, index=t),
+                                                   unit=channel_up.unit,
+                                                   info=channel_up.info)
+
+                                channel_01 = self.get_channel(code_pattern.set(fine_location_2="01", filter_class="C"))
+                                channel_02 = self.get_channel(code_pattern.set(fine_location_2="02", filter_class="C"))
+                                channel_03 = self.get_channel(code_pattern.set(fine_location_2="03", filter_class="C"))
+                                if None not in (channel_01, channel_02, channel_03):
+                                    value_01 = channel_01.get_data()[np.argmax(np.abs(channel_01.get_data()))]
+                                    value_02 = channel_02.get_data(unit=channel_01.unit)[np.argmax(np.abs(channel_02.get_data(unit=channel_01.unit)))]
+                                    value_03 = channel_03.get_data(unit=channel_01.unit)[np.argmax(np.abs(channel_03.get_data(unit=channel_01.unit)))]
+                                    value = np.array([value_01, value_02, value_03])[np.argmax(np.abs([value_01, value_02, value_03]))]
+                                    return Channel(code=channel_01.code.set(fine_location_2="00", filter_class="X"),
+                                                   data=pd.DataFrame([value]),
+                                                   unit=channel_01.unit)
+
+                                channel_LO = self.get_channel(code_pattern.set(fine_location_2="LO", filter_class="C"))
+                                channel_UP = self.get_channel(code_pattern.set(fine_location_2="UP", filter_class="C"))
+                                if None not in (channel_LO, channel_UP):
+                                    value_left = channel_LO.get_data()[np.argmax(np.abs(channel_LO.get_data()))]
+                                    value_right = channel_UP.get_data(unit=channel_LO.unit)[np.argmax(np.abs(channel_UP.get_data(unit=channel_LO.unit)))]
+                                    value = np.array([value_left, value_right])[np.argmax(np.abs([value_left, value_right]))]
+                                    return Channel(code=channel_LO.code.set(fine_location_2="00", filter_class="X"),
+                                                   data=pd.DataFrame([value]),
+                                                   unit=channel_LO.unit)
+                            else:
+                                channel_up = self.get_channel(code_pattern.set(fine_location_2="UP"))
+                                channel_mi = self.get_channel(code_pattern.set(fine_location_2="MI"))
+                                channel_lo = self.get_channel(code_pattern.set(fine_location_2="LO"))
+                                if None not in (channel_up, channel_mi, channel_lo):
+                                    t = time_intersect(channel_up, channel_mi, channel_lo)
+                                    values = np.array([channel_up.get_data(t=t),
+                                                       channel_mi.get_data(t=t, unit=channel_up.unit),
+                                                       channel_lo.get_data(t=t, unit=channel_up.unit)])
+                                    new_values = values[np.argmax(np.abs(values), axis=0), np.arange(values.shape[1])]
+                                    return Channel(code=channel_up.code.set(fine_location_2="00"),
+                                                   data=pd.DataFrame(new_values, index=t),
+                                                   unit=channel_up.unit,
+                                                   info=channel_up.info)
+
+                                channel_01 = self.get_channel(code_pattern.set(fine_location_2="01"))
+                                channel_02 = self.get_channel(code_pattern.set(fine_location_2="02"))
+                                channel_03 = self.get_channel(code_pattern.set(fine_location_2="03"))
+                                if None not in (channel_01, channel_02, channel_03):
+                                    t = time_intersect(channel_01, channel_02, channel_03)
+                                    values = np.array([channel_01.get_data(t=t),
+                                                       channel_02.get_data(t=t, unit=channel_01.unit),
+                                                       channel_03.get_data(t=t, unit=channel_01.unit)])
+                                    idx_max_abs = np.argmax(np.abs(values), axis=0)
+                                    new_values = values[idx_max_abs, np.arange(values.shape[1])]
+                                    return Channel(code=channel_01.code.set(fine_location_2="00"),
+                                                   data=pd.DataFrame(new_values, index=t),
+                                                   unit=channel_01.unit)
+
+                                channel_LO = self.get_channel(code_pattern.set(fine_location_2="LO"))
+                                channel_UP = self.get_channel(code_pattern.set(fine_location_2="UP"))
+                                if None not in (channel_LO, channel_UP):
+                                    t = time_intersect(channel_LO, channel_UP)
+                                    values = np.array([channel_LO.get_data(t=t), channel_UP.get_data(t=t, unit=channel_LO.unit)])
+                                    idx_max_abs = np.argmax(np.abs(values), axis=0)
+                                    new_values = values[idx_max_abs, np.arange(values.shape[1])]
+                                    return Channel(code=channel_LO.code.set(fine_location_2="00"),
+                                                   data=pd.DataFrame(new_values, index=t),
+                                                   unit=channel_LO.unit)
+
+                    if code_pattern.main_location == "VCAR":
+                        if code_pattern.filter_class == "X":
+                            channel = self.get_channel(code_pattern.set(main_location="ABDO", physical_dimension="DS", filter_class="C"))
+                            if channel is not None:
+                                return calculate_vc(channel)[1]
+                            channel = self.get_channel(code_pattern.set(main_location="ABRI", physical_dimension="DS", filter_class="C"))
+                            if channel is not None:
+                                return calculate_vc(channel)[1]
+                        else:
+                            channel = self.get_channel(code_pattern.set(main_location="ABDO", physical_dimension="DS"))
+                            if channel is not None:
+                                return calculate_vc(channel)[0]
+                            channel = self.get_channel(code_pattern.set(main_location="ABRI", physical_dimension="DS"))
+                            if channel is not None:
+                                return calculate_vc(channel)[0]
+
+                        if code_pattern.fine_location_2 == "00":
+                            if code_pattern.filter_class == "X":
+                                channel_01 = self.get_channel(code_pattern.set(fine_location_2="01", filter_class="C"))
+                                channel_02 = self.get_channel(code_pattern.set(fine_location_2="02", filter_class="C"))
+                                if None not in (channel_01, channel_02):
+                                    value_left = channel_01.get_data()[np.argmax(np.abs(channel_01.get_data()))]
+                                    value_right = channel_02.get_data(unit=channel_01.unit)[np.argmax(np.abs(channel_02.get_data(unit=channel_01.unit)))]
+                                    value = np.array([value_left, value_right])[np.argmax(np.abs([value_left, value_right]))]
+                                    return Channel(code=channel_01.code.set(fine_location_2="00", filter_class="X"),
+                                                   data=pd.DataFrame([value]),
+                                                   unit=channel_01.unit)
+                            else:
+                                channel_01 = self.get_channel(code_pattern.set(fine_location_2="01"))
+                                channel_02 = self.get_channel(code_pattern.set(fine_location_2="02"))
+                                if None not in (channel_01, channel_02):
+                                    t = time_intersect(channel_01, channel_02)
+                                    values = np.array([channel_01.get_data(t=t), channel_02.get_data(t=t, unit=channel_01.unit)])
+                                    idx_max_abs = np.argmax(np.abs(values), axis=0)
+                                    new_values = values[idx_max_abs, np.arange(values.shape[1])]
+                                    return Channel(code=channel_01.code.set(fine_location_2="00"),
+                                                   data=pd.DataFrame(new_values, index=t),
+                                                   unit=channel_01.unit)
+
                     if code_pattern.fine_location_1 == "00":
                         if code_pattern.filter_class == "X":
                             channel_left = self.get_channel(code_pattern.set(fine_location_1="LE", filter_class="C"))
@@ -688,131 +828,26 @@ class Isomme:
                             channel_right = self.get_channel(code_pattern.set(fine_location_1="RI"))
                             if None not in (channel_left, channel_right):
                                 t = time_intersect(channel_left, channel_right)
-                                values = np.array([channel_left.get_data(t=t), channel_right.get_data(t=t, unit=channel_left.unit)])
+                                values = np.array([channel_left.get_data(t=t),
+                                                   channel_right.get_data(t=t, unit=channel_left.unit)])
                                 idx_max_abs = np.argmax(np.abs(values), axis=0)
                                 new_values = values[idx_max_abs, np.arange(values.shape[1])]
                                 return Channel(code=channel_left.code.set(fine_location_1="00"),
                                                data=pd.DataFrame(new_values, index=t),
                                                unit=channel_left.unit)
-                            
-                # Viscous Criterion (Chest and Abdomen) (min/max of fine_location_2=01 and fine_location_2=02)
-                if code_pattern.main_location == "VCAR":
-                    if code_pattern.fine_location_2 == "00":
-                        if code_pattern.filter_class == "X":
-                            channel_01 = self.get_channel(code_pattern.set(fine_location_2="01", filter_class="C"))
-                            channel_02 = self.get_channel(code_pattern.set(fine_location_2="02", filter_class="C"))
-                            if None not in (channel_01, channel_02):
-                                value_left = channel_01.get_data()[np.argmax(np.abs(channel_01.get_data()))]
-                                value_right = channel_02.get_data(unit=channel_01.unit)[np.argmax(np.abs(channel_02.get_data(unit=channel_01.unit)))]
-                                value = np.array([value_left, value_right])[np.argmax(np.abs([value_left, value_right]))]
-                                return Channel(code=channel_01.code.set(fine_location_2="00", filter_class="X"),
-                                               data=pd.DataFrame([value]),
-                                               unit=channel_01.unit)
-                        else:
-                            channel_01 = self.get_channel(code_pattern.set(fine_location_2="01"))
-                            channel_02 = self.get_channel(code_pattern.set(fine_location_2="02"))
-                            if None not in (channel_01, channel_02):
-                                t = time_intersect(channel_01, channel_02)
-                                values = np.array([channel_01.get_data(t=t), channel_02.get_data(t=t, unit=channel_01.unit)])
-                                idx_max_abs = np.argmax(np.abs(values), axis=0)
-                                new_values = values[idx_max_abs, np.arange(values.shape[1])]
-                                return Channel(code=channel_01.code.set(fine_location_2="00"),
-                                               data=pd.DataFrame(new_values, index=t),
-                                               unit=channel_01.unit)
-                
-                # Viscous Criterion (Chest and Abdomen) (min/max of fine_location_2=LO and fine_location_2=UP)
-                if code_pattern.main_location == "VCCR":
-                    if code_pattern.fine_location_2 == "00":
-                        if code_pattern.filter_class == "X":
-                            channel_LO = self.get_channel(code_pattern.set(fine_location_2="LO", filter_class="C"))
-                            channel_UP = self.get_channel(code_pattern.set(fine_location_2="UP", filter_class="C"))
-                            if None not in (channel_LO, channel_UP):
-                                value_left = channel_LO.get_data()[np.argmax(np.abs(channel_LO.get_data()))]
-                                value_right = channel_UP.get_data(unit=channel_LO.unit)[np.argmax(np.abs(channel_UP.get_data(unit=channel_LO.unit)))]
-                                value = np.array([value_left, value_right])[np.argmax(np.abs([value_left, value_right]))]
-                                return Channel(code=channel_LO.code.set(fine_location_2="00", filter_class="X"),
-                                               data=pd.DataFrame([value]),
-                                               unit=channel_LO.unit)
-                        else:
-                            channel_LO = self.get_channel(code_pattern.set(fine_location_2="LO"))
-                            channel_UP = self.get_channel(code_pattern.set(fine_location_2="UP"))
-                            if None not in (channel_LO, channel_UP):
-                                t = time_intersect(channel_LO, channel_UP)
-                                values = np.array([channel_LO.get_data(t=t), channel_UP.get_data(t=t, unit=channel_LO.unit)])
-                                idx_max_abs = np.argmax(np.abs(values), axis=0)
-                                new_values = values[idx_max_abs, np.arange(values.shape[1])]
-                                return Channel(code=channel_LO.code.set(fine_location_2="00"),
-                                               data=pd.DataFrame(new_values, index=t),
-                                               unit=channel_LO.unit)
-                            
-                # Viscous Criterion (Chest and Abdomen) (min/max of fine_location_2=01 and fine_location_2=02 and fine_location_2=03)
-                if code_pattern.main_location == "VCCR":
-                    if code_pattern.fine_location_2 == "00":
-                        if code_pattern.filter_class == "X":
-                            channel_01 = self.get_channel(code_pattern.set(fine_location_2="01", filter_class="C"))
-                            channel_02 = self.get_channel(code_pattern.set(fine_location_2="02", filter_class="C"))
-                            channel_03 = self.get_channel(code_pattern.set(fine_location_2="03", filter_class="C"))
-                            if None not in (channel_01, channel_02, channel_03):
-                                value_01 = channel_01.get_data()[np.argmax(np.abs(channel_01.get_data()))]
-                                value_02 = channel_02.get_data(unit=channel_01.unit)[np.argmax(np.abs(channel_02.get_data(unit=channel_01.unit)))]
-                                value_03 = channel_03.get_data(unit=channel_01.unit)[np.argmax(np.abs(channel_03.get_data(unit=channel_01.unit)))]
-                                value = np.array([value_01, value_02, value_03])[np.argmax(np.abs([value_01, value_02, value_03]))]
-                                return Channel(code=channel_01.code.set(fine_location_2="00", filter_class="X"),
-                                               data=pd.DataFrame([value]),
-                                               unit=channel_01.unit)
-                        else:
-                            channel_01 = self.get_channel(code_pattern.set(fine_location_2="01"))
-                            channel_02 = self.get_channel(code_pattern.set(fine_location_2="02"))
-                            channel_03 = self.get_channel(code_pattern.set(fine_location_2="03"))
-                            if None not in (channel_01, channel_02, channel_03):
-                                t = time_intersect(channel_01, channel_02, channel_03)
-                                values = np.array([channel_01.get_data(t=t), 
-                                                   channel_02.get_data(t=t, unit=channel_01.unit),
-                                                   channel_03.get_data(t=t, unit=channel_01.unit)])
-                                idx_max_abs = np.argmax(np.abs(values), axis=0)
-                                new_values = values[idx_max_abs, np.arange(values.shape[1])]
-                                return Channel(code=channel_01.code.set(fine_location_2="00"),
-                                               data=pd.DataFrame(new_values, index=t),
-                                               unit=channel_01.unit)
 
-                # Viscous Criterion (Chest and Abdomen)
-                if code_pattern.main_location == "VCCR":
-                    if code_pattern.filter_class == "X":
-                        channel = self.get_channel(code_pattern.set(main_location="CHST", physical_dimension="DS", filter_class="C"))
-                        if channel is not None:
-                            return calculate_vc(channel)[1]
-                        channel = self.get_channel(code_pattern.set(main_location="TRRI", physical_dimension="DS", filter_class="C"))
-                        if channel is not None:
-                            return calculate_vc(channel)[1]
-                        channel = self.get_channel(code_pattern.set(main_location="RIBS", physical_dimension="DS", filter_class="C"))
-                        if channel is not None:
-                            return calculate_vc(channel)[1]
-                    else:
-                        channel = self.get_channel(code_pattern.set(main_location="CHST", physical_dimension="DS"))
-                        if channel is not None:
-                            return calculate_vc(channel)[0]
-                        channel = self.get_channel(code_pattern.set(main_location="TRRI", physical_dimension="DS"))
-                        if channel is not None:
-                            return calculate_vc(channel)[0]
-                        channel = self.get_channel(code_pattern.set(main_location="RIBS", physical_dimension="DS"))
-                        if channel is not None:
-                            return calculate_vc(channel)[0]
-
-                if code_pattern.main_location == "VCAR":
-                    if code_pattern.filter_class == "X":
-                        channel = self.get_channel(code_pattern.set(main_location="ABDO", physical_dimension="DS", filter_class="C"))
-                        if channel is not None:
-                            return calculate_vc(channel)[1]
-                        channel = self.get_channel(code_pattern.set(main_location="ABRI", physical_dimension="DS", filter_class="C"))
-                        if channel is not None:
-                            return calculate_vc(channel)[1]
-                    else:
-                        channel = self.get_channel(code_pattern.set(main_location="ABDO", physical_dimension="DS"))
-                        if channel is not None:
-                            return calculate_vc(channel)[0]
-                        channel = self.get_channel(code_pattern.set(main_location="ABRI", physical_dimension="DS"))
-                        if channel is not None:
-                            return calculate_vc(channel)[0]
+                # ES-2 / ES-2re Abdomen Force (Min. of front/middle/rear)
+                if code_pattern.main_location == "ABDO" and code_pattern.fine_location_2 == "00" and code_pattern.physical_dimension == "FO" and code_pattern.direction == "Y":
+                    channel_re = self.get_channel(code_pattern.set(fine_location_2="RE"))
+                    channel_mi = self.get_channel(code_pattern.set(fine_location_2="MI"))
+                    channel_fr = self.get_channel(code_pattern.set(fine_location_2="FR"))
+                    if None not in (channel_re, channel_mi, channel_fr):
+                        t = time_intersect(channel_re, channel_mi, channel_fr)
+                        values = np.min([channel_re.get_data(t), channel_mi.get_data(t, unit=channel_re.unit), channel_fr.get_data(t, unit=channel_re.unit)], axis=0)
+                        return Channel(code=channel_re.code.set(fine_location_2="00"),
+                                       data=pd.DataFrame(values, index=t),
+                                       unit=channel_re.unit,
+                                       info=channel_re.info)
 
                 # Acetabulum Compression (Maximum of left and right)
                 if code_pattern.main_location == "ACTB" and code_pattern.fine_location_1 == "00" and code_pattern.fine_location_2 == "00" and code_pattern.physical_dimension == "FO" and code_pattern.direction == "R":
