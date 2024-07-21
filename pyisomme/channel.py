@@ -130,7 +130,7 @@ class Channel:
                 filter_class = "0"
             elif cfc == 1000:
                 filter_class = "A"
-            elif cfc == "600":
+            elif cfc == 600:
                 filter_class = "B"
             elif cfc == 180:
                 filter_class = "C"
