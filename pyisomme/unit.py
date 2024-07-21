@@ -2,7 +2,8 @@ import astropy.units as u
 from astropy.constants import g0
 
 
-u.set_enabled_aliases({"Nm": u.Unit("N*m")})
+u.set_enabled_aliases({"Nm": u.Unit("N*m"),
+                       "dimensionless": u.Unit("1")})
 
 g0 = g0
 
