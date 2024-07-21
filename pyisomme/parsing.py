@@ -92,6 +92,13 @@ def parse_xxx(text: str, isomme) -> Channel:
         time_array = np.linspace(time_of_first_sample, n * sampling_interval, n)
         return Channel(code, pd.DataFrame(array, index=time_array), unit=unit, info=info)
 
+    elif sampling_interval is not None:
+        logger.info(f"[{code}] Assume 'Time of first sample' = 0")
+
+        n = len(array)
+        time_array = np.linspace(0, n * sampling_interval, n)
+        return Channel(code, pd.DataFrame(array, index=time_array), unit=unit, info=info)
+
     elif reference_channel_code is not None:
         logger.info(f"[{code}] Assume 'Reference channel' = 'explicit'")
 
