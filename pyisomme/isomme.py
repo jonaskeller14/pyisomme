@@ -1073,7 +1073,7 @@ class Isomme:
                             channel_anz = channel_anz.adjust_to_range(target_range=(-45, 45), unit="deg")
                             values = channel_dc0.get_data(t=t) * np.cos(channel_anz.get_data(t=t, unit="rad"))
                             return Channel(
-                                code=channel_dc0.code.set(physical_dimension="DS", direction="Y"),
+                                code=channel_dc0.code.set(physical_dimension="DC", direction="Y"),
                                 data=pd.DataFrame(values, index=t),
                                 unit=channel_dc0.unit,
                                 info=channel_dc0.info
