@@ -1176,7 +1176,7 @@ class Isomme:
                     if channel in channel_list:
                         continue
                     if fnmatch.fnmatch(channel.code, code_pattern[:-1] + "?"):
-                        channel_list.append(channel.cfc(filter_class=code_pattern[-1]))
+                        channel_list.append(channel.cfc(code_pattern[-1]))
 
             try:
                 code_pattern = Code(code_pattern)
