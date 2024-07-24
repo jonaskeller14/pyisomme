@@ -3,7 +3,7 @@ from pyisomme.limits import Limits
 from pyisomme.report.criterion import Criterion
 
 from pptx import Presentation
-from tqdm import tqdm
+from tqdm.auto import tqdm
 from tqdm.contrib.logging import logging_redirect_tqdm
 import time
 import logging

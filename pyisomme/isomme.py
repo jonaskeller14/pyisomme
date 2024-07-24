@@ -7,7 +7,7 @@ from pyisomme.calculate import *
 from pyisomme.utils import debug_logging
 from pyisomme.info import Info
 
-from tqdm import tqdm
+from tqdm.auto import tqdm
 from tqdm.contrib.logging import logging_redirect_tqdm
 import os
 import glob
