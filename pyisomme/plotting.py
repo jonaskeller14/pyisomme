@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 class Plot:
-    colors = mcolors.TABLEAU_COLORS.values()
+    colors: list = list(mcolors.TABLEAU_COLORS.values())
     linestyles: list = ["-", "--", "-.", ":", (0, (10, 3)), (0, (5, 1)), ]
     isomme_list: list
     figsize: tuple
@@ -136,7 +136,7 @@ class Plot_Line(Plot):
 
         for idx, ax in enumerate(axs):
             ax.margins(x=0, y=0)
-            for isomme, color in zip(self.isomme_list, self.colors):
+            for idx_isomme, isomme in enumerate(self.isomme_list):
                 if idx >= len(self.channels[isomme]):
                     continue
                 channels = self.channels[isomme][idx]
@@ -150,7 +150,10 @@ class Plot_Line(Plot):
 
                     data = copy.deepcopy(channel.convert_unit(y_units[ax]).data)
                     data.index *= 1000  # convert to ms
-                    ax.plot(data, c=color, label=isomme.test_number if len(channels) <= 1 else f"{isomme.test_number} {channel.code}", ls=self.linestyles[idx2 % len(self.linestyles)])
+                    ax.plot(data,
+                            c=self.colors[idx_isomme % len(self.colors)],
+                            label=isomme.test_number if len(channels) <= 1 else f"{isomme.test_number} {channel.code}",
+                            ls=self.linestyles[idx2 % len(self.linestyles)])
                     if not ax.get_title():
                         ax.set_title(f"{channel.code}")
                     else:
