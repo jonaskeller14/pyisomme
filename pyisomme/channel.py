@@ -354,7 +354,7 @@ class Channel:
         new_code = self.code.differentiate()
         new_unit = Unit(self.unit) / "s"
         new_info = self.info
-        new_info["Dimension"] = new_code.physical_dimension
+        new_info.update({"Dimension": new_code.physical_dimension})
 
         new_channel = Channel(new_code, new_data, unit=new_unit, info=new_info)
         return new_channel
@@ -372,7 +372,7 @@ class Channel:
         new_code = self.code.integrate()
         new_unit = Unit(self.unit) * "s"
         new_info = self.info
-        new_info["Dimension"] = new_code.physical_dimension
+        new_info.update({"Dimension": new_code.physical_dimension})
 
         new_channel = Channel(new_code, new_data, unit=new_unit, info=new_info)
         new_channel -= new_channel.get_data(t=0)
