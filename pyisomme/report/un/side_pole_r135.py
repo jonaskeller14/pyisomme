@@ -36,7 +36,7 @@ class UN_Side_Pole_R135(Report):
         ]
 
     class Criterion_Overall(Criterion):
-        name = "Master"
+        name = "Overall"
         p: int = 1
 
         def __init__(self, report, isomme):

@@ -1028,10 +1028,10 @@ class EuroNCAP_Frontal_MPDB(Report):
 
         def __init__(self, report):
             super().__init__(report)
-            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_driver}HEADDAMA??AAXA"],
-                                      [f"?{self.report.criterion_master[isomme].p_driver}HEADDAMA??AAYA"],
-                                      [f"?{self.report.criterion_master[isomme].p_driver}HEADDAMA??AAZA"],
-                                      [f"?{self.report.criterion_master[isomme].p_driver}HEADDAMA??AARA"]] for isomme in self.report.isomme_list}
+            self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p_driver}HEADDAMA??AAXA"],
+                                      [f"?{self.report.criterion_overall[isomme].p_driver}HEADDAMA??AAYA"],
+                                      [f"?{self.report.criterion_overall[isomme].p_driver}HEADDAMA??AAZA"],
+                                      [f"?{self.report.criterion_overall[isomme].p_driver}HEADDAMA??AARA"]] for isomme in self.report.isomme_list}
 
     class Page_Driver_Neck_Load(EuroNCAP_Frontal_50kmh.Page_Driver_Neck_Load):
         pass
@@ -1045,10 +1045,10 @@ class EuroNCAP_Frontal_MPDB(Report):
 
         def __init__(self, report):
             super().__init__(report)
-            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_driver}CHSTLEUP??DSXC"],
-                                      [f"?{self.report.criterion_master[isomme].p_driver}CHSTRIUP??DSXC"],
-                                      [f"?{self.report.criterion_master[isomme].p_driver}CHSTLELO??DSXC"],
-                                      [f"?{self.report.criterion_master[isomme].p_driver}CHSTRILO??DSXC"]] for isomme in self.report.isomme_list}
+            self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p_driver}CHSTLEUP??DSXC"],
+                                      [f"?{self.report.criterion_overall[isomme].p_driver}CHSTRIUP??DSXC"],
+                                      [f"?{self.report.criterion_overall[isomme].p_driver}CHSTLELO??DSXC"],
+                                      [f"?{self.report.criterion_overall[isomme].p_driver}CHSTRILO??DSXC"]] for isomme in self.report.isomme_list}
 
     class Page_Driver_Abdomen_Compression(Page_Plot_nxn):
         name = "Driver Abdomen Compression"
@@ -1058,8 +1058,8 @@ class EuroNCAP_Frontal_MPDB(Report):
 
         def __init__(self, report):
             super().__init__(report)
-            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_driver}ABDOLE00??DSXC"],
-                                      [f"?{self.report.criterion_master[isomme].p_driver}ABDORI00??DSXC"]] for isomme in self.report.isomme_list}
+            self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p_driver}ABDOLE00??DSXC"],
+                                      [f"?{self.report.criterion_overall[isomme].p_driver}ABDORI00??DSXC"]] for isomme in self.report.isomme_list}
 
     class Page_Driver_Femur_Axial_Force(EuroNCAP_Frontal_50kmh.Page_Driver_Femur_Axial_Force):
         pass
@@ -1073,10 +1073,10 @@ class EuroNCAP_Frontal_MPDB(Report):
 
         def __init__(self, report):
             super().__init__(report)
-            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_driver}TIBILEUP??FOZB"],
-                                      [f"?{self.report.criterion_master[isomme].p_driver}TIBIRIUP??FOZB"],
-                                      [f"?{self.report.criterion_master[isomme].p_driver}TIBILELO??FOZB"],
-                                      [f"?{self.report.criterion_master[isomme].p_driver}TIBIRILO??FOZB"]] for isomme in self.report.isomme_list}
+            self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p_driver}TIBILEUP??FOZB"],
+                                      [f"?{self.report.criterion_overall[isomme].p_driver}TIBIRIUP??FOZB"],
+                                      [f"?{self.report.criterion_overall[isomme].p_driver}TIBILELO??FOZB"],
+                                      [f"?{self.report.criterion_overall[isomme].p_driver}TIBIRILO??FOZB"]] for isomme in self.report.isomme_list}
 
     class Page_Driver_Tibia_Index(Page_Plot_nxn):
         name = "Driver Tibia Index"
@@ -1087,10 +1087,10 @@ class EuroNCAP_Frontal_MPDB(Report):
 
         def __init__(self, report):
             super().__init__(report)
-            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_driver}TIINLEUP??000B"],
-                                      [f"?{self.report.criterion_master[isomme].p_driver}TIINRIUP??000B"],
-                                      [f"?{self.report.criterion_master[isomme].p_driver}TIINLELO??000B"],
-                                      [f"?{self.report.criterion_master[isomme].p_driver}TIINRILO??000B"]] for isomme in self.report.isomme_list}
+            self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p_driver}TIINLEUP??000B"],
+                                      [f"?{self.report.criterion_overall[isomme].p_driver}TIINRIUP??000B"],
+                                      [f"?{self.report.criterion_overall[isomme].p_driver}TIINLELO??000B"],
+                                      [f"?{self.report.criterion_overall[isomme].p_driver}TIINRILO??000B"]] for isomme in self.report.isomme_list}
 
     class Page_Driver_Knee_Slider_Compression(Page_Plot_nxn):
         name = "Driver Knee Slider Compression"
@@ -1101,8 +1101,8 @@ class EuroNCAP_Frontal_MPDB(Report):
 
         def __init__(self, report):
             super().__init__(report)
-            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_driver}KNSLLE00??DSXC"],
-                                      [f"?{self.report.criterion_master[isomme].p_driver}KNSLRI00??DSXC"]]for isomme in self.report.isomme_list}
+            self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p_driver}KNSLLE00??DSXC"],
+                                      [f"?{self.report.criterion_overall[isomme].p_driver}KNSLRI00??DSXC"]]for isomme in self.report.isomme_list}
 
     class Page_Passenger_Result_Values_Chart(Page_Criterion_Values_Chart):
         name = "Passenger Result Values Chart"
@@ -1173,12 +1173,12 @@ class EuroNCAP_Frontal_MPDB(Report):
 
         def __init__(self, report):
             super().__init__(report)
-            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_passenger}SEBE000[30]B1FO[X0]C"],
-                                      [f"?{self.report.criterion_master[isomme].p_passenger}SEBE000[30]B2FO[X0]C"],
-                                      [f"?{self.report.criterion_master[isomme].p_passenger}SEBE000[30]B3FO[X0]C"],
-                                      [f"?{self.report.criterion_master[isomme].p_passenger}SEBE000[30]B4FO[X0]C"],
-                                      [f"?{self.report.criterion_master[isomme].p_passenger}SEBE000[30]B5FO[X0]C"],
-                                      [f"?{self.report.criterion_master[isomme].p_passenger}SEBE000[30]B6FO[X0]C"]] for isomme in self.report.isomme_list}
+            self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p_passenger}SEBE000[30]B1FO[X0]C"],
+                                      [f"?{self.report.criterion_overall[isomme].p_passenger}SEBE000[30]B2FO[X0]C"],
+                                      [f"?{self.report.criterion_overall[isomme].p_passenger}SEBE000[30]B3FO[X0]C"],
+                                      [f"?{self.report.criterion_overall[isomme].p_passenger}SEBE000[30]B4FO[X0]C"],
+                                      [f"?{self.report.criterion_overall[isomme].p_passenger}SEBE000[30]B5FO[X0]C"],
+                                      [f"?{self.report.criterion_overall[isomme].p_passenger}SEBE000[30]B6FO[X0]C"]] for isomme in self.report.isomme_list}
 
     class Page_Passenger_Head_Acceleration(Page_Plot_nxn):
         name: str = "Passenger Head Acceleration"
@@ -1189,7 +1189,7 @@ class EuroNCAP_Frontal_MPDB(Report):
 
         def __init__(self, report):
             super().__init__(report)
-            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_passenger}HEAD??????AC{xyzr}A"] for xyzr in "XYZR"] for isomme in self.report.isomme_list}
+            self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p_passenger}HEAD??????AC{xyzr}A"] for xyzr in "XYZR"] for isomme in self.report.isomme_list}
 
     class Page_Passenger_Neck_Load(Page_Plot_nxn):
         name: str = "Passenger Neck Load"
@@ -1200,9 +1200,9 @@ class EuroNCAP_Frontal_MPDB(Report):
 
         def __init__(self, report):
             super().__init__(report)
-            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_passenger}NECKUP00??MOYB"],
-                                      [f"?{self.report.criterion_master[isomme].p_passenger}NECKUP00??FOZA"],
-                                      [f"?{self.report.criterion_master[isomme].p_passenger}NECKUP00??FOXA"]] for isomme in self.report.isomme_list}
+            self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p_passenger}NECKUP00??MOYB"],
+                                      [f"?{self.report.criterion_overall[isomme].p_passenger}NECKUP00??FOZA"],
+                                      [f"?{self.report.criterion_overall[isomme].p_passenger}NECKUP00??FOXA"]] for isomme in self.report.isomme_list}
 
     class Page_Passenger_Chest_Deflection(Page_Plot_nxn):
         name: str = "Passenger Chest Deflection"
@@ -1212,8 +1212,8 @@ class EuroNCAP_Frontal_MPDB(Report):
 
         def __init__(self, report):
             super().__init__(report)
-            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_passenger}CHST000???DSXC"],
-                                      [f"?{self.report.criterion_master[isomme].p_passenger}VCCR000???VEXC"]] for isomme in self.report.isomme_list}
+            self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p_passenger}CHST000???DSXC"],
+                                      [f"?{self.report.criterion_overall[isomme].p_passenger}VCCR000???VEXC"]] for isomme in self.report.isomme_list}
 
     class Page_Passenger_Femur_Axial_Force(Page_Plot_nxn):
         name: str = "Passenger Femur Axial Force"
@@ -1224,8 +1224,8 @@ class EuroNCAP_Frontal_MPDB(Report):
 
         def __init__(self, report):
             super().__init__(report)
-            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_passenger}FEMRLE00??FOZB"],
-                                      [f"?{self.report.criterion_master[isomme].p_passenger}FEMRRI00??FOZB"]] for isomme in self.report.isomme_list}
+            self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p_passenger}FEMRLE00??FOZB"],
+                                      [f"?{self.report.criterion_overall[isomme].p_passenger}FEMRRI00??FOZB"]] for isomme in self.report.isomme_list}
 
     class Page_Passenger_Knee_Slider_Compression(Page_Plot_nxn):
         name = "Passenger Knee Slider Compression"
@@ -1236,8 +1236,8 @@ class EuroNCAP_Frontal_MPDB(Report):
 
         def __init__(self, report):
             super().__init__(report)
-            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_passenger}KNSLLE00??DSXC"],
-                                      [f"?{self.report.criterion_master[isomme].p_passenger}KNSLRI00??DSXC"]]for isomme in self.report.isomme_list}
+            self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p_passenger}KNSLLE00??DSXC"],
+                                      [f"?{self.report.criterion_overall[isomme].p_passenger}KNSLRI00??DSXC"]]for isomme in self.report.isomme_list}
 
     class Page_Passenger_Tibia_Compression(Page_Plot_nxn):
         name = "Passenger Tibia Compression"
@@ -1248,10 +1248,10 @@ class EuroNCAP_Frontal_MPDB(Report):
 
         def __init__(self, report):
             super().__init__(report)
-            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_passenger}TIBILEUP??FOZB"],
-                                      [f"?{self.report.criterion_master[isomme].p_passenger}TIBIRIUP??FOZB"],
-                                      [f"?{self.report.criterion_master[isomme].p_passenger}TIBILELO??FOZB"],
-                                      [f"?{self.report.criterion_master[isomme].p_passenger}TIBIRILO??FOZB"]] for isomme in self.report.isomme_list}
+            self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p_passenger}TIBILEUP??FOZB"],
+                                      [f"?{self.report.criterion_overall[isomme].p_passenger}TIBIRIUP??FOZB"],
+                                      [f"?{self.report.criterion_overall[isomme].p_passenger}TIBILELO??FOZB"],
+                                      [f"?{self.report.criterion_overall[isomme].p_passenger}TIBIRILO??FOZB"]] for isomme in self.report.isomme_list}
 
     class Page_Passenger_Tibia_Index(Page_Plot_nxn):
         name = "Passenger Tibia Index"
@@ -1262,10 +1262,10 @@ class EuroNCAP_Frontal_MPDB(Report):
 
         def __init__(self, report):
             super().__init__(report)
-            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p_passenger}TIINLEUP??000B"],
-                                      [f"?{self.report.criterion_master[isomme].p_passenger}TIINRIUP??000B"],
-                                      [f"?{self.report.criterion_master[isomme].p_passenger}TIINLELO??000B"],
-                                      [f"?{self.report.criterion_master[isomme].p_passenger}TIINRILO??000B"]] for isomme in self.report.isomme_list}
+            self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p_passenger}TIINLEUP??000B"],
+                                      [f"?{self.report.criterion_overall[isomme].p_passenger}TIINRIUP??000B"],
+                                      [f"?{self.report.criterion_overall[isomme].p_passenger}TIINLELO??000B"],
+                                      [f"?{self.report.criterion_overall[isomme].p_passenger}TIINRILO??000B"]] for isomme in self.report.isomme_list}
 
     class Page_OLC_Trolley(Page_Plot_nxn):
         name: str = "OLC Trolley"
