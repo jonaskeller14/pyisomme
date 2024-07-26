@@ -10,6 +10,10 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import to_rgb
 import numpy as np
 import io
+import os
+from pptx.util import Inches
+from abc import abstractmethod
+from datetime import datetime
 from typing import Callable
 
 
@@ -19,7 +23,8 @@ class Page:
     def __init__(self, report):
         self.report = report
 
-    def construct(self, presentation):
+    @abstractmethod
+    def construct(self, presentation) -> None:
         pass
 
     def __repr__(self):
@@ -27,7 +32,7 @@ class Page:
 
 
 class Page_Cover(Page):
-    name: str = "Cover"
+    name = "Cover"
     title: str = None
     subtitle: str = None
 
@@ -43,9 +48,30 @@ class Page_Cover(Page):
         slide.placeholders[1].text = self.subtitle
 
 
-class Page_Criterion_Table(Page):
-    name: str
-    title: str
+class Page_Content(Page):
+    title: str = None
+    footer: str = f"{datetime.now().strftime('%d.%m.%Y')} | {os.getlogin()}"
+
+    def construct(self, presentation) -> None:
+        title_slide_layout = presentation.slide_layouts[1]
+        slide = presentation.slides.add_slide(title_slide_layout)
+        slide.shapes.title.text = self.title
+
+        slide_width = presentation.slide_width
+        slide_height = presentation.slide_height
+
+        txBox = slide.shapes.add_textbox(0, Inches(slide_height / Inches(1) - 0.3), slide_width, Inches(0.3))
+        tf = txBox.text_frame
+        tf.margin_top = Inches(0.05)
+        tf.margin_bottom = Inches(0.05)
+        tf.margin_left = Inches(0.05)
+        tf.margin_right = Inches(0.05)
+        p = tf.paragraphs[0]
+        p.text = self.footer
+        p.font.size = Inches(0.2)
+
+
+class Page_Criterion_Table(Page_Content):
     criteria: dict[Isomme, list[Criterion]]
     row_label: Callable
     cell_text: Callable
@@ -55,9 +81,8 @@ class Page_Criterion_Table(Page):
         self.criteria = {}
 
     def construct(self, presentation):
-        title_slide_layout = presentation.slide_layouts[1]
-        slide = presentation.slides.add_slide(title_slide_layout)
-        slide.shapes.title.text = self.title
+        super().construct(presentation)
+        slide = presentation.slides[-1]
 
         top = slide.placeholders[1].top
         left = slide.placeholders[1].left
@@ -107,9 +132,7 @@ class Page_Criterion_Rating_Table(Page_Criterion_Table):
     cell_text = staticmethod(lambda criterion: f"{criterion.rating:.1f}")
 
 
-class Page_Criterion_Values_Chart(Page):
-    name: str
-    title: str
+class Page_Criterion_Values_Chart(Page_Content):
     criteria: dict[Isomme, list[Criterion]]
 
     def __init__(self, report):
@@ -117,9 +140,8 @@ class Page_Criterion_Values_Chart(Page):
         self.criteria = {}
 
     def construct(self, presentation):
-        title_slide_layout = presentation.slide_layouts[1]
-        slide = presentation.slides.add_slide(title_slide_layout)
-        slide.shapes.title.text = self.title
+        super().construct(presentation)
+        slide = presentation.slides[-1]
 
         top = slide.placeholders[1].top
         left = slide.placeholders[1].left
@@ -229,8 +251,7 @@ class Page_Criterion_Values_Chart(Page):
         slide.shapes.add_picture(image_steam, left=left, top=top, height=height)
 
 
-class Page_Plot_nxn(Page):
-    title: str = None
+class Page_Plot_nxn(Page_Content):
     channels: dict[Isomme, list[list[Channel | str]]]
     nrows: int = 1
     ncols: int = 1
@@ -245,9 +266,8 @@ class Page_Plot_nxn(Page):
             self.title = self.name
 
     def construct(self, presentation):
-        title_slide_layout = presentation.slide_layouts[1]
-        slide = presentation.slides.add_slide(title_slide_layout)
-        slide.shapes.title.text = self.title
+        super().construct(presentation)
+        slide = presentation.slides[-1]
 
         top = slide.placeholders[1].top
         left = slide.placeholders[1].left
@@ -275,7 +295,7 @@ class Page_Plot_nxn(Page):
         slide.shapes.add_picture(image_steam, left=left, top=top, height=height)
 
 
-class Page_Line_Table(Page):
+class Page_Line_Table(Page_Content):
     channels: dict[Isomme, list[list[Channel | str]]]
     cell_texts: list[np.ndarray | list[list, ...]]
     row_labels: list[np.ndarray | list]
@@ -294,9 +314,8 @@ class Page_Line_Table(Page):
         super().__init__(report)
 
     def construct(self, presentation):
-        title_slide_layout = presentation.slide_layouts[1]
-        slide = presentation.slides.add_slide(title_slide_layout)
-        slide.shapes.title.text = self.title
+        super().construct(presentation)
+        slide = presentation.slides[-1]
 
         top = slide.placeholders[1].top
         left = slide.placeholders[1].left
