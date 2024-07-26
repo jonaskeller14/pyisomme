@@ -141,13 +141,13 @@ class Channel:
 
         # Check if Channel is already filtered
         if filter_class == "0":
-            return copy.deepcopy(self) if not return_copy else self
+            return copy.deepcopy(self) if return_copy else self
         elif (filter_class == "A" and self.code.filter_class in ("A", "B", "C", "D") or
               filter_class == "B" and self.code.filter_class in ("B", "C", "D") or
               filter_class == "C" and self.code.filter_class in ("C", "D") or
               filter_class == "D" and self.code.filter_class in ("D",)):
             logger.warning("No filtering applied. Channel is already filtered.")
-            return copy.deepcopy(self) if not return_copy else self
+            return copy.deepcopy(self) if return_copy else self
 
         # Calculation
         if method == "ISO-6487":
@@ -220,7 +220,7 @@ class Channel:
             data = copy.deepcopy(self.data)
             data.iloc[:, 0] = samples
 
-            info = self.info
+            info = copy.deepcopy(self.info)
             info.update({"Channel frequency class": cfc})
 
             if return_copy:
