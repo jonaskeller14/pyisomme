@@ -252,12 +252,12 @@ class UN_Side_Pole_R135(Report):
 
         def __init__(self, report):
             super().__init__(report)
-            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p}TRRILE01??DSRB"],
-                                      [f"?{self.report.criterion_master[isomme].p}TRRIRI01??DSRB"],
-                                      [f"?{self.report.criterion_master[isomme].p}TRRILE02??DSRB"],
-                                      [f"?{self.report.criterion_master[isomme].p}TRRIRI02??DSRB"],
-                                      [f"?{self.report.criterion_master[isomme].p}TRRILE03??DSRB"],
-                                      [f"?{self.report.criterion_master[isomme].p}TRRIRI04??DSRB"]] for isomme in self.report.isomme_list}
+            self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p}TRRILE01??DSRB"],
+                                      [f"?{self.report.criterion_overall[isomme].p}TRRIRI01??DSRB"],
+                                      [f"?{self.report.criterion_overall[isomme].p}TRRILE02??DSRB"],
+                                      [f"?{self.report.criterion_overall[isomme].p}TRRIRI02??DSRB"],
+                                      [f"?{self.report.criterion_overall[isomme].p}TRRILE03??DSRB"],
+                                      [f"?{self.report.criterion_overall[isomme].p}TRRIRI04??DSRB"]] for isomme in self.report.isomme_list}
 
     class Page_Abdomen_Resultant_Compression(Page_Plot_nxn):
         name: str = "Abdomen Resultant Compression"
@@ -268,10 +268,10 @@ class UN_Side_Pole_R135(Report):
 
         def __init__(self, report):
             super().__init__(report)
-            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p}ABRILE01??DSRB"],
-                                      [f"?{self.report.criterion_master[isomme].p}ABRIRI01??DSRB"],
-                                      [f"?{self.report.criterion_master[isomme].p}ABRILE02??DSRB"],
-                                      [f"?{self.report.criterion_master[isomme].p}ABRIRI03??DSRB"]] for isomme in self.report.isomme_list}
+            self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p}ABRILE01??DSRB"],
+                                      [f"?{self.report.criterion_overall[isomme].p}ABRIRI01??DSRB"],
+                                      [f"?{self.report.criterion_overall[isomme].p}ABRILE02??DSRB"],
+                                      [f"?{self.report.criterion_overall[isomme].p}ABRIRI03??DSRB"]] for isomme in self.report.isomme_list}
 
     class Page_Spine_T12_Acceleration(Page_Plot_nxn):
         name: str = "Spine T12 Acceleration"
@@ -282,7 +282,7 @@ class UN_Side_Pole_R135(Report):
 
         def __init__(self, report):
             super().__init__(report)
-            self.channels = {isomme: [[f"?{self.report.criterion_master[isomme].p}THSP1200??AC{xyzr}C"] for xyzr in "XYZR"] for isomme in self.report.isomme_list}
+            self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p}THSP1200??AC{xyzr}C"] for xyzr in "XYZR"] for isomme in self.report.isomme_list}
 
     class Page_Pubic_Symphysis_Force(EuroNCAP_Side_Pole.Page_Pubic_Symphysis_Force):
         pass
