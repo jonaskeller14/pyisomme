@@ -124,11 +124,11 @@ class Isomme:
                 self.test_info = parse_mme(mme_file.read())
 
         # CHN
-        chn_paths = list(mme_path.parent.rglob(f"{self.test_number}.[cC][hH][nN]"))
+        chn_paths = list(mme_path.parent.glob(f"[cC][hH][aA][nN][nN][eE][lL]*/{self.test_number}.[cC][hH][nN]"))
         if len(chn_paths) == 0:
             raise FileNotFoundError("No .chn file found.")
         elif len(chn_paths) > 1:
-            raise Exception(f"Multiple .chn file found. {chn_paths}")
+            logger.warning(f"Multiple .chn file found. {chn_paths}. Only first will be considered.")
 
         chn_path = chn_paths[0]
         try:
@@ -164,6 +164,7 @@ class Isomme:
                     continue
 
                 xxx_path = xxx_paths[0]
+                logger.debug(xxx_path)
                 try:
                     with open(xxx_path, "r", encoding="utf-8") as xxx_file:
                         self.channels.append(parse_xxx(xxx_file.read(), isomme=self))
@@ -213,11 +214,11 @@ class Isomme:
                 self.test_info = parse_mme(mme_content.decode("iso-8859-1"))
 
         # CHN
-        chn_paths = fnmatch.filter(archive.namelist(), f"*{self.test_number}.[cC][hH][nN]")
+        chn_paths = fnmatch.filter(archive.namelist(), str(Path(mme_path).parent.joinpath("[cC][hH][aA][nN][nN][eE][lL]*", "{self.test_number}.[cC][hH][nN]")))
         if len(chn_paths) == 0:
             raise FileNotFoundError("No .chn file found.")
         elif len(chn_paths) > 1:
-            raise Exception("Multiple .chn files found.")
+            logger.warning(f"Multiple .chn file found. {chn_paths}. Only first will be considered.")
 
         chn_path = chn_paths[0]
         with archive.open(chn_path, "r") as chn_file:
@@ -253,6 +254,7 @@ class Isomme:
                     continue
 
                 xxx_path = xxx_paths[0]
+                logger.debug(xxx_path)
                 with archive.open(xxx_path, "r") as xxx_file:
                     xxx_content = xxx_file.read()
                     try:
@@ -321,6 +323,7 @@ class Isomme:
                         continue
 
                     xxx_path = xxx_paths[0]
+                    logger.debug(xxx_path)
                     with tar_file.extractfile(xxx_path) as xxx_file:
                         xxx_content = xxx_file.read()
                         try:
