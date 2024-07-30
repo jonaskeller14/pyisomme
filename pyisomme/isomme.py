@@ -1258,7 +1258,7 @@ class Isomme:
         return self
 
 
-def read(*paths, channel_code_patterns: list = None, recursive: bool = True) -> list[Isomme]:
+def read(*paths, channel_code_patterns: list = None, recursive: bool = True, merge: bool = True) -> list[Isomme]:
     all_paths = []
     for path in paths:
         all_paths += glob.glob(path, recursive=recursive)
@@ -1269,6 +1269,23 @@ def read(*paths, channel_code_patterns: list = None, recursive: bool = True) -> 
     iso_list = []
     with logging_redirect_tqdm():
         for path in tqdm(all_paths, desc="Reading"):
-            iso_list.append(Isomme().read(path, *channel_code_patterns))
+            try:
+                iso_list.append(Isomme().read(path, *channel_code_patterns))
+            except Exception as e:
+                logger.critical(e)
 
+    if merge:
+        iso_list = merge_duplicate_isommes(iso_list)
+        for isomme in iso_list:
+            isomme.delete_duplicates(filter_class_duplicates=True)
     return iso_list
+
+
+def merge_duplicate_isommes(isommes: list[Isomme]) -> list:
+    isommes_dict = {}
+    for isomme in isommes:
+        if isomme.test_number in isommes_dict:
+            isommes_dict[isomme.test_number].extend(isomme)
+        else:
+            isommes_dict[isomme.test_number] = isomme
+    return isommes
