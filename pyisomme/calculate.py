@@ -761,7 +761,7 @@ def calculate_chest_pc_score(channel_le_up_ds: Channel,
     s_4 = 12.384
 
     channel_pc_score = l_1 * channel_up_tot / s_1 + l_2 * channel_lo_tot / s_2 + l_3 * channel_up_dif / s_3 + l_4 * channel_lo_dif / s_4
-    channel_pc_score.code.set(fine_location_1="00", fine_location_2="PC")
+    channel_pc_score.set_code(fine_location_1="00", fine_location_2="PC")
     return channel_pc_score
 
 

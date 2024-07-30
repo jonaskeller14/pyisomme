@@ -232,6 +232,16 @@ class TestCalculate(unittest.TestCase):
         assert v1.get_channel("??TMONUP????MOYB") is not None
         assert v1.get_channel("??TMONUP????MOYX") is not None
 
+    def test_calculate_chest_pc_score(self):
+        iso = pyisomme.Isomme(test_number="1234")
+        iso.add_sample_channel(code="11CHSTLEUPTHDSRA", unit="mm", y_range=[0, -20])
+        iso.add_sample_channel(code="11CHSTRIUPTHDSRA", unit="mm", y_range=[0, -20])
+        iso.add_sample_channel(code="11CHSTLELOTHDSRA", unit="mm", y_range=[0, -20])
+        iso.add_sample_channel(code="11CHSTRILOTHDSRA", unit="mm", y_range=[0, -20])
+        channel = iso.get_channel("11CHST00PCTHDSRA")
+        assert channel is not None
+        assert channel.code == "11CHST00PCTHDSRA"
+
     def test_calculate_tibia_index(self):
         # Repair wring data
         for channel in self.v1.channels:
