@@ -473,6 +473,9 @@ class Channel:
                            unit=self.unit,
                            info=self.info)
 
+    def __radd__(self, other):
+        return self.__add__(other)
+
     def __sub__(self, other):
         if isinstance(other, Channel):
             t = time_intersect(self, other)
@@ -505,6 +508,9 @@ class Channel:
                            data=self.data * other,
                            unit=self.unit,
                            info=self.info)
+
+    def __rmul__(self, other):
+        return self.__mul__(other)
 
     def __truediv__(self, other):
         if isinstance(other, Channel):
