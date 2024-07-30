@@ -386,6 +386,7 @@ def calculate_neck_nij(c_fz: Channel,
     """
     References:
     - https://www.ni.com/docs/de-DE/bundle/diadem/page/crash/neck_nij.html
+    - references/SafetyWissen/SafetyCompanion-2023.pdf
     :param c_fz:
     :param c_mocy:
     :param oop: Out-of-position (else In-position)
@@ -420,26 +421,34 @@ def calculate_neck_nij(c_fz: Channel,
                     "HF": -61,
                 }[dummy]
         else:
-            assert dummy in ("H3", "HF"), f"Dummy {dummy} not supported by {calculate_neck_nij.__name__}"
+            assert dummy in ("H3", "HF", "T3", "TH"), f"Dummy {dummy} not supported by {calculate_neck_nij.__name__}"
             if fz_t_crit is None:
                 fz_t_crit = {
                     "H3": 6806,
                     "HF": 4287,
+                    "TH": 4200,
+                    "T3": 4200,
                 }[dummy]
             if fz_c_crit is None:
                 fz_c_crit = {
                     "H3": -6160,
                     "HF": -3880,
+                    "TH": -6400,
+                    "T3": -6400,
                 }[dummy]
             if mocy_f_crit is None:
                 mocy_f_crit = {
                     "H3": 310,
                     "HF": 155,
+                    "TH": 88.1,
+                    "T3": 88.1,
                 }[dummy]
             if mocy_e_crit is None:
                 mocy_e_crit = {
                     "H3": -135,
                     "HF": -67,
+                    "TH": -117,
+                    "T3": -117,
                 }[dummy]
 
     t = time_intersect(c_fz, c_mocy)
