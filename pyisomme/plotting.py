@@ -42,6 +42,7 @@ class Plot_Line(Plot):
     sharex: bool
     sharey: bool | str
     limits: dict[Isomme, Limits] | None = None
+    legend: bool = True
 
     def __init__(self,
                  channels: dict[Isomme, list[list[Channel | str]]],
@@ -52,6 +53,7 @@ class Plot_Line(Plot):
                  sharex: bool = True,
                  sharey: bool = False,
                  figsize: tuple = (10, 10),
+                 legend: bool = None,
                  limits: Limits | dict[Isomme, Limits] = None):
         super().__init__(figsize=figsize, nrows=nrows, ncols=ncols)
 
@@ -76,6 +78,9 @@ class Plot_Line(Plot):
             self.limits = limits
         elif isinstance(limits, Limits):
             self.limits = {isomme: limits for isomme in self.isomme_list}
+
+        if legend is not None:
+            self.legend = legend
 
         self.fig = self.plot()
 
@@ -124,7 +129,8 @@ class Plot_Line(Plot):
                 self.plot_fill_limits(ax, limit_list_dict[ax], xlim=xlims[idx], ylim=ylims[idx], x_unit="ms", y_unit=y_units[ax])
                 self.plot_text_limits(ax, limit_list_dict[ax], xlim=xlims[idx], ylim=ylims[idx], x_unit="ms", y_unit=y_units[ax])
 
-            ax.legend(loc='upper right')
+            if self.legend:
+                ax.legend(loc='upper right')
             ax.yaxis.set_tick_params(labelleft=True)
             ax.grid(True)
             ax.set_xlim(xlims[idx])
