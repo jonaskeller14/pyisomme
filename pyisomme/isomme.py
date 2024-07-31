@@ -1227,6 +1227,16 @@ class Isomme:
         for idx, channel in enumerate(self.channels):
             print(f"\t{(idx+1):03}\t{channel.code}")
 
+    def set_code(self, *args, **kwargs) -> Isomme:
+        for channel in self.channels:
+            channel.set_code(*args, **kwargs)
+        return self
+
+    def cfc(self, *args, **kwargs) -> Isomme:
+        for channel in self.channels:
+            channel.cfc(*args, **kwargs, return_copy=False)
+        return self
+
     def scale_y(self, *args, **kwargs) -> Isomme:
         for channel in self.channels:
             channel.scale_y(*args, **kwargs)
