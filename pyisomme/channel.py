@@ -451,7 +451,10 @@ class Channel:
         return not self.__eq__(other)
 
     def __neg__(self):
-        return Channel(self.code, -self.data, self.unit, self.info)
+        return Channel(self.code,
+                       -self.data,
+                       self.unit,
+                       info=self.info + [("Calculation History", f"-1 * {self.code}")])
 
     def __add__(self, other):
         if isinstance(other, Channel):
@@ -460,18 +463,18 @@ class Channel:
                 return Channel(code=self.code,
                                data=pd.DataFrame(self.get_data(t) + other.get_data(t, unit=self.unit), index=t),
                                unit=self.unit,
-                               info=self.info)
+                               info=self.info + [("Calculation History", f"{self.code} - {other.code}")])
             else:
                 logger.warning(f"Adding channels with non compatible physical units: {self.unit} and {other.unit}")
                 return Channel(code=self.code,
                                data=pd.DataFrame(self.get_data(t=t) + other.get_data(t=t), index=t),
                                unit=self.unit,
-                               info=self.info)
+                               info=self.info + [("Calculation History", f"{self.code} - {other.code}")])
         else:
             return Channel(code=self.code,
                            data=self.data + other,
                            unit=self.unit,
-                           info=self.info)
+                           info=self.info + [("Calculation History", f"{self.code} - {other}")])
 
     def __radd__(self, other):
         return self.__add__(other)
@@ -483,18 +486,18 @@ class Channel:
                 return Channel(code=self.code,
                                data=pd.DataFrame(self.get_data(t) - other.get_data(t, unit=self.unit), index=t),
                                unit=self.unit,
-                               info=self.info)
+                               info=self.info + [("Calculation History", f"{self.code} - {other.code}")])
             else:
                 logger.warning(f"Subtracting channels with non compatible physical units: {self.unit} and {other.unit}")
                 return Channel(code=self.code,
                                data=pd.DataFrame(self.get_data(t=t) - other.get_data(t=t), index=t),
                                unit=self.unit,
-                               info=self.info)
+                               info=self.info + [("Calculation History", f"{self.code} - {other.code}")])
         else:
             return Channel(code=self.code,
                            data=self.data - other,
                            unit=self.unit,
-                           info=self.info)
+                           info=self.info + [("Calculation History", f"{self.code} - {other}")])
 
     def __mul__(self, other):
         if isinstance(other, Channel):
@@ -502,12 +505,12 @@ class Channel:
             return Channel(code=self.code,
                            data=pd.DataFrame(self.get_data(t=t) * other.get_data(t=t), index=t),
                            unit=self.unit * other.unit,
-                           info=self.info)
+                           info=self.info + [("Calculation History", f"{self.code} / {other.code}")])
         else:
             return Channel(code=self.code,
                            data=self.data * other,
                            unit=self.unit,
-                           info=self.info)
+                           info=self.info + [("Calculation History", f"{self.code} / {other}")])
 
     def __rmul__(self, other):
         return self.__mul__(other)
@@ -518,24 +521,24 @@ class Channel:
             return Channel(code=self.code,
                            data=pd.DataFrame(self.get_data(t=t) / other.get_data(t=t), index=t),
                            unit=self.unit / other.unit,
-                           info=self.info)
+                           info=self.info + [("Calculation History", f"{self.code} / {other.code}")])
         else:
             return Channel(code=self.code,
                            data=self.data / other,
                            unit=self.unit,
-                           info=self.info)
+                           info=self.info + [("Calculation History", f"{self.code} / {other}")])
 
     def __pow__(self, power, modulo=None):
         return Channel(code=self.code,
                        data=self.data**power,
                        unit=self.unit,
-                       info=self.info + [("Calculation History", f"x^{power}")])
+                       info=self.info + [("Calculation History", f"{self.code}^{power}")])
 
     def __abs__(self):
         return Channel(code=self.code,
                        data=abs(self.data),
                        unit=self.unit,
-                       info=self.info + [("Calculation History", "abs(x)")])
+                       info=self.info + [("Calculation History", f"abs({self.code})")])
 
 
 def create_sample(code: str = "SAMPLE??????????",
