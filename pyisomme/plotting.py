@@ -156,6 +156,8 @@ class Plot_Line(Plot):
 
                     data = copy.deepcopy(channel.convert_unit(y_units[ax]).data)
                     data.index *= 1000  # convert to ms
+                    data = data.truncate(before=self.xlim[0] if self.xlim is not None else None,
+                                         after=self.xlim[1] if self.xlim is not None else None)
                     ax.plot(data,
                             c=self.colors[idx_isomme % len(self.colors)],
                             label=isomme.test_number if len(channels) <= 1 else f"{isomme.test_number} {channel.code}",
