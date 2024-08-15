@@ -100,7 +100,8 @@ def main():
 
         pyisomme.Plot_Line({isomme: [isomme.get_channels(*options.codes)[n]] for isomme in isomme_list},
                            xlim=xlim,
-                           ylim=ylim).show()
+                           ylim=ylim,
+                           legend=options.legend).show()
 
 
 if __name__ == "__main__":
@@ -199,6 +200,10 @@ if __name__ == "__main__":
     plot_parser.add_argument("-y", "--ylim",
                              dest="ylim",
                              help="Y-Axis Range")
+    plot_parser.add_argument("--legend-off",
+                             dest="legend",
+                             action="store_false",
+                             help="Hide legend")
 
     options = parser.parse_args()
 
