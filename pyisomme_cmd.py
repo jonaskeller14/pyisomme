@@ -1,5 +1,7 @@
 import argparse
 import logging
+import pandas as pd
+import numpy as np
 
 import pyisomme
 
@@ -63,9 +65,14 @@ def main():
             if options.cfc is not None:
                 channel.cfc(options.cfc, return_copy=False)
 
+        if options.resample:
+            for channel in merged_isomme.channels:
+                start, step, stop = options.resample
+                t = np.arange(start, stop+step, step)
+                channel.data = pd.DataFrame(channel.get_data(t=t), index=t)
+
         if options.crop:
-            x_min, x_max = options.crop().replace("-", " ").replace("..", " ").strip().split()
-            merged_isomme.crop(float(x_min), float(x_max))
+            merged_isomme.crop(*options.crop)
 
         if options.append:
             try:
@@ -82,8 +89,7 @@ def main():
 
         if options.crop:
             for isomme in isomme_list:
-                x_min, x_max = options.crop().replace("-", " ").replace("..", " ").strip().split()
-                isomme.crop(float(x_min), float(x_max))
+                isomme.crop(options.crop)
 
         report = {report.__name__: report for report in REPORTS}[options.report_name](isomme_list)
         report.calculate()
@@ -94,13 +100,11 @@ def main():
             isomme_list = [pyisomme.Isomme().read(input_path) for input_path in options.input_paths]
         else:
             isomme_list = [pyisomme.Isomme().read(input_path, *options.codes) for input_path in options.input_paths]
-        xlim = tuple([float(x) for x in options.xlim.split()]) if options.xlim is not None else None
-        ylim = tuple([float(y) for y in options.ylim.split()]) if options.ylim is not None else None
-        n = slice(None) if options.n == "*" else slice(None, int(options.n))
+        n = slice(None, options.n)
 
         pyisomme.Plot_Line({isomme: [isomme.get_channels(*options.codes)[n]] for isomme in isomme_list},
-                           xlim=xlim,
-                           ylim=ylim,
+                           xlim=options.xlim,
+                           ylim=options.ylim,
                            legend=options.legend).show()
 
 
@@ -156,9 +160,17 @@ if __name__ == "__main__":
     merge_parser.add_argument("--offset-y", default=0, dest="offset_y")
     merge_parser.add_argument("--auto-offset-y", action="store_true", dest="auto_offset_y")
     merge_parser.add_argument("--append", action="store_true", dest="append", help="Append channels to ISO-MME if output_path exists")
+    merge_parser.add_argument('--resample',
+                              nargs=3,
+                              type=float,
+                              metavar=('START', 'STEP', 'STOP'),
+                              help='Resampling by linear interpolation (no extrapolation)')
     merge_parser.add_argument("--crop",
                               dest="crop",
-                              help="Crop ISO-MME channels to x-min to x-max e.g. (--crop=0.0 - 0.15)")
+                              nargs=2,
+                              type=float,
+                              metavar=('START', 'STOP'),
+                              help="Crop ISO-MME channels to x-min to x-max e.g. (--crop 0.0 0.15)")
     merge_parser.add_argument("--cfc", dest="cfc")
 
     report_parser = command_parsers.add_parser("report", help="Create a Report")
@@ -175,7 +187,10 @@ if __name__ == "__main__":
                                help="Path to Template (.pptx)")
     report_parser.add_argument("--crop",
                                dest="crop",
-                               help="Crop ISO-MME channels to x-min to x-max e.g. (--crop=0.0 - 0.15)")
+                               nargs=2,
+                               type=float,
+                               metavar=('START', 'STOP'),
+                               help="Crop ISO-MME channels to x-min to x-max e.g. (--crop 0.0 0.15)")
 
     plot_parser = command_parsers.add_parser("plot", help="Plot Channels")
     plot_parser.add_argument(nargs="+",
@@ -190,15 +205,21 @@ if __name__ == "__main__":
                              action="store_true",
                              dest="calculate",
                              help="Plot calculated Channel.")
-    plot_parser.add_argument("-n", "--n-channels",  # TODO: Add choices int or "*"
-                             default="*",
+    plot_parser.add_argument("-n", "--n-channels",
+                             type=int,
                              dest="n",
-                             help="Number of channels to plot (default is all=*)")
+                             help="Limit Number of channels to plot")
     plot_parser.add_argument("-x", "--xlim",
                              dest="xlim",
-                             help="X-Axis Range")
+                             nargs=2,
+                             type=float,
+                             metavar=('START', 'STOP'),
+                             help="X-Axis Range [in ms]")
     plot_parser.add_argument("-y", "--ylim",
                              dest="ylim",
+                             nargs=2,
+                             type=float,
+                             metavar=('START', 'STOP'),
                              help="Y-Axis Range")
     plot_parser.add_argument("--legend-off",
                              dest="legend",
