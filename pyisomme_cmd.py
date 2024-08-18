@@ -158,8 +158,14 @@ if __name__ == "__main__":
     merge_parser.add_argument("--scale-y", default=1, dest="scale_y")
     merge_parser.add_argument("--offset-x", default=0, dest="offset_x")
     merge_parser.add_argument("--offset-y", default=0, dest="offset_y")
-    merge_parser.add_argument("--auto-offset-y", action="store_true", dest="auto_offset_y")
-    merge_parser.add_argument("--append", action="store_true", dest="append", help="Append channels to ISO-MME if output_path exists")
+    merge_parser.add_argument("--auto-offset-y",
+                              action="store_true",
+                              dest="auto_offset_y",
+                              help="Apply y-offset with value from t=0")
+    merge_parser.add_argument("--append",
+                              action="store_true",
+                              dest="append",
+                              help="Append channels to ISO-MME if output_path exists")
     merge_parser.add_argument('--resample',
                               nargs=3,
                               type=float,
@@ -171,7 +177,9 @@ if __name__ == "__main__":
                               type=float,
                               metavar=('START', 'STOP'),
                               help="Crop ISO-MME channels to x-min to x-max e.g. (--crop 0.0 0.15)")
-    merge_parser.add_argument("--cfc", dest="cfc")
+    merge_parser.add_argument("--cfc",
+                              dest="cfc",
+                              help="Filter channels with Channel Frequency Class CFC (in Hz or as ISO-Code A/B/C/..)")
 
     report_parser = command_parsers.add_parser("report", help="Create a Report")
     report_parser.add_argument(dest="report_name",
