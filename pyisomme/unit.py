@@ -12,4 +12,6 @@ class Unit:
     def __new__(cls, unit):
         if isinstance(unit, str):
             unit = unit.replace("°C", "deg_C").replace("°", "deg")
+        if unit == "-":
+            unit = "1"
         return u.Unit(unit)
