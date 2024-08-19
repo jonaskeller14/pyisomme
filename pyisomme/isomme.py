@@ -124,7 +124,7 @@ class Isomme:
                 self.test_info = parse_mme(mme_file.read())
 
         # CHN
-        chn_paths = list(mme_path.parent.glob(f"[cC][hH][aA][nN][nN][eE][lL]*/{self.test_number}.[cC][hH][nN]"))
+        chn_paths = list(mme_path.parent.glob(f"[cC][hH][aA][nN][nN][eE][lL]*/{self..[cC][hH][nN]"))
         if len(chn_paths) == 0:
             raise FileNotFoundError("No .chn file found.")
         elif len(chn_paths) > 1:
@@ -214,7 +214,7 @@ class Isomme:
                 self.test_info = parse_mme(mme_content.decode("iso-8859-1"))
 
         # CHN
-        chn_paths = fnmatch.filter(archive.namelist(), str(Path(mme_path).parent.joinpath("[cC][hH][aA][nN][nN][eE][lL]*", "{self.test_number}.[cC][hH][nN]")))
+        chn_paths = fnmatch.filter(archive.namelist(), str(Path(mme_path).parent.joinpath("[cC][hH][aA][nN][nN][eE][lL]*", f"{self.test_number}.[cC][hH][nN]")))
         if len(chn_paths) == 0:
             raise FileNotFoundError("No .chn file found.")
         elif len(chn_paths) > 1:
@@ -231,7 +231,7 @@ class Isomme:
         # 001
         self.channels = []  # in case channel exist trough constructor
         with logging_redirect_tqdm():
-            for key in tqdm(fnmatch.filter(self.channel_info.keys(), "Name of channel *"), desc=f"Read Channel of {self.test_number}"):
+            for key in tqdm(fnmatch.filter(self.channel_info.keys(), "Name of channel *"), desc=f"Read Channel of {self."):
                 code = self.channel_info[key].split()[0].split("/")[0]
                 if len(channel_code_patterns) == 0:
                     skip = False
@@ -283,7 +283,7 @@ class Isomme:
                     self.test_info = parse_mme(mme_content.decode("iso-8859-1"))
 
             # CHN
-            chn_paths = fnmatch.filter(tar_file.getnames(), f"*{self.test_number}.[cC][hH][nN]")
+            chn_paths = fnmatch.filter(tar_file.getnames(), f"*{self..[cC][hH][nN]")
             if len(chn_paths) == 0:
                 raise FileNotFoundError("No .chn file found.")
             elif len(chn_paths) > 1:
@@ -300,7 +300,7 @@ class Isomme:
             # 001
             self.channels = []  # in case channel exist trough constructor
             with logging_redirect_tqdm():
-                for key in tqdm(fnmatch.filter(self.channel_info.keys(), "Name of channel *"), desc=f"Read Channel of {self.test_number}"):
+                for key in tqdm(fnmatch.filter(self.channel_info.keys(), "Name of channel *"), desc=f"Read Channel of {self."):
                     code = self.channel_info[key].split()[0].split("/")[0]
                     if len(channel_code_patterns) == 0:
                         skip = False
@@ -358,7 +358,7 @@ class Isomme:
 
         # 001 - iterate over channels
         with logging_redirect_tqdm():
-            for channel_idx, channel in tqdm(enumerate(channels, 1), desc=f"Write Channel of {self.test_number}",
+            for channel_idx, channel in tqdm(enumerate(channels, 1), desc=f"Write Channel of {self.",
                                              total=len(channels)):
                 channel_info[f"Name of channel {channel_idx:03}"] = channel.code + (
                     f' / {channel.get_info("Name of the channel")}' if channel.get_info(
@@ -372,7 +372,7 @@ class Isomme:
 
     def write_folder(self, path: str | Path, *channel_code_patterns) -> Isomme:
         path = Path(path)
-        self.write_mme(path.joinpath(f"{self.test_number}.mme"), *channel_code_patterns)
+        self.write_mme(path.joinpath(f"{self..mme"), *channel_code_patterns)
         return self
 
     def write_zip(self, path: str | Path, *channel_code_patterns) -> Isomme:
@@ -469,7 +469,7 @@ class Isomme:
         return not self.__eq__(other)
 
     def __repr__(self):
-        return f"Isomme({self.test_number})"
+        return f"Isomme({self.)"
 
     def __str__(self):
         return self.test_number
@@ -1223,7 +1223,7 @@ class Isomme:
         Print all channel codes to console.
         :return: None
         """
-        print(f"{self.test_number} - Channel List:")
+        print(f"{self. - Channel List:")
         for idx, channel in enumerate(self.channels):
             print(f"\t{(idx+1):03}\t{channel.code}")
 
