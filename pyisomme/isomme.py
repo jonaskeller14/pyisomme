@@ -544,7 +544,7 @@ class Isomme:
                 # xms
                 if fnmatch.fnmatch(code_pattern.fine_location_2, "[0-9][CS]") and code_pattern.filter_class == "X":
                     channel = self.get_channel(code_pattern.set(fine_location_2="00",
-                                                                filter_class="A"))
+                                                                filter_class="A" if not code_pattern.main_location == "THSP" else "C"))
                     if channel is not None:
                         return calculate_xms(channel, min_delta_t=int(code_pattern.fine_location_2[0]), method=code_pattern.fine_location_2[1])
 
@@ -963,7 +963,19 @@ class Isomme:
                     if None not in channels and all([channel.code.fine_location_3 in ("H3", "HF", "TH", "T3") for channel in channels]):
                         return calculate_tibia_index(channel_MOX, channel_MOY, channel_FOZ)
 
-                # THOR Dummy Chest/Abdomen Displacement (Minimum of individual IR-TRACC displacment)
+                # THOR Dummy Chest PCA Score
+                if code_pattern.main_location == "CHST" and code_pattern.fine_location_1 == "00" and code_pattern.fine_location_2 == "PC" and code_pattern.physical_dimension == "DS" and code_pattern.filter_class != "X":
+                    channel_le_up_ds = self.get_channel(code_pattern.set(fine_location_1="LE", fine_location_2="UP"))
+                    channel_ri_up_ds = self.get_channel(code_pattern.set(fine_location_1="RI", fine_location_2="UP"))
+                    channel_le_lo_ds = self.get_channel(code_pattern.set(fine_location_1="LE", fine_location_2="LO"))
+                    channel_ri_lo_ds = self.get_channel(code_pattern.set(fine_location_1="RI", fine_location_2="LO"))
+                    if None not in (channel_le_up_ds, channel_ri_up_ds, channel_le_lo_ds, channel_ri_lo_ds):
+                        return calculate_chest_pc_score(channel_le_up_ds=channel_le_up_ds,
+                                                        channel_ri_up_ds=channel_ri_up_ds,
+                                                        channel_le_lo_ds=channel_le_lo_ds,
+                                                        channel_ri_lo_ds=channel_ri_lo_ds)
+
+                # THOR Dummy Chest/Abdomen Displacement (Minimum of individual IR-TRACC displacement)
                 # page 31: https://www.humaneticsgroup.com/sites/default/files/2020-11/thor-50m_3d_ir-tracc_um-rev_c.pdf
                 if code_pattern.main_location == "CHST" and code_pattern.fine_location_1 == "00" and code_pattern.fine_location_2 == "00" and code_pattern.physical_dimension == "DS":
                     channels = [self.get_channel(code_pattern.set(fine_location_1=fine_location_1, fine_location_2=fine_location_2)) for fine_location_1, fine_location_2 in (("LE","UP"), ("RI","UP"), ("LE","LO"), ("RI","LO"))]
