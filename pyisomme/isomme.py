@@ -143,16 +143,14 @@ class Isomme:
         with logging_redirect_tqdm():
             for key in tqdm(fnmatch.filter(self.channel_info.keys(), "Name of channel *"), desc=f"Read Channel of {self.test_number}"):
                 code = self.channel_info[key].split()[0].split("/")[0]
-                if len(channel_code_patterns) == 0:
-                    skip = False
-                else:
+                if len(channel_code_patterns) != 0:
                     skip = True
                     for channel_code_pattern in channel_code_patterns:
                         if fnmatch.fnmatch(code, channel_code_pattern):
                             skip = False
                             break
-                if skip:
-                    continue
+                    if skip:
+                        continue
 
                 xxx = re.search(r"Name of channel (\d*)", key)
                 if xxx is None:
@@ -233,16 +231,14 @@ class Isomme:
         with logging_redirect_tqdm():
             for key in tqdm(fnmatch.filter(self.channel_info.keys(), "Name of channel *"), desc=f"Read Channel of {self.test_number}"):
                 code = self.channel_info[key].split()[0].split("/")[0]
-                if len(channel_code_patterns) == 0:
-                    skip = False
-                else:
+                if len(channel_code_patterns) != 0:
                     skip = True
                     for channel_code_pattern in channel_code_patterns:
                         if fnmatch.fnmatch(code, channel_code_pattern):
                             skip = False
                             break
-                if skip:
-                    continue
+                    if skip:
+                        continue
 
                 xxx = re.search(r"Name of channel (\d*)", key)
                 if xxx is None:
@@ -302,16 +298,14 @@ class Isomme:
             with logging_redirect_tqdm():
                 for key in tqdm(fnmatch.filter(self.channel_info.keys(), "Name of channel *"), desc=f"Read Channel of {self.test_number}"):
                     code = self.channel_info[key].split()[0].split("/")[0]
-                    if len(channel_code_patterns) == 0:
-                        skip = False
-                    else:
+                    if len(channel_code_patterns) != 0:
                         skip = True
                         for channel_code_pattern in channel_code_patterns:
                             if fnmatch.fnmatch(code, channel_code_pattern):
                                 skip = False
                                 break
-                    if skip:
-                        continue
+                        if skip:
+                            continue
 
                     xxx = re.search(r"Name of channel (\d*)", key)
                     if xxx is None:
