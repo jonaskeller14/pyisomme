@@ -13,7 +13,7 @@ pip install pyisomme
 - Create PowerPoint Reports (Euro-NCAP, UN-R137, UN-R94)
 - Display Limit bars in plots
 - Compare performance of left-hand-drive vehicle with right-hand-drive vehicle
-- Command line tool script for fast and easy use [pyisomme_cmd.py](pyisomme_cmd.py) (list, merge, rename, plot, report, ...)
+- Command line tool script for fast and easy use [pyisomme/\_\_main__.py](pyisomme/__main__.py) (list, merge, rename, plot, report, ...)
 
 ## Command Line Interface
 List all commands with description

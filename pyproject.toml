@@ -28,6 +28,12 @@ dependencies = [
 ]
 requires-python = ">=3.9"
 
+[tool.setuptools.data-files]
+"docs" = [
+    "docs/*",
+    "references/*"
+]
+
 [tool.setuptools.packages.find]
 include = ["pyisomme*"]
 
