@@ -28,8 +28,8 @@ dependencies = [
 ]
 requires-python = ">=3.9"
 
-[tool.setuptools]
-packages = ["pyisomme"]
+[tool.setuptools.packages.find]
+include = ["pyisomme*"]
 
 [project.optional-dependencies]
 dev = [

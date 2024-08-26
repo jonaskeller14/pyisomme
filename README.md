@@ -1,5 +1,11 @@
 # pyisomme
 
+## Installation
+
+```
+pip install pyisomme
+```
+
 ## Features
 - Read/write ISO-MME (compressed/uncompressed)
 - Modify Channel and calculate Injury Risk Values (HIC, a3ms, DAMAGE, OLC, BrIC, NIJ, ...)
