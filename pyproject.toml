@@ -28,8 +28,13 @@ dependencies = [
 ]
 requires-python = ">=3.9"
 
+[tool.setuptools]
+packages = ["pyisomme"]
+
 [project.optional-dependencies]
-dev = []
+dev = [
+    "objective_rating_metrics",
+]
 
 [project.urls]
 Homepage = "https://github.com/jonaskeller14/pyisomme"
