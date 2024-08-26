@@ -212,7 +212,7 @@ class Isomme:
                 self.test_info = parse_mme(mme_content.decode("iso-8859-1"))
 
         # CHN
-        chn_paths = fnmatch.filter(archive.namelist(), str(Path(mme_path).parent.joinpath("[cC][hH][aA][nN][nN][eE][lL]*", "{self.test_number}.[cC][hH][nN]")))
+        chn_paths = fnmatch.filter(archive.namelist(), str(Path(mme_path).parent.joinpath("[cC][hH][aA][nN][nN][eE][lL]*", f"{self.test_number}.[cC][hH][nN]")))
         if len(chn_paths) == 0:
             raise FileNotFoundError("No .chn file found.")
         elif len(chn_paths) > 1:
