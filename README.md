@@ -18,25 +18,25 @@ pip install pyisomme
 ## Command Line Interface
 List all commands with description
 ```
-python python_cmd.py --help
-python python_cmd.py <command> --help
+python -m pyisomme --help
+python -m pyisomme <command> --help
 ```
 ### Examples
 Merge multiple ISO-MME container
 ```
-python python_cmd.py merge ./iso_merged.zip ./iso_1/v1.mme ./iso_2.zip ./iso_3.tar.gz
+python -m pyisomme merge ./iso_merged.zip ./iso_1/v1.mme ./iso_2.zip ./iso_3.tar.gz
 ```
 Resample (start=0ms / step=1ms / stop=100ms) with linear interpolation
 ```
-python python_cmd.py merge ./iso_1/v1.mme ./iso_1/v1.mme --resample 0 0.001 0.1 
+python -m pyisomme merge ./iso_1/v1.mme ./iso_1/v1.mme --resample 0 0.001 0.1 
 ```
 Plot Channel(s) for quick visualization (automatically calculates resultant head acceleration from x/y/z-channels and filters with filter-class A / 1000 Hz)
 ```
-python python_cmd.py plot ./iso_1/v1.mme --codes 24HEAD??????ACRA --xlim 0 100 --calculate
+python -m pyisomme plot ./iso_1/v1.mme --codes 24HEAD??????ACRA --xlim 0 100 --calculate
 ```
 Create Report (and only consider data from 0-200 ms)
 ```
-python python_cmd.py report EuroNCAP_Frontal_MPDB report.pptx data\nhtsa\09203 --crop 0 0.2
+python -m pyisomme report EuroNCAP_Frontal_MPDB report.pptx data\nhtsa\09203 --crop 0 0.2
 ```
 
 ## Python Examples
