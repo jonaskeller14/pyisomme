@@ -100,7 +100,7 @@ def main():
         if options.calculate:
             isomme_list = [pyisomme.Isomme().read(input_path) for input_path in options.input_paths]
         else:
-            isomme_list = [pyisomme.Isomme().read(input_path, *options.codes) for input_path in options.input_paths]
+            isomme_list = [pyisomme.Isomme().read(input_path, "??TIRS??????????", *options.codes) for input_path in options.input_paths]
         n = slice(None, options.n)
 
         pyisomme.Plot_Line({isomme: [isomme.get_channels(*options.codes)[n]] for isomme in isomme_list},
