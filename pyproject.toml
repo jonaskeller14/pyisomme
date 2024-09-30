@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyisomme"
-version = "0.0.2"
+version = "0.0.3"
 description = "Tools for ISO-MME file format (merge, report, calculate, CFC-filter, ...)"
 readme = "README.md"
 authors = [{ name = "Jonas Keller", email = "jonaskeller14@googlemail.com" }]
