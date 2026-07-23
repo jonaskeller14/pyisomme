@@ -1,4 +1,24 @@
 references/**/*.pdf
-data/nhtsa
+data/*
+!data/README.md
 tests/out
-*/**/__pycache__
+out/
+
+# IDE
+.idea/
+.vscode/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# scratch / local artifacts
+tmp/
+tmp1/
+tmp2/
+CORAplus411_240517.zip
