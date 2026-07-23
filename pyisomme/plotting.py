@@ -1,72 +1,76 @@
 from __future__ import annotations
 
-from pyisomme.limits import Limits, limit_list_unique, limit_list_sort
+from pyisomme.limits import Limit, Limits, limit_list_unique, limit_list_sort
 from pyisomme.channel import Channel
-from pyisomme.code import combine_codes
+from pyisomme.code import Code, combine_codes
 from pyisomme.isomme import Isomme
+from pyisomme.unit import Unit
 
 import copy
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
+from matplotlib.axes import Axes
 import numpy as np
 import logging
+from typing import cast
 
 
 logger = logging.getLogger(__name__)
 
 
 class Plot:
-    colors: list = list(mcolors.TABLEAU_COLORS.values())
-    linestyles: list = ["-", "--", "-.", ":", (0, (10, 3)), (0, (5, 1)), ]
+    colors: list[str] = list(mcolors.TABLEAU_COLORS.values())
+    linestyles: list[str | tuple] = ["-", "--", "-.", ":", (0, (10, 3)), (0, (5, 1)), ]
     isomme_list: list
-    figsize: tuple
+    figsize: tuple[float, float]
     fig: plt.Figure
     nrows: int = 1
     ncols: int = 1
 
-    def __init__(self, figsize: tuple, nrows: int, ncols: int):
+    def __init__(self, figsize: tuple[float, float], nrows: int | None, ncols: int | None):
         self.figsize = figsize
         if nrows is not None:
             self.nrows = nrows
         if ncols is not None:
             self.ncols = ncols
 
-    def show(self, *args, **kwargs):
+    def show(self, *args, **kwargs) -> Plot:
         plt.show(*args, **kwargs)
         return self
 
 
 class Plot_Line(Plot):
     isomme_list: list[Isomme]
-    channels: dict[Isomme, list[list[Channel]]]
+    channels: dict[Isomme, list[list[Channel | None]]]
+    xlim: tuple[float, float] | None
+    ylim: tuple[float, float] | None
     sharex: bool
-    sharey: bool | str
+    sharey: bool
     limits: dict[Isomme, Limits] | None = None
     legend: bool = True
 
     def __init__(self,
                  channels: dict[Isomme, list[list[Channel | str]]],
-                 nrows: int = None,
-                 ncols: int = None,
-                 xlim: tuple[float | int, float | int] = None,
-                 ylim: tuple[float | int, float | int] = None,
+                 nrows: int | None = None,
+                 ncols: int | None = None,
+                 xlim: tuple[float, float] | None = None,
+                 ylim: tuple[float, float] | None = None,
                  sharex: bool = True,
                  sharey: bool = False,
-                 figsize: tuple = (10, 10),
-                 legend: bool = None,
-                 limits: Limits | dict[Isomme, Limits] = None):
+                 figsize: tuple[float, float] = (10, 10),
+                 legend: bool | None = None,
+                 limits: Limits | dict[Isomme, Limits] | None = None):
         super().__init__(figsize=figsize, nrows=nrows, ncols=ncols)
 
         self.isomme_list = list(channels.keys())
 
         # Replace Channel-Code with Channel
-        for isomme, channel_list in channels.items():
-            for idx_ax, channel_ax_list in enumerate(channel_list):
-                for idx, channel_ax in enumerate(channel_ax_list):
-                    if isinstance(channel_ax, str):
-                        channels[isomme][idx_ax][idx] = isomme.get_channel(channel_ax)
-
-        self.channels = channels
+        self.channels = {
+            isomme: [[isomme.get_channel(channel_ax) if isinstance(channel_ax, str) else channel_ax
+                      for channel_ax in channel_ax_list]
+                     for channel_ax_list in channel_list]
+            for isomme, channel_list in channels.items()
+        }
 
         self.xlim = xlim
         self.ylim = ylim
@@ -85,11 +89,12 @@ class Plot_Line(Plot):
         self.fig = self.plot()
 
     def plot(self) -> plt.Figure:
-        fig, axs = plt.subplots(self.nrows, self.ncols, figsize=self.figsize, layout="constrained")
+        fig, subplot_axs = plt.subplots(self.nrows, self.ncols, figsize=self.figsize, layout="constrained")
         if (self.nrows * self.ncols) == 1:
-            axs = [axs, ]
+            axs = [subplot_axs, ]
         else:
-            axs = list(axs.flat)
+            axs = list(subplot_axs.flat)
+        axs = cast("list[Axes]", axs)
 
         # Remove empty axes
         for idx, ax in enumerate(axs):
@@ -101,7 +106,7 @@ class Plot_Line(Plot):
 
         return fig
 
-    def plot_lines(self, axs) -> None:
+    def plot_lines(self, axs: list[Axes]) -> None:
         # Plot Channels
         codes_plotted, y_units = self.plot_channel(axs)
 
@@ -109,7 +114,7 @@ class Plot_Line(Plot):
         xlims = self.determine_xlims(axs)
 
         # Find Limits
-        limit_list_dict = {ax: [] for ax in axs}
+        limit_list_dict: dict[Axes, list[Limit]] = {ax: [] for ax in axs}
         if self.limits is not None:
             for ax in axs:
                 for isomme in self.isomme_list:
@@ -136,9 +141,9 @@ class Plot_Line(Plot):
             ax.set_xlim(xlims[idx])
             ax.set_ylim(ylims[idx])
 
-    def plot_channel(self, axs) -> tuple[dict, dict]:
-        codes_plotted = {ax: {isomme: [] for isomme in self.isomme_list} for ax in axs}
-        y_units = {ax: None for ax in axs}
+    def plot_channel(self, axs: list[Axes]) -> tuple[dict[Axes, dict[Isomme, list[Code]]], dict[Axes, Unit | None]]:
+        codes_plotted: dict[Axes, dict[Isomme, list[Code]]] = {ax: {isomme: [] for isomme in self.isomme_list} for ax in axs}
+        y_units: dict[Axes, Unit | None] = {ax: None for ax in axs}
 
         for idx, ax in enumerate(axs):
             ax.margins(x=0, y=0)
@@ -149,12 +154,14 @@ class Plot_Line(Plot):
                 for idx2, channel in enumerate(channels):
                     if channel is None:
                         continue
-                    if y_units[ax] is None:
-                        y_units[ax] = channel.unit
+                    unit = y_units[ax]
+                    if unit is None:
+                        unit = channel.unit
+                        y_units[ax] = unit
 
                     logger.debug(f"Plotting {isomme} {channel}")
 
-                    data = copy.deepcopy(channel.convert_unit(y_units[ax]).data)
+                    data = copy.deepcopy(channel.convert_unit(unit).data)
                     data.index *= 1000  # convert to ms
                     data = data.truncate(before=self.xlim[0] if self.xlim is not None else None,
                                          after=self.xlim[1] if self.xlim is not None else None)
@@ -169,11 +176,11 @@ class Plot_Line(Plot):
                     if not ax.get_xlabel():
                         ax.set_xlabel('Time [ms]')
                     if not ax.get_ylabel():
-                        ax.set_ylabel(f"{channel.get_info('Dimension')} [{y_units[ax]}]")
+                        ax.set_ylabel(f"{channel.get_info('Dimension')} [{unit}]")
                     codes_plotted[ax][isomme].append(channel.code)
         return codes_plotted, y_units
 
-    def determine_xlims(self, axs) -> np.ndarray:
+    def determine_xlims(self, axs: list[Axes]) -> np.ndarray:
         if self.xlim is not None:
             xlims = np.array([self.xlim for ax in axs])
         else:
@@ -184,7 +191,7 @@ class Plot_Line(Plot):
                 xlims[:, 1] = np.max(xlims[:, 1])
         return xlims
 
-    def determine_ylims(self, axs) -> np.ndarray:
+    def determine_ylims(self, axs: list[Axes]) -> np.ndarray:
         if self.ylim is not None:
             ylims = np.array([self.ylim for ax in axs])
         else:
@@ -195,7 +202,7 @@ class Plot_Line(Plot):
                 ylims[:, 1] = np.max(ylims[:, 1])
         return ylims
 
-    def plot_line_limits(self, ax, limit_list, xlim, x_unit, y_unit, label=False) -> None:
+    def plot_line_limits(self, ax: Axes, limit_list: list[Limit], xlim: tuple[float, float], x_unit: str | Unit | None, y_unit: str | Unit | None, label: bool = False) -> None:
         x = np.linspace(*xlim, 1000)
         # TODO: replace infinity values with ylim values to get vertical lines
         limit_list = limit_list_sort(limit_list)
@@ -204,7 +211,7 @@ class Plot_Line(Plot):
         for limit in limit_list:
             ax.plot(x, limit.get_data(x, x_unit=x_unit, y_unit=y_unit), color=limit.color, linestyle=limit.linestyle, label=limit.name if label else None)
 
-    def plot_fill_limits(self, ax, limit_list, xlim, ylim, x_unit, y_unit) -> None:
+    def plot_fill_limits(self, ax: Axes, limit_list: list[Limit], xlim: tuple[float, float], ylim: tuple[float, float], x_unit: str | Unit | None, y_unit: str | Unit | None) -> None:
         x = np.linspace(*xlim, 1000)
         y_min, y_max = ylim
 
@@ -254,7 +261,7 @@ class Plot_Line(Plot):
                             np.concatenate([y_1, y_2]),
                             color=limit.color, alpha=0.2)
 
-    def plot_text_limits(self, ax, limit_list, xlim, ylim, x_unit, y_unit) -> None:
+    def plot_text_limits(self, ax: Axes, limit_list: list[Limit], xlim: tuple[float, float], ylim: tuple[float, float], x_unit: str | Unit | None, y_unit: str | Unit | None) -> None:
         x = np.linspace(*xlim, 1000)
         x0 = x[0]
 
@@ -264,30 +271,31 @@ class Plot_Line(Plot):
         for limit in limit_list:
             if limit.name is None:
                 continue
-            if not ylim[0] <= limit.get_data(x0, x_unit=x_unit, y_unit=y_unit) <= ylim[1]:
+            y0 = float(limit.get_data(x0, x_unit=x_unit, y_unit=y_unit))
+            if not ylim[0] <= y0 <= ylim[1]:
                 logger.warning(f"Label of {limit} not visible.")
                 continue
-            ax.text(x0, limit.get_data(x0, x_unit=x_unit, y_unit=y_unit), limit.name, color="black", bbox={"facecolor": limit.color, "edgecolor": "black", "linewidth": 1}, verticalalignment="top" if limit.upper else "bottom" if limit.lower else "center")
+            ax.text(x0, y0, limit.name, color="black", bbox={"facecolor": limit.color, "edgecolor": "black", "linewidth": 1}, verticalalignment="top" if limit.upper else "bottom" if limit.lower else "center")
 
 
 class Plot_Table(Plot):
-    cell_texts: list[np.ndarray | list[list, ...]]
-    cell_colors: list[np.ndarray | list[list, ...]] = None
+    cell_texts: list[np.ndarray | list[list]]
+    cell_colors: list[np.ndarray | list[list]] | None = None
     row_labels: list[np.ndarray | list]
     col_labels: list[np.ndarray | list]
-    col_labels_colors: list[np.ndarray | list] = None
+    col_labels_colors: list[np.ndarray | list] | None = None
     col_labels_fontweight: str = "bold"
 
     def __init__(self,
-                 cell_texts: list[np.ndarray | list[list, ...]],
+                 cell_texts: list[np.ndarray | list[list]],
                  row_labels: list[np.ndarray | list],
                  col_labels: list[np.ndarray | list],
-                 cell_colors: list[np.ndarray | list[list, ...]] = None,
-                 col_labels_colors: list[np.ndarray | list] = None,
-                 col_labels_fontweight: str = None,
-                 nrows: int = None,
-                 ncols: int = None,
-                 figsize: tuple = (10, 10)):
+                 cell_colors: list[np.ndarray | list[list]] | None = None,
+                 col_labels_colors: list[np.ndarray | list] | None = None,
+                 col_labels_fontweight: str | None = None,
+                 nrows: int | None = None,
+                 ncols: int | None = None,
+                 figsize: tuple[float, float] = (10, 10)):
         super().__init__(figsize=figsize, nrows=nrows, ncols=ncols)
 
         self.cell_texts = cell_texts
@@ -306,12 +314,13 @@ class Plot_Table(Plot):
 
         self.fig = self.plot()
 
-    def plot(self):
-        fig, axs = plt.subplots(self.nrows, self.ncols, figsize=self.figsize, layout="constrained")
+    def plot(self) -> plt.Figure:
+        fig, subplot_axs = plt.subplots(self.nrows, self.ncols, figsize=self.figsize, layout="constrained")
         if (self.nrows * self.ncols) == 1:
-            axs = [axs, ]
+            axs = [subplot_axs, ]
         else:
-            axs = list(axs.flat)
+            axs = list(subplot_axs.flat)
+        axs = cast("list[Axes]", axs)
 
         fig.patch.set_visible(False)
 
@@ -319,13 +328,16 @@ class Plot_Table(Plot):
 
         return fig
 
-    def plot_tables(self, axs: list) -> None:
+    def plot_tables(self, axs: list[Axes]) -> None:
+        cell_colors = self.cell_colors
+        assert cell_colors is not None  # resolved to a concrete list in __init__
+
         for idx, ax in enumerate(axs):
             ax.axis('off')
             ax.axis('tight')
 
             table = ax.table(cellText=self.cell_texts[idx],
-                             cellColours=self.cell_colors[idx],
+                             cellColours=cell_colors[idx],
                              cellLoc="center",
                              rowLabels=self.row_labels[idx],
                              colLabels=self.col_labels[idx],
@@ -343,33 +355,32 @@ class Plot_Table(Plot):
 class Plot_Line_Table(Plot_Line, Plot_Table):
     def __init__(self,
                  channels: dict[Isomme, list[list[Channel | str]]],
-                 cell_texts: list[np.ndarray | list[list, ...]],
+                 cell_texts: list[np.ndarray | list[list]],
                  row_labels: list[np.ndarray | list],
                  col_labels: list[np.ndarray | list],
-                 xlim: tuple[float | int, float | int] = None,
-                 ylim: tuple[float | int, float | int] = None,
+                 xlim: tuple[float, float] | None = None,
+                 ylim: tuple[float, float] | None = None,
                  sharex: bool = True,
                  sharey: bool = False,
-                 limits: Limits | dict[Isomme, Limits] = None,
-                 cell_colors: list[np.ndarray | list[list, ...]] = None,
-                 col_labels_colors: list[np.ndarray | list] = None,
-                 col_labels_fontweight: str = None,
-                 nrows: int = None,
-                 ncols: int = None,
-                 figsize: tuple = (10, 10)):
+                 limits: Limits | dict[Isomme, Limits] | None = None,
+                 cell_colors: list[np.ndarray | list[list]] | None = None,
+                 col_labels_colors: list[np.ndarray | list] | None = None,
+                 col_labels_fontweight: str | None = None,
+                 nrows: int | None = None,
+                 ncols: int | None = None,
+                 figsize: tuple[float, float] = (10, 10)):
         Plot.__init__(self, figsize=figsize, nrows=nrows, ncols=ncols)
 
         # Line
         self.isomme_list = list(channels.keys())
 
         # Replace Channel-Code with Channel
-        for isomme, channel_list in channels.items():
-            for idx_ax, channel_ax_list in enumerate(channel_list):
-                for idx, channel_ax in enumerate(channel_ax_list):
-                    if isinstance(channel_ax, str):
-                        channels[isomme][idx_ax][idx] = isomme.get_channel(channel_ax)
-
-        self.channels = channels
+        self.channels = {
+            isomme: [[isomme.get_channel(channel_ax) if isinstance(channel_ax, str) else channel_ax
+                      for channel_ax in channel_ax_list]
+                     for channel_ax_list in channel_list]
+            for isomme, channel_list in channels.items()
+        }
 
         self.xlim = xlim
         self.ylim = ylim
@@ -400,11 +411,12 @@ class Plot_Line_Table(Plot_Line, Plot_Table):
         self.fig = self.plot()
 
     def plot(self) -> plt.Figure:
-        fig, axs = plt.subplots(self.nrows, self.ncols, figsize=self.figsize, layout="constrained")
+        fig, subplot_axs = plt.subplots(self.nrows, self.ncols, figsize=self.figsize, layout="constrained")
         if (self.nrows * self.ncols) == 1:
-            axs = [axs, ]
+            axs = [subplot_axs, ]
         else:
-            axs = list(axs.flat)
+            axs = list(subplot_axs.flat)
+        axs = cast("list[Axes]", axs)
 
         fig.patch.set_visible(False)
 

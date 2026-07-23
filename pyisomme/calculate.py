@@ -18,8 +18,8 @@ logger = logging.getLogger(__name__)
 
 @debug_logging(logger)
 def calculate_resultant(c1: Channel | None,
-                        c2: Channel | int | None = 0,
-                        c3: Channel | int | None = 0) -> Channel | None:
+                        c2: Channel | float | None = 0,
+                        c3: Channel | float | None = 0) -> Channel | None:
     """
     Takes 2 or 3 Channels and calculates the 2nd norm or resultant component.
     :param c1: X-Channel
