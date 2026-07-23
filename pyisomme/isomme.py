@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pyisomme.parsing import parse_mme, parse_chn, parse_xxx
-from pyisomme.channel import create_sample
+from pyisomme.channel import create_sample, Channel
 from pyisomme.code import Code
 from pyisomme.calculate import *
 from pyisomme.utils import debug_logging
@@ -9,6 +9,7 @@ from pyisomme.info import Info
 
 from tqdm.auto import tqdm
 from tqdm.contrib.logging import logging_redirect_tqdm
+from typing import Literal, Optional
 import os
 import glob
 import re
@@ -26,15 +27,15 @@ logger = logging.getLogger(__name__)
 
 
 class Isomme:
-    test_number: str
+    test_number: str | None
     test_info: Info
-    channels: list
+    channels: list[Channel]
     channel_info: Info
 
-    def __init__(self, test_number: str = None,
-                 test_info: list = None,
-                 channels: list = None,
-                 channel_info: list = None):
+    def __init__(self, test_number: str | None = None,
+                 test_info: list | None = None,
+                 channels: list[Channel] | None = None,
+                 channel_info: list | None = None):
         """
         Create empty Isomme object.
         """
@@ -43,7 +44,7 @@ class Isomme:
         self.channels = [] if channels is None else channels
         self.channel_info = Info([]) if channel_info is None else Info(channel_info)
 
-    def get_test_info(self, *labels):
+    def get_test_info(self, *labels) -> Optional[str]:
         """
         Get test info by giving one or multiple label(s) to identify information.
         Regex or fnmatch patterns possible.
@@ -61,7 +62,7 @@ class Isomme:
                     continue
         return None
 
-    def get_channel_info(self, *labels):
+    def get_channel_info(self, *labels) -> Optional[str]:
         """
         Get channel info by giving one or multiple label(s) to identify information.
         Regex or fnmmatch pattern possible.
@@ -259,7 +260,7 @@ class Isomme:
                         self.channels.append(parse_xxx(xxx_content.decode("iso-8859-1"), isomme=self))
         return self
 
-    def read_from_tarfile(self, tar_path: Path, *channel_code_patterns, mode: str = "r") -> Isomme:
+    def read_from_tarfile(self, tar_path: Path, *channel_code_patterns, mode: Literal['r', 'r:*', 'r:', 'r:gz', 'r:bz2', 'r:xz'] = "r") -> Isomme:
         with tarfile.open(tar_path, mode) as tar_file:
             # MME
             mme_paths = fnmatch.filter(tar_file.getnames(), "*.[mM][mM][eE]")
@@ -373,7 +374,7 @@ class Isomme:
         path = Path(path)
         folder_path = path.parent.joinpath(path.stem)
         self.write_folder(folder_path, *channel_code_patterns)
-        shutil.make_archive(str(folder_path), 'zip', str(folder_path))
+        shutil.make_archive(str(folder_path), 'zip', str(folder_path), logger=logger)
         shutil.rmtree(folder_path)
         return self
 
@@ -434,7 +435,7 @@ class Isomme:
                 raise NotImplementedError(f"Could not extend Isomme with type {type(other)}")
         return self
 
-    def delete_duplicates(self, filter_class_duplicates: bool = False):
+    def delete_duplicates(self, filter_class_duplicates: bool = False) -> Isomme:
         """
         Delete channel duplicates (same channel code). The last added one will be deleted first.
         :param filter_class_duplicates: Delete redundant channels and only keep channels with the least amount of filtering applied
@@ -456,39 +457,39 @@ class Isomme:
                     logger.debug(f"Removed duplicate filter Channel: {channel.code}")
         return self
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         return self.test_number == other.test_number
 
-    def __ne__(self, other):
+    def __ne__(self, other) -> bool:
         return not self.__eq__(other)
 
-    def __repr__(self):
-        return f"Isomme({self.test_number})"
+    def __repr__(self) -> str:
+        return f"Isomme({self.test_number or 'Unnamed'})"
 
-    def __str__(self):
-        return self.test_number
+    def __str__(self) -> str:
+        return self.test_number or "Unnamed ISOMME"
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.channels)
 
-    def __getitem__(self, index):
+    def __getitem__(self, index: int | slice | str) -> list[Channel] | Channel | None:
         if isinstance(index, str):
             return self.get_channels(index)
         elif isinstance(index, int) or isinstance(index, slice):
             return self.channels[index]
 
-    def __contains__(self, item):
+    def __contains__(self, item) -> bool:
         return item in self.channels
 
     def __iter__(self):
         for channel in self.channels:
             yield channel
 
-    def __hash__(self):
-        return hash(self.test_number)
+    def __hash__(self) -> int:
+        return hash(self.test_number or "Unnamed ISOMME")
 
     @debug_logging(logger)
-    def get_channel(self, *code_patterns: str, filter: bool = True, calculate: bool = True, differentiate=True, integrate=True) -> Channel | None:
+    def get_channel(self, *code_patterns: str, filter: bool = True, calculate: bool = True, differentiate: bool = True, integrate: bool = True) -> Channel | None:
         """
         Get channel by channel code pattern.
         First match will be returned, although multiple matches could exist.
@@ -519,16 +520,16 @@ class Isomme:
                 # Resultant Channel
                 if code_pattern.direction == "R" and code_pattern.filter_class != "X":
                     channel_xyz = [self.get_channel(code_pattern.set(direction=direction)) for direction in "XYZ"]
-                    if None not in channel_xyz:
+                    if all(channel is not None for channel in channel_xyz):
                         return calculate_resultant(*channel_xyz)
                     channel_123 = [self.get_channel(code_pattern.set(direction=direction)) for direction in "123"]
-                    if None not in channel_123:
+                    if all(channel is not None for channel in channel_123):
                         return calculate_resultant(*channel_123)
 
                 # BrIC
                 if code_pattern.main_location == "BRIC" and code_pattern.filter_class == "X":
                     channel_head_av_xyz = [self.get_channel(code_pattern.set(main_location="HEAD", physical_dimension="AV", direction=direction, filter_class="D")) for direction in "XYZ"]
-                    if None not in channel_head_av_xyz:
+                    if all(channel is not None for channel in channel_head_av_xyz):
                         return calculate_bric(*channel_head_av_xyz)
 
                 # HIC
@@ -553,7 +554,7 @@ class Isomme:
                     if code_pattern.filter_class == "X":
                         channel_xyz = [self.get_channel(code_pattern.set(fine_location_1="00", fine_location_2="00", direction=direction, filter_class="A"),
                                                         code_pattern.set(fine_location_1="CG", fine_location_2="00", direction=direction, filter_class="A")) for direction in "XYZ"]
-                        if None not in channel_xyz:
+                        if all(channel is not None for channel in channel_xyz):
                             if code_pattern.direction == "X":
                                 return calculate_damage(*channel_xyz)[4]
                             if code_pattern.direction == "Y":
@@ -565,7 +566,7 @@ class Isomme:
                     else:
                         channel_xyz = [self.get_channel(code_pattern.set(fine_location_1="00", fine_location_2="00", direction=direction),
                                                         code_pattern.set(fine_location_1="CG", fine_location_2="00", direction=direction)) for direction in "XYZ"]
-                        if None not in channel_xyz:
+                        if all(channel is not None for channel in channel_xyz):
                             if code_pattern.direction == "X":
                                 return calculate_damage(*channel_xyz)[0]
                             if code_pattern.direction == "Y":
@@ -582,46 +583,46 @@ class Isomme:
                             if code_pattern.filter_class == "X":
                                 channel_mx = self.get_channel(code_pattern.set(main_location="NECK", physical_dimension="MO", direction="X", filter_class="B"))
                                 channel_fy = self.get_channel(code_pattern.set(main_location="NECK", physical_dimension="FO", direction="Y", filter_class="B"))
-                                if None not in (channel_mx, channel_fy):
+                                if channel_mx is not None and channel_fy is not None:
                                     return calculate_neck_MOCx(channel_mx, channel_fy)[1]
                             else:
                                 channel_mx = self.get_channel(code_pattern.set(main_location="NECK", physical_dimension="MO", direction="X"))
                                 channel_fy = self.get_channel(code_pattern.set(main_location="NECK", physical_dimension="FO", direction="Y"))
-                                if None not in (channel_mx, channel_fy):
+                                if channel_mx is not None and channel_fy is not None:
                                     return calculate_neck_MOCx(channel_mx, channel_fy)[0]
                         elif code_pattern.direction == "Y":
                             if code_pattern.filter_class == "X":
                                 channel_my = self.get_channel(code_pattern.set(main_location="NECK", physical_dimension="MO", direction="Y", filter_class="B"))
                                 channel_fx = self.get_channel(code_pattern.set(main_location="NECK", physical_dimension="FO", direction="X", filter_class="B"))
-                                if None not in (channel_my, channel_fx):
+                                if channel_my is not None and channel_fx is not None:
                                     return calculate_neck_MOCy(channel_my, channel_fx)[1]
                             else:
                                 channel_my = self.get_channel(code_pattern.set(main_location="NECK", physical_dimension="MO", direction="Y"))
                                 channel_fx = self.get_channel(code_pattern.set(main_location="NECK", physical_dimension="FO", direction="X"))
-                                if None not in (channel_my, channel_fx):
+                                if channel_my is not None and channel_fx is not None:
                                     return calculate_neck_MOCy(channel_my, channel_fx)[0]
                     elif code_pattern.fine_location_1 == "LO":
                         if code_pattern.direction == "X":
                             if code_pattern.filter_class == "X":
                                 channel_mx = self.get_channel(code_pattern.set(main_location="NECK", physical_dimension="MO", direction="X", filter_class="B"))
                                 channel_fy = self.get_channel(code_pattern.set(main_location="NECK", physical_dimension="FO", direction="Y", filter_class="B"))
-                                if None not in (channel_mx, channel_fy):
+                                if channel_mx is not None and channel_fy is not None:
                                     return calculate_neck_Mx_base(channel_mx, channel_fy)[1]
                             else:
                                 channel_mx = self.get_channel(code_pattern.set(main_location="NECK", physical_dimension="MO", direction="X"))
                                 channel_fy = self.get_channel(code_pattern.set(main_location="NECK", physical_dimension="FO", direction="Y"))
-                                if None not in (channel_mx, channel_fy):
+                                if channel_mx is not None and channel_fy is not None:
                                     return calculate_neck_Mx_base(channel_mx, channel_fy)[0]
                         elif code_pattern.direction == "Y":
                             if code_pattern.filter_class == "X":
                                 channel_my = self.get_channel(code_pattern.set(main_location="NECK", physical_dimension="MO", direction="Y", filter_class="B"))
                                 channel_fx = self.get_channel(code_pattern.set(main_location="NECK", physical_dimension="FO", direction="X", filter_class="B"))
-                                if None not in (channel_my, channel_fx):
+                                if channel_my is not None and channel_fx is not None:
                                     return calculate_neck_My_base(channel_my, channel_fx)[1]
                             else:
                                 channel_my = self.get_channel(code_pattern.set(main_location="NECK", physical_dimension="MO", direction="Y"))
                                 channel_fx = self.get_channel(code_pattern.set(main_location="NECK", physical_dimension="FO", direction="X"))
-                                if None not in (channel_my, channel_fx):
+                                if channel_my is not None and channel_fx is not None:
                                     return calculate_neck_My_base(channel_my, channel_fx)[0]
 
                 # Neck NIJ  # FIXME: Total Moment (TMON statt NECK ??)
@@ -629,7 +630,7 @@ class Isomme:
                     if code_pattern.filter_class == "X":
                         c_fz = self.get_channel(code_pattern.set(main_location="NECK", fine_location_1="UP", fine_location_2="00", physical_dimension="FO", direction="Z", filter_class="B"))
                         c_mocy = self.get_channel(code_pattern.set(main_location="NECK", fine_location_1="UP", fine_location_2="00", physical_dimension="MO", direction="Y", filter_class="B"))
-                        if None not in (c_fz, c_mocy):
+                        if c_fz is not None and c_mocy is not None:
                             if code_pattern.fine_location_2 == "00":
                                 return calculate_neck_nij(c_fz, c_mocy, oop=code_pattern.fine_location_1 == "OP")[5]
                             elif code_pattern.fine_location_2 == "CF":
@@ -643,7 +644,7 @@ class Isomme:
                     else:
                         c_fz = self.get_channel(code_pattern.set(main_location="NECK", fine_location_1="UP", fine_location_2="00", physical_dimension="FO", direction="Z"))
                         c_mocy = self.get_channel(code_pattern.set(main_location="NECK", fine_location_1="UP", fine_location_2="00", physical_dimension="MO", direction="Y"))
-                        if None not in (c_fz, c_mocy):
+                        if c_fz is not None and c_mocy is not None:
                             if code_pattern.fine_location_2 == "00":
                                 return calculate_neck_nij(c_fz, c_mocy, oop=code_pattern.fine_location_1 == "OP")[0]
                             elif code_pattern.fine_location_2 == "CF":
@@ -659,7 +660,7 @@ class Isomme:
                 if code_pattern.main_location == "SHLD" and code_pattern.fine_location_1 == "00" and code_pattern.physical_dimension == "FO" and code_pattern.direction == "Y":
                     channel_left = self.get_channel(code_pattern.set(fine_location_1="LE"))
                     channel_right = self.get_channel(code_pattern.set(fine_location_1="RI"))
-                    if None not in (channel_left, channel_right):
+                    if channel_left is not None and channel_right is not None:
                         t = time_intersect(channel_left, channel_right)
                         y = np.array([channel_left.get_data(t=t), channel_right.get_data(t=t, unit=channel_left.unit)])
                         return Channel(code=channel_left.code.set(fine_location_1="00"),
@@ -697,7 +698,7 @@ class Isomme:
                                 channel_up = self.get_channel(code_pattern.set(fine_location_2="UP"))
                                 channel_mi = self.get_channel(code_pattern.set(fine_location_2="MI"))
                                 channel_lo = self.get_channel(code_pattern.set(fine_location_2="LO"))
-                                if None not in (channel_up, channel_mi, channel_lo):
+                                if channel_up is not None and channel_mi is not None and channel_lo is not None:
                                     t = time_intersect(channel_up, channel_mi, channel_lo)
                                     values = np.array([channel_up.get_data(t=t),
                                                        channel_mi.get_data(t=t, unit=channel_up.unit),
@@ -712,7 +713,7 @@ class Isomme:
                                 channel_01 = self.get_channel(code_pattern.set(fine_location_2="01", filter_class="C"))
                                 channel_02 = self.get_channel(code_pattern.set(fine_location_2="02", filter_class="C"))
                                 channel_03 = self.get_channel(code_pattern.set(fine_location_2="03", filter_class="C"))
-                                if None not in (channel_01, channel_02, channel_03):
+                                if channel_01 is not None and channel_02 is not None and channel_03 is not None:
                                     value_01 = channel_01.get_data()[np.argmax(np.abs(channel_01.get_data()))]
                                     value_02 = channel_02.get_data(unit=channel_01.unit)[np.argmax(np.abs(channel_02.get_data(unit=channel_01.unit)))]
                                     value_03 = channel_03.get_data(unit=channel_01.unit)[np.argmax(np.abs(channel_03.get_data(unit=channel_01.unit)))]
@@ -723,7 +724,7 @@ class Isomme:
 
                                 channel_LO = self.get_channel(code_pattern.set(fine_location_2="LO", filter_class="C"))
                                 channel_UP = self.get_channel(code_pattern.set(fine_location_2="UP", filter_class="C"))
-                                if None not in (channel_LO, channel_UP):
+                                if channel_LO is not None and channel_UP is not None:
                                     value_left = channel_LO.get_data()[np.argmax(np.abs(channel_LO.get_data()))]
                                     value_right = channel_UP.get_data(unit=channel_LO.unit)[np.argmax(np.abs(channel_UP.get_data(unit=channel_LO.unit)))]
                                     value = np.array([value_left, value_right])[np.argmax(np.abs([value_left, value_right]))]
@@ -734,7 +735,7 @@ class Isomme:
                                 channel_up = self.get_channel(code_pattern.set(fine_location_2="UP"))
                                 channel_mi = self.get_channel(code_pattern.set(fine_location_2="MI"))
                                 channel_lo = self.get_channel(code_pattern.set(fine_location_2="LO"))
-                                if None not in (channel_up, channel_mi, channel_lo):
+                                if channel_up is not None and channel_mi is not None and channel_lo is not None:
                                     t = time_intersect(channel_up, channel_mi, channel_lo)
                                     values = np.array([channel_up.get_data(t=t),
                                                        channel_mi.get_data(t=t, unit=channel_up.unit),
@@ -748,7 +749,7 @@ class Isomme:
                                 channel_01 = self.get_channel(code_pattern.set(fine_location_2="01"))
                                 channel_02 = self.get_channel(code_pattern.set(fine_location_2="02"))
                                 channel_03 = self.get_channel(code_pattern.set(fine_location_2="03"))
-                                if None not in (channel_01, channel_02, channel_03):
+                                if channel_01 is not None and channel_02 is not None and channel_03 is not None:
                                     t = time_intersect(channel_01, channel_02, channel_03)
                                     values = np.array([channel_01.get_data(t=t),
                                                        channel_02.get_data(t=t, unit=channel_01.unit),
@@ -761,7 +762,7 @@ class Isomme:
 
                                 channel_LO = self.get_channel(code_pattern.set(fine_location_2="LO"))
                                 channel_UP = self.get_channel(code_pattern.set(fine_location_2="UP"))
-                                if None not in (channel_LO, channel_UP):
+                                if channel_LO is not None and channel_UP is not None:
                                     t = time_intersect(channel_LO, channel_UP)
                                     values = np.array([channel_LO.get_data(t=t), channel_UP.get_data(t=t, unit=channel_LO.unit)])
                                     idx_max_abs = np.argmax(np.abs(values), axis=0)
@@ -790,7 +791,7 @@ class Isomme:
                             if code_pattern.filter_class == "X":
                                 channel_01 = self.get_channel(code_pattern.set(fine_location_2="01", filter_class="C"))
                                 channel_02 = self.get_channel(code_pattern.set(fine_location_2="02", filter_class="C"))
-                                if None not in (channel_01, channel_02):
+                                if channel_01 is not None and channel_02 is not None:
                                     value_left = channel_01.get_data()[np.argmax(np.abs(channel_01.get_data()))]
                                     value_right = channel_02.get_data(unit=channel_01.unit)[np.argmax(np.abs(channel_02.get_data(unit=channel_01.unit)))]
                                     value = np.array([value_left, value_right])[np.argmax(np.abs([value_left, value_right]))]
@@ -800,7 +801,7 @@ class Isomme:
                             else:
                                 channel_01 = self.get_channel(code_pattern.set(fine_location_2="01"))
                                 channel_02 = self.get_channel(code_pattern.set(fine_location_2="02"))
-                                if None not in (channel_01, channel_02):
+                                if channel_01 is not None and channel_02 is not None:
                                     t = time_intersect(channel_01, channel_02)
                                     values = np.array([channel_01.get_data(t=t), channel_02.get_data(t=t, unit=channel_01.unit)])
                                     idx_max_abs = np.argmax(np.abs(values), axis=0)
@@ -813,7 +814,7 @@ class Isomme:
                         if code_pattern.filter_class == "X":
                             channel_left = self.get_channel(code_pattern.set(fine_location_1="LE", filter_class="C"))
                             channel_right = self.get_channel(code_pattern.set(fine_location_1="RI", filter_class="C"))
-                            if None not in (channel_left, channel_right):
+                            if channel_left is not None and channel_right is not None:
                                 value_left = channel_left.get_data()[np.argmax(np.abs(channel_left.get_data()))]
                                 value_right = channel_right.get_data(unit=channel_left.unit)[np.argmax(np.abs(channel_right.get_data(unit=channel_left.unit)))]
                                 value = np.array([value_left, value_right])[np.argmax(np.abs([value_left, value_right]))]
@@ -823,7 +824,7 @@ class Isomme:
                         else:
                             channel_left = self.get_channel(code_pattern.set(fine_location_1="LE"))
                             channel_right = self.get_channel(code_pattern.set(fine_location_1="RI"))
-                            if None not in (channel_left, channel_right):
+                            if channel_left is not None and channel_right is not None:
                                 t = time_intersect(channel_left, channel_right)
                                 values = np.array([channel_left.get_data(t=t),
                                                    channel_right.get_data(t=t, unit=channel_left.unit)])
@@ -838,7 +839,7 @@ class Isomme:
                     channel_re = self.get_channel(code_pattern.set(fine_location_2="RE"))
                     channel_mi = self.get_channel(code_pattern.set(fine_location_2="MI"))
                     channel_fr = self.get_channel(code_pattern.set(fine_location_2="FR"))
-                    if None not in (channel_re, channel_mi, channel_fr):
+                    if channel_re is not None and channel_mi is not None and channel_fr is not None:
                         t = time_intersect(channel_re, channel_mi, channel_fr)
                         values = np.min([channel_re.get_data(t), channel_mi.get_data(t, unit=channel_re.unit), channel_fr.get_data(t, unit=channel_re.unit)], axis=0)
                         return Channel(code=channel_re.code.set(fine_location_2="00"),
@@ -863,7 +864,7 @@ class Isomme:
                 if code_pattern.main_location == "KTHC" and code_pattern.physical_dimension == "IM" and code_pattern.fine_location_1 == "00" and code_pattern.filter_class == "X":
                     channel_left = self.get_channel(code_pattern.set(fine_location_1="LE"))
                     channel_right = self.get_channel(code_pattern.set(fine_location_1="RI"))
-                    if None not in (channel_left, channel_right):
+                    if channel_left is not None and channel_right is not None:
                         idx_min = np.argmin([channel_left.get_data()[0], channel_right.get_data()[0]], axis=0)
                         channel_min = [channel_left, channel_right][idx_min]
                         return Channel(code=channel_min.code.set(fine_location_1="00"),
@@ -960,7 +961,7 @@ class Isomme:
                     channel_MOY = self.get_channel(code_pattern.set(main_location="TIBI", physical_dimension="MO", direction="Y"))
                     channel_FOZ = self.get_channel(code_pattern.set(main_location="TIBI", physical_dimension="FO", direction="Z"))
                     channels = [channel_MOX, channel_MOY, channel_FOZ]
-                    if None not in channels and all([channel.code.fine_location_3 in ("H3", "HF", "TH", "T3") for channel in channels]):
+                    if channel_MOX is not None and channel_MOY is not None and channel_FOZ is not None and all(channel.code.fine_location_3 in ("H3", "HF", "TH", "T3") for channel in channels):
                         return calculate_tibia_index(channel_MOX, channel_MOY, channel_FOZ)
 
                 # THOR Dummy Chest PCA Score
@@ -969,7 +970,7 @@ class Isomme:
                     channel_ri_up_ds = self.get_channel(code_pattern.set(fine_location_1="RI", fine_location_2="UP"))
                     channel_le_lo_ds = self.get_channel(code_pattern.set(fine_location_1="LE", fine_location_2="LO"))
                     channel_ri_lo_ds = self.get_channel(code_pattern.set(fine_location_1="RI", fine_location_2="LO"))
-                    if None not in (channel_le_up_ds, channel_ri_up_ds, channel_le_lo_ds, channel_ri_lo_ds):
+                    if channel_le_up_ds is not None and channel_ri_up_ds is not None and channel_le_lo_ds is not None and channel_ri_lo_ds is not None:
                         return calculate_chest_pc_score(channel_le_up_ds=channel_le_up_ds,
                                                         channel_ri_up_ds=channel_ri_up_ds,
                                                         channel_le_lo_ds=channel_le_lo_ds,
@@ -979,7 +980,7 @@ class Isomme:
                 # page 31: https://www.humaneticsgroup.com/sites/default/files/2020-11/thor-50m_3d_ir-tracc_um-rev_c.pdf
                 if code_pattern.main_location == "CHST" and code_pattern.fine_location_1 == "00" and code_pattern.fine_location_2 == "00" and code_pattern.physical_dimension == "DS":
                     channels = [self.get_channel(code_pattern.set(fine_location_1=fine_location_1, fine_location_2=fine_location_2)) for fine_location_1, fine_location_2 in (("LE","UP"), ("RI","UP"), ("LE","LO"), ("RI","LO"))]
-                    if None not in channels and all(channel.code.fine_location_3 in ("TH", "T3", "00", "??") for channel in channels):
+                    if all(channel is not None for channel in channels) and all(channel.code.fine_location_3 in ("TH", "T3", "00", "??") for channel in channels):
                         time = time_intersect(*channels)
                         values = np.min([channel.get_data(t=time, unit=channels[0].unit) for channel in channels], axis=0)
                         return Channel(code=channels[0].code.set(fine_location_1="00", fine_location_2="00"),
@@ -987,7 +988,7 @@ class Isomme:
                                        unit=channels[0].unit)
                 if code_pattern.main_location == "ABDO" and code_pattern.fine_location_1 == "00" and code_pattern.fine_location_2 == "00" and code_pattern.physical_dimension == "DS":
                     channels = [self.get_channel(code_pattern.set(fine_location_1=fine_location_1, fine_location_2=fine_location_2)) for fine_location_1, fine_location_2 in (("LE","00"), ("RI","00"))]
-                    if None not in channels and all(channel.code.fine_location_3 in ("TH", "T3", "00", "??") for channel in channels):
+                    if all(channel is not None for channel in channels) and all(channel.code.fine_location_3 in ("TH", "T3", "00", "??") for channel in channels):
                         time = time_intersect(*channels)
                         values = np.min([channel.get_data(t=time, unit=channels[0].unit) for channel in channels], axis=0)
                         return Channel(code=channels[0].code.set(fine_location_1="00", fine_location_2="00"),
@@ -1003,7 +1004,7 @@ class Isomme:
                             channel_dc0 = self.get_channel(code_pattern.set(direction="0"))
                             channel_any = self.get_channel(code_pattern.set(physical_dimension="AN", direction="Y"))
                             channel_anz = self.get_channel(code_pattern.set(physical_dimension="AN", direction="Z"))
-                            if None not in (channel_dc0, channel_any, channel_anz):
+                            if channel_dc0 is not None and channel_any is not None and channel_anz is not None:
                                 time = time_intersect(channel_dc0, channel_any, channel_anz)
                                 channel_any = channel_any.adjust_to_range(target_range=(-45, 45), unit="deg")
                                 channel_anz = channel_anz.adjust_to_range(target_range=(-45, 45), unit="deg")
@@ -1014,7 +1015,7 @@ class Isomme:
                         if code_pattern.direction == "Y":
                             channel_dc0 = self.get_channel(code_pattern.set(direction="0"))
                             channel_anz = self.get_channel(code_pattern.set(physical_dimension="AN", direction="Z"))
-                            if None not in (channel_dc0, channel_anz):
+                            if channel_dc0 is not None and channel_anz is not None:
                                 time = time_intersect(channel_dc0, channel_anz)
                                 channel_anz = channel_anz.adjust_to_range(target_range=(-45, 45), unit="deg")
                                 values = channel_dc0.get_data(t=time, unit="mm") * np.sin(channel_anz.get_data(t=time, unit="rad"))
@@ -1025,7 +1026,7 @@ class Isomme:
                             channel_dc0 = self.get_channel(code_pattern.set(direction="0"))
                             channel_any = self.get_channel(code_pattern.set(physical_dimension="AN", direction="Y"))
                             channel_anz = self.get_channel(code_pattern.set(physical_dimension="AN", direction="Z"))
-                            if None not in (channel_dc0, channel_any, channel_anz):
+                            if channel_dc0 is not None and channel_any is not None and channel_anz is not None:
                                 time = time_intersect(channel_dc0, channel_any, channel_anz)
                                 channel_any = channel_any.adjust_to_range(target_range=(-45, 45), unit="deg")
                                 channel_anz = channel_anz.adjust_to_range(target_range=(-45, 45), unit="deg")
@@ -1056,7 +1057,7 @@ class Isomme:
                     channel_01 = self.get_channel(code_pattern.set(fine_location_2="01"))
                     channel_02 = self.get_channel(code_pattern.set(fine_location_2="02"))
                     channel_03 = self.get_channel(code_pattern.set(fine_location_2="03"))
-                    if None not in (channel_01, channel_02, channel_03):
+                    if channel_01 is not None and channel_02 is not None and channel_03 is not None:
                         time = time_intersect(channel_01, channel_02, channel_03)
                         values = np.min([channel.get_data(t=time, unit=channel_01.unit) for channel in (channel_01, channel_02, channel_03)], axis=0)
                         return Channel(code=channel_01.code.set(fine_location_2="00"),
@@ -1065,7 +1066,7 @@ class Isomme:
                 if code_pattern.main_location == "ABRI" and code_pattern.fine_location_2 == "00" and code_pattern.fine_location_3 in ("WS", "??") and code_pattern.physical_dimension == "DS":
                     channel_01 = self.get_channel(code_pattern.set(fine_location_2="01"))
                     channel_02 = self.get_channel(code_pattern.set(fine_location_2="02"))
-                    if None not in (channel_01, channel_02):
+                    if channel_01 is not None and channel_02 is not None:
                         time = time_intersect(channel_01, channel_02)
                         values = np.min([channel.get_data(t=time, unit=channel_01.unit) for channel in (channel_01, channel_02)], axis=0)
                         return Channel(code=channel_01.code.set(fine_location_2="00"),
@@ -1077,7 +1078,7 @@ class Isomme:
                     if code_pattern.physical_dimension == "DC" and code_pattern.direction == "Y":
                         channel_dc0 = self.get_channel(code_pattern.set(physical_dimension="DC", direction="0"))
                         channel_anz = self.get_channel(code_pattern.set(physical_dimension="AN", direction="Z"))
-                        if None not in (channel_dc0, channel_anz):
+                        if channel_dc0 is not None and channel_anz is not None:
                             t = time_intersect(channel_dc0, channel_anz)
                             channel_anz = channel_anz.adjust_to_range(target_range=(-45, 45), unit="deg")
                             values = channel_dc0.get_data(t=t) * np.cos(channel_anz.get_data(t=t, unit="rad"))
@@ -1097,7 +1098,7 @@ class Isomme:
                     channel_up = self.get_channel(code_pattern.set(fine_location_2="UP"))
                     channel_mi = self.get_channel(code_pattern.set(fine_location_2="MI"))
                     channel_lo = self.get_channel(code_pattern.set(fine_location_2="LO"))
-                    if None not in (channel_up, channel_mi, channel_lo):
+                    if channel_up is not None and channel_mi is not None and channel_lo is not None:
                         t = time_intersect(channel_up, channel_mi, channel_lo)
                         values = np.min([channel_up.get_data(t), channel_mi.get_data(t, unit=channel_up.unit), channel_lo.get_data(t, unit=channel_up.unit)], axis=0)
                         return Channel(code=channel_up.code.set(fine_location_2="00"),
@@ -1109,7 +1110,7 @@ class Isomme:
                     channel_re = self.get_channel(code_pattern.set(fine_location_2="RE"))
                     channel_mi = self.get_channel(code_pattern.set(fine_location_2="MI"))
                     channel_fr = self.get_channel(code_pattern.set(fine_location_2="FR"))
-                    if None not in (channel_re, channel_mi, channel_fr):
+                    if channel_re is not None and channel_mi is not None and channel_fr is not None:
                         t = time_intersect(channel_re, channel_mi, channel_fr)
                         values = np.min([channel_re.get_data(t), channel_mi.get_data(t, unit=channel_re.unit), channel_fr.get_data(t, unit=channel_re.unit)], axis=0)
                         return Channel(code=channel_re.code.set(fine_location_2="00"),
@@ -1121,7 +1122,7 @@ class Isomme:
                 if code_pattern.main_location == "FOOT" and code_pattern.physical_dimension == "AC" and code_pattern.direction == "R":
                     channel_left = self.get_channel(code_pattern.set(fine_location_1="LE"))
                     channel_right = self.get_channel(code_pattern.set(fine_location_1="RI"))
-                    if None not in (channel_left, channel_right):
+                    if channel_left is not None and channel_right is not None:
                         t = time_intersect(channel_left, channel_right)
                         values = np.max([channel_left.get_data(t), channel_right.get_data(t, unit=channel_left.unit)], axis=0)
                         return Channel(code=channel_left.code.set(fine_location_1="00"),
@@ -1161,7 +1162,7 @@ class Isomme:
         return None
 
     @debug_logging(logger)
-    def get_channels(self, *code_patterns: str, filter: bool = True, calculate: bool = True, differentiate: bool = False, integrate: bool = False) -> list:
+    def get_channels(self, *code_patterns: str, filter: bool = True, calculate: bool = True, differentiate: bool = False, integrate: bool = False) -> list[Channel]:
         """
         Get all channels by channel code patter. All Wildcards are supported.
         A list of all matching channels will be returned.
@@ -1274,7 +1275,7 @@ class Isomme:
         return self
 
 
-def read(*paths, channel_code_patterns: list = None, recursive: bool = True, merge: bool = True) -> list[Isomme]:
+def read(*paths, channel_code_patterns: list | None = None, recursive: bool = True, merge: bool = True) -> list[Isomme]:
     all_paths = []
     for path in paths:
         all_paths += glob.glob(path, recursive=recursive)
@@ -1297,11 +1298,11 @@ def read(*paths, channel_code_patterns: list = None, recursive: bool = True, mer
     return iso_list
 
 
-def merge_duplicate_isommes(isommes: list[Isomme]) -> list:
+def merge_duplicate_isommes(isommes: list[Isomme]) -> list[Isomme]:
     isommes_dict = {}
     for isomme in isommes:
         if isomme.test_number in isommes_dict:
             isommes_dict[isomme.test_number].extend(isomme)
         else:
             isommes_dict[isomme.test_number] = isomme
-    return isommes
+    return list(isommes_dict.values())

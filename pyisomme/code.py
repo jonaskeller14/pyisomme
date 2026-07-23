@@ -13,12 +13,12 @@ logger = logging.getLogger(__name__)
 
 
 class Code(str):
-    def __new__(cls, code):
+    def __new__(cls, code: str) -> Code:
         assert re.fullmatch(r"[a-zA-Z0-9?]{16}", code), \
             "Invalid code. Code must be 16 characters long, only letters and digits."
         return super(Code, cls).__new__(cls, code)
 
-    def __init__(self, code: str):
+    def __init__(self, code: str) -> None:
         super().__init__()
 
         self.test_object: str = code[0]
@@ -32,15 +32,15 @@ class Code(str):
         self.filter_class: str = code[15]
 
     def set(self,
-            test_object: str = None,
-            position: str = None,
-            main_location: str = None,
-            fine_location_1: str = None,
-            fine_location_2: str = None,
-            fine_location_3: str = None,
-            physical_dimension: str = None,
-            direction: str = None,
-            filter_class: str = None) -> Code:
+            test_object: str | None = None,
+            position: str | None = None,
+            main_location: str | None = None,
+            fine_location_1: str | None = None,
+            fine_location_2: str | None = None,
+            fine_location_3: str | None = None,
+            physical_dimension: str | None = None,
+            direction: str | None = None,
+            filter_class: str | None = None) -> Code:
         if test_object is None:
             test_object = self.test_object
         if position is None:
@@ -71,7 +71,7 @@ class Code(str):
         root = ET.parse(Path(__file__).parent.joinpath("channel_codes.xml")).getroot()
         for element in root.findall("Codification/Element"):
             for channel in element.findall(".//Channel"):
-                if fnmatch(str(self), channel.get("code")):
+                if fnmatch(str(self), channel.get("code", "")):
                     info[element.get("name")] = channel.get("description")
                     break
             if element.get("name") not in info:
@@ -87,13 +87,13 @@ class Code(str):
         root = ET.parse(Path(__file__).parent.joinpath("channel_codes.xml")).getroot()
         for element in root.findall("Codification/Element[@name='Physical Dimension']"):
             for channel in element.findall(".//Channel"):
-                if fnmatch(str(self), channel.get("code")):
+                if fnmatch(str(self), channel.get("code", "")):
                     default_unit = channel.get("default_unit")
                     if default_unit is not None:
-                        return Unit(default_unit)
+                        return Unit(default_unit)  # type: ignore
         return None
 
-    def integrate(self):
+    def integrate(self) -> Code:
         """
         Integrate Dimension of Channel code.
         :return: str or Error is raised
@@ -109,7 +109,7 @@ class Code(str):
                 return Code(re.sub(*replace_pattern, self))
         raise NotImplementedError("Could not integrate code")
 
-    def differentiate(self):
+    def differentiate(self) -> Code:
         """
         Differentiate Dimension of Channel code.
         :return: str or Error is raised
@@ -139,7 +139,7 @@ class Code(str):
         for element in root.findall("Codification/Element"):
             match = False
             for channel in element.findall(".//Channel"):
-                if fnmatch(str(self), channel.get("code")):
+                if fnmatch(str(self), channel.get("code", "")):
                     match = True
                     break
             if not match:
@@ -149,7 +149,7 @@ class Code(str):
 
 
 def combine_codes(*codes: str | Code) -> Code:
-    if len (codes) == 0:
+    if len(codes) == 0:
         return Code("????????????????")
 
     comnbined_code = Code(codes[0])

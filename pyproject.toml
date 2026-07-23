@@ -42,7 +42,7 @@ include = ["pyisomme*"]
 
 [project.optional-dependencies]
 dev = [
-    "objective_rating_metrics",
+    "objective_rating_metrics~=1.3",
 ]
 
 [project.urls]

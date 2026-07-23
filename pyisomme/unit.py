@@ -1,5 +1,5 @@
 import astropy.units as u
-from astropy.constants import g0
+from astropy.constants import g0 # type: ignore
 
 
 u.set_enabled_aliases({"Nm": u.Unit("N*m"),

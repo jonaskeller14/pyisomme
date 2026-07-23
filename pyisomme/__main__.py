@@ -2,6 +2,11 @@ import argparse
 import logging
 import pandas as pd
 import numpy as np
+import sys
+
+from pyisomme import Info
+
+sys.path.append(f"{__file__}/..")
 
 import pyisomme
 
@@ -12,7 +17,6 @@ REPORTS = [
     pyisomme.report.euro_ncap.side_barrier.EuroNCAP_Side_Barrier,
     pyisomme.report.euro_ncap.side_pole.EuroNCAP_Side_Pole,
     pyisomme.report.euro_ncap.side_farside.EuroNCAP_Side_FarSide,
-    pyisomme.report.euro_ncap.side_farside_vtc.EuroNCAP_Side_Farside_VTC,
     pyisomme.report.un.frontal_50kmh_r137.UN_Frontal_50kmh_R137,
     pyisomme.report.un.frontal_56kmh_odb_r94.UN_Frontal_56kmh_ODB_R94,
     pyisomme.report.un.side_pole_r135.UN_Side_Pole_R135,
@@ -75,6 +79,15 @@ def main():
         if options.crop:
             merged_isomme.crop(*options.crop)
 
+        if options.delete_info:
+            merged_isomme.test_info = Info([])
+            merged_isomme.channel_info = Info([])
+            for channel in merged_isomme.channels:
+                channel.info = Info([])  # FIXME: Nicht löschen von reference channel, usw.
+
+        if options.set_test_number:
+            merged_isomme.test_number = options.set_test_number
+
         if options.append:
             try:
                 existing_isomme = pyisomme.Isomme().read(options.output_path)
@@ -103,7 +116,7 @@ def main():
             isomme_list = [pyisomme.Isomme().read(input_path, "??TIRS??????????", *options.codes) for input_path in options.input_paths]
         n = slice(None, options.n)
 
-        pyisomme.Plot_Line({isomme: [isomme.get_channels(*options.codes)[n]] for isomme in isomme_list},
+        pyisomme.Plot_Line({isomme: [list(set(isomme.get_channels(*options.codes) + [isomme.get_channel(code) for code in options.codes]))[n]] for isomme in isomme_list},
                            xlim=options.xlim,
                            ylim=options.ylim,
                            legend=options.legend).show()
@@ -181,6 +194,13 @@ if __name__ == "__main__":
     merge_parser.add_argument("--cfc",
                               dest="cfc",
                               help="Filter channels with Channel Frequency Class CFC (in Hz or as ISO-Code A/B/C/..)")
+    merge_parser.add_argument("--delete-info",
+                              action="store_true",
+                              dest="delete_info",
+                              help="Delete test and channel info (hiding potentially confidential data when publishing)")
+    merge_parser.add_argument("--set-test-number",
+                              dest="set_test_number",
+                              help="Set test number of output path (default is first test number of input paths)")
 
     report_parser = command_parsers.add_parser("report", help="Create a Report")
     report_parser.add_argument(dest="report_name",

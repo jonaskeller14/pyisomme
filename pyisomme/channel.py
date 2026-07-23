@@ -8,8 +8,10 @@ import re
 import pandas as pd
 import numpy as np
 import logging
+from typing import overload
 from fnmatch import fnmatch
 from scipy.integrate import cumulative_trapezoid
+from scipy import interpolate as scipy_interpolate
 import copy
 from astropy.units import CompositeUnit
 
@@ -23,7 +25,7 @@ class Channel:
     unit: Unit
     info: Info
 
-    def __init__(self, code: str | Code, data: pd.DataFrame, unit: str | Unit = None, info: list | dict = None):
+    def __init__(self, code: str | Code, data: pd.DataFrame, unit: str | Unit | None = None, info: list | dict | None = None):
         self.set_code(code)
         self.data = data
         self.set_unit(unit)
@@ -35,7 +37,7 @@ class Channel:
     def __repr__(self):
         return f"Channel(code={self.code})"
 
-    def set_code(self, new_code: str | Code = None, **code_components) -> Channel:
+    def set_code(self, new_code: str | Code | None = None, **code_components) -> Channel:
         if new_code is None:  # if only components are set
             assert self.code is not None
             new_code = self.code
@@ -297,16 +299,23 @@ class Channel:
         else:
             raise NotImplementedError
 
-    def get_data(self, t=None, unit=None) -> np.ndarray | float:
+    @overload
+    def get_data(self, t: None = ..., unit=None, method: str = "linear", fill_value: tuple = (0, 0)) -> np.ndarray: ...
+    @overload
+    def get_data(self, t: float | np.ndarray, unit=None, method: str = "linear", fill_value: tuple = (0, 0)) -> np.ndarray | float: ...
+
+    def get_data(self, t=None, unit=None, method: str = "linear", fill_value: tuple = (0, 0)) -> np.ndarray | float:
         """
         Returns Value at time t. If t is out of recorded range, zero will be returned
         If t between timesteps --> Interpolation
         :param t:
         :param unit:
+        :param method: Interpolation method
+        :param fill_value:
         :return:
         """
         time_array = self.data.index.to_numpy()
-        value_array = self.data.iloc[:, 0].to_numpy()
+        value_array = copy.deepcopy(self.data.iloc[:, 0].to_numpy())
 
         # Unit conversion
         if unit is not None:
@@ -322,8 +331,10 @@ class Channel:
         if t is None:
             return value_array
 
-        # Interpolation
-        return np.interp(t, time_array, value_array, left=0, right=0)
+        # Interpolation (kinds like "linear" need at least 2 points (otherwise zero division and nan return value)
+        if len(time_array) < 2:
+            method = "nearest"
+        return scipy_interpolate.interp1d(time_array, value_array, kind=method, fill_value=fill_value, bounds_error=False)(t)
 
     def get_info(self, *labels: str) -> str | None:
         """
@@ -396,8 +407,10 @@ class Channel:
     def write(self, xxx_path):
         with open(xxx_path, "w") as xxx_file:
             self.info.update({"Channel code": self.code,
+                              "Unit": self.unit,
                               "Number of samples": len(self.data)})
             if self.get_info("Reference channel", "") in ("implicit", ""):
+                # TODO: Check if implicit if valid instead and create unique time channel otherwise?
                 self.info.update({
                     "Time of first sample": self.data.index[0],
                     "Sampling interval": np.mean(np.diff(self.data.index)),
@@ -436,8 +449,8 @@ class Channel:
         self.data = pd.DataFrame(self.data.values, index=self.data.index + offset)
         return self
 
-    def crop(self, x_min: float = None, x_max: float = None) -> Channel:
-        self.data = self.data.truncate(before=x_min, after=x_max)
+    def crop(self, x_min: float | None = None, x_max: float | None = None) -> Channel:
+        self.data = self.data.truncate(before=x_min, after=x_max)  # type: ignore[arg-type]
         return self
 
     # Operator methods
@@ -571,15 +584,22 @@ def create_sample(code: str = "SAMPLE??????????",
     return Channel(code, data, unit, info=[("Sampling interval", np.diff(time_array)[0])])
 
 
-def time_intersect(*channels: Channel) -> np.ndarray:
+def time_intersect(*channels: Channel, interpolate: bool = False) -> np.ndarray:
     """
     Returns intersection of time-array of given channels.
     :param channels: Channel objects
+    :param interpolate: Apply interpolation for time points in between
     :return: time array
     """
     if len(channels) == 0:
         return np.array([])
     time_array = channels[0].data.index
     for channel in channels[1:]:
-        time_array = np.intersect1d(time_array, channel.data.index)
+        if interpolate:
+            t_min = np.max([np.min(time_array), np.min(channel.data.index)])
+            t_max = np.min([np.max(time_array), np.max(channel.data.index)])
+            time_array = np.sort(np.concatenate([time_array, channel.data.index]))
+            time_array = time_array[(time_array >= t_min) * (time_array <= t_max)]
+        else:
+            time_array = np.intersect1d(time_array, channel.data.index)
     return time_array

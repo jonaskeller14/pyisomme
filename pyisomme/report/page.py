@@ -182,6 +182,9 @@ class Page_Criterion_Values_Chart(Page_Content):
 
         for idx_isomme, criteria in enumerate(self.criteria.values()):
             for idx_col, criterion in enumerate(criteria):
+                if not criterion.limits.limit_list:
+                    continue
+
                 if criterion.channel is None:
                     x_limit = 0
                 else:

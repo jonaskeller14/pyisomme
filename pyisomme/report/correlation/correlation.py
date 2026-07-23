@@ -1,0 +1,91 @@
+from __future__ import annotations
+
+from pyisomme import Channel
+from pyisomme.report.page import Page_Cover, Page_Criterion_Table
+from pyisomme.report.report import Report
+from pyisomme.report.criterion import Criterion
+from pyisomme.correlation import Correlation_ISO18571
+
+import logging
+import numpy as np
+
+
+logger = logging.getLogger(__name__)
+
+
+class Correlation(Report):
+    name = "Correlation"
+    protocol = "ISO-18571:2024"
+    protocols = {
+        "ISO-18571:2024": "Objective Rating Metric for non ambigious signals according to ISO/TS 18571:2024 "
+                          "[https://www.iso.org/standard/85791.html][https://openvt.eu/validation-metrics/ISO18571]",
+    }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.pages = [
+            Page_Cover(self),
+            self.Page_Correlation_Overall_Rating_Table(self),
+        ]
+
+    class Criterion_Overall(Criterion):
+        name = "Overall"
+        is_reference: bool | None = None
+        is_comparison: bool | None = None
+        criteria: list
+
+        def __init__(self, report, isomme):
+            super().__init__(report, isomme)
+
+            isomme_r = self.report.isomme_list[0]
+            isomme_c = self.isomme
+
+            self.is_reference = True if isomme_r == isomme_c else False
+            self.is_comparison = True if isomme_r != isomme_c else False
+
+            self.criteria = []
+            for channel_r in isomme_r.channels:
+                self.criteria.append(self.Criterion_Curve_Correlation(report=report,
+                                                                      isomme=isomme,
+                                                                      channel_r=isomme_r.get_channel(channel_r.code.set(filter_class="D")),
+                                                                      channel_c=isomme_c.get_channel(channel_r.code.set(filter_class="D"), calculate=False, integrate=False, differentiate=False)))
+
+        def calculation(self):
+            if not self.is_comparison:
+                return
+
+            for criterion in self.criteria:
+                criterion.calculate()
+
+            self.value = np.nanmin([criterion.value for criterion in self.criteria])
+
+        class Criterion_Curve_Correlation(Criterion):
+            name = "Correlation"
+            channel_r: Channel | None = None
+            channel_c: Channel | None = None
+
+            def __init__(self, report, isomme, channel_r: Channel, channel_c: Channel):
+                self.name = f"{channel_c.code if channel_c is not None else np.nan}"
+
+                super().__init__(report, isomme)
+
+                self.channel_r = channel_r
+                self.channel_c = channel_c
+
+            def calculation(self):
+                if self.channel_r is not None and self.channel_c is not None and self.channel_r is not self.channel_c:
+                    self.value = Correlation_ISO18571(reference_channel=self.channel_r,
+                                                      comparison_channel=self.channel_c).overall_rating()
+                    self.color = "green" if self.value > 0.75 else "orange" if self.value > 0.5 else "red"
+
+    class Page_Correlation_Overall_Rating_Table(Page_Criterion_Table):
+        name = "Correlation Overall Rating Table"
+        title = "Correlation Overall Rating"
+        row_label = staticmethod(lambda criterion: f"{criterion.name}")
+        cell_text = staticmethod(lambda criterion: f"{criterion.value:.1%}")
+
+        def __init__(self, report):
+            super().__init__(report)
+
+            self.criteria = {isomme: sorted(self.report.criterion_overall[isomme].criteria, key=lambda criterion: criterion.channel_r.code) for isomme in self.report.isomme_list}

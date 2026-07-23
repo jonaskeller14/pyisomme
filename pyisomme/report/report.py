@@ -5,6 +5,7 @@ from pyisomme.report.criterion import Criterion
 from pptx import Presentation
 from tqdm.auto import tqdm
 from tqdm.contrib.logging import logging_redirect_tqdm
+import numpy as np
 import time
 import logging
 
@@ -90,10 +91,15 @@ class Report:
 
 class MetaReport(Report):
     reports: list[Report]
+    rating: float = np.nan
 
     def calculate(self):
         for report in self.reports:
             report.calculate()
+        self.calculation()
+
+    def calculation(self) -> None:
+        pass
 
     def print_results(self):
         for report in self.reports:

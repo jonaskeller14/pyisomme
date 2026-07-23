@@ -64,5 +64,8 @@ To add a new report/load case: create a module in the appropriate protocol subpa
 
 ## Bundled subprojects (not part of the pyisomme package)
 
-- [ISO18571/](ISO18571/) — the `objective_rating_metrics` package (ISO 18571 correlation rating), the `dev` optional dependency used by [pyisomme/correlation.py](pyisomme/correlation.py).
 - [head-trajectory-calculation/](head-trajectory-calculation/) — standalone analysis script.
+
+## Third-party dependencies
+
+- `objective_rating_metrics` (ISO 18571 correlation rating, used by [pyisomme/correlation.py](pyisomme/correlation.py)) is installed from PyPI via the `dev` extra in [pyproject.toml](pyproject.toml) — it is *not* vendored in-repo. Bump the version pin there when a new upstream release is needed.

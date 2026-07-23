@@ -9,6 +9,7 @@ import copy
 import logging
 import numpy as np
 import pandas as pd
+from scipy.stats import norm
 from scipy.integrate import solve_ivp, trapezoid
 
 
@@ -17,8 +18,8 @@ logger = logging.getLogger(__name__)
 
 @debug_logging(logger)
 def calculate_resultant(c1: Channel | None,
-                        c2: Channel | None = 0,
-                        c3: Channel | None = 0) -> Channel | None:
+                        c2: Channel | int | None = 0,
+                        c3: Channel | int | None = 0) -> Channel | None:
     """
     Takes 2 or 3 Channels and calculates the 2nd norm or resultant component.
     :param c1: X-Channel
@@ -185,9 +186,9 @@ def calculate_xms(channel: Channel, min_delta_t: float = 3, method: str = "S") -
 def calculate_bric(c_av_x: Channel | None,
                    c_av_y: Channel | None,
                    c_av_z: Channel | None,
-                   critical_av_x: float = None,
-                   critical_av_y: float = None,
-                   critical_av_z: float = None,
+                   critical_av_x: float | None = None,
+                   critical_av_y: float | None = None,
+                   critical_av_z: float | None = None,
                    method: str = "MPS") -> Channel | None:
     """
     References:
@@ -379,10 +380,10 @@ def calculate_damage(c_aa_x: Channel | None,
 def calculate_neck_nij(c_fz: Channel,
                        c_mocy: Channel,
                        oop: bool = True,
-                       fz_c_crit: float = None,
-                       fz_t_crit: float = None,
-                       mocy_f_crit: float = None,
-                       mocy_e_crit: float = None) -> tuple[Channel, ...]:
+                       fz_c_crit: float | None = None,
+                       fz_t_crit: float | None = None,
+                       mocy_f_crit: float | None = None,
+                       mocy_e_crit: float | None = None) -> tuple[Channel, ...]:
     """
     References:
     - https://www.ni.com/docs/de-DE/bundle/diadem/page/crash/neck_nij.html
@@ -530,7 +531,7 @@ def calculate_neck_nij(c_fz: Channel,
 
 
 @debug_logging(logger)
-def calculate_neck_MOCx(channel_Mx: Channel, channel_Fy: Channel, d: float = None) -> tuple[Channel, Channel] | tuple[None, None]:
+def calculate_neck_MOCx(channel_Mx: Channel | None, channel_Fy: Channel | None, d: float | None = None) -> tuple[Channel, Channel] | tuple[None, None]:
     """
     References:
     - references/Euro-NCAP/tb-021-data-acquisition-and-injury-calculation-v402.pdf
@@ -540,7 +541,7 @@ def calculate_neck_MOCx(channel_Mx: Channel, channel_Fy: Channel, d: float = Non
     :param d: lever
     :return:
     """
-    if None in (channel_Mx, channel_Fy):
+    if channel_Mx is None or channel_Fy is None:
         return None, None
 
     if d is None:
@@ -579,7 +580,7 @@ def calculate_neck_MOCx(channel_Mx: Channel, channel_Fy: Channel, d: float = Non
 
 
 @debug_logging(logger)
-def calculate_neck_MOCy(channel_My: Channel, channel_Fx: Channel, d: float = None) -> tuple[Channel, Channel] | tuple[None, None]:
+def calculate_neck_MOCy(channel_My: Channel | None, channel_Fx: Channel | None, d: float | None = None) -> tuple[Channel, Channel] | tuple[None, None]:
     """
     References:
     - references/Euro-NCAP/tb-021-data-acquisition-and-injury-calculation-v402.pdf
@@ -589,7 +590,7 @@ def calculate_neck_MOCy(channel_My: Channel, channel_Fx: Channel, d: float = Non
     :param d: lever
     :return:
     """
-    if None in (channel_My, channel_Fx):
+    if channel_My is None or channel_Fx is None:
         return None, None
 
     if d is None:
@@ -631,7 +632,7 @@ def calculate_neck_MOCy(channel_My: Channel, channel_Fx: Channel, d: float = Non
 
 
 @debug_logging(logger)
-def calculate_neck_Mx_base(channel_Mx: Channel, channel_Fy: Channel, dz: float = None) -> tuple[Channel, Channel] | tuple[None, None]:
+def calculate_neck_Mx_base(channel_Mx: Channel | None, channel_Fy: Channel | None, dz: float | None = None) -> tuple[Channel, Channel] | tuple[None, None]:
     """
     References:
     - references/Euro-NCAP/tb-021-data-acquisition-and-injury-calculation-v402.pdf
@@ -641,7 +642,7 @@ def calculate_neck_Mx_base(channel_Mx: Channel, channel_Fy: Channel, dz: float =
     :param dz: lever
     :return:
     """
-    if None in (channel_Mx, channel_Fy):
+    if channel_Mx is None or channel_Fy is None:
         return None, None
 
     if dz is None:
@@ -681,7 +682,7 @@ def calculate_neck_Mx_base(channel_Mx: Channel, channel_Fy: Channel, dz: float =
 
 
 @debug_logging(logger)
-def calculate_neck_My_base(channel_My: Channel, channel_Fx: Channel, dz: float = None) -> tuple[Channel, Channel] | tuple[None, None]:
+def calculate_neck_My_base(channel_My: Channel | None, channel_Fx: Channel | None, dz: float | None = None) -> tuple[Channel, Channel] | tuple[None, None]:
     """
     References:
     - references/Euro-NCAP/tb-021-data-acquisition-and-injury-calculation-v402.pdf
@@ -691,7 +692,7 @@ def calculate_neck_My_base(channel_My: Channel, channel_Fx: Channel, dz: float =
     :param dz: lever
     :return:
     """
-    if None in (channel_My, channel_Fx):
+    if channel_My is None or channel_Fx is None:
         return None, None
 
     if dz is None:
@@ -767,9 +768,9 @@ def calculate_chest_pc_score(channel_le_up_ds: Channel,
 
 @debug_logging(logger)
 def calculate_vc(channel: Channel | None,
-                 scaling_factor: float = None,
-                 defo_constant: float = None,
-                 dummy: str = None) -> tuple[Channel | None, Channel | None]:
+                 scaling_factor: float | None = None,
+                 defo_constant: float | None = None,
+                 dummy: str | None = None) -> tuple[Channel | None, Channel | None]:
     """
     References:
     - references/Euro-NCAP/tb-021-data-acquisition-and-injury-calculation-v402.pdf
@@ -919,14 +920,14 @@ def calculate_tibia_index(channel_MOX: Channel | None,
     :param channel_FOZ:
     :return:
     """
-    if None in (channel_MOX, channel_MOY, channel_FOZ):
+    if channel_MOX is None or channel_MOY is None or channel_FOZ is None:
         return None
 
     dummy = channel_MOX.code.fine_location_3
     assert dummy in ("H3", "HF", "TH", "T3"), f"Dummy {dummy} not supported by {calculate_tibia_index.__name__}"
-    assert channel_MOX.code.fine_location_3 == channel_MOY.code.fine_location_3 == channel_FOZ.code.fine_location_3, f"Channel with different dummy found."
-    assert channel_MOX.code.test_object == channel_MOY.code.test_object == channel_FOZ.code.test_object, f"Channel with different test_objects found."
-    assert channel_MOX.code.position == channel_MOY.code.position == channel_FOZ.code.position, f"Channel with different positions found."
+    assert channel_MOX.code.fine_location_3 == channel_MOY.code.fine_location_3 == channel_FOZ.code.fine_location_3, "Channel with different dummy found."
+    assert channel_MOX.code.test_object == channel_MOY.code.test_object == channel_FOZ.code.test_object, "Channel with different test_objects found."
+    assert channel_MOX.code.position == channel_MOY.code.position == channel_FOZ.code.position, "Channel with different positions found."
 
     channel_m_r = calculate_resultant(channel_MOX, channel_MOY)
     m_r_c = 225 if dummy in ("H3", "TH", "T3") else 115  # [Nm]
@@ -944,6 +945,48 @@ def calculate_tibia_index(channel_MOX: Channel | None,
               (".Channel 001", channel_MOX.code),
               (".Channel 002", channel_MOY.code),
               (".hannel 003", channel_FOZ.code),])
+
+
+@debug_logging(logger)
+def calculate_trajectory(channel_acx: Channel | None,
+                         channel_acy: Channel | None,
+                         channel_acz: Channel | None,
+                         channel_avx: Channel | None,
+                         channel_avy: Channel | None,
+                         channel_avz: Channel | None,
+                         x_0: float = 0.0,
+                         y_0: float = 0.0,
+                         z_0: float = 0.0) -> Channel | None:
+    """
+    Calculate Trajectory (Coordinates) by integrating acceleration signals and rotation
+    References:
+    - TODO
+    :param channel_acx:
+    :param channel_acy:
+    :param channel_acz:
+    :param channel_avx:
+    :param channel_avy:
+    :param channel_avz:
+    :param x_0:
+    :param y_0:
+    :param z_0:
+    :return:
+    """
+    if (channel_acx is None or channel_acy is None or channel_acz is None
+            or channel_avx is None or channel_avy is None or channel_avz is None):
+        return None
+
+    t = time_intersect(channel_acx, channel_acy, channel_acz, channel_avx, channel_avy, channel_avz)
+    _acx = channel_acx.get_data(t, unit="m/s^2")
+    _acy = channel_acy.get_data(t, unit="m/s^2")
+    _acz = channel_acz.get_data(t, unit="m/s^2")
+    _avx = channel_avx.get_data(t, unit="rad/s")
+    _avy = channel_avy.get_data(t, unit="rad/s")
+    _avz = channel_avz.get_data(t, unit="rad/s")
+
+    # TODO: Inlclude Euro-NCAP python skript or try to understand? and include and reference!!!
+
+    raise NotImplementedError
 
 
 @debug_logging(logger)
@@ -985,7 +1028,6 @@ def calculate_olc(c_v: Channel | None,
         if c_s_rel.data.iloc[i_2, 0] - olc * (1/2*t_2**2 + 1/2*t_1**2 - t_1*t_2) >= free_flight_phase_displacement + restraining_phase_displacement:
             break
 
-    is_restraining_phase = (t_1 < c_s_rel.data.index) * (c_s_rel.data.index < t_2)
     after_restraining_phase = c_s_rel.data.index >= t_2
     if not after_restraining_phase.any():
         logger.warning("Incorrect OLC values. Not reached restraining phase displacement.")
@@ -1010,3 +1052,389 @@ def calculate_olc(c_v: Channel | None,
               ("t_2 [s]", t_2)]
     )
     return c_olc, c_olc_visual
+
+
+@debug_logging(logger)
+def calculate_p_head_hic15_ais_2plus(channel_hic15: Channel, dummy: str | None = None) -> Channel:
+    """
+    References:
+    - references/SafetyWissen/SafetyCompanion-2023.pdf
+    :param channel_hic15:
+    :param dummy:
+    :return:
+    """
+    if dummy is None:
+        dummy = channel_hic15.code.fine_location_3
+
+    hic15 = channel_hic15.get_data()
+
+    if dummy in ("TH", "T3"):
+        p = norm.cdf((np.log(hic15) - 6.96362) / 0.84687)
+    else:
+        raise NotImplementedError(f"Dummy {dummy} not supported.")
+
+    return Channel(code="????????????????",
+                   data=pd.DataFrame(p, index=channel_hic15.data.index),
+                   unit="1")
+
+
+@debug_logging(logger)
+def calculate_p_head_hic15_ais_3plus(channel_hic15: Channel, dummy: str | None = None) -> Channel:
+    """
+    References:
+    - references/SafetyWissen/SafetyCompanion-2024.pdf
+    :param channel_hic15:
+    :param dummy:
+    :return:
+    """
+    if dummy is None:
+        dummy = channel_hic15.code.fine_location_3
+
+    hic15 = channel_hic15.get_data()
+
+    if dummy in ("H3", "HF", "TH", "T3"):
+        p = norm.cdf((np.log(hic15) - 7.45231) / 0.73998)
+    else:
+        raise NotImplementedError(f"Dummy {dummy} not supported.")
+
+    return Channel(code="????????????????",
+                   data=pd.DataFrame(p, index=channel_hic15.data.index),
+                   unit="1")
+
+
+@debug_logging(logger)
+def calculate_p_head_hic36_ais_3plus(channel_hic36: Channel, dummy: str | None = None) -> Channel:
+    """
+    References:
+    - references/SafetyWissen/SafetyCompanion-2024.pdf
+    :param channel_hic36:
+    :param dummy:
+    :return:
+    """
+    if dummy is None:
+        dummy = channel_hic36.code.fine_location_3
+
+    hic36 = channel_hic36.get_data()
+
+    if dummy in ("ER", "S2"):
+        p = norm.cdf((np.log(hic36) - 7.45231) / 0.73998)
+    else:
+        raise NotImplementedError(f"Dummy {dummy} not supported.")
+
+    return Channel(code="????????????????",
+                   data=pd.DataFrame(p, index=channel_hic36.data.index),
+                   unit="1")
+
+
+@debug_logging(logger)
+def calculate_p_head_bric_ais_3plus(channel_bric: Channel, dummy: str | None = None) -> Channel:
+    """
+    References:
+    - references/SafetyWissen/SafetyCompanion-2023.pdf
+    :param channel_bric:
+    :param dummy:
+    :return:
+    """
+    if dummy is None:
+        dummy = channel_bric.code.fine_location_3
+
+    bric = channel_bric.get_data()
+
+    if dummy in ("TH", "T3"):
+        p = 1 - np.exp(-((bric - 0.523) / 0.531)**1.8)
+    else:
+        raise NotImplementedError(f"Dummy {dummy} not supported.")
+
+    return Channel(code="????????????????",
+                   data=pd.DataFrame(p, index=channel_bric.data.index),
+                   unit="1")
+
+
+@debug_logging(logger)
+def calculate_p_head_bric_ais_4plus(channel_bric: Channel, dummy: str | None = None) -> Channel:
+    """
+    References:
+    - references/SafetyWissen/SafetyCompanion-2023.pdf
+    :param channel_bric:
+    :param dummy:
+    :return:
+    """
+    if dummy is None:
+        dummy = channel_bric.code.fine_location_3
+
+    bric = channel_bric.get_data()
+
+    if dummy in ("TH", "T3"):
+        p = 1 - np.exp(-((bric - 0.523) / 0.647)**1.8)
+    else:
+        raise NotImplementedError(f"Dummy {dummy} not supported.")
+
+    return Channel(code="????????????????",
+                   data=pd.DataFrame(p, index=channel_bric.data.index),
+                   unit="1")
+
+
+@debug_logging(logger)
+def calculate_p_chest_deflection_ais_3plus(channel_chest_deflection: Channel, dummy: str | None = None) -> Channel:
+    """
+    References:
+    - references/SafetyWissen/SafetyCompanion-2024.pdf
+    - references/SafetyWissen/SafetyCompanion-2023.pdf
+    :param channel_chest_deflection:
+    :param dummy:
+    :return:
+    """
+    if dummy is None:
+        dummy = channel_chest_deflection.code.fine_location_3
+
+    chest_deflection = np.abs(channel_chest_deflection.get_data(unit="mm"))
+
+    if dummy == "H3":
+        p = 1 / (1 + np.exp(10.5456 - 1.568 * chest_deflection ** 0.4612))
+    elif dummy == "HF":
+        p = 1 / (1 + np.exp(10.5456 - 1.7212 * chest_deflection ** 0.4612))
+    elif dummy in ("TH", "T3"):
+        p = 1 - np.exp(-(chest_deflection / 58.183)**2.997)
+    else:
+        raise NotImplementedError(f"Dummy {dummy} not supported.")
+
+    return Channel(code="????????????????",
+                   data=pd.DataFrame(p, index=channel_chest_deflection.data.index),
+                   unit="1")
+
+
+@debug_logging(logger)
+def calculate_p_femur_force_ais_2plus(channel_femur_force: Channel, dummy: str | None = None) -> Channel:
+    """
+    References:
+    - references/SafetyWissen/SafetyCompanion-2024.pdf
+    :param channel_femur_force:
+    :param dummy:
+    :return:
+    """
+    if dummy is None:
+        dummy = channel_femur_force.code.fine_location_3
+
+    femur_force = np.abs(channel_femur_force.get_data(unit="kN"))
+
+    if dummy == "H3":
+        p = 1 / (1 + np.exp(5.795 - 0.5196 * femur_force))
+    elif dummy == "HF":
+        p = 1 / (1 + np.exp(5.7949 - 0.7619 * femur_force))
+    else:
+        raise NotImplementedError(f"Dummy {dummy} not supported.")
+
+    return Channel(code="????????????????",
+                   data=pd.DataFrame(p, index=channel_femur_force.data.index),
+                   unit="1")
+
+
+@debug_logging(logger)
+def calculate_p_neck_nij_ais_2plus(channel_neck_nij: Channel, dummy: str | None = None) -> Channel:
+    """
+    References:
+    - references/SafetyWissen/SafetyCompanion-2023.pdf
+    :param channel_neck_nij:
+    :param dummy:
+    :return:
+    """
+    if dummy is None:
+        dummy = channel_neck_nij.code.fine_location_3
+
+    neck_nij = channel_neck_nij.get_data()
+
+    if dummy in ("TH", "T3"):
+        p = 1 / (1 + np.exp(5.819 - 5.681 * neck_nij))
+    else:
+        raise NotImplementedError(f"Dummy {dummy} not supported.")
+
+    return Channel(code="????????????????",
+                   data=pd.DataFrame(p, index=channel_neck_nij.data.index),
+                   unit="1")
+
+
+@debug_logging(logger)
+def calculate_p_neck_nij_ais_3plus(channel_neck_nij: Channel, dummy: str | None = None) -> Channel:
+    """
+    References:
+    - references/SafetyWissen/SafetyCompanion-2024.pdf
+    - references/SafetyWissen/SafetyCompanion-2023.pdf
+    :param channel_neck_nij:
+    :param dummy:
+    :return:
+    """
+    if dummy is None:
+        dummy = channel_neck_nij.code.fine_location_3
+
+    neck_nij = channel_neck_nij.get_data()
+
+    if dummy in ("H3", "HF"):
+        p = 1 / (1 + np.exp(3.2269 - 1.9688 * neck_nij))
+    elif dummy in ("TH", "T3"):
+        p = 1 / (1 + np.exp(6.047 - 5.44 * neck_nij))
+    else:
+        raise NotImplementedError(f"Dummy {dummy} not supported.")
+
+    return Channel(code="????????????????",
+                   data=pd.DataFrame(p, index=channel_neck_nij.data.index),
+                   unit="1")
+
+
+@debug_logging(logger)
+def calculate_p_neck_tension_ais_3plus(channel_neck_tension: Channel, dummy: str | None = None) -> Channel:
+    """
+    References:
+    - references/SafetyWissen/SafetyCompanion-2024.pdf
+    :param channel_neck_tension:
+    :param dummy:
+    :return:
+    """
+    if dummy is None:
+        dummy = channel_neck_tension.code.fine_location_3
+
+    neck_tension = np.abs(channel_neck_tension.get_data(unit="kN"))
+
+    if dummy == "H3":
+        p = 1 / (1 + np.exp(10.9745 - 2.375 * neck_tension))
+    elif dummy == "HF":
+        p = 1 / (1 + np.exp(10.958 - 3.770 * neck_tension))
+    else:
+        raise NotImplementedError(f"Dummy {dummy} not supported.")
+
+    return Channel(code="????????????????",
+                   data=pd.DataFrame(p, index=channel_neck_tension.data.index),
+                   unit="1")
+
+
+@debug_logging(logger)
+def calculate_p_neck_compression_ais_3plus(channel_neck_compression: Channel, dummy: str | None = None) -> Channel:
+    """
+    References:
+    - references/SafetyWissen/SafetyCompanion-2024.pdf
+    :param channel_neck_compression:
+    :param dummy:
+    :return:
+    """
+    if dummy is None:
+        dummy = channel_neck_compression.code.fine_location_3
+
+    neck_compression = np.abs(channel_neck_compression.get_data(unit="kN"))
+
+    if dummy == "H3":
+        p = 1 / (1 + np.exp(10.9745 - 2.375 * neck_compression))
+    elif dummy == "HF":
+        p = 1 / (1 + np.exp(10.958 - 3.770 * neck_compression))
+    else:
+        raise NotImplementedError(f"Dummy {dummy} not supported.")
+
+    return Channel(code="????????????????",
+                   data=pd.DataFrame(p, index=channel_neck_compression.data.index),
+                   unit="1")
+
+
+@debug_logging(logger)
+def calculate_p_chest_rib_deflection_ais_3plus(channel_chest_rib_deflection: Channel, dummy: str | None = None) -> Channel:
+    """
+    References:
+    - references/SafetyWissen/SafetyCompanion-2024.pdf
+    :param channel_chest_rib_deflection:
+    :param dummy:
+    :return:
+    """
+    if dummy is None:
+        dummy = channel_chest_rib_deflection.code.fine_location_3
+
+    rib_deflection = np.abs(channel_chest_rib_deflection.get_data(unit="mm"))
+
+    if dummy == "ER":
+        p = 1 / (1 + np.exp(5.3895 - 0.0919 * rib_deflection))
+    else:
+        raise NotImplementedError(f"Dummy {dummy} not supported.")
+
+    return Channel(code="????????????????",
+                   data=pd.DataFrame(p, index=channel_chest_rib_deflection.data.index),
+                   unit="1")
+
+
+@debug_logging(logger)
+def calculate_p_abdomen_force_ais_3plus(channel_abdomen_force: Channel, dummy: str | None = None) -> Channel:
+    """
+    References:
+    - references/SafetyWissen/SafetyCompanion-2024.pdf
+    :param channel_abdomen_force:
+    :param dummy:
+    :return:
+    """
+    if dummy is None:
+        dummy = channel_abdomen_force.code.fine_location_3
+
+    abdomen_force = np.abs(channel_abdomen_force.get_data(unit="N"))
+
+    if dummy == "ER":
+        p = 1 / (1 + np.exp(6.04044 - 0.002133 * abdomen_force))
+    else:
+        raise NotImplementedError(f"Dummy {dummy} not supported.")
+
+    return Channel(code="????????????????",
+                   data=pd.DataFrame(p, index=channel_abdomen_force.data.index),
+                   unit="1")
+
+
+@debug_logging(logger)
+def calculate_p_abdomen_compression_ais_3plus(channel_abdomen_compression: Channel, dummy: str | None = None) -> Channel:
+    """
+    References:
+    - references/SafetyWissen/SafetyCompanion-2023.pdf
+    :param channel_abdomen_compression:
+    :param dummy:
+    :return:
+    """
+    raise NotImplementedError  # FIXME
+
+
+@debug_logging(logger)
+def calculate_p_pelvis_force_ais_3plus(channel_pelvis_force: Channel, dummy: str | None = None) -> Channel:
+    """
+    References:
+    - references/SafetyWissen/SafetyCompanion-2024.pdf
+    :param channel_pelvis_force:
+    :param dummy:
+    :return:
+    """
+    if dummy is None:
+        dummy = channel_pelvis_force.code.fine_location_3
+
+    pelvis_force = np.abs(channel_pelvis_force.get_data(unit="N"))
+
+    if dummy == "ER":
+        p = 1 / (1 + np.exp(7.5969 - 0.0011 * pelvis_force))
+    else:
+        raise NotImplementedError(f"Dummy {dummy} not supported.")
+
+    return Channel(code="????????????????",
+                   data=pd.DataFrame(p, index=channel_pelvis_force.data.index),
+                   unit="1")
+
+
+@debug_logging(logger)
+def calculate_p_pelvis_force_ais_2plus(channel_pelvis_force: Channel, dummy: str | None = None) -> Channel:
+    """
+    References:
+    - references/SafetyWissen/SafetyCompanion-2024.pdf
+    :param channel_pelvis_force:
+    :param dummy:
+    :return:
+    """
+    if dummy is None:
+        dummy = channel_pelvis_force.code.fine_location_3
+
+    pelvis_force = np.abs(channel_pelvis_force.get_data(unit="N"))
+
+    if dummy == "S2":
+        p = 1 / (1 + np.exp(6.3055 - 0.00094 * pelvis_force))
+    else:
+        raise NotImplementedError(f"Dummy {dummy} not supported.")
+
+    return Channel(code="????????????????",
+                   data=pd.DataFrame(p, index=channel_pelvis_force.data.index),
+                   unit="1")

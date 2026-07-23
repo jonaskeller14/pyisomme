@@ -1,9 +1,16 @@
 import logging
+from typing import Callable, TypeVar, overload
 
 
 intend = "\t"
 
+F = TypeVar("F", bound=Callable[..., object])
 
+
+@overload
+def debug_logging(logger_or_func: logging.Logger) -> Callable[[F], F]: ...
+@overload
+def debug_logging(logger_or_func: F) -> F: ...
 def debug_logging(logger_or_func):
     def decorator(func):
         def wrapper(*args, **kwargs):

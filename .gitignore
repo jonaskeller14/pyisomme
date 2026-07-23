@@ -3,10 +3,14 @@ data/*
 !data/README.md
 tests/out
 out/
+docs/isomme_write/
 
 # IDE
 .idea/
 .vscode/
+
+# Claude Code local settings
+.claude/settings.local.json
 
 # Python
 __pycache__/
@@ -16,9 +20,11 @@ build/
 dist/
 .pytest_cache/
 .ipynb_checkpoints/
+.venv/
 
 # scratch / local artifacts
 tmp/
 tmp1/
 tmp2/
 CORAplus411_240517.zip
+python-pptx-table-styles
