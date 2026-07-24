@@ -4,6 +4,7 @@ from pyisomme.parsing import parse_mme, parse_chn, parse_xxx
 from pyisomme.channel import create_sample, Channel
 from pyisomme.code import Code
 from pyisomme.errors import InvalidCodeError
+from pyisomme.sources import ArchiveSource, FolderSource, ZipSource, TarSource
 from pyisomme.calculate import *
 from pyisomme.utils import debug_logging
 from pyisomme.info import Info
@@ -17,11 +18,9 @@ import re
 import copy
 from pathlib import Path
 import fnmatch
-import zipfile
 import logging
 import shutil
 import pandas as pd
-import tarfile
 
 
 logger = logging.getLogger(__name__)
@@ -115,30 +114,41 @@ class Isomme:
         logger.info(f"Reading '{path}' done. Number of channel: {len(self.channels)}")
         return self
 
-    def read_from_mme(self, mme_path: Path, *channel_code_patterns) -> Isomme:
+    def _read_from_source(self, source: ArchiveSource, *channel_code_patterns, mme_name: str | None = None) -> Isomme:
+        """
+        Read an ISO-MME container from any :class:`ArchiveSource` (folder/zip/tar).
+
+        This is the single implementation behind ``read_from_mme``/``read_from_zip``/
+        ``read_from_tarfile``; the thin wrappers only build the right source. Member names
+        are matched with :func:`fnmatch.filter`, which normalizes case and path separators
+        so ``str(Path(...).joinpath(...))`` patterns work identically across backends.
+        :param source: backend the container is stored in
+        :param channel_code_patterns: (optional) only read channels matching these patterns
+        :param mme_name: known .mme member name (filesystem case); if ``None`` it is located
+        """
+        names = source.names()
+
         # MME
-        self.test_number = mme_path.stem
-        try:
-            with open(mme_path, "r", encoding="utf-8") as mme_file:
-                self.test_info = parse_mme(mme_file.read())
-        except UnicodeDecodeError:
-            with open(mme_path, "r", encoding="iso-8859-1") as mme_file:
-                self.test_info = parse_mme(mme_file.read())
+        if mme_name is None:
+            mme_names = fnmatch.filter(names, "*.[mM][mM][eE]")
+            if len(mme_names) == 0:
+                raise FileNotFoundError("No .mme file found.")
+            elif len(mme_names) > 1:
+                raise Exception("Multiple .mme files found.")
+            mme_name = mme_names[0]
+        self.test_number = Path(mme_name).stem
+        self.test_info = parse_mme(source.read_text(mme_name))
 
         # CHN
-        chn_paths = list(mme_path.parent.glob(f"[cC][hH][aA][nN][nN][eE][lL]*/{self.test_number}.[cC][hH][nN]"))
-        if len(chn_paths) == 0:
+        chn_pattern = str(Path(mme_name).parent.joinpath("[cC][hH][aA][nN][nN][eE][lL]*", f"{self.test_number}.[cC][hH][nN]"))
+        chn_names = fnmatch.filter(names, chn_pattern)
+        if len(chn_names) == 0:
             raise FileNotFoundError("No .chn file found.")
-        elif len(chn_paths) > 1:
-            logger.warning(f"Multiple .chn file found. {chn_paths}. Only first will be considered.")
+        elif len(chn_names) > 1:
+            logger.warning(f"Multiple .chn file found. {chn_names}. Only first will be considered.")
 
-        chn_path = chn_paths[0]
-        try:
-            with open(chn_path, "r", encoding="utf-8") as chn_file:
-                self.channel_info = parse_chn(chn_file.read())
-        except UnicodeDecodeError:
-            with open(chn_path, "r", encoding="iso-8859-1") as chn_file:
-                self.channel_info = parse_chn(chn_file.read())
+        chn_name = chn_names[0]
+        self.channel_info = parse_chn(source.read_text(chn_name))
 
         # 001
         self.channels = []  # in case channel exist trough constructor, use extend()
@@ -158,20 +168,20 @@ class Isomme:
                 if xxx is None:
                     raise Exception
                 xxx = xxx.groups()[0]
-                xxx_paths = list(Path(chn_path).parent.glob(f"{self.test_number}.{xxx}"))
-                if len(xxx_paths) == 0:
+                xxx_pattern = str(Path(chn_name).parent.joinpath(f"{self.test_number}.{xxx}"))
+                xxx_names = fnmatch.filter(names, xxx_pattern)
+                if len(xxx_names) == 0:
                     logger.critical(f"Channel file '{self.test_number}.{xxx}' not found.")
                     continue
 
-                xxx_path = xxx_paths[0]
-                logger.debug(xxx_path)
-                try:
-                    with open(xxx_path, "r", encoding="utf-8") as xxx_file:
-                        self.channels.append(parse_xxx(xxx_file.read(), isomme=self))
-                except UnicodeDecodeError:
-                    with open(xxx_path, "r", encoding="iso-8859-1") as xxx_file:
-                        self.channels.append(parse_xxx(xxx_file.read(), isomme=self))
+                xxx_name = xxx_names[0]
+                logger.debug(xxx_name)
+                self.channels.append(parse_xxx(source.read_text(xxx_name), isomme=self))
         return self
+
+    def read_from_mme(self, mme_path: Path, *channel_code_patterns) -> Isomme:
+        mme_path = Path(mme_path)
+        return self._read_from_source(FolderSource(mme_path.parent), *channel_code_patterns, mme_name=mme_path.name)
 
     def read_from_folder(self, folder_path: Path, *channel_code_patterns) -> Isomme:
         mme_paths = list(folder_path.rglob("*.[mM][mM][eE]"))
@@ -194,139 +204,12 @@ class Isomme:
         return self.read_from_mme(mme_paths[0], *channel_code_patterns)
 
     def read_from_zip(self, zip_path: Path, *channel_code_patterns) -> Isomme:
-        archive = zipfile.ZipFile(zip_path, "r")
-
-        # MME
-        mme_paths = fnmatch.filter(archive.namelist(), "*.[mM][mM][eE]")
-        if len(mme_paths) == 0:
-            raise FileNotFoundError("No .mme file found.")
-        elif len(mme_paths) > 1:
-            raise Exception("Multiple .mme files found.")
-
-        mme_path = mme_paths[0]
-        self.test_number = Path(mme_path).stem
-
-        with archive.open(mme_path, "r") as mme_file:
-            mme_content = mme_file.read()
-            try:
-                self.test_info = parse_mme(mme_content.decode("utf-8"))
-            except UnicodeDecodeError:
-                self.test_info = parse_mme(mme_content.decode("iso-8859-1"))
-
-        # CHN
-        chn_paths = fnmatch.filter(archive.namelist(), str(Path(mme_path).parent.joinpath("[cC][hH][aA][nN][nN][eE][lL]*", f"{self.test_number}.[cC][hH][nN]")))
-        if len(chn_paths) == 0:
-            raise FileNotFoundError("No .chn file found.")
-        elif len(chn_paths) > 1:
-            logger.warning(f"Multiple .chn file found. {chn_paths}. Only first will be considered.")
-
-        chn_path = chn_paths[0]
-        with archive.open(chn_path, "r") as chn_file:
-            chn_content = chn_file.read()
-            try:
-                self.channel_info = parse_chn(chn_content.decode("utf-8"))
-            except UnicodeDecodeError:
-                self.channel_info = parse_chn(chn_content.decode("iso-8859-1"))
-
-        # 001
-        self.channels = []  # in case channel exist trough constructor
-        with logging_redirect_tqdm():
-            for key in tqdm(fnmatch.filter(self.channel_info.keys(), "Name of channel *"), desc=f"Read Channel of {self.test_number}"):
-                code = self.channel_info[key].split()[0].split("/")[0]
-                if len(channel_code_patterns) != 0:
-                    skip = True
-                    for channel_code_pattern in channel_code_patterns:
-                        if fnmatch.fnmatch(code, channel_code_pattern):
-                            skip = False
-                            break
-                    if skip:
-                        continue
-
-                xxx = re.search(r"Name of channel (\d*)", key)
-                if xxx is None:
-                    raise Exception
-                xxx = xxx.groups()[0]
-                xxx_paths = fnmatch.filter(archive.namelist(), str(Path(chn_path).parent.joinpath(f"*.{xxx}")))
-                if len(xxx_paths) == 0:
-                    logger.critical(f"Channel file '*.{xxx}' not found.")
-                    continue
-
-                xxx_path = xxx_paths[0]
-                logger.debug(xxx_path)
-                with archive.open(xxx_path, "r") as xxx_file:
-                    xxx_content = xxx_file.read()
-                    try:
-                        self.channels.append(parse_xxx(xxx_content.decode("utf-8"), isomme=self))
-                    except UnicodeDecodeError:
-                        self.channels.append(parse_xxx(xxx_content.decode("iso-8859-1"), isomme=self))
-        return self
+        with ZipSource(zip_path) as source:
+            return self._read_from_source(source, *channel_code_patterns)
 
     def read_from_tarfile(self, tar_path: Path, *channel_code_patterns, mode: Literal['r', 'r:*', 'r:', 'r:gz', 'r:bz2', 'r:xz'] = "r") -> Isomme:
-        with tarfile.open(tar_path, mode) as tar_file:
-            # MME
-            mme_paths = fnmatch.filter(tar_file.getnames(), "*.[mM][mM][eE]")
-            if len(mme_paths) == 0:
-                raise FileNotFoundError("No .mme file found.")
-            elif len(mme_paths) > 1:
-                raise Exception("Multiple .mme files found.")
-
-            mme_path = mme_paths[0]
-            self.test_number = Path(mme_path).stem
-
-            with tar_file.extractfile(mme_path) as mme_file:
-                mme_content = mme_file.read()
-                try:
-                    self.test_info = parse_mme(mme_content.decode("utf-8"))
-                except UnicodeDecodeError:
-                    self.test_info = parse_mme(mme_content.decode("iso-8859-1"))
-
-            # CHN
-            chn_paths = fnmatch.filter(tar_file.getnames(), f"*{self.test_number}.[cC][hH][nN]")
-            if len(chn_paths) == 0:
-                raise FileNotFoundError("No .chn file found.")
-            elif len(chn_paths) > 1:
-                raise Exception("Multiple .chn files found.")
-
-            chn_path = chn_paths[0]
-            with tar_file.extractfile(chn_path) as chn_file:
-                chn_content = chn_file.read()
-                try:
-                    self.channel_info = parse_chn(chn_content.decode("utf-8"))
-                except UnicodeDecodeError:
-                    self.channel_info = parse_chn(chn_content.decode("iso-8859-1"))
-
-            # 001
-            self.channels = []  # in case channel exist trough constructor
-            with logging_redirect_tqdm():
-                for key in tqdm(fnmatch.filter(self.channel_info.keys(), "Name of channel *"), desc=f"Read Channel of {self.test_number}"):
-                    code = self.channel_info[key].split()[0].split("/")[0]
-                    if len(channel_code_patterns) != 0:
-                        skip = True
-                        for channel_code_pattern in channel_code_patterns:
-                            if fnmatch.fnmatch(code, channel_code_pattern):
-                                skip = False
-                                break
-                        if skip:
-                            continue
-
-                    xxx = re.search(r"Name of channel (\d*)", key)
-                    if xxx is None:
-                        raise Exception
-                    xxx = xxx.groups()[0]
-                    xxx_paths = fnmatch.filter(tar_file.getnames(), str(Path(chn_path).parent.joinpath(f"*.{xxx}")))
-                    if len(xxx_paths) == 0:
-                        logger.critical(f"Channel file '*.{xxx}' not found.")
-                        continue
-
-                    xxx_path = xxx_paths[0]
-                    logger.debug(xxx_path)
-                    with tar_file.extractfile(xxx_path) as xxx_file:
-                        xxx_content = xxx_file.read()
-                        try:
-                            self.channels.append(parse_xxx(xxx_content.decode("utf-8"), isomme=self))
-                        except UnicodeDecodeError:
-                            self.channels.append(parse_xxx(xxx_content.decode("iso-8859-1"), isomme=self))
-            return self
+        with TarSource(tar_path, mode) as source:
+            return self._read_from_source(source, *channel_code_patterns)
 
     def write_mme(self, path: str | Path, *channel_code_patterns) -> Isomme:
         channels = self.get_channels(*channel_code_patterns) if len(channel_code_patterns) != 0 else self.channels

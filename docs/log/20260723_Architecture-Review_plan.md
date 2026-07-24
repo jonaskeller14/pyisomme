@@ -11,7 +11,7 @@ Each step is self-contained and must leave the test suite green.
 | 2 | Normalization boundary at ingest | ✅ Done | `parse_xxx` split into `parse_header_and_data` + `resolve_time_axis`; assumptions recorded in the **standard** ISO/TS 13499 `Comments` field (prefix-marked, `get_normalization_notes`); fall-through explicit (TIRS=sample-index silent, else logged+recorded); non-numeric data → `MalformedFileError`; latent `n*dt` endpoint bug fixed; `tests/test_parsing.TestTimeAxisNormalization` green |
 | 3 | **Kill `assert`-as-validation + cache `channel_codes.xml`** | ✅ Done | `Code.__new__` → `InvalidCodeError` (survives `python -O`); `get_channel`/`get_channels` catch `InvalidCodeError`; `limits.py` validation asserts → `ValueError`; `channel_codes.xml` parsed once at import (`_CHANNEL_CODES_ROOT`); `tests/test_code.py` updated |
 | 4 | **Fix aliasing + calc-history bugs** | ✅ Done | `integrate`/`differentiate` now `deepcopy(self.info)` (was mutating the source channel); `__add__` history logs `+` (was `-`), `__mul__` logs `*` (was `/`); mul/div physical-type skip documented; `tests/test_channel.py` green |
-| 5 | De-duplicate readers behind `ArchiveSource` | ⬜ | fs/zip/tar → one interface; single encoding-fallback helper |
+| 5 | **De-duplicate readers behind `ArchiveSource`** | ✅ Done | new `sources.py` (`ArchiveSource` + `FolderSource`/`ZipSource`/`TarSource`, one `read_text_with_fallback`); `read_from_*` collapse to thin wrappers over one `_read_from_source`; ~210 lines → ~100; byte-identical reads verified vs baseline; `tests/test_sources.py` green |
 | 6 | Tighten union types | ⬜ | `__getitem__`, `cfc`, `get_data` split |
 | 7 | `get_channel` → provider registry | ⬜ | Biggest structural win; provider-by-provider |
 | 8 | Explicit `Criterion.children` + occupant helper | ⬜ | Replace `dir()` reflection; de-dup position logic |
@@ -173,3 +173,47 @@ strings recorded the wrong symbol, landing misleading provenance in exported met
 - **`self.info + [...]` returns a plain `list`, not an `Info`** — pre-existing behavior,
   unchanged here; the `Channel` constructor accepts either, so out of scope for this
   surgical step.
+
+---
+
+## Step 5 — De-duplicate readers behind `ArchiveSource` (§5-F)  ✅
+
+**Goal:** `read_from_mme` / `read_from_zip` / `read_from_tarfile` were ~90% identical,
+differing only in the file-access primitive (fs glob vs `zipfile.namelist`/`open` vs
+`tarfile.getnames`/`extractfile`); the utf-8→iso-8859-1 fallback was copy-pasted 6×. A
+parser fix had to be applied in three places.
+
+### Tasks
+- [x] New `pyisomme/sources.py`: abstract `ArchiveSource` (`names() -> list[str]`,
+      `read_bytes(name) -> bytes`, plus `read_text`/`close`/context-manager sugar) with
+      three backends — `FolderSource` (rglob, POSIX-relative names), `ZipSource`,
+      `TarSource`. One `read_text_with_fallback(bytes) -> str` replaces the 6 inline
+      try/except decode blocks.
+- [x] One `Isomme._read_from_source(source, *patterns, mme_name=None)` holds the entire
+      MME→CHN→channel-iteration logic. `read_from_zip`/`read_from_tarfile` become
+      two-liners that build the source in a `with`; `read_from_mme` builds a
+      `FolderSource(mme_path.parent)` and passes the known `mme_name` (fs case already
+      knows its .mme, so it skips the search). `read_from_folder`/`_chn`/`_xxx` still
+      resolve the .mme then delegate — unchanged.
+- [x] Removed now-unused `zipfile`/`tarfile` imports from `isomme.py`.
+- [x] `tests/test_sources.py` — fixture-free: encoding fallback (utf-8 + 0xFC→iso-8859-1)
+      and all three backends round-tripping a synthetic 3-member container.
+
+### Design notes
+- **Behavior-preserving, verified byte-for-byte:** captured a pre-refactor baseline
+  (sorted channel-code hash per source) and confirmed folder/zip/tar/tar.gz reads of
+  `data/nhtsa/11391` are identical after — plus all NHTSA zip/folder fixtures still read
+  with matching channel counts. (The zip fixture legitimately differs from the folder
+  fixture in *content* — `H3` vs `00` fine-location — which is a fixture artifact, not
+  reader logic; each source still reads exactly its own bytes.)
+- **Unified match patterns via `fnmatch.filter`:** `str(Path(...).joinpath(...))` +
+  `fnmatch.filter` is what the zip/tar readers already did and works cross-platform
+  because `fnmatch` normalizes case *and* path separators (`normcase`). The three readers'
+  slightly-divergent CHN/xxx patterns were consolidated to the more precise
+  `<mme-parent>/[cC]hannel*/<test>.chn` and `<chn-parent>/<test>.<nnn>` forms; identical
+  results on every fixture since file stems equal the test number there.
+- **Resource cleanup:** `ZipSource`/`TarSource` now close their handle via the
+  context-manager wrappers — the old `read_from_zip` never closed its `ZipFile`.
+- **Minor perf trade-off:** `FolderSource.names()` does one `rglob("*")` up front instead
+  of per-pattern globs. Negligible next to reading hundreds of channel files, and it keeps
+  the backend interface uniform.
