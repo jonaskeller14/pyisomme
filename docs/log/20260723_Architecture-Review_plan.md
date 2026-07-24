@@ -10,7 +10,7 @@ Each step is self-contained and must leave the test suite green.
 | 1 | **Error taxonomy + 3 outcome states** | ✅ Done | `errors.py` (`PyisommeError` tree, `MissingData`, `Status`), `Criterion.require*()`, 3-state `Criterion.calculate()`; `tests/test_errors.py` green |
 | 2 | Normalization boundary at ingest | ✅ Done | `parse_xxx` split into `parse_header_and_data` + `resolve_time_axis`; assumptions recorded in the **standard** ISO/TS 13499 `Comments` field (prefix-marked, `get_normalization_notes`); fall-through explicit (TIRS=sample-index silent, else logged+recorded); non-numeric data → `MalformedFileError`; latent `n*dt` endpoint bug fixed; `tests/test_parsing.TestTimeAxisNormalization` green |
 | 3 | **Kill `assert`-as-validation + cache `channel_codes.xml`** | ✅ Done | `Code.__new__` → `InvalidCodeError` (survives `python -O`); `get_channel`/`get_channels` catch `InvalidCodeError`; `limits.py` validation asserts → `ValueError`; `channel_codes.xml` parsed once at import (`_CHANNEL_CODES_ROOT`); `tests/test_code.py` updated |
-| 4 | Fix aliasing + calc-history bugs | ⬜ | `integrate`/`differentiate` info copy; operator history strings |
+| 4 | **Fix aliasing + calc-history bugs** | ✅ Done | `integrate`/`differentiate` now `deepcopy(self.info)` (was mutating the source channel); `__add__` history logs `+` (was `-`), `__mul__` logs `*` (was `/`); mul/div physical-type skip documented; `tests/test_channel.py` green |
 | 5 | De-duplicate readers behind `ArchiveSource` | ⬜ | fs/zip/tar → one interface; single encoding-fallback helper |
 | 6 | Tighten union types | ⬜ | `__getitem__`, `cfc`, `get_data` split |
 | 7 | `get_channel` → provider registry | ⬜ | Biggest structural win; provider-by-provider |
@@ -140,3 +140,36 @@ vanish — invalid codes would sail straight through). And stop re-parsing the p
   and `limits.get_full_limits` internal invariants are domain-invariant guards, not
   external-input validation; deferred to keep this step focused on the `-O` foot-guns the
   review named (§5-D/E).
+
+---
+
+## Step 4 — Fix aliasing + calc-history bugs (§5-G, §5-I)  ✅
+
+**Goal:** two one-liner correctness/provenance bugs. (1) `differentiate`/`integrate`
+aliased and mutated the *source* channel's `.info`; (2) operator "Calculation History"
+strings recorded the wrong symbol, landing misleading provenance in exported metadata.
+
+### Tasks
+- [x] `Channel.differentiate`/`integrate`: `new_info = self.info` → `copy.deepcopy(self.info)`.
+      `Info.update` mutates in place and returns self, so the alias silently added a
+      `Dimension` entry to the *source* channel on every derivation. `cfc` already did this
+      correctly with `deepcopy`; the two derivation methods now match.
+- [x] `__add__`: history string `f"{self.code} - {other.code}"` → `+` (all three branches:
+      compatible-unit, incompatible-unit, scalar).
+- [x] `__mul__`: history string `f"{self.code} / {other.code}"` → `*` (both branches).
+- [x] `__truediv__` already logged `/` correctly — left unchanged.
+- [x] Added a comment on `__mul__` documenting the *intentional* skip of the `physical_type`
+      compatibility check that `__add__`/`__sub__` perform (mul/div across physical types is
+      valid and the result unit is computed from operands).
+- [x] `tests/test_channel.py`: `test_calculation_history_add_mul` (asserts the exact history
+      tuple for `+ - * /`, both channel and scalar operands) and
+      `test_{differentiate,integrate}_does_not_mutate_source_info` (source `.info` unchanged
+      after derivation).
+
+### Design notes
+- **Operator methods were never affected by the aliasing bug:** they build info via
+  `self.info + [...]`, which is `list.__add__` → a *new* list, not an in-place mutation. So
+  only the two `update()`-based derivation methods needed the `deepcopy` fix.
+- **`self.info + [...]` returns a plain `list`, not an `Info`** — pre-existing behavior,
+  unchanged here; the `Channel` constructor accepts either, so out of scope for this
+  surgical step.

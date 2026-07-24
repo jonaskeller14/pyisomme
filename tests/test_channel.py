@@ -53,6 +53,41 @@ class TestChannel(unittest.TestCase):
         self.assertEqual((c_1 - c_2).get_data(unit="m"), 0)
         self.assertEqual((c_1 - 1).get_data(unit="m"), 0)
 
+    def test_calculation_history_add_mul(self):
+        c_1 = pyisomme.Channel(code="11HEAD0000H3ACXA", data=pd.DataFrame([1]), unit="m")
+        c_2 = pyisomme.Channel(code="11HEAD0000H3ACYA", data=pd.DataFrame([1]), unit="m")
+
+        # __add__ must record "+", not "-"
+        self.assertEqual((c_1 + c_2).info[-1], ("Calculation History", "11HEAD0000H3ACXA + 11HEAD0000H3ACYA"))
+        self.assertEqual((c_1 + 1).info[-1], ("Calculation History", "11HEAD0000H3ACXA + 1"))
+        # __sub__ records "-"
+        self.assertEqual((c_1 - c_2).info[-1], ("Calculation History", "11HEAD0000H3ACXA - 11HEAD0000H3ACYA"))
+        # __mul__ must record "*", not "/"
+        self.assertEqual((c_1 * c_2).info[-1], ("Calculation History", "11HEAD0000H3ACXA * 11HEAD0000H3ACYA"))
+        self.assertEqual((c_1 * 2).info[-1], ("Calculation History", "11HEAD0000H3ACXA * 2"))
+        # __truediv__ records "/"
+        self.assertEqual((c_1 / c_2).info[-1], ("Calculation History", "11HEAD0000H3ACXA / 11HEAD0000H3ACYA"))
+
+    def test_differentiate_does_not_mutate_source_info(self):
+        source = pyisomme.create_sample(code="11HEAD0000H3VEXA", mode="linear")
+        before = list(source.info)
+
+        derived = source.differentiate()
+
+        # The source channel's info must be untouched by the derivation.
+        self.assertEqual(list(source.info), before)
+        # The derived channel gets its own updated Dimension.
+        self.assertEqual(derived.info.get("Dimension"), derived.code.physical_dimension)
+
+    def test_integrate_does_not_mutate_source_info(self):
+        source = pyisomme.create_sample(code="11HEAD0000H3ACXA", mode="linear")
+        before = list(source.info)
+
+        derived = source.integrate()
+
+        self.assertEqual(list(source.info), before)
+        self.assertEqual(derived.info.get("Dimension"), derived.code.physical_dimension)
+
 
 if __name__ == '__main__':
     unittest.main()

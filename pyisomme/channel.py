@@ -364,7 +364,7 @@ class Channel:
 
         new_code = self.code.differentiate()
         new_unit = Unit(self.unit) / "s"
-        new_info = self.info
+        new_info = copy.deepcopy(self.info)
         new_info.update({"Dimension": new_code.physical_dimension})
 
         new_channel = Channel(new_code, new_data, unit=new_unit, info=new_info)
@@ -382,7 +382,7 @@ class Channel:
         )
         new_code = self.code.integrate()
         new_unit = Unit(self.unit) * "s"
-        new_info = self.info
+        new_info = copy.deepcopy(self.info)
         new_info.update({"Dimension": new_code.physical_dimension})
 
         new_channel = Channel(new_code, new_data, unit=new_unit, info=new_info)
@@ -476,18 +476,18 @@ class Channel:
                 return Channel(code=self.code,
                                data=pd.DataFrame(self.get_data(t) + other.get_data(t, unit=self.unit), index=t),
                                unit=self.unit,
-                               info=self.info + [("Calculation History", f"{self.code} - {other.code}")])
+                               info=self.info + [("Calculation History", f"{self.code} + {other.code}")])
             else:
                 logger.warning(f"Adding channels with non compatible physical units: {self.unit} and {other.unit}")
                 return Channel(code=self.code,
                                data=pd.DataFrame(self.get_data(t=t) + other.get_data(t=t), index=t),
                                unit=self.unit,
-                               info=self.info + [("Calculation History", f"{self.code} - {other.code}")])
+                               info=self.info + [("Calculation History", f"{self.code} + {other.code}")])
         else:
             return Channel(code=self.code,
                            data=self.data + other,
                            unit=self.unit,
-                           info=self.info + [("Calculation History", f"{self.code} - {other}")])
+                           info=self.info + [("Calculation History", f"{self.code} + {other}")])
 
     def __radd__(self, other):
         return self.__add__(other)
@@ -513,17 +513,20 @@ class Channel:
                            info=self.info + [("Calculation History", f"{self.code} - {other}")])
 
     def __mul__(self, other):
+        # NOTE: unlike __add__/__sub__, mul/div intentionally skip the physical_type
+        # compatibility check — multiplying/dividing different physical types is valid
+        # (e.g. force * distance = energy) and the resulting unit is computed accordingly.
         if isinstance(other, Channel):
             t = time_intersect(self, other)
             return Channel(code=self.code,
                            data=pd.DataFrame(self.get_data(t=t) * other.get_data(t=t), index=t),
                            unit=self.unit * other.unit,
-                           info=self.info + [("Calculation History", f"{self.code} / {other.code}")])
+                           info=self.info + [("Calculation History", f"{self.code} * {other.code}")])
         else:
             return Channel(code=self.code,
                            data=self.data * other,
                            unit=self.unit,
-                           info=self.info + [("Calculation History", f"{self.code} / {other}")])
+                           info=self.info + [("Calculation History", f"{self.code} * {other}")])
 
     def __rmul__(self, other):
         return self.__mul__(other)
