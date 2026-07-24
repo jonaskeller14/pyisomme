@@ -3,6 +3,7 @@ import pyisomme
 import unittest
 import os
 import logging
+import numpy as np
 import pandas as pd
 import shutil
 
@@ -71,6 +72,100 @@ class TestIsomme(unittest.TestCase):
         assert len(isomme.channels) == 5
         isomme.delete_duplicates(filter_class_duplicates=True)
         assert len(isomme.channels) == 3 and "11HEAD0000H3ACX0" in [c.code for c in isomme.channels]
+
+    def test_get_channel_calculates_resultant(self):
+        time = [0.0, 0.01, 0.02]
+        isomme = pyisomme.Isomme(channels=[
+            pyisomme.Channel(code="11HEAD0000H3ACXA", data=pd.DataFrame([1.0, 2.0, 3.0], index=time), unit="g"),
+            pyisomme.Channel(code="11HEAD0000H3ACYA", data=pd.DataFrame([0.0, 0.0, 0.0], index=time), unit="g"),
+            pyisomme.Channel(code="11HEAD0000H3ACZA", data=pd.DataFrame([0.0, 0.0, 0.0], index=time), unit="g"),
+        ])
+        channel = isomme.get_channel("11HEAD0000H3ACRA")
+        assert channel is not None
+        assert channel.code.direction == "R"
+        assert channel.code.physical_dimension == "AC"
+        assert channel.get_data().tolist() == [1.0, 2.0, 3.0]
+
+    def test_get_channel_reconstructs_via_differentiate_and_calculate(self):
+        time = [0.0, 0.01, 0.02]
+        isomme = pyisomme.Isomme(channels=[
+            pyisomme.Channel(code="11HEAD0000H3VEXA", data=pd.DataFrame([0.0, 0.01, 0.02], index=time), unit="m/s"),
+            pyisomme.Channel(code="11HEAD0000H3VEYA", data=pd.DataFrame([0.0, 0.0, 0.0], index=time), unit="m/s"),
+            pyisomme.Channel(code="11HEAD0000H3VEZA", data=pd.DataFrame([0.0, 0.0, 0.0], index=time), unit="m/s"),
+        ])
+
+        # Reconstruct the missing acceleration X channel by differentiating the existing velocity channel.
+        acc_x = isomme.get_channel("11HEAD0000H3ACXA")
+        assert acc_x is not None
+        assert acc_x.code.physical_dimension == "AC"
+        assert acc_x.code.direction == "X"
+        assert np.allclose(acc_x.get_data().flatten(), [1.0, 1.0, 1.0], atol=1e-8)
+
+        # Reconstruct the resultant acceleration by calculating from the reconstructed X/Y/Z acceleration channels.
+        acc_r = isomme.get_channel("11HEAD0000H3ACRA")
+        assert acc_r is not None
+        assert acc_r.code.direction == "R"
+        assert acc_r.code.physical_dimension == "AC"
+        assert np.allclose(acc_r.get_data().flatten(), [1.0, 1.0, 1.0], atol=1e-8)
+
+    def test_get_channel_integration_reconstructs_velocity(self):
+        time = [0.0, 0.01, 0.02]
+        isomme = pyisomme.Isomme(channels=[
+            pyisomme.Channel(code="11HEAD0000H3ACXA", data=pd.DataFrame([0.0, 1.0, 2.0], index=time), unit="m/s^2"),
+        ])
+        velocity = isomme.get_channel("11HEAD0000H3VEXA")
+        assert velocity is not None
+        assert velocity.code.physical_dimension == "VE"
+        assert np.allclose(velocity.get_data().flatten(), [0.0, 0.005, 0.02], atol=1e-8)
+
+    def test_get_channel_filters_to_requested_class(self):
+        # The ISO-6487 filter averages the first/last 10 points, so it needs a realistic
+        # (not 3-sample) signal; use a 10 kHz record like real crash data.
+        time = np.linspace(0.0, 0.1, 1000)
+        isomme = pyisomme.Isomme(channels=[
+            pyisomme.Channel(code="11HEAD0000H3ACX0", data=pd.DataFrame(np.sin(2 * np.pi * 50 * time), index=time), unit="g"),
+        ])
+        filtered = isomme.get_channel("11HEAD0000H3ACXA")
+        assert filtered is not None
+        assert filtered.code.filter_class == "A"
+        assert filtered.code == "11HEAD0000H3ACXA"
+
+    def test_get_channel_builds_hic_from_acceleration(self):
+        time = [0.0, 0.01, 0.02, 0.03]
+        isomme = pyisomme.Isomme(channels=[
+            pyisomme.Channel(code="11HEAD000000ACXA", data=pd.DataFrame([0.0, 1.0, 0.5, 0.0], index=time), unit="g"),
+            pyisomme.Channel(code="11HEAD000000ACYA", data=pd.DataFrame([0.0, 0.0, 0.0, 0.0], index=time), unit="g"),
+            pyisomme.Channel(code="11HEAD000000ACZA", data=pd.DataFrame([0.0, 0.0, 0.0, 0.0], index=time), unit="g"),
+        ])
+        hic = isomme.get_channel("11HICR00150000RX")
+        assert hic is not None
+        assert hic.code.main_location == "HICR"
+        assert hic.code.filter_class == "X"
+        assert hic.get_data()[0] >= 0
+
+    def test_get_channel_builds_bric(self):
+        time = [0.0, 0.01]
+        isomme = pyisomme.Isomme(channels=[
+            pyisomme.Channel(code="11HEAD000000AVXD", data=pd.DataFrame([10.0, 20.0], index=time), unit="rad/s"),
+            pyisomme.Channel(code="11HEAD000000AVYD", data=pd.DataFrame([10.0, 30.0], index=time), unit="rad/s"),
+            pyisomme.Channel(code="11HEAD000000AVZD", data=pd.DataFrame([10.0, 40.0], index=time), unit="rad/s"),
+        ])
+        bric = isomme.get_channel("11BRIC00000000XX")
+        assert bric is not None
+        assert bric.code.main_location == "BRIC"
+        assert bric.code.direction == "0"
+        assert bric.get_data()[0] > 0
+
+    def test_get_channel_builds_xms_from_acceleration(self):
+        time = [0.0, 0.001, 0.002, 0.003, 0.004]
+        isomme = pyisomme.Isomme(channels=[
+            pyisomme.Channel(code="11HEAD0000H3ACXA", data=pd.DataFrame([0.0, 1.0, 2.0, 3.0, 4.0], index=time), unit="g"),
+        ])
+        xms = isomme.get_channel("11HEAD003SH3ACXX")
+        assert xms is not None
+        assert xms.code.fine_location_2 == "3S"
+        assert xms.code.filter_class == "X"
+        assert xms.data.shape == (1, 1)
 
 
 if __name__ == '__main__':

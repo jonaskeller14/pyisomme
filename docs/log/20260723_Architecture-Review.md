@@ -83,6 +83,18 @@ which re-checks `if channel is None: return None`, which flows back into `get_ch
 4. **The big one — replace `Channel | None` with a typed "absent channel".** See §4;
    this single change removes most of the union noise in `calculate.py` and `get_channel`.
 
+5. **Optional at the edge of a *query*, never in the middle of a *computation*.** `X | None`
+   is the right type where absence is a genuine, expected answer to a *lookup*
+   (`get_channel`, `get_test_info`, a pre-calculation `Criterion.channel`) — keep those.
+   It is the *wrong* type as defensive padding on a pure computation (`calculate_*`), where
+   `None` can only arrive as a bug and the `if x is None: return None` guard merely defers
+   the crash to the next `.get_data()`. Post-Step-7 every `calculate_*` caller is a provider
+   that already None-guards before calling, so those guards are dead code that never
+   delivered the "handle missing data without errors" they were written for — that job now
+   belongs to Step 1's `require_channel` + three-state `Criterion`. De-Optional
+   `calculate.py` (params `Channel`, returns `Channel`/`tuple[Channel, ...]`); see the
+   §8 resolution.
+
 ---
 
 ## 3. `get_channel`: the god-method
@@ -333,6 +345,13 @@ metadata, so it's misleading provenance. Also `__mul__`/`__truediv__` skip the
 `physical_type` compatibility check that `__add__`/`__sub__` perform — intentional for
 mul/div, but worth a comment.
 
+**J — BrIC computed from the X-axis alone (bug).** `calculate_bric`
+([calculate.py:226-228](pyisomme/calculate.py#L226)) read `c_av_x.get_data()` into `av_x`,
+`av_y` *and* `av_z` — a copy-paste slip, so every BrIC value used the X angular velocity for
+all three axes and ignored Y/Z entirely. Same class as G/I but a real *correctness* error,
+not cosmetic. **Fixed 2026-07-24**, with a `test_calculate_bric` regression guard that feeds
+distinct per-axis peaks (a dominant Y peak → BrIC ~1.86 vs. the X-only ~0.34).
+
 **F — read/write duplication.** `read_from_mme` / `read_from_zip` / `read_from_tarfile`
 are ~90% identical, differing only in the file-access primitive (fs glob vs
 `zipfile.namelist` vs `tarfile.getnames`) and the open call. The utf-8→iso-8859-1
@@ -399,6 +418,42 @@ deeply nested inner classes, and the tree is discovered *reflectively* by scanni
 
 Steps 1–4 are a few days and remove most of the "not robust" feeling. 5–8 are the deeper
 "messy" cleanup and can proceed opportunistically as you touch each area.
+
+---
+
+## 8. Resolution (2026-07-24): de-Optional `calculate.py`; tighten model Optionals
+
+Two owner questions resolved, feeding Steps 9–10 of the plan.
+
+**"Should `calculate.py` stop returning `Channel | None`?" — yes.** The intention behind the
+pervasive `Channel | None` (params *and* returns) was "handle invalid/missing data without
+errors", but it never achieved that and is now dead weight:
+- **The guards are unreachable.** After Step 7 every internal caller is a provider that does
+  `if all(channel is not None): return calculate_x(...)` — `None` never reaches the function.
+- **It never prevented an error, only moved it.** The two direct report callers prove it:
+  `calculate_olc(get_channel(...))[0]` returns `(None, None)` on a missing channel, then
+  crashes one line later at `.get_data()`; `calculate_p_*` already takes plain `Channel` and
+  crashes the same way. Graceful degradation comes from `require_channel` + three-state
+  `Criterion` (Step 1), not from None-plumbing inside the biomechanics.
+- **Layering.** A `calculate_*` that receives `None` is now unambiguously a bug and should
+  surface as `ERROR`; removing the guards makes that correct-by-construction. The change is
+  behavior-preserving at the report level (absent input → `ERROR`/`NaN` either way) and
+  verifiable with the print-results baseline the earlier steps used.
+
+The general rule (see §2.5): **Optional at query edges, not inside computations.** Keep
+`get_channel`/`get_test_info` Optional (queries; the provider fall-through *relies* on `None`);
+de-Optional `calculate.py`.
+
+**Model-field decision — `Isomme.test_number: str | None` → `str`.** It is set from the file
+stem on every `read()`, and the four `test_number or "Unnamed ISOMME"` fallbacks
+([isomme.py:350,353,383](pyisomme/isomme.py#L350) + `__hash__`) collapse to one display
+helper with a `""` default. `Criterion.channel`/`name`/`color` stay Optional (legitimately
+unset until `calculation()` runs).
+
+**Type-annotation cleanups bundled with Step 9:** `calculate_hic`'s unannotated `max_delta_t`
+→ `float`; `method: str` → `Literal[...]` for `calculate_xms`/`calculate_bric`; `calculate_olc`
+return `tuple[Channel, Channel]`. `dummy: str | None = None` stays (None = auto-detect from
+code).
 
 ---
 

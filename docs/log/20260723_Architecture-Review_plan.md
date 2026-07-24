@@ -15,6 +15,8 @@ Each step is self-contained and must leave the test suite green.
 | 6 | **Tighten union types** | ✅ Done | `__getitem__` explicit `TypeError` for unsupported keys (kept int→Channel / slice→list / str→get_channels shorthand by choice); `cfc(filter_class)` + `cfc_hz(freq)` split w/ deprecation shim, `method: Literal`; `get_data`→`np.ndarray` (the `\|float` was never real) + new `get_value(t)→float`; fixes latent SAE info-aliasing bug; `tests/test_channel.py` +7 green |
 | 7 | `get_channel` → provider registry | ✅ Done | new `providers.py` (`ChannelProvider` + `AggregatePairProvider` + 30-entry `PROVIDERS`); ~630-line calculate cascade → 6-line registry walk; ~11 min/max blocks collapse to config rows; report stdout byte-identical to baseline |
 | 8 | Explicit `Criterion.children` + occupant helper | ⬜ | Replace `dir()` reflection; de-dup position logic |
+| 9 | **De-Optional `calculate.py` + typing** | ⬜ | Drop `Channel \| None` params/returns (guards are dead post-Step-7); `Literal`/`float` annotations; BrIC X-axis bug already fixed (2026-07-24) |
+| 10 | Tighten model Optionals (`test_number: str`) | ⬜ | `Isomme.test_number: str \| None` → `str` (`""` default); collapse `or "Unnamed"` fallbacks |
 
 ---
 
@@ -348,3 +350,70 @@ surgery on a giant method.
   Step 1's three-state model and §2.4's `Channel | None` union-soup in `calculate.py`.
 - The lambda match predicates in `PROVIDERS` could migrate to declarative field-constraint
   rows (or `Code`-pattern matching) if a data-driven criterion table (§6) is pursued.
+
+---
+
+## Step 9 — De-Optional `calculate.py` + type annotations (§2.5, §8)  ⬜
+
+**Goal:** answer the owner's question ("remove `None` from `calculate.py`, always return
+`Channel`?") — **yes**. The `Channel | None` in/out unions were defensive padding that (a) is
+now dead code (Step 7's providers None-guard before every call) and (b) never delivered
+graceful handling anyway (a returned `None` just crashes at the next `.get_data()`). Missing
+inputs are handled at the boundary by Step 1's `require_channel` + three-state `Criterion`.
+
+### Tasks
+- [ ] Parameters: `Channel | None` → `Channel`; `Channel | float | None = 0` →
+      `Channel | float = 0` (the `| float` is real for resultant components, the `| None`
+      is not). Returns: `Channel | None` → `Channel`;
+      `tuple[Channel, Channel] | tuple[None, None]` → `tuple[Channel, Channel]`;
+      `tuple[Channel, ...] | None` → `tuple[Channel, ...]`.
+- [ ] Delete the now-unreachable `if ... is None: return None` / `return None, None` guards.
+      The provider-side `if all(channel is not None): return calculate_x(...)` guards **stay**
+      — that is the correct boundary.
+- [ ] Type-annotation cleanups: `calculate_hic(max_delta_t: float)`; `method` →
+      `Literal["S", "C"]` (xms) / `Literal["MPS", "CSDM", "Average of CSDM and MPS"]` (bric);
+      `calculate_olc -> tuple[Channel, Channel]`. Leave `dummy: str | None = None`
+      (None = auto-detect from the channel code).
+- [ ] Migrate the two direct report callers that still pass a raw `get_channel(...)` into a
+      `calculate_*` (`frontal_mpdb.py` OLC, `frontal_56kmh.py` p_head) toward `require_channel`
+      so their missing-input case becomes `NA` rather than `ERROR`. (Optional within this step;
+      removing the guards is behavior-preserving without it — both paths already end in
+      `ERROR`/`NaN`.)
+- [ ] Verify against a fresh `report.print_results()` baseline across `tests/test_report`
+      (as Steps 5/7 did). **Note:** the BrIC values legitimately *change* — see below.
+
+### Already done (2026-07-24)
+- [x] **BrIC X-axis bug fixed** (review §5-J): `av_y`/`av_z` now read `c_av_y`/`c_av_z`
+      instead of `c_av_x`. Guarded by `test_calculate_bric` with distinct per-axis peaks.
+      Any report computing BrIC will now produce corrected (different) numbers — re-baseline.
+- [x] Adjacent test hygiene: `tests/test_isomme.py` (bric/hic setup + `get_data()` ndarray
+      assertions, filter-class signal length) and `tests/test_calculate.py`
+      (bric/xms `get_data()[0]`, olc realistic sled pulse) — full suite green (25 tests).
+
+### Design notes
+- **Behavior-preserving at the report level.** Removing a `None`-guard means an absent input
+  now raises *inside* `calculate_*` (at the first `.convert_unit`/`.get_data`) instead of one
+  line later in the caller — same `ERROR`/`NaN` outcome, one frame earlier and more honest.
+- **Scope line:** `get_channel`/`get_test_info` keep `-> ... | None` (they are *queries*;
+  the provider fall-through in `get_channel` depends on `None`). Only the *computations* lose
+  Optional. See review §2.5 / §8: *Optional at query edges, not inside computations.*
+
+---
+
+## Step 10 — Tighten model Optionals (`Isomme.test_number: str`)  ⬜
+
+**Goal:** remove an Optional that is never legitimately absent, collapsing its scattered
+fallbacks.
+
+### Tasks
+- [ ] `Isomme.test_number: str | None` → `str` with a `""` default. `read()` already sets it
+      from the file stem; manual/sample construction passes it explicitly.
+- [ ] Collapse the four `self.test_number or "Unnamed ISOMME"` fallbacks
+      (`__repr__`/`__str__`/`__hash__` + list header) into one `display_name` helper.
+- [ ] Leave `Criterion.channel`/`name`/`color` Optional — legitimately unset until
+      `calculation()` runs (query-edge, not computation).
+
+### Design notes
+- Two unnamed `Isomme`s already compare/hash equal (both `None` today); `""` preserves that.
+- Low blast radius, but touches `__eq__`/`__hash__`/merge dict keys — run `tests/test_isomme`
+  + `tests/test_report` after.

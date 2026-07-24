@@ -11,6 +11,7 @@ import numpy as np
 import pandas as pd
 from scipy.stats import norm
 from scipy.integrate import solve_ivp, trapezoid
+from typing import Literal
 
 
 logger = logging.getLogger(__name__)
@@ -43,7 +44,7 @@ def calculate_resultant(c1: Channel | None,
 
 
 @debug_logging(logger)
-def calculate_hic(channel: Channel, max_delta_t) -> Channel | None:
+def calculate_hic(channel: Channel, max_delta_t) -> Channel:
     """
     Computes head injury criterion (HIC)
     HIC15 --> max_delta_t = 15
@@ -57,9 +58,6 @@ def calculate_hic(channel: Channel, max_delta_t) -> Channel | None:
     :return:
     """
     assert 0 < max_delta_t < 100
-
-    if channel is None:
-        return None
 
     channel = channel.convert_unit(g0)
 
@@ -114,7 +112,7 @@ def calculate_hic(channel: Channel, max_delta_t) -> Channel | None:
 
 
 @debug_logging(logger)
-def calculate_xms(channel: Channel, min_delta_t: float = 3, method: str = "S") -> Channel | None:
+def calculate_xms(channel: Channel, min_delta_t: float = 3, method: Literal["S", "C"] = "S") -> Channel:
     """
     Exceedance value (typical 3ms)
     :param channel:
@@ -122,11 +120,7 @@ def calculate_xms(channel: Channel, min_delta_t: float = 3, method: str = "S") -
     :param method: S (for single peak) or C (for cumulative)
     :return:
     """
-    assert method in ("S", "C")
     assert 0 < min_delta_t < 10
-
-    if channel is None:
-        return None
 
     min_delta_t *= 1e-3  # convert to s
     time_array = channel.data.index
@@ -164,6 +158,8 @@ def calculate_xms(channel: Channel, min_delta_t: float = 3, method: str = "S") -
                 res_t1 = time_array[greater_indices_left[0]]
                 res_t2 = time_array[greater_indices_left[-1] + 1]  #  +1 because right bound was delete
                 break
+    else:
+        raise ValueError(f"Method {method} not supported. Use 'S' or 'C'.")
 
     new_code = channel.code.set(fine_location_2=f"{(min_delta_t*1e3):.0f}{method}",
                                 filter_class="X")
@@ -183,13 +179,13 @@ def calculate_xms(channel: Channel, min_delta_t: float = 3, method: str = "S") -
 
 
 @debug_logging(logger)
-def calculate_bric(c_av_x: Channel | None,
-                   c_av_y: Channel | None,
-                   c_av_z: Channel | None,
+def calculate_bric(c_av_x: Channel,
+                   c_av_y: Channel,
+                   c_av_z: Channel,
                    critical_av_x: float | None = None,
                    critical_av_y: float | None = None,
                    critical_av_z: float | None = None,
-                   method: str = "MPS") -> Channel | None:
+                   method: Literal["MPS", "CSDM", "Average of CSDM and MPS"] = "MPS") -> Channel:
     """
     References:
     - references/NHTSA/Stapp2013Takhounts.pdf
@@ -202,9 +198,6 @@ def calculate_bric(c_av_x: Channel | None,
     :param critical_av_z: unit rad/s
     :return:
     """
-    if c_av_x is None or c_av_y is None or c_av_z is None:
-        return None
-
     assert method in ("MPS", "CSDM", "Average of CSDM and MPS")
 
     if critical_av_x is None:
@@ -231,8 +224,8 @@ def calculate_bric(c_av_x: Channel | None,
     c_av_z = c_av_z.convert_unit("rad/s")
 
     av_x = c_av_x.get_data()
-    av_y = c_av_x.get_data()
-    av_z = c_av_x.get_data()
+    av_y = c_av_y.get_data()
+    av_z = c_av_z.get_data()
 
     bric = np.sqrt((np.max(np.abs(av_x))/critical_av_x)**2 + (np.max(np.abs(av_y))/critical_av_y)**2 + (np.max(np.abs(av_z))/critical_av_z)**2)
 
@@ -253,9 +246,9 @@ def calculate_bric(c_av_x: Channel | None,
 
 
 @debug_logging(logger)
-def calculate_damage(c_aa_x: Channel | None,
-                     c_aa_y: Channel | None,
-                     c_aa_z: Channel | None) -> tuple[Channel, ...] | None:
+def calculate_damage(c_aa_x: Channel,
+                     c_aa_y: Channel,
+                     c_aa_z: Channel) -> tuple[Channel, ...]:
     """
     :param c_aa_x: Angular Acceleration Channel
     :param c_aa_y: Angular Acceleration Channel
@@ -280,9 +273,6 @@ def calculate_damage(c_aa_x: Channel | None,
             [...]
 
     """
-    if c_aa_x is None or c_aa_y is None or c_aa_z is None:
-        return None
-
     # Convert Units to SI
     c_aa_x = c_aa_x.convert_unit("rad/s^2")
     c_aa_y = c_aa_y.convert_unit("rad/s^2")
@@ -767,10 +757,10 @@ def calculate_chest_pc_score(channel_le_up_ds: Channel,
 
 
 @debug_logging(logger)
-def calculate_vc(channel: Channel | None,
+def calculate_vc(channel: Channel,
                  scaling_factor: float | None = None,
                  defo_constant: float | None = None,
-                 dummy: str | None = None) -> tuple[Channel | None, Channel | None]:
+                 dummy: str | None = None) -> tuple[Channel, Channel]:
     """
     References:
     - references/Euro-NCAP/tb-021-data-acquisition-and-injury-calculation-v402.pdf
@@ -782,9 +772,6 @@ def calculate_vc(channel: Channel | None,
     :param dummy: Dummy type
     :return:
     """
-    if channel is None:
-        return None, None
-
     channel = copy.deepcopy(channel).convert_unit("m")
 
     if scaling_factor is None or defo_constant is None:
