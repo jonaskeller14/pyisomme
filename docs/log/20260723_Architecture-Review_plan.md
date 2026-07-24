@@ -13,7 +13,7 @@ Each step is self-contained and must leave the test suite green.
 | 4 | **Fix aliasing + calc-history bugs** | ✅ Done | `integrate`/`differentiate` now `deepcopy(self.info)` (was mutating the source channel); `__add__` history logs `+` (was `-`), `__mul__` logs `*` (was `/`); mul/div physical-type skip documented; `tests/test_channel.py` green |
 | 5 | **De-duplicate readers behind `ArchiveSource`** | ✅ Done | new `sources.py` (`ArchiveSource` + `FolderSource`/`ZipSource`/`TarSource`, one `read_text_with_fallback`); `read_from_*` collapse to thin wrappers over one `_read_from_source`; ~210 lines → ~100; byte-identical reads verified vs baseline; `tests/test_sources.py` green |
 | 6 | **Tighten union types** | ✅ Done | `__getitem__` explicit `TypeError` for unsupported keys (kept int→Channel / slice→list / str→get_channels shorthand by choice); `cfc(filter_class)` + `cfc_hz(freq)` split w/ deprecation shim, `method: Literal`; `get_data`→`np.ndarray` (the `\|float` was never real) + new `get_value(t)→float`; fixes latent SAE info-aliasing bug; `tests/test_channel.py` +7 green |
-| 7 | `get_channel` → provider registry | ⬜ | Biggest structural win; provider-by-provider |
+| 7 | `get_channel` → provider registry | ✅ Done | new `providers.py` (`ChannelProvider` + `AggregatePairProvider` + 30-entry `PROVIDERS`); ~630-line calculate cascade → 6-line registry walk; ~11 min/max blocks collapse to config rows; report stdout byte-identical to baseline |
 | 8 | Explicit `Criterion.children` + occupant helper | ⬜ | Replace `dir()` reflection; de-dup position logic |
 
 ---
@@ -287,3 +287,64 @@ parser fix had to be applied in three places.
   honest `np.ndarray` annotation already removed the misleading union.
 - `calculate.py`'s pervasive `Channel | None` in/out unions (§2.4) are the larger remaining
   union-soup, addressed structurally by Step 7's provider registry (typed absence).
+
+---
+
+## Step 7 — `get_channel` → provider registry (§3)  ✅
+
+**Goal:** dissolve the ~630-line `if`-cascade inside `get_channel` that mixed three unrelated
+jobs — lookup/matching, synthesis *policy* (filter→calculate→differentiate→integrate), and
+the biomechanics themselves (BrIC, HIC, DAMAGE, NIJ, VC, IR-TRACC geometry, THOR PCA,
+min/max-of-left-right ×10, …). Move the domain knowledge out of the lookup method and into a
+registry of self-describing providers, so adding a criterion is *appending a provider*, not
+surgery on a giant method.
+
+### Tasks
+- [x] New `pyisomme/providers.py`: `ChannelProvider` base (`matches(code) -> bool`,
+      `build(isomme, code) -> Channel | None`); `_FnProvider` (wraps a bespoke match/build
+      function pair so each block stays a small named function behind the uniform interface);
+      `AggregatePairProvider` (one parameterized class for the "min/max/max-abs of siblings"
+      family — config = `vary` field, `members`, `agg`, `keep_info`).
+- [x] Transcribed **all** synthesis blocks into `PROVIDERS` (30 entries) in the **exact
+      original order**. The ~11 element-wise min/max blocks (SHLD, ABDO, ACTB, FEMR, KNSL,
+      TIIN ×2, TIBI ×2, RIBS, FOOT) collapse into `AggregatePairProvider` config rows; the
+      genuinely bespoke biomechanics (resultant, BrIC, HIC, xms, DAMAGE, neck total moment,
+      NIJ, VC, KTH, tibia index, chest PCA, THOR/WorldSid IR-TRACC, OLC) keep a hand-written
+      `_build_*` function each.
+- [x] `get_channel` step 3 shrinks from ~630 lines to a 6-line registry walk: for the first
+      provider whose `matches(code)` is true and whose `build(...)` returns a channel, return
+      it; a `None` build result falls through to the next matching provider — faithfully
+      reproducing the old cascade's "matching block that can't find its inputs falls to the
+      next `if`" semantics.
+- [x] Import hygiene: `isomme.py`'s now-dead `from pyisomme.calculate import *`, `import
+      pandas as pd`, and residual `np`/`time_intersect` usages are gone. The package-level
+      re-export of `calculate_*` (`pyisomme.calculate_femur_impulse`, relied on by
+      `test_calculate`) moved to an **explicit** `from pyisomme.calculate import *` in
+      `__init__.py` — it was previously leaking through `isomme`'s star import by accident.
+
+### Design notes
+- **Verified behavior-preserving byte-for-byte.** Captured a pre-refactor baseline of every
+  `report.print_results()` across the whole `tests/test_report` suite (13 tests, 15 report
+  trees); the post-refactor `diff` is **IDENTICAL**. Every derived channel — resultants,
+  criteria, geometry, the collapsed aggregates — synthesizes exactly as before.
+- **The fall-through semantics are the subtle part.** Conditions overlap (e.g. the two
+  `TIIN …00…` aggregates are more specific than the bespoke `calculate_tibia_index` block, and
+  the VC provider nests fine-location aggregates inside its `main_location in ("VCCR","VCAR")`
+  guard). Preserving list order + "first matching provider that *builds* wins" keeps these
+  precedences exactly as the linear `if`-chain had them. The duplicate ABDO-force block
+  (appeared twice, identical) folds to a single provider with no behavior change.
+- **`AggregatePairProvider` keeps the first member's own-unit path.** The original fetched the
+  first sibling with no `unit=` and the rest with `unit=first.unit`; the provider mirrors that
+  (`first.get_data(t=t)` then `unit=first.unit` for the rest) so resampling/conversion is
+  bit-identical, and `keep_info` reproduces the per-block choice of whether to carry `info`.
+- **`build` returns `Channel | None`, not a typed absence — yet.** This step is the structural
+  split; the review's richer payoff (`provider.required(code)` feeding a *typed* absence that
+  names the missing sub-input into Step 1's `MissingData`/NA path) is the natural follow-on now
+  that each provider is isolated.
+
+### Follow-on (later, incremental)
+- Give providers an explicit `required(code) -> list[str]`, and have `get_channel` raise a
+  typed absence (naming the missing sub-input) instead of bare `None` — closing the loop with
+  Step 1's three-state model and §2.4's `Channel | None` union-soup in `calculate.py`.
+- The lambda match predicates in `PROVIDERS` could migrate to declarative field-constraint
+  rows (or `Code`-pattern matching) if a data-driven criterion table (§6) is pursued.
