@@ -44,7 +44,11 @@ class Limit:
 
         if func is not None:
             self.func = func
-        assert self.func.__code__.co_argcount == 1
+        if self.func.__code__.co_argcount != 1:
+            raise ValueError(
+                f"Limit func must take exactly one argument, "
+                f"got {self.func.__code__.co_argcount}."
+            )
 
         if color is not None:
             self.color = color
@@ -126,7 +130,8 @@ class Limits:
 
     def get_limits(self, channel: Channel) -> list[Limit]:
         limits = limit_list_sort(self.find_limits(channel.code))
-        assert len(limits) > 0, "No limits found."
+        if len(limits) == 0:
+            raise ValueError(f"No limits found for channel '{channel.code}'.")
 
         channel_times = channel.data.index
         channel_values = cast(np.ndarray, channel.get_data())
@@ -157,8 +162,10 @@ class Limits:
 
     def get_limit_ratings(self, channel: Channel, interpolate=True) -> list:
         limits = limit_list_sort(self.find_limits(channel.code))
-        assert len(limits) > 0, "No limits found."
-        assert None not in [limit.rating for limit in limits], "All limits must have a value defined."
+        if len(limits) == 0:
+            raise ValueError(f"No limits found for channel '{channel.code}'.")
+        if None in [limit.rating for limit in limits]:
+            raise ValueError("All limits must have a rating defined.")
 
         channel_times = channel.data.index
         channel_values = cast(np.ndarray, channel.get_data())

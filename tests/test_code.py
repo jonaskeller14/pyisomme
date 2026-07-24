@@ -1,4 +1,5 @@
 import pyisomme
+from pyisomme.errors import InvalidCodeError
 
 import unittest
 import logging
@@ -14,13 +15,13 @@ class TestCode(unittest.TestCase):
         pyisomme.Code("11HEAD0000H3ACXA")
 
         # 15 chars
-        with self.assertRaises(AssertionError):
+        with self.assertRaises(InvalidCodeError):
             pyisomme.Code("11HEAD0000H3ACX")
         # 17 chars
-        with self.assertRaises(AssertionError):
+        with self.assertRaises(InvalidCodeError):
             pyisomme.Code("11HEAD0000H3ACXA?")
         # invalid chars
-        with self.assertRaises(AssertionError):
+        with self.assertRaises(InvalidCodeError):
             pyisomme.Code("11HEAD0000H3ACX*")
 
     def test_combine_codes(self):

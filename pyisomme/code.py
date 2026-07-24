@@ -1,21 +1,30 @@
 from __future__ import annotations
 
+from pyisomme.errors import InvalidCodeError
 from pyisomme.unit import Unit
 
 import re
 from fnmatch import fnmatch
-import logging
 from pathlib import Path
+import logging
 import xml.etree.ElementTree as ET
 
 
 logger = logging.getLogger(__name__)
 
 
+_CHANNEL_CODES_ROOT: ET.Element = ET.parse(
+    Path(__file__).parent.joinpath("channel_codes.xml")
+).getroot()
+
+
 class Code(str):
     def __new__(cls, code: str) -> Code:
-        assert re.fullmatch(r"[a-zA-Z0-9?]{16}", code), \
-            "Invalid code. Code must be 16 characters long, only letters and digits."
+        if not re.fullmatch(r"[a-zA-Z0-9?]{16}", code):
+            raise InvalidCodeError(
+                f"Invalid code '{code}'. Code must be 16 characters long, containing only "
+                "letters, digits and '?' wildcards."
+            )
         return super(Code, cls).__new__(cls, code)
 
     def __init__(self, code: str) -> None:
@@ -68,7 +77,7 @@ class Code(str):
         :return: dict with code attributes
         """
         info = {}
-        root = ET.parse(Path(__file__).parent.joinpath("channel_codes.xml")).getroot()
+        root = _CHANNEL_CODES_ROOT
         for element in root.findall("Codification/Element"):
             for channel in element.findall(".//Channel"):
                 if fnmatch(str(self), channel.get("code", "")):
@@ -84,7 +93,7 @@ class Code(str):
         Default Units are stored in 'channel_codes.xml'
         :return: Unit or None
         """
-        root = ET.parse(Path(__file__).parent.joinpath("channel_codes.xml")).getroot()
+        root = _CHANNEL_CODES_ROOT
         for element in root.findall("Codification/Element[@name='Physical Dimension']"):
             for channel in element.findall(".//Channel"):
                 if fnmatch(str(self), channel.get("code", "")):
@@ -135,7 +144,7 @@ class Code(str):
             logger.error("Code length not 16 characters.")
             return False
 
-        root = ET.parse(Path(__file__).parent.joinpath("channel_codes.xml")).getroot()
+        root = _CHANNEL_CODES_ROOT
         for element in root.findall("Codification/Element"):
             match = False
             for channel in element.findall(".//Channel"):

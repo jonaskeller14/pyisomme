@@ -3,6 +3,7 @@ from __future__ import annotations
 from pyisomme.parsing import parse_mme, parse_chn, parse_xxx
 from pyisomme.channel import create_sample, Channel
 from pyisomme.code import Code
+from pyisomme.errors import InvalidCodeError
 from pyisomme.calculate import *
 from pyisomme.utils import debug_logging
 from pyisomme.info import Info
@@ -513,7 +514,7 @@ class Isomme:
                         return channel.cfc(code_pattern[-1])
             try:
                 code_pattern = Code(code_pattern)
-            except AssertionError:
+            except InvalidCodeError:
                 continue
             # 3. Calculate Channel
             if calculate:
@@ -1190,7 +1191,7 @@ class Isomme:
 
             try:
                 code_pattern = Code(code_pattern)
-            except AssertionError:
+            except InvalidCodeError:
                 continue
             # 3. Calculate Channel
             if calculate:

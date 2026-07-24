@@ -9,7 +9,7 @@ Each step is self-contained and must leave the test suite green.
 |---|------|--------|-------|
 | 1 | **Error taxonomy + 3 outcome states** | ✅ Done | `errors.py` (`PyisommeError` tree, `MissingData`, `Status`), `Criterion.require*()`, 3-state `Criterion.calculate()`; `tests/test_errors.py` green |
 | 2 | Normalization boundary at ingest | ✅ Done | `parse_xxx` split into `parse_header_and_data` + `resolve_time_axis`; assumptions recorded in the **standard** ISO/TS 13499 `Comments` field (prefix-marked, `get_normalization_notes`); fall-through explicit (TIRS=sample-index silent, else logged+recorded); non-numeric data → `MalformedFileError`; latent `n*dt` endpoint bug fixed; `tests/test_parsing.TestTimeAxisNormalization` green |
-| 3 | Kill `assert`-as-validation + cache `channel_codes.xml` | ⬜ | `Code.__new__` → `InvalidCodeError`; module-level XML cache |
+| 3 | **Kill `assert`-as-validation + cache `channel_codes.xml`** | ✅ Done | `Code.__new__` → `InvalidCodeError` (survives `python -O`); `get_channel`/`get_channels` catch `InvalidCodeError`; `limits.py` validation asserts → `ValueError`; `channel_codes.xml` parsed once at import (`_CHANNEL_CODES_ROOT`); `tests/test_code.py` updated |
 | 4 | Fix aliasing + calc-history bugs | ⬜ | `integrate`/`differentiate` info copy; operator history strings |
 | 5 | De-duplicate readers behind `ArchiveSource` | ⬜ | fs/zip/tar → one interface; single encoding-fallback helper |
 | 6 | Tighten union types | ⬜ | `__getitem__`, `cfc`, `get_data` split |
@@ -101,3 +101,42 @@ line. Stop the fall-through that silently produced a wrong (integer) time axis.
 - The review's fuller `normalize(isomme)` pass (unit canonicalization, a test-level
   normalization log aggregated from per-channel notes) is still open; the per-channel note
   is the auditable substrate it would roll up.
+
+---
+
+## Step 3 — Kill `assert`-as-validation + cache `channel_codes.xml`  ✅
+
+**Goal:** stop using `assert` for input validation and control flow (assertions are stripped
+under `python -O`, so both the check *and* the `except AssertionError` control flow silently
+vanish — invalid codes would sail straight through). And stop re-parsing the packaged
+`channel_codes.xml` from disk on every code lookup.
+
+### Tasks
+- [x] `Code.__new__`: `assert re.fullmatch(...)` → raise `InvalidCodeError` (Step 1's
+      taxonomy) with a descriptive message. Now enforced identically with/without `-O`.
+- [x] `Isomme.get_channel`/`get_channels`: the two `try: Code(...) except AssertionError:
+      continue` sites now catch `InvalidCodeError` (import added to `isomme.py`).
+- [x] `code.py`: parse `channel_codes.xml` **once** at import into module-level
+      `_CHANNEL_CODES_ROOT`; `get_info`/`get_default_unit`/`is_valid` read the cached root
+      instead of `ET.parse(...)` per call. Pure speedup, no API change (a report triggers
+      thousands of these lookups).
+- [x] `limits.py`: replace validation asserts with explicit raises — `Limit.__init__`
+      func-arity check and the two `get_limits`/`get_limit_ratings` "No limits found" /
+      "rating defined" checks → `ValueError`.
+- [x] `tests/test_code.py`: `assertRaises(AssertionError)` → `assertRaises(InvalidCodeError)`.
+
+### Design notes
+- **`InvalidCodeError` subclasses `ValueError`** (see `errors.py`), so any latent
+  `except ValueError` around code construction keeps working; the `except AssertionError`
+  sites were the only catchers of the old behavior and both were migrated.
+- **No import cycle:** `errors.py` imports only `enum`; `code.py`/`limits.py` importing it is
+  safe within the `__init__.py` load order.
+- **`limits.py` uses `ValueError`, not `MissingData`.** "No limits found" is currently a
+  loud failure (was `AssertionError`, caught by `Criterion.calculate`'s broad `except` →
+  `ERROR`). `ValueError` preserves that exact outcome while being `-O`-safe. Reclassifying
+  "no matching limit" as soft `NA` is an intentional *later* migration (Step 1 follow-on),
+  not smuggled into this surgical step.
+- **Left out of scope:** the `assert`s in `calculate.py` (dummy-type / method preconditions)
+  and `limits.get_full_limits` internal invariants are domain-invariant guards, not
+  external-input validation; deferred to keep this step focused on the `-O` foot-guns the
+  review named (§5-D/E).
