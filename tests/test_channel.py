@@ -2,7 +2,10 @@ import pyisomme
 
 import unittest
 import logging
+import warnings
+import copy
 import pandas as pd
+import numpy as np
 
 
 logger = logging.getLogger(__name__)
@@ -87,6 +90,65 @@ class TestChannel(unittest.TestCase):
 
         self.assertEqual(list(source.info), before)
         self.assertEqual(derived.info.get("Dimension"), derived.code.physical_dimension)
+
+    def test_cfc_and_cfc_hz_equivalence(self):
+        # Filter class "B" and its cutoff frequency 600 Hz must produce identical results,
+        # and both must record filter class "B" in the code.
+        source = pyisomme.create_sample(code="11HEAD0000H3ACXP", mode="sin")
+        by_class = copy.deepcopy(source).cfc("B")
+        by_freq = copy.deepcopy(source).cfc_hz(600)
+
+        self.assertTrue(np.allclose(by_class.get_data(), by_freq.get_data()))
+        self.assertEqual(by_class.code.filter_class, "B")
+        self.assertEqual(by_freq.code.filter_class, "B")
+
+    def test_cfc_hz_non_standard_frequency_records_S(self):
+        source = pyisomme.create_sample(code="11HEAD0000H3ACXP", mode="sin")
+        self.assertEqual(copy.deepcopy(source).cfc_hz(123.0).code.filter_class, "S")
+
+    def test_cfc_unknown_filter_class_raises(self):
+        source = pyisomme.create_sample(code="11HEAD0000H3ACXP", mode="sin")
+        with self.assertRaises(ValueError):
+            source.cfc("Z")
+
+    def test_cfc_numeric_is_deprecated_and_delegates(self):
+        # Backward-compat shim: cfc(<number>) warns and behaves like cfc_hz(<number>).
+        source = pyisomme.create_sample(code="11HEAD0000H3ACXP", mode="sin")
+        expected = copy.deepcopy(source).cfc_hz(600)
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always")
+            result = copy.deepcopy(source).cfc(600)
+        self.assertTrue(any(issubclass(w.category, DeprecationWarning) for w in caught))
+        self.assertTrue(np.allclose(result.get_data(), expected.get_data()))
+
+    def test_cfc_does_not_mutate_source_info(self):
+        # Both filter methods must leave the source channel's info untouched.
+        for method in ("ISO-6487", "SAE-J211-1"):
+            source = pyisomme.create_sample(code="11HEAD0000H3ACXP", mode="sin")
+            before = list(source.info)
+            copy.deepcopy(source).cfc("B", method=method)
+            self.assertEqual(list(source.info), before, msg=method)
+
+    def test_get_value_is_float_get_data_is_ndarray(self):
+        source = pyisomme.create_sample(code="11HEAD0000H3ACXP", mode="sin")
+        self.assertIsInstance(source.get_value(t=0.0), float)
+        self.assertIsInstance(source.get_data(t=0.0), np.ndarray)
+        self.assertIsInstance(source.get_data(), np.ndarray)
+
+    def test_getitem_index_types(self):
+        c0 = pyisomme.create_sample(code="11HEAD0000H3ACXP", mode="sin")
+        c1 = pyisomme.create_sample(code="11HEAD0000H3ACYP", mode="sin")
+        iso = pyisomme.Isomme(test_number="TEST", channels=[c0, c1])
+
+        # int -> single Channel, slice -> list
+        self.assertIs(iso[0], c0)
+        self.assertEqual(iso[0:2], [c0, c1])
+        # str -> code-pattern shorthand for get_channels (a list)
+        self.assertEqual(iso["11HEAD0000H3ACXP"], [c0])
+        self.assertEqual(iso["11HEAD0000H3AC?P"], [c0, c1])
+        # unsupported key type -> explicit TypeError (was a silent None)
+        with self.assertRaises(TypeError):
+            iso[1.5]
 
 
 if __name__ == '__main__':

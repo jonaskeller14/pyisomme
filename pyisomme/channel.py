@@ -8,11 +8,12 @@ import re
 import pandas as pd
 import numpy as np
 import logging
-from typing import overload
+import warnings
 from fnmatch import fnmatch
 from scipy.integrate import cumulative_trapezoid
 from scipy import interpolate as scipy_interpolate
 import copy
+from typing import Literal
 from astropy.units import CompositeUnit
 
 
@@ -92,55 +93,51 @@ class Channel:
         self.unit = Unit(new_unit)
         return self
 
-    def cfc(self, value: int | str, method="ISO-6487", return_copy: bool = True) -> Channel:
+    # Cutoff frequency (Hz) of each standard ISO filter class.
+    _FILTER_CLASS_CFC = {"0": np.inf, "A": 1000, "B": 600, "C": 180, "D": 60}
+    _CFC_METHODS = Literal["ISO-6487", "SAE-J211-1"]
+
+    def cfc(self, filter_class: str, method: _CFC_METHODS = "ISO-6487", return_copy: bool = True) -> Channel:
         """
-        Apply a filter to smooth curves.
+        Apply a filter to smooth curves, selected by ISO **filter class**
+        ("0"/"A"/"B"/"C"/"D"). To filter by an explicit cutoff frequency use cfc_hz().
         REFERENCES:
         - Appendix C of references/SAE-J211-1-MAR95/sae.j211-1.1995.pdf
         - Annex A of references/ISO-6487/ISO-6487-2015.pdf
-        :param value:
+        :param filter_class: one of "0", "A", "B", "C", "D"
         :param method:
         :param return_copy:
         :return:
         """
-        if isinstance(value, str):
-            filter_class = value
-            cfc = None
-        elif isinstance(value, int):
-            filter_class = None
-            cfc = value
-        else:
-            raise ValueError
+        if not isinstance(filter_class, str):
+            # Backward compatibility: cfc(<number>) historically meant a cutoff frequency.
+            warnings.warn(
+                "Channel.cfc(<numeric>) is deprecated; use cfc_hz(freq) for a cutoff "
+                "frequency in Hz, or cfc('A'/'B'/'C'/'D') for an ISO filter class.",
+                DeprecationWarning, stacklevel=2,
+            )
+            return self.cfc_hz(filter_class, method=method, return_copy=return_copy)
+        if filter_class not in self._FILTER_CLASS_CFC:
+            raise ValueError(
+                f"Unknown filter class {filter_class!r}; expected one of "
+                f"{sorted(self._FILTER_CLASS_CFC)}."
+            )
+        return self._apply_cfc(self._FILTER_CLASS_CFC[filter_class], filter_class, method, return_copy)
 
-        # Convert Filter-Class to cfc value
-        if cfc is None:
-            if filter_class == "0":
-                cfc = np.inf
-            elif filter_class == "A":
-                cfc = 1000
-            elif filter_class == "B":
-                cfc = 600
-            elif filter_class == "C":
-                cfc = 180
-            elif filter_class == "D":
-                cfc = 60
-            else:
-                raise NotImplementedError
+    def cfc_hz(self, freq: float, method: _CFC_METHODS = "ISO-6487", return_copy: bool = True) -> Channel:
+        """
+        Apply a filter to smooth curves, selected by an explicit cutoff **frequency in Hz**.
+        The nearest standard ISO filter class (or "S" for a non-standard cutoff) is recorded
+        in the resulting channel code.
+        :param freq: cutoff frequency in Hz (np.inf = no filtering)
+        :param method:
+        :param return_copy:
+        :return:
+        """
+        filter_class = next((fc for fc, hz in self._FILTER_CLASS_CFC.items() if hz == freq), "S")
+        return self._apply_cfc(freq, filter_class, method, return_copy)
 
-        if filter_class is None:
-            if np.isinf(cfc):
-                filter_class = "0"
-            elif cfc == 1000:
-                filter_class = "A"
-            elif cfc == 600:
-                filter_class = "B"
-            elif cfc == 180:
-                filter_class = "C"
-            elif cfc == 60:
-                filter_class = "D"
-            else:
-                filter_class = "S"
-
+    def _apply_cfc(self, cfc: float, filter_class: str, method: _CFC_METHODS, return_copy: bool) -> Channel:
         # Check if Channel is already filtered
         if filter_class == "0":
             return copy.deepcopy(self) if return_copy else self
@@ -281,7 +278,7 @@ class Channel:
             data = copy.deepcopy(self.data)
             data.iloc[:, 0] = output_values
 
-            info = self.info
+            info = copy.deepcopy(self.info)  # deepcopy: Info.update mutates in place (was aliasing self.info)
             info.update({"Channel frequency class": cfc})
 
             if return_copy:
@@ -299,20 +296,19 @@ class Channel:
         else:
             raise NotImplementedError
 
-    @overload
-    def get_data(self, t: None = ..., unit=None, method: str = "linear", fill_value: tuple = (0, 0)) -> np.ndarray: ...
-    @overload
-    def get_data(self, t: float | np.ndarray, unit=None, method: str = "linear", fill_value: tuple = (0, 0)) -> np.ndarray | float: ...
-
-    def get_data(self, t=None, unit=None, method: str = "linear", fill_value: tuple = (0, 0)) -> np.ndarray | float:
+    def get_data(self, t=None, unit=None, method: str = "linear", fill_value: tuple = (0, 0)) -> np.ndarray:
         """
-        Returns Value at time t. If t is out of recorded range, zero will be returned
-        If t between timesteps --> Interpolation
-        :param t:
-        :param unit:
+        Returns the samples as an array. If t is given, interpolate at those time(s);
+        out-of-range times return the fill value. If t is scalar the result is a 0-d
+        array (use get_value() when a plain float is wanted).
+
+        Always returns an ``np.ndarray`` — scipy's interp1d yields a (0-d) array even for
+        a scalar t, so the historical ``| float`` annotation never held.
+        :param t: None (whole signal), a scalar time, or an array of times
+        :param unit: target unit for conversion (None keeps the channel unit)
         :param method: Interpolation method
         :param fill_value:
-        :return:
+        :return: np.ndarray
         """
         time_array = self.data.index.to_numpy()
         value_array = copy.deepcopy(self.data.iloc[:, 0].to_numpy())
@@ -335,6 +331,17 @@ class Channel:
         if len(time_array) < 2:
             method = "nearest"
         return scipy_interpolate.interp1d(time_array, value_array, kind=method, fill_value=fill_value, bounds_error=False)(t)
+
+    def get_value(self, t: float, unit=None, method: str = "linear", fill_value: tuple = (0, 0)) -> float:
+        """
+        Interpolated scalar sample at a single time t, as a plain Python float.
+
+        Thin scalar-typed wrapper over get_data() for the (common) case where exactly one
+        value is wanted, so callers need not unwrap a 0-d array.
+        :param t: a single time
+        :return: float
+        """
+        return float(self.get_data(t=t, unit=unit, method=method, fill_value=fill_value))
 
     def get_info(self, *labels: str) -> str | None:
         """
@@ -391,7 +398,7 @@ class Channel:
         return new_channel
 
     def adjust_to_range(self, target_range: tuple = (-45, 45), unit="deg") -> Channel:
-        angle_0 = self.get_data(t=0, unit=unit)
+        angle_0 = self.get_value(t=0, unit=unit)
 
         old_offset = None
         offset = 0
@@ -443,7 +450,7 @@ class Channel:
         return self
 
     def auto_offset_y(self, t: float = 0) -> Channel:
-        return self.offset_y(offset=self.get_data(t=t))
+        return self.offset_y(offset=self.get_value(t=t))
 
     def offset_x(self, offset: float) -> Channel:
         self.data = pd.DataFrame(self.data.values, index=self.data.index + offset)

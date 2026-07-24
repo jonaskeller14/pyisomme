@@ -68,7 +68,12 @@ def main():
             channel.offset_x(options.offset_x)
 
             if options.cfc is not None:
-                channel.cfc(options.cfc, return_copy=False)
+                try:
+                    freq = float(options.cfc)
+                except ValueError:
+                    channel.cfc(options.cfc, return_copy=False)  # ISO filter class, e.g. "A"
+                else:
+                    channel.cfc_hz(freq, return_copy=False)  # cutoff frequency in Hz
 
         if options.resample:
             for channel in merged_isomme.channels:

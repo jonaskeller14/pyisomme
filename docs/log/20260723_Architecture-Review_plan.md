@@ -12,7 +12,7 @@ Each step is self-contained and must leave the test suite green.
 | 3 | **Kill `assert`-as-validation + cache `channel_codes.xml`** | ✅ Done | `Code.__new__` → `InvalidCodeError` (survives `python -O`); `get_channel`/`get_channels` catch `InvalidCodeError`; `limits.py` validation asserts → `ValueError`; `channel_codes.xml` parsed once at import (`_CHANNEL_CODES_ROOT`); `tests/test_code.py` updated |
 | 4 | **Fix aliasing + calc-history bugs** | ✅ Done | `integrate`/`differentiate` now `deepcopy(self.info)` (was mutating the source channel); `__add__` history logs `+` (was `-`), `__mul__` logs `*` (was `/`); mul/div physical-type skip documented; `tests/test_channel.py` green |
 | 5 | **De-duplicate readers behind `ArchiveSource`** | ✅ Done | new `sources.py` (`ArchiveSource` + `FolderSource`/`ZipSource`/`TarSource`, one `read_text_with_fallback`); `read_from_*` collapse to thin wrappers over one `_read_from_source`; ~210 lines → ~100; byte-identical reads verified vs baseline; `tests/test_sources.py` green |
-| 6 | Tighten union types | ⬜ | `__getitem__`, `cfc`, `get_data` split |
+| 6 | **Tighten union types** | ✅ Done | `__getitem__` explicit `TypeError` for unsupported keys (kept int→Channel / slice→list / str→get_channels shorthand by choice); `cfc(filter_class)` + `cfc_hz(freq)` split w/ deprecation shim, `method: Literal`; `get_data`→`np.ndarray` (the `\|float` was never real) + new `get_value(t)→float`; fixes latent SAE info-aliasing bug; `tests/test_channel.py` +7 green |
 | 7 | `get_channel` → provider registry | ⬜ | Biggest structural win; provider-by-provider |
 | 8 | Explicit `Criterion.children` + occupant helper | ⬜ | Replace `dir()` reflection; de-dup position logic |
 
@@ -217,3 +217,73 @@ parser fix had to be applied in three places.
 - **Minor perf trade-off:** `FolderSource.names()` does one `rglob("*")` up front instead
   of per-pattern globs. Negligible next to reading hundreds of channel files, and it keeps
   the backend interface uniform.
+
+---
+
+## Step 6 — Tighten union types (§2)  ✅
+
+**Goal:** kill the three functions whose *return* or *parameter* type is decided by an
+`isinstance` check inside, forcing every caller to re-discover the runtime type
+(`__getitem__ -> list | Channel | None`, `cfc(value: int | str)`,
+`get_data -> np.ndarray | float`).
+
+### Tasks
+- [x] **`Isomme.__getitem__`** — the silent `None` fall-through for unsupported key types
+      is replaced by an explicit `TypeError`. Return type annotation narrowed to
+      `Channel | list[Channel]` (was `... | None`). The `str` code-pattern shorthand
+      (`iso["<pattern>"]` -> `get_channels`, a list) was **kept by owner preference**: the
+      review flagged the key-type-dependent return (`int`->Channel vs `str`->list) as a
+      footgun, but the ergonomic shorthand is wanted; the docstring now spells out the
+      return-type-by-key-type behavior and points at `get_channel` for single-match intent.
+- [x] **`Channel.cfc`** split by the two domain concepts: `cfc(filter_class: str)`
+      ("0"/"A"/"B"/"C"/"D") and `cfc_hz(freq: float)` (cutoff in Hz), sharing a private
+      `_apply_cfc(cfc, filter_class, method, return_copy)` core. The bidirectional
+      class↔freq mapping collapses to one dict `_FILTER_CLASS_CFC`; unknown class →
+      `ValueError`. Internal callers (`get_channel` filter step, `Isomme.cfc` wrapper)
+      pass a filter-class letter unchanged. CLI `--cfc` now routes a numeric arg to
+      `cfc_hz` (its help always promised "Hz or ISO-Code", but numeric strings previously
+      hit `NotImplementedError`). `method` is annotated `Literal["ISO-6487", "SAE-J211-1"]`
+      (class-level `_CFC_METHODS` alias); the `else: raise NotImplementedError` stays as the
+      runtime backstop. `filter_class` is left as `str` **on purpose** — internal callers
+      pass a computed slice (`code_pattern[-1]`), so a `Literal` there would be a false
+      positive, and the runtime `_FILTER_CLASS_CFC` check already rejects bad classes with a
+      descriptive `ValueError`.
+- [x] **`Channel.get_data`** return type corrected to `np.ndarray` and the two `@overload`
+      stubs dropped (`overload` import removed). Added **`get_value(t) -> float`** for the
+      single-sample case; migrated the two internal scalar callers (`auto_offset_y`,
+      `adjust_to_range`).
+- [x] `tests/test_channel.py` +7: cfc/cfc_hz equivalence, non-standard-freq → "S",
+      unknown-class `ValueError`, numeric-cfc deprecation+delegation, cfc no-mutate (both
+      methods), `get_value`/`get_data` types, `__getitem__` sequence-only + str `TypeError`.
+
+### Design notes
+- **The `get_data -> | float` union was a lie, not a real narrowing.** `scipy`'s
+  `interp1d(...)(t)` returns a (0-d) `np.ndarray` even for scalar `t`, so `get_data` has
+  *always* returned an ndarray. Correcting the annotation to `np.ndarray` removes the union
+  **with zero call-site migration** — the ~60 `get_data(t=...)` sites keep working
+  byte-identically (a 0-d array broadcasts wherever a float did). `get_value` is the
+  additive, opt-in scalar path (`float(get_data(...))`), not a forced rename. The review
+  itself flagged the full rename as *lower priority* ("the overloads make it tolerable"),
+  so broad migration is deliberately **deferred**; only the two sites the type-checker
+  flagged as wanting a scalar were moved.
+- **`cfc` keeps a backward-compat shim, by design.** The primary signature is now
+  `cfc(filter_class: str)`, but a non-`str` arg (the old `cfc(1000)` / `cfc(60)` used in
+  the docs notebooks and by any downstream code) emits a `DeprecationWarning` and delegates
+  to `cfc_hz`. This tightens the *documented* type while giving a real migration path
+  instead of a hard break — the notebooks still run.
+- **Latent aliasing bug fixed for free (same class as Step 4 §5-G).** The `SAE-J211-1`
+  branch did `info = self.info` then `info.update(...)`, mutating the *source* channel's
+  info on every filter (the `ISO-6487` branch already `deepcopy`'d). Consolidating the tail
+  into `_apply_cfc` and using `deepcopy` uniformly fixes it; covered by
+  `test_cfc_does_not_mutate_source_info` over both methods.
+- **Removing string indexing is a (small) behavior change, but a safe one:** no in-repo
+  caller used `iso["<pattern>"]` (grep-verified), the review explicitly recommends routing
+  pattern lookup through `get_channel`/`get_channels`, and the raised `TypeError` names the
+  replacement rather than failing silently.
+
+### Follow-on (later, incremental)
+- The broader `get_data(t=scalar)` → `get_value` migration across `calculate.py` /
+  `isomme.py` (~60 sites) can proceed opportunistically as those areas are touched; the
+  honest `np.ndarray` annotation already removed the misleading union.
+- `calculate.py`'s pervasive `Channel | None` in/out unions (§2.4) are the larger remaining
+  union-soup, addressed structurally by Step 7's provider registry (typed absence).

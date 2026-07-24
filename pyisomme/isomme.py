@@ -356,11 +356,22 @@ class Isomme:
     def __len__(self) -> int:
         return len(self.channels)
 
-    def __getitem__(self, index: int | slice | str) -> list[Channel] | Channel | None:
+    def __getitem__(self, index: int | slice | str) -> Channel | list[Channel]:
+        """Index into the container.
+
+        - ``iso[0]`` -> the Channel at that position
+        - ``iso[0:3]`` -> a list of Channels
+        - ``iso["11HEAD??????ACXP"]`` -> shorthand for ``get_channels(pattern)`` (a list)
+
+        Note the key type decides the return type: an ``int`` yields a single Channel while
+        a ``str`` pattern yields a *list*. When you want exactly one match, prefer
+        ``get_channel(pattern)``; for a list, ``get_channels(pattern)`` or this shorthand.
+        """
         if isinstance(index, str):
             return self.get_channels(index)
-        elif isinstance(index, int) or isinstance(index, slice):
+        if isinstance(index, (int, slice)):
             return self.channels[index]
+        raise TypeError(f"Isomme indices must be int, slice or str, not {type(index).__name__}")
 
     def __contains__(self, item) -> bool:
         return item in self.channels
