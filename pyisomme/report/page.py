@@ -33,8 +33,8 @@ class Page:
 
 class Page_Cover(Page):
     name = "Cover"
-    title: str = None
-    subtitle: str = None
+    title: str
+    subtitle: str
 
     def __init__(self, report):
         super().__init__(report)
@@ -49,7 +49,7 @@ class Page_Cover(Page):
 
 
 class Page_Content(Page):
-    title: str = None
+    title: str | None = None
     footer: str = f"{datetime.now().strftime('%d.%m.%Y')} | {os.getlogin()}"
 
     def construct(self, presentation) -> None:
@@ -190,7 +190,7 @@ class Page_Criterion_Values_Chart(Page_Content):
                 else:
                     x_limit = criterion.limits.get_limit_min_x(criterion.channel)
 
-                col_factor_limit = 1.1 * np.nanmax([abs(l.func(x_limit)) if not np.isinf(abs(l.func(x_limit))) else np.nan for l in criterion.limits.limit_list])
+                col_factor_limit = 1.1 * np.nanmax([abs(limit.func(x_limit)) if not np.isinf(abs(limit.func(x_limit))) else np.nan for limit in criterion.limits.limit_list])
                 if not np.isnan(col_factor_limit):
                     col_factors[idx_col] = np.nanmax([col_factor_limit, col_factors[idx_col]])
 
@@ -260,8 +260,8 @@ class Page_Plot_nxn(Page_Content):
     ncols: int = 1
     sharex: bool = False
     sharey: bool = False
-    xlim: tuple[float | int, float | int] = None
-    ylim: tuple[float | int, float | int] = None
+    xlim: tuple[float | int, float | int] | None = None
+    ylim: tuple[float | int, float | int] | None = None
 
     def __init__(self, report):
         super().__init__(report)
@@ -300,21 +300,18 @@ class Page_Plot_nxn(Page_Content):
 
 class Page_Line_Table(Page_Content):
     channels: dict[Isomme, list[list[Channel | str]]]
-    cell_texts: list[np.ndarray | list[list, ...]]
+    cell_texts: list[np.ndarray | list[list]]
     row_labels: list[np.ndarray | list]
     col_labels: list[np.ndarray | list]
-    cell_colors: list[np.ndarray | list[list, ...]] = None,
-    col_labels_colors: list[np.ndarray | list] = None,
-    col_labels_fontweight: str = None,
+    cell_colors: list[np.ndarray | list[list]] | None = None
+    col_labels_colors: list[np.ndarray | list] | None = None
+    col_labels_fontweight: str | None = None
     nrows: int = 1
     ncols: int = 1
     sharex: bool = False
     sharey: bool = False
-    xlim: tuple[float | int, float | int] = None
-    ylim: tuple[float | int, float | int] = None
-
-    def __init__(self, report):
-        super().__init__(report)
+    xlim: tuple[float | int, float | int] | None = None
+    ylim: tuple[float | int, float | int] | None = None
 
     def construct(self, presentation):
         super().construct(presentation)

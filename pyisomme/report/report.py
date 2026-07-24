@@ -1,4 +1,7 @@
-from pyisomme.report.page import Page_Cover
+from __future__ import annotations
+
+from pyisomme.isomme import Isomme
+from pyisomme.report.page import Page, Page_Cover
 from pyisomme.limits import Limits
 from pyisomme.report.criterion import Criterion
 
@@ -8,22 +11,23 @@ from tqdm.contrib.logging import logging_redirect_tqdm
 import numpy as np
 import time
 import logging
+from pathlib import Path
 
 
 logger = logging.getLogger(__name__)
 
 
 class Report:
-    name: str = None
-    title: str = None
-    isomme_list: list = None
-    limits: dict = None
-    criterion_overall: dict = None
-    pages: list
-    protocol: str
-    protocols: dict = {}
+    name: str | None = None
+    title: str
+    isomme_list: list[Isomme]
+    limits: dict[Isomme, Limits]
+    criterion_overall: dict[Isomme, Criterion]
+    pages: list[Page]
+    protocol: str | None = None
+    protocols: dict[str, str] = {}
 
-    def __init__(self, isomme_list: list, title: str = "Report", protocol: str = None):
+    def __init__(self, isomme_list: list[Isomme], title: str = "Unnamed Report", protocol: str | None = None) -> None:
         self.isomme_list = isomme_list
         self.title = title
 
@@ -32,7 +36,7 @@ class Report:
                 f"Protocol {protocol} not available. Available protocols: {list(self.protocols.keys())}"
             self.protocol = protocol
 
-        self.limits = {isomme: Limits(name=self.name, limit_list=[]) for isomme in isomme_list}
+        self.limits = {isomme: Limits(name=self.name or "Unnamed Limits", limit_list=[]) for isomme in isomme_list}
 
         self.criterion_overall = {}
         for isomme in self.isomme_list:
@@ -42,15 +46,15 @@ class Report:
             Page_Cover(self),
         ]
 
-    def calculate(self):
+    def calculate(self) -> Report:
         with logging_redirect_tqdm():
             for isomme in tqdm(self.isomme_list, desc="Calculate Report"):
                 logger.info(f"Calculate Criteria for {isomme}")
                 self.criterion_overall[isomme].calculate()
         return self
 
-    def print_results(self):
-        def print_subcriteria_results(criterion, intend="\t"):
+    def print_results(self) -> Report:
+        def print_subcriteria_results(criterion: Criterion, intend: str = "\t") -> None:
             print(f"{intend}{criterion.name if criterion.name is not None else criterion.__class__.__name__}: "
                   f"Value={criterion.value:.5g} [{criterion.channel.unit if criterion.channel is not None else ''}] "
                   f"Rating={criterion.rating:.5g}")
@@ -64,13 +68,14 @@ class Report:
             print_subcriteria_results(self.criterion_overall[isomme])
         return self
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Report(title='{self.title}', name='{self.name}')"
 
     class Criterion_Overall(Criterion):
-        pass
+        def calculation(self) -> None:
+            pass
 
-    def export_pptx(self, path, template: str = None):
+    def export_pptx(self, path: str | Path, template: str | Path | None = None) -> Report:
         presentation = Presentation(template)
 
         with logging_redirect_tqdm():
@@ -89,18 +94,21 @@ class Report:
         logger.info(f"pptx successfully exported: {path}")
         return self
 
+
 class MetaReport(Report):
     reports: list[Report]
     rating: float = np.nan
 
-    def calculate(self):
+    def calculate(self) -> MetaReport:
         for report in self.reports:
             report.calculate()
         self.calculation()
+        return self
 
     def calculation(self) -> None:
         pass
 
-    def print_results(self):
+    def print_results(self) -> MetaReport:
         for report in self.reports:
             report.print_results()
+        return self
