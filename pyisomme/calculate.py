@@ -18,9 +18,9 @@ logger = logging.getLogger(__name__)
 
 
 @debug_logging(logger)
-def calculate_resultant(c1: Channel | None,
-                        c2: Channel | float | None = 0,
-                        c3: Channel | float | None = 0) -> Channel | None:
+def calculate_resultant(c1: Channel,
+                        c2: Channel | float = 0,
+                        c3: Channel | float = 0) -> Channel:
     """
     Takes 2 or 3 Channels and calculates the 2nd norm or resultant component.
     :param c1: X-Channel
@@ -28,9 +28,6 @@ def calculate_resultant(c1: Channel | None,
     :param c3: (optional) Z-Channel
     :return: Resultant Channel
     """
-    if c1 is None or c2 is None or c3 is None:
-        return None
-
     new_channel = (c1 ** 2 + c2 ** 2 + c3 ** 2) ** (1 / 2)
     new_channel.info = c1.info.update({
         "Data source": "calculation",
@@ -44,7 +41,7 @@ def calculate_resultant(c1: Channel | None,
 
 
 @debug_logging(logger)
-def calculate_hic(channel: Channel, max_delta_t) -> Channel:
+def calculate_hic(channel: Channel, max_delta_t: float) -> Channel:
     """
     Computes head injury criterion (HIC)
     HIC15 --> max_delta_t = 15
@@ -521,7 +518,7 @@ def calculate_neck_nij(c_fz: Channel,
 
 
 @debug_logging(logger)
-def calculate_neck_MOCx(channel_Mx: Channel | None, channel_Fy: Channel | None, d: float | None = None) -> tuple[Channel, Channel] | tuple[None, None]:
+def calculate_neck_MOCx(channel_Mx: Channel, channel_Fy: Channel, d: float | None = None) -> tuple[Channel, Channel]:
     """
     References:
     - references/Euro-NCAP/tb-021-data-acquisition-and-injury-calculation-v402.pdf
@@ -531,9 +528,6 @@ def calculate_neck_MOCx(channel_Mx: Channel | None, channel_Fy: Channel | None, 
     :param d: lever
     :return:
     """
-    if channel_Mx is None or channel_Fy is None:
-        return None, None
-
     if d is None:
         dummys = list({channel_Mx.code.fine_location_3, channel_Fy.code.fine_location_3})
         assert len(dummys) == 1, f"Multiple dummy types found: {dummys}"
@@ -570,7 +564,7 @@ def calculate_neck_MOCx(channel_Mx: Channel | None, channel_Fy: Channel | None, 
 
 
 @debug_logging(logger)
-def calculate_neck_MOCy(channel_My: Channel | None, channel_Fx: Channel | None, d: float | None = None) -> tuple[Channel, Channel] | tuple[None, None]:
+def calculate_neck_MOCy(channel_My: Channel, channel_Fx: Channel, d: float | None = None) -> tuple[Channel, Channel]:
     """
     References:
     - references/Euro-NCAP/tb-021-data-acquisition-and-injury-calculation-v402.pdf
@@ -580,9 +574,6 @@ def calculate_neck_MOCy(channel_My: Channel | None, channel_Fx: Channel | None, 
     :param d: lever
     :return:
     """
-    if channel_My is None or channel_Fx is None:
-        return None, None
-
     if d is None:
         dummys = list({channel_My.code.fine_location_3, channel_Fx.code.fine_location_3})
         assert len(dummys) == 1, f"Multiple dummy types found: {dummys}"
@@ -622,7 +613,7 @@ def calculate_neck_MOCy(channel_My: Channel | None, channel_Fx: Channel | None, 
 
 
 @debug_logging(logger)
-def calculate_neck_Mx_base(channel_Mx: Channel | None, channel_Fy: Channel | None, dz: float | None = None) -> tuple[Channel, Channel] | tuple[None, None]:
+def calculate_neck_Mx_base(channel_Mx: Channel, channel_Fy: Channel, dz: float | None = None) -> tuple[Channel, Channel]:
     """
     References:
     - references/Euro-NCAP/tb-021-data-acquisition-and-injury-calculation-v402.pdf
@@ -632,9 +623,6 @@ def calculate_neck_Mx_base(channel_Mx: Channel | None, channel_Fy: Channel | Non
     :param dz: lever
     :return:
     """
-    if channel_Mx is None or channel_Fy is None:
-        return None, None
-
     if dz is None:
         dummys = list({channel_Mx.code.fine_location_3, channel_Fy.code.fine_location_3})
         assert len(dummys) == 1, f"Multiple dummy types found: {dummys}"
@@ -672,7 +660,7 @@ def calculate_neck_Mx_base(channel_Mx: Channel | None, channel_Fy: Channel | Non
 
 
 @debug_logging(logger)
-def calculate_neck_My_base(channel_My: Channel | None, channel_Fx: Channel | None, dz: float | None = None) -> tuple[Channel, Channel] | tuple[None, None]:
+def calculate_neck_My_base(channel_My: Channel, channel_Fx: Channel, dz: float | None = None) -> tuple[Channel, Channel]:
     """
     References:
     - references/Euro-NCAP/tb-021-data-acquisition-and-injury-calculation-v402.pdf
@@ -682,9 +670,6 @@ def calculate_neck_My_base(channel_My: Channel | None, channel_Fx: Channel | Non
     :param dz: lever
     :return:
     """
-    if channel_My is None or channel_Fx is None:
-        return None, None
-
     if dz is None:
         dummys = list({channel_My.code.fine_location_3, channel_Fx.code.fine_location_3})
         assert len(dummys) == 1, f"Multiple dummy types found: {dummys}"
@@ -847,7 +832,7 @@ def calculate_vc(channel: Channel,
 
 
 @debug_logging(logger)
-def calculate_iliac_force_drop(channel: Channel | None, delta_t: float = 0.001) -> Channel | None:
+def calculate_iliac_force_drop(channel: Channel, delta_t: float = 0.001) -> Channel:
     """
     References:
     - references/Euro-NCAP/tb-021-data-acquisition-and-injury-calculation-v402.pdf
@@ -855,9 +840,6 @@ def calculate_iliac_force_drop(channel: Channel | None, delta_t: float = 0.001) 
     :param delta_t:
     :return:
     """
-    if channel is None:
-        return None
-
     time_array = channel.data.index
 
     ifd = channel.get_data(t=time_array + delta_t) - channel.get_data(t=time_array)
@@ -896,10 +878,10 @@ def calculate_femur_impulse(channel: Channel, y_end: float = -4050) -> Channel:
 
 
 @debug_logging(logger)
-def calculate_tibia_index(channel_MOX: Channel | None,
-                          channel_MOY: Channel | None,
-                          channel_FOZ: Channel | None,
-                          ) -> Channel | None:
+def calculate_tibia_index(channel_MOX: Channel,
+                          channel_MOY: Channel,
+                          channel_FOZ: Channel,
+                          ) -> Channel:
     """
     References: references/Euro-NCAP/tb-021-data-acquisition-and-injury-calculation-v402.pdf
     :param channel_MOX:
@@ -907,9 +889,6 @@ def calculate_tibia_index(channel_MOX: Channel | None,
     :param channel_FOZ:
     :return:
     """
-    if channel_MOX is None or channel_MOY is None or channel_FOZ is None:
-        return None
-
     dummy = channel_MOX.code.fine_location_3
     assert dummy in ("H3", "HF", "TH", "T3"), f"Dummy {dummy} not supported by {calculate_tibia_index.__name__}"
     assert channel_MOX.code.fine_location_3 == channel_MOY.code.fine_location_3 == channel_FOZ.code.fine_location_3, "Channel with different dummy found."
@@ -935,15 +914,15 @@ def calculate_tibia_index(channel_MOX: Channel | None,
 
 
 @debug_logging(logger)
-def calculate_trajectory(channel_acx: Channel | None,
-                         channel_acy: Channel | None,
-                         channel_acz: Channel | None,
-                         channel_avx: Channel | None,
-                         channel_avy: Channel | None,
-                         channel_avz: Channel | None,
+def calculate_trajectory(channel_acx: Channel,
+                         channel_acy: Channel,
+                         channel_acz: Channel,
+                         channel_avx: Channel,
+                         channel_avy: Channel,
+                         channel_avz: Channel,
                          x_0: float = 0.0,
                          y_0: float = 0.0,
-                         z_0: float = 0.0) -> Channel | None:
+                         z_0: float = 0.0) -> Channel:
     """
     Calculate Trajectory (Coordinates) by integrating acceleration signals and rotation
     References:
@@ -959,10 +938,6 @@ def calculate_trajectory(channel_acx: Channel | None,
     :param z_0:
     :return:
     """
-    if (channel_acx is None or channel_acy is None or channel_acz is None
-            or channel_avx is None or channel_avy is None or channel_avz is None):
-        return None
-
     t = time_intersect(channel_acx, channel_acy, channel_acz, channel_avx, channel_avy, channel_avz)
     _acx = channel_acx.get_data(t, unit="m/s^2")
     _acy = channel_acy.get_data(t, unit="m/s^2")
@@ -977,9 +952,9 @@ def calculate_trajectory(channel_acx: Channel | None,
 
 
 @debug_logging(logger)
-def calculate_olc(c_v: Channel | None,
+def calculate_olc(c_v: Channel,
                   free_flight_phase_displacement: float = 0.065,
-                  restraining_phase_displacement: float = 0.235) -> tuple[Channel | None, ...] | None:
+                  restraining_phase_displacement: float = 0.235) -> tuple[Channel, Channel]:
     """
     Calculate OLC
     :param c_v:
@@ -987,9 +962,6 @@ def calculate_olc(c_v: Channel | None,
     :param restraining_phase_displacement:
     :return:
     """
-    if c_v is None:
-        return None, None
-
     c_v = c_v.convert_unit("m/s")
 
     c_olc_visual = copy.deepcopy(c_v)
