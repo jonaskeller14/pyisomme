@@ -6,26 +6,47 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 pyisomme is a Python library and CLI for the **ISO-MME** crash-test data file format. It reads/writes ISO-MME containers, manipulates signal channels (filter, integrate, differentiate, arithmetic), computes injury-risk criteria (HIC, a3ms, DAMAGE, OLC, BrIC, NIJ, ...), plots curves, and generates PowerPoint assessment reports (Euro-NCAP, UN-R94/R137, US-NCAP, IIHS).
 
+## Current work — `pyisomme.report` refactor
+
+An incremental refactor of the report architecture is in progress. Before touching anything under
+[pyisomme/report/](pyisomme/report/), read:
+
+- **[docs/log/20260726_Report-Architecture-Review_plan.md](docs/log/20260726_Report-Architecture-Review_plan.md)** — the step-by-step plan, ground rules and per-step acceptance criteria. Work **one step at a time**; do not stray outside the step's scope.
+- **[docs/log/20260726_Report-Architecture-Review_progress.md](docs/log/20260726_Report-Architecture-Review_progress.md)** — running log of what is done, decisions taken and open questions. **Every session must append an entry here before finishing.**
+- [docs/log/20260726_Report-Architecture-Review.md](docs/log/20260726_Report-Architecture-Review.md) — the rationale (findings F1–F15, proposals P1–P11). Consult only the IDs your step names; do not read it end to end.
+
+Invariants that must survive the refactor: NaN propagation is intentional (never swap in `np.nan*` to hide missing data); the criterion tree is eagerly constructed and user-mutable (manual inputs are set between construction and `calculate()`); criterion nesting stays.
+
 ## Commands
 
+**Use the repo venv** — the `python` on `PATH` is a broken Anaconda 3.12 (numpy 2.3.5 against a scipy
+built for <1.29) that cannot even `import pyisomme`. `.venv` is Python **3.9.13** with correct pins
+(numpy 1.26.4, scipy 1.12.0) and the `dev` extra installed. 3.9 is the development target — it matches
+`requires-python = ">=3.9"` and the lower leg of the CI matrix; the Anaconda install is deliberately
+left unrepaired, so never invoke a bare `python`.
+
 ```bash
+# Windows: prefix commands with the venv interpreter
+.venv/Scripts/python.exe -m unittest discover -s tests
+
 # Install for development (editable, with dev extras)
-pip install -e ".[dev]"
+.venv/Scripts/python.exe -m pip install -e ".[dev]"
 
 # Run the CLI
-python -m pyisomme --help
-python -m pyisomme <command> --help   # list | merge | rename | plot | report
-
-# Run the full test suite (unittest)
-python -m unittest discover -s tests
+.venv/Scripts/python.exe -m pyisomme --help
+.venv/Scripts/python.exe -m pyisomme <command> --help   # list | merge | report | plot
 
 # Run a single test module / case / method
-python -m unittest tests.test_report
-python -m unittest tests.test_report.TestReport
-python -m unittest tests.test_report.TestReport.test_EuroNCAP_Frontal_50kmh
+.venv/Scripts/python.exe -m unittest tests.test_report
+.venv/Scripts/python.exe -m unittest tests.test_report.TestReport
+.venv/Scripts/python.exe -m unittest tests.test_report.TestReport.test_EuroNCAP_Frontal_50kmh
 ```
 
 Note: tests (`tests/test.py`, `tests/test_report.py`, etc.) read real fixture data from `data/` (e.g. `data/nhtsa/…`, `data/iso-mme-org/…`) and report tests write `.pptx` output into an `out/` directory. Fixture folders are largely untracked and must exist locally for those tests to pass.
+
+**Runtime:** everything outside `tests/test_report.py` runs in ~6 s; the 13 report tests take ~12 min
+together (`test_EuroNCAP` alone several minutes). Run report tests individually while iterating — a
+full `discover` will blow past a 10-minute command timeout.
 
 ## Core Architecture
 

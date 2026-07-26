@@ -2,6 +2,7 @@ references/**/*.pdf
 data/*
 !data/README.md
 tests/out
+tests/out_*
 out/
 docs/isomme_write/
 
