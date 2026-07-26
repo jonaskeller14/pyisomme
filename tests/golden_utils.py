@@ -304,12 +304,29 @@ def build_euro_ncap_side_barrier() -> Report:
     return pyisomme.report.euro_ncap.side_barrier.EuroNCAP_Side_Barrier([v1])
 
 
-#: Golden-file stem -> builder. Deliberately small: these two run in ~35 s together
-#: and cover a frontal tree (64 criteria, 172 limits) and a side tree (13 criteria,
-#: 48 limits, 100 % rating coverage). See the Step 1 progress entry for why
-#: ``EuroNCAP_Frontal_MPDB`` is not here (it cannot be constructed — item D1).
+def build_euro_ncap_frontal_mpdb() -> Report:
+    """
+    Mirrors ``tests.test_report.TestReport.test_EuroNCAP_Frontal_MPDB`` (minus the export).
+
+    Added in Step 2, once the unguarded ``calculate_olc`` in ``Page_OLC_Trolley``
+    (progress item D1) stopped breaking construction. None of these fixtures carries
+    a trolley (``M?MBAR…VEXA``) channel, so the OLC page is empty here.
+    """
+    v1 = _read("iso-mme-org", "MME 1.6 Testdata short", "AK3T02FO", pattern="[!B][013]*")
+    v2 = _read("nhtsa", "14084", pattern="[!B][013]*")
+    v3 = _read("nhtsa", "09203", pattern="[!B][013]*")
+    for channel in v3.channels:
+        if channel.code.main_location == "TIBI" and channel.code.fine_location_3 in ("00", "??"):
+            channel.set_code(fine_location_3="TH")
+    return pyisomme.report.euro_ncap.frontal_mpdb.EuroNCAP_Frontal_MPDB([v3, v2, v1])
+
+
+#: Golden-file stem -> builder. Deliberately small: covers a frontal tree
+#: (64 criteria, 172 limits), a side tree (13 criteria, 48 limits, 100 % rating
+#: coverage) and the MPDB tree.
 BUILDERS: dict[str, Callable[[], Report]] = {
     "euro_ncap_frontal_50kmh": build_euro_ncap_frontal_50kmh,
+    "euro_ncap_frontal_mpdb": build_euro_ncap_frontal_mpdb,
     "euro_ncap_side_barrier": build_euro_ncap_side_barrier,
 }
 

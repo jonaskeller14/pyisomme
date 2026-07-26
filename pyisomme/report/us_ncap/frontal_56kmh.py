@@ -1,8 +1,19 @@
-from pyisomme.report.page import Page_Cover
+"""
+US-NCAP frontal impact at 56 km/h — **unfinished stub, not usable yet.**
+
+What exists: the driver head criterion (HIC15 → AIS3+ risk) with its star limits.
+What is missing: ``Criterion_Passenger`` is referenced but never defined, and the
+driver's chest/femur/neck criteria are empty placeholders. Constructing the report
+therefore raises :class:`NotImplementedError` rather than a confusing
+``AttributeError`` deep inside the criterion tree.
+
+The report is deliberately absent from ``REPORTS`` in ``pyisomme/__main__.py`` and
+is out of scope for the report refactor (plan Step 2, review Appendix A5).
+"""
+from pyisomme.calculate import calculate_p_head_hic15_ais_3plus
 from pyisomme.report.report import Report
 from pyisomme.report.criterion import Criterion
-from pyisomme.report.us_ncap.calculate import *
-from pyisomme.report.us_ncap.limits import *
+from pyisomme.report.us_ncap.limits import Limit_1, Limit_2, Limit_3, Limit_4, Limit_5
 
 import logging
 import numpy as np
@@ -13,11 +24,11 @@ logger = logging.getLogger(__name__)
 
 class USNCAP_Frontal_56kmh(Report):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.pages = [
-            Page_Cover(self),
-        ]
+        raise NotImplementedError(
+            "USNCAP_Frontal_56kmh is an unfinished stub: Criterion_Passenger is not "
+            "defined and the driver's chest/femur/neck criteria are empty. See the "
+            "module docstring."
+        )
 
     class Criterion_Overall(Criterion):
         name = "Overall"

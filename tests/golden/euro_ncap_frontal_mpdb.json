@@ -1,0 +1,4503 @@
+{
+  "definition": {
+    "criteria": {
+      "Overall": {
+        "class": "Criterion_Overall",
+        "limits": [],
+        "name": "Overall"
+      },
+      "criterion_compatibility_modifier": {
+        "class": "Criterion_Compatibility_Modifier",
+        "limits": [],
+        "name": "Compatibility Modifier"
+      },
+      "criterion_compatibility_modifier/criterion_olc_modifier": {
+        "class": "Criterion_OLC_Modifier",
+        "limits": [
+          {
+            "code_patterns": [
+              "M?MBAR0OLC??VEX?"
+            ],
+            "color": "black",
+            "func_samples": [
+              25,
+              25,
+              25,
+              25,
+              25,
+              25,
+              25
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "0 pt. Modifier",
+            "rating": 0,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "  Name   = Standard acceleration of gravity\n  Value  = 9.80665\n  Uncertainty  = 0.0\n  Unit  = m / s2\n  Reference = CODATA 2018"
+          },
+          {
+            "code_patterns": [
+              "M?MBAR0OLC??VEX?"
+            ],
+            "color": "black",
+            "func_samples": [
+              25,
+              25,
+              25,
+              25,
+              25,
+              25,
+              25
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "-2..0 pt. Modifier",
+            "rating": 0,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "  Name   = Standard acceleration of gravity\n  Value  = 9.80665\n  Uncertainty  = 0.0\n  Unit  = m / s2\n  Reference = CODATA 2018"
+          },
+          {
+            "code_patterns": [
+              "M?MBAR0OLC??VEX?"
+            ],
+            "color": "black",
+            "func_samples": [
+              40,
+              40,
+              40,
+              40,
+              40,
+              40,
+              40
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "-2 pt. Modifier",
+            "rating": -2,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "  Name   = Standard acceleration of gravity\n  Value  = 9.80665\n  Uncertainty  = 0.0\n  Unit  = m / s2\n  Reference = CODATA 2018"
+          }
+        ],
+        "name": "Occupant Load Criterion (OLC) Modifier"
+      },
+      "criterion_door_opening_during_impact": {
+        "class": "Criterion_DoorOpeningDuringImpact",
+        "limits": [],
+        "name": "Door Opening During Impact"
+      },
+      "criterion_driver": {
+        "class": "Criterion_Driver",
+        "limits": [],
+        "name": "Driver"
+      },
+      "criterion_driver/criterion_chest_abdomen": {
+        "class": "Criterion_Chest_Abdomen",
+        "limits": [],
+        "name": "Chest and Abdomen"
+      },
+      "criterion_driver/criterion_chest_abdomen/criterion_abdomen": {
+        "class": "Criterion_Abdomen",
+        "limits": [],
+        "name": "Abdomen"
+      },
+      "criterion_driver/criterion_chest_abdomen/criterion_abdomen/criterion_abdomen_compression": {
+        "class": "Criterion_Abdomen_Compression",
+        "limits": [
+          {
+            "code_patterns": [
+              "?1ABDO??????DSX?"
+            ],
+            "color": "red",
+            "func_samples": [
+              -88,
+              -88,
+              -88,
+              -88,
+              -88,
+              -88,
+              -88
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "mm"
+          },
+          {
+            "code_patterns": [
+              "?1ABDO??????DSX?"
+            ],
+            "color": "green",
+            "func_samples": [
+              -88,
+              -88,
+              -88,
+              -88,
+              -88,
+              -88,
+              -88
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Good",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "mm"
+          }
+        ],
+        "name": "Abdomen Compression"
+      },
+      "criterion_driver/criterion_chest_abdomen/criterion_chest": {
+        "class": "Criterion_Chest",
+        "limits": [],
+        "name": "Chest"
+      },
+      "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_chest_compression": {
+        "class": "Criterion_Chest_Compression",
+        "limits": [
+          {
+            "code_patterns": [
+              "?1CHST??????DSX?"
+            ],
+            "color": "gray",
+            "func_samples": [
+              -60.0,
+              -60.0,
+              -60.0,
+              -60.0,
+              -60.0,
+              -60.0,
+              -60.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Capping",
+            "rating": "-inf",
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "mm"
+          },
+          {
+            "code_patterns": [
+              "?1CHST??????DSX?"
+            ],
+            "color": "red",
+            "func_samples": [
+              -60.0,
+              -60.0,
+              -60.0,
+              -60.0,
+              -60.0,
+              -60.0,
+              -60.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "mm"
+          },
+          {
+            "code_patterns": [
+              "?1CHST??????DSX?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              -51.667,
+              -51.667,
+              -51.667,
+              -51.667,
+              -51.667,
+              -51.667,
+              -51.667
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "mm"
+          },
+          {
+            "code_patterns": [
+              "?1CHST??????DSX?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              -43.333,
+              -43.333,
+              -43.333,
+              -43.333,
+              -43.333,
+              -43.333,
+              -43.333
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "mm"
+          },
+          {
+            "code_patterns": [
+              "?1CHST??????DSX?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              -35.0,
+              -35.0,
+              -35.0,
+              -35.0,
+              -35.0,
+              -35.0,
+              -35.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "mm"
+          },
+          {
+            "code_patterns": [
+              "?1CHST??????DSX?"
+            ],
+            "color": "green",
+            "func_samples": [
+              -35.0,
+              -35.0,
+              -35.0,
+              -35.0,
+              -35.0,
+              -35.0,
+              -35.0
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Good",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "mm"
+          }
+        ],
+        "name": "Chest Compression"
+      },
+      "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_shoulder_belt_load": {
+        "class": "Criterion_ShoulderBeltLoad",
+        "limits": [
+          {
+            "code_patterns": [
+              "?1SEBE????B3FO[X0]?"
+            ],
+            "color": "green",
+            "func_samples": [
+              6.0,
+              6.0,
+              6.0,
+              6.0,
+              6.0,
+              6.0,
+              6.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "0 pt. Modifier",
+            "rating": 0,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1SEBE????B3FO[X0]?"
+            ],
+            "color": "red",
+            "func_samples": [
+              6.0,
+              6.0,
+              6.0,
+              6.0,
+              6.0,
+              6.0,
+              6.0
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "-2 pt. Modifier",
+            "rating": -2,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          }
+        ],
+        "name": "Modifier Shoulder Belt Load"
+      },
+      "criterion_driver/criterion_head_neck": {
+        "class": "Criterion_Head_Neck",
+        "limits": [],
+        "name": "Head & Neck"
+      },
+      "criterion_driver/criterion_head_neck/criterion_head": {
+        "class": "Criterion_Head",
+        "limits": [],
+        "name": "Head"
+      },
+      "criterion_driver/criterion_head_neck/criterion_head/criterion_damage": {
+        "class": "Criterion_DAMAGE",
+        "limits": [
+          {
+            "code_patterns": [
+              "?1HEADDAMA??AAR?"
+            ],
+            "color": "green",
+            "func_samples": [
+              0.42,
+              0.42,
+              0.42,
+              0.42,
+              0.42,
+              0.42,
+              0.42
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "0 pt. Modifier",
+            "rating": 0.0,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "rad/s^2"
+          },
+          {
+            "code_patterns": [
+              "?1HEADDAMA??AAR?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              0.42,
+              0.42,
+              0.42,
+              0.42,
+              0.42,
+              0.42,
+              0.42
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "-1 pt. Modifier",
+            "rating": -1.0,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "rad/s^2"
+          },
+          {
+            "code_patterns": [
+              "?1HEADDAMA??AAR?"
+            ],
+            "color": "red",
+            "func_samples": [
+              0.47,
+              0.47,
+              0.47,
+              0.47,
+              0.47,
+              0.47,
+              0.47
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "-2 pt. Modifier",
+            "rating": -2.0,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "rad/s^2"
+          }
+        ],
+        "name": "Modifier for Brain Injury - DAMAGE"
+      },
+      "criterion_driver/criterion_head_neck/criterion_head/criterion_head_a3ms": {
+        "class": "Criterion_Head_a3ms",
+        "limits": [
+          {
+            "code_patterns": [
+              "?1HEAD003C??ACR?",
+              "?1HEADCG3C??ACR?"
+            ],
+            "color": "green",
+            "func_samples": [
+              72.0,
+              72.0,
+              72.0,
+              72.0,
+              72.0,
+              72.0,
+              72.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Good",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "9.80665 m / s2"
+          },
+          {
+            "code_patterns": [
+              "?1HEAD003C??ACR?",
+              "?1HEADCG3C??ACR?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              72.0,
+              72.0,
+              72.0,
+              72.0,
+              72.0,
+              72.0,
+              72.0
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "9.80665 m / s2"
+          },
+          {
+            "code_patterns": [
+              "?1HEAD003C??ACR?",
+              "?1HEADCG3C??ACR?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              74.667,
+              74.667,
+              74.667,
+              74.667,
+              74.667,
+              74.667,
+              74.667
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "9.80665 m / s2"
+          },
+          {
+            "code_patterns": [
+              "?1HEAD003C??ACR?",
+              "?1HEADCG3C??ACR?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              77.333,
+              77.333,
+              77.333,
+              77.333,
+              77.333,
+              77.333,
+              77.333
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "9.80665 m / s2"
+          },
+          {
+            "code_patterns": [
+              "?1HEAD003C??ACR?",
+              "?1HEADCG3C??ACR?"
+            ],
+            "color": "red",
+            "func_samples": [
+              80.0,
+              80.0,
+              80.0,
+              80.0,
+              80.0,
+              80.0,
+              80.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "9.80665 m / s2"
+          },
+          {
+            "code_patterns": [
+              "?1HEAD003C??ACR?",
+              "?1HEADCG3C??ACR?"
+            ],
+            "color": "gray",
+            "func_samples": [
+              80.0,
+              80.0,
+              80.0,
+              80.0,
+              80.0,
+              80.0,
+              80.0
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Capping",
+            "rating": "-inf",
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "9.80665 m / s2"
+          }
+        ],
+        "name": "Head a3ms"
+      },
+      "criterion_driver/criterion_head_neck/criterion_head/criterion_hic_15": {
+        "class": "Criterion_HIC_15",
+        "limits": [
+          {
+            "code_patterns": [
+              "?1HICR0015??00RX",
+              "?1HICRCG15??00RX"
+            ],
+            "color": "green",
+            "func_samples": [
+              500.0,
+              500.0,
+              500.0,
+              500.0,
+              500.0,
+              500.0,
+              500.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Good",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "1"
+          },
+          {
+            "code_patterns": [
+              "?1HICR0015??00RX",
+              "?1HICRCG15??00RX"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              500.0,
+              500.0,
+              500.0,
+              500.0,
+              500.0,
+              500.0,
+              500.0
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "1"
+          },
+          {
+            "code_patterns": [
+              "?1HICR0015??00RX",
+              "?1HICRCG15??00RX"
+            ],
+            "color": "orange",
+            "func_samples": [
+              566.667,
+              566.667,
+              566.667,
+              566.667,
+              566.667,
+              566.667,
+              566.667
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "1"
+          },
+          {
+            "code_patterns": [
+              "?1HICR0015??00RX",
+              "?1HICRCG15??00RX"
+            ],
+            "color": "brown",
+            "func_samples": [
+              633.333,
+              633.333,
+              633.333,
+              633.333,
+              633.333,
+              633.333,
+              633.333
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "1"
+          },
+          {
+            "code_patterns": [
+              "?1HICR0015??00RX",
+              "?1HICRCG15??00RX"
+            ],
+            "color": "red",
+            "func_samples": [
+              700.0,
+              700.0,
+              700.0,
+              700.0,
+              700.0,
+              700.0,
+              700.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "1"
+          },
+          {
+            "code_patterns": [
+              "?1HICR0015??00RX",
+              "?1HICRCG15??00RX"
+            ],
+            "color": "gray",
+            "func_samples": [
+              700.0,
+              700.0,
+              700.0,
+              700.0,
+              700.0,
+              700.0,
+              700.0
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Capping",
+            "rating": "-inf",
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "1"
+          }
+        ],
+        "name": "HIC 15"
+      },
+      "criterion_driver/criterion_head_neck/criterion_neck": {
+        "class": "Criterion_Neck",
+        "limits": [],
+        "name": "Neck"
+      },
+      "criterion_driver/criterion_head_neck/criterion_neck/criterion_fx_shear": {
+        "class": "Criterion_Fx_Shear",
+        "limits": [
+          {
+            "code_patterns": [
+              "?1NECKUP00??FOX?"
+            ],
+            "color": "green",
+            "func_samples": [
+              1.9,
+              1.9,
+              1.9,
+              1.9,
+              1.9,
+              1.9,
+              1.9
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Good",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "ms",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1NECKUP00??FOX?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              1.9,
+              1.9,
+              1.9,
+              1.9,
+              1.9,
+              1.9,
+              1.9
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "ms",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1NECKUP00??FOX?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              2.3,
+              2.3,
+              2.3,
+              2.3,
+              2.3,
+              2.3,
+              2.3
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": null,
+            "x_unit": "ms",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1NECKUP00??FOX?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              2.7,
+              2.7,
+              2.7,
+              2.7,
+              2.7,
+              2.7,
+              2.7
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": null,
+            "x_unit": "ms",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1NECKUP00??FOX?"
+            ],
+            "color": "red",
+            "func_samples": [
+              3.1,
+              3.1,
+              3.1,
+              3.1,
+              3.1,
+              3.1,
+              3.1
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": null,
+            "x_unit": "ms",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1NECKUP00??FOX?"
+            ],
+            "color": "gray",
+            "func_samples": [
+              3.1,
+              3.1,
+              3.1,
+              3.1,
+              3.1,
+              3.1,
+              3.1
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Capping",
+            "rating": "-inf",
+            "upper": null,
+            "x_unit": "ms",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1NECKUP00??FOX?"
+            ],
+            "color": "green",
+            "func_samples": [
+              -1.9,
+              -1.9,
+              -1.9,
+              -1.9,
+              -1.9,
+              -1.9,
+              -1.9
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Good",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "ms",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1NECKUP00??FOX?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              -1.9,
+              -1.9,
+              -1.9,
+              -1.9,
+              -1.9,
+              -1.9,
+              -1.9
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "ms",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1NECKUP00??FOX?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              -2.3,
+              -2.3,
+              -2.3,
+              -2.3,
+              -2.3,
+              -2.3,
+              -2.3
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": true,
+            "x_unit": "ms",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1NECKUP00??FOX?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              -2.7,
+              -2.7,
+              -2.7,
+              -2.7,
+              -2.7,
+              -2.7,
+              -2.7
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": true,
+            "x_unit": "ms",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1NECKUP00??FOX?"
+            ],
+            "color": "red",
+            "func_samples": [
+              -3.1,
+              -3.1,
+              -3.1,
+              -3.1,
+              -3.1,
+              -3.1,
+              -3.1
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": null,
+            "x_unit": "ms",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1NECKUP00??FOX?"
+            ],
+            "color": "gray",
+            "func_samples": [
+              -3.1,
+              -3.1,
+              -3.1,
+              -3.1,
+              -3.1,
+              -3.1,
+              -3.1
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Capping",
+            "rating": "-inf",
+            "upper": true,
+            "x_unit": "ms",
+            "y_unit": "kN"
+          }
+        ],
+        "name": "Neck Fx shear"
+      },
+      "criterion_driver/criterion_head_neck/criterion_neck/criterion_fz_tension": {
+        "class": "Criterion_Fz_Tension",
+        "limits": [
+          {
+            "code_patterns": [
+              "?1NECKUP00??FOZ?"
+            ],
+            "color": "green",
+            "func_samples": [
+              2.7,
+              2.7,
+              2.7,
+              2.7,
+              2.7,
+              2.7,
+              2.7
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Good",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "ms",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1NECKUP00??FOZ?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              2.7,
+              2.7,
+              2.7,
+              2.7,
+              2.7,
+              2.7,
+              2.7
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "ms",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1NECKUP00??FOZ?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              2.9,
+              2.9,
+              2.9,
+              2.9,
+              2.9,
+              2.9,
+              2.9
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": null,
+            "x_unit": "ms",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1NECKUP00??FOZ?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              3.1,
+              3.1,
+              3.1,
+              3.1,
+              3.1,
+              3.1,
+              3.1
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": null,
+            "x_unit": "ms",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1NECKUP00??FOZ?"
+            ],
+            "color": "red",
+            "func_samples": [
+              3.3,
+              3.3,
+              3.3,
+              3.3,
+              3.3,
+              3.3,
+              3.3
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": null,
+            "x_unit": "ms",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1NECKUP00??FOZ?"
+            ],
+            "color": "gray",
+            "func_samples": [
+              3.3,
+              3.3,
+              3.3,
+              3.3,
+              3.3,
+              3.3,
+              3.3
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Capping",
+            "rating": "-inf",
+            "upper": null,
+            "x_unit": "ms",
+            "y_unit": "kN"
+          }
+        ],
+        "name": "Neck Fz tension"
+      },
+      "criterion_driver/criterion_head_neck/criterion_neck/criterion_my_extension": {
+        "class": "Criterion_My_Extension",
+        "limits": [
+          {
+            "code_patterns": [
+              "?1NECKUP00??MOY?"
+            ],
+            "color": "green",
+            "func_samples": [
+              -42,
+              -42,
+              -42,
+              -42,
+              -42,
+              -42,
+              -42
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Good",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "Nm"
+          },
+          {
+            "code_patterns": [
+              "?1NECKUP00??MOY?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              -42,
+              -42,
+              -42,
+              -42,
+              -42,
+              -42,
+              -42
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "Nm"
+          },
+          {
+            "code_patterns": [
+              "?1NECKUP00??MOY?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              -47,
+              -47,
+              -47,
+              -47,
+              -47,
+              -47,
+              -47
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "Nm"
+          },
+          {
+            "code_patterns": [
+              "?1NECKUP00??MOY?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              -52,
+              -52,
+              -52,
+              -52,
+              -52,
+              -52,
+              -52
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "Nm"
+          },
+          {
+            "code_patterns": [
+              "?1NECKUP00??MOY?"
+            ],
+            "color": "red",
+            "func_samples": [
+              -57,
+              -57,
+              -57,
+              -57,
+              -57,
+              -57,
+              -57
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "Nm"
+          },
+          {
+            "code_patterns": [
+              "?1NECKUP00??MOY?"
+            ],
+            "color": "gray",
+            "func_samples": [
+              -57,
+              -57,
+              -57,
+              -57,
+              -57,
+              -57,
+              -57
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Capping",
+            "rating": "-inf",
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "Nm"
+          }
+        ],
+        "name": "Neck My extension"
+      },
+      "criterion_driver/criterion_knee_femur_pelvis": {
+        "class": "Criterion_Knee_Femur_Pelvis",
+        "limits": [],
+        "name": "Knee, Femur and Pelvis"
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_femur": {
+        "class": "Criterion_Femur",
+        "limits": [],
+        "name": "Femur"
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_femur/criterion_femur_compression": {
+        "class": "Criterion_Femur_Compression",
+        "limits": [
+          {
+            "code_patterns": [
+              "?1FEMR??00??FOZ?"
+            ],
+            "color": "green",
+            "func_samples": [
+              -3.8,
+              -3.8,
+              -3.8,
+              -3.8,
+              -3.8,
+              -3.8,
+              -3.8
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Good",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "ms",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1FEMR??00??FOZ?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              -3.8,
+              -3.8,
+              -3.8,
+              -3.8,
+              -3.8,
+              -3.8,
+              -3.8
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "ms",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1FEMR??00??FOZ?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              -5.557,
+              -5.5569496,
+              -5.556496,
+              -5.554480000000001,
+              -5.55196,
+              -5.5318000000000005,
+              -5.506600000000001
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": true,
+            "x_unit": "ms",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1FEMR??00??FOZ?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              -7.313,
+              -7.3128994,
+              -7.311993999999999,
+              -7.30797,
+              -7.3029399999999995,
+              -7.2627,
+              -7.2124
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": true,
+            "x_unit": "ms",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1FEMR??00??FOZ?"
+            ],
+            "color": "red",
+            "func_samples": [
+              -9.07,
+              -9.069849,
+              -9.06849,
+              -9.06245,
+              -9.0549,
+              -8.9945,
+              -8.919
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": true,
+            "x_unit": "ms",
+            "y_unit": "kN"
+          }
+        ],
+        "name": "Femur Compression"
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_knee": {
+        "class": "Criterion_Knee",
+        "limits": [],
+        "name": "Knee"
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_knee/criterion_knee_slider_compression": {
+        "class": "Criterion_Knee_Slider_Compression",
+        "limits": [
+          {
+            "code_patterns": [
+              "?1KNSL??00??DSX?"
+            ],
+            "color": "red",
+            "func_samples": [
+              -15.0,
+              -15.0,
+              -15.0,
+              -15.0,
+              -15.0,
+              -15.0,
+              -15.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "mm"
+          },
+          {
+            "code_patterns": [
+              "?1KNSL??00??DSX?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              -12.0,
+              -12.0,
+              -12.0,
+              -12.0,
+              -12.0,
+              -12.0,
+              -12.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "mm"
+          },
+          {
+            "code_patterns": [
+              "?1KNSL??00??DSX?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              -9.0,
+              -9.0,
+              -9.0,
+              -9.0,
+              -9.0,
+              -9.0,
+              -9.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "mm"
+          },
+          {
+            "code_patterns": [
+              "?1KNSL??00??DSX?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              -6.0,
+              -6.0,
+              -6.0,
+              -6.0,
+              -6.0,
+              -6.0,
+              -6.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "mm"
+          },
+          {
+            "code_patterns": [
+              "?1KNSL??00??DSX?"
+            ],
+            "color": "green",
+            "func_samples": [
+              -6.0,
+              -6.0,
+              -6.0,
+              -6.0,
+              -6.0,
+              -6.0,
+              -6.0
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Good",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "mm"
+          }
+        ],
+        "name": "Knee Slider Compression"
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_pelvis": {
+        "class": "Criterion_Pelvis",
+        "limits": [],
+        "name": "Pelvis"
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_pelvis/criterion_acetabulum_force": {
+        "class": "Criterion_Acetabulum_Force",
+        "limits": [
+          {
+            "code_patterns": [
+              "?1ACTB??00??FOR?"
+            ],
+            "color": "red",
+            "func_samples": [
+              -4.1,
+              -4.1,
+              -4.1,
+              -4.1,
+              -4.1,
+              -4.1,
+              -4.1
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1ACTB??00??FOR?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              -3.827,
+              -3.827,
+              -3.827,
+              -3.827,
+              -3.827,
+              -3.827,
+              -3.827
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1ACTB??00??FOR?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              -3.553,
+              -3.553,
+              -3.553,
+              -3.553,
+              -3.553,
+              -3.553,
+              -3.553
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1ACTB??00??FOR?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              -3.28,
+              -3.28,
+              -3.28,
+              -3.28,
+              -3.28,
+              -3.28,
+              -3.28
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1ACTB??00??FOR?"
+            ],
+            "color": "green",
+            "func_samples": [
+              -3.28,
+              -3.28,
+              -3.28,
+              -3.28,
+              -3.28,
+              -3.28,
+              -3.28
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Good",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          }
+        ],
+        "name": "Acetabulum Force"
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_submarining": {
+        "class": "Criterion_Submarining",
+        "limits": [],
+        "name": "Submarining"
+      },
+      "criterion_driver/criterion_lowerleg_foot_ankle": {
+        "class": "Criterion_LowerLeg_Foot_Ankle",
+        "limits": [],
+        "name": "Lower Leg, Foot and Ankle"
+      },
+      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_pedal_rearward_displacement": {
+        "class": "Criterion_Pedal_Rearward_Displacement",
+        "limits": [],
+        "name": "Pedal Rearward Displacement"
+      },
+      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_tibia_compression": {
+        "class": "Criterion_Tibia_Compression",
+        "limits": [
+          {
+            "code_patterns": [
+              "?1TIBI??????FOZ?"
+            ],
+            "color": "red",
+            "func_samples": [
+              -8,
+              -8,
+              -8,
+              -8,
+              -8,
+              -8,
+              -8
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1TIBI??????FOZ?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              -6,
+              -6,
+              -6,
+              -6,
+              -6,
+              -6,
+              -6
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1TIBI??????FOZ?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              -4,
+              -4,
+              -4,
+              -4,
+              -4,
+              -4,
+              -4
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1TIBI??????FOZ?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              -2,
+              -2,
+              -2,
+              -2,
+              -2,
+              -2,
+              -2
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1TIBI??????FOZ?"
+            ],
+            "color": "green",
+            "func_samples": [
+              -2,
+              -2,
+              -2,
+              -2,
+              -2,
+              -2,
+              -2
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Good",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          }
+        ],
+        "name": "Tibia Compression"
+      },
+      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_tibia_index": {
+        "class": "Criterion_Tibia_Index",
+        "limits": [
+          {
+            "code_patterns": [
+              "?1TIIN??????000?"
+            ],
+            "color": "green",
+            "func_samples": [
+              0.4,
+              0.4,
+              0.4,
+              0.4,
+              0.4,
+              0.4,
+              0.4
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Good",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "1"
+          },
+          {
+            "code_patterns": [
+              "?1TIIN??????000?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              0.4,
+              0.4,
+              0.4,
+              0.4,
+              0.4,
+              0.4,
+              0.4
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "1"
+          },
+          {
+            "code_patterns": [
+              "?1TIIN??????000?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              0.7,
+              0.7,
+              0.7,
+              0.7,
+              0.7,
+              0.7,
+              0.7
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "1"
+          },
+          {
+            "code_patterns": [
+              "?1TIIN??????000?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "1"
+          },
+          {
+            "code_patterns": [
+              "?1TIIN??????000?"
+            ],
+            "color": "red",
+            "func_samples": [
+              1.3,
+              1.3,
+              1.3,
+              1.3,
+              1.3,
+              1.3,
+              1.3
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Poor",
+            "rating": 0,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "1"
+          }
+        ],
+        "name": "Tibia Index"
+      },
+      "criterion_passenger": {
+        "class": "Criterion_Passenger",
+        "limits": [],
+        "name": "Passenger"
+      },
+      "criterion_passenger/criterion_chest": {
+        "class": "Criterion_Chest",
+        "limits": [],
+        "name": "Chest"
+      },
+      "criterion_passenger/criterion_chest/criterion_chest_compression": {
+        "class": "Criterion_Chest_Compression",
+        "limits": [
+          {
+            "code_patterns": [
+              "?3CHST000[03]??DSX?"
+            ],
+            "color": "gray",
+            "func_samples": [
+              -42.0,
+              -42.0,
+              -42.0,
+              -42.0,
+              -42.0,
+              -42.0,
+              -42.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Capping",
+            "rating": "-inf",
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "mm"
+          },
+          {
+            "code_patterns": [
+              "?3CHST000[03]??DSX?"
+            ],
+            "color": "red",
+            "func_samples": [
+              -42.0,
+              -42.0,
+              -42.0,
+              -42.0,
+              -42.0,
+              -42.0,
+              -42.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "mm"
+          },
+          {
+            "code_patterns": [
+              "?3CHST000[03]??DSX?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              -35.333,
+              -35.333,
+              -35.333,
+              -35.333,
+              -35.333,
+              -35.333,
+              -35.333
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "mm"
+          },
+          {
+            "code_patterns": [
+              "?3CHST000[03]??DSX?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              -28.667,
+              -28.667,
+              -28.667,
+              -28.667,
+              -28.667,
+              -28.667,
+              -28.667
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "mm"
+          },
+          {
+            "code_patterns": [
+              "?3CHST000[03]??DSX?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              -22.0,
+              -22.0,
+              -22.0,
+              -22.0,
+              -22.0,
+              -22.0,
+              -22.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "mm"
+          },
+          {
+            "code_patterns": [
+              "?3CHST000[03]??DSX?"
+            ],
+            "color": "green",
+            "func_samples": [
+              -22.0,
+              -22.0,
+              -22.0,
+              -22.0,
+              -22.0,
+              -22.0,
+              -22.0
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Good",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "mm"
+          }
+        ],
+        "name": "Chest Compression"
+      },
+      "criterion_passenger/criterion_chest/criterion_chest_vc": {
+        "class": "Criterion_Chest_VC",
+        "limits": [
+          {
+            "code_patterns": [
+              "?3VCCR000[03]??VEX?"
+            ],
+            "color": "green",
+            "func_samples": [
+              0.5,
+              0.5,
+              0.5,
+              0.5,
+              0.5,
+              0.5,
+              0.5
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Good",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "m/s"
+          },
+          {
+            "code_patterns": [
+              "?3VCCR000[03]??VEX?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              0.5,
+              0.5,
+              0.5,
+              0.5,
+              0.5,
+              0.5,
+              0.5
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "m/s"
+          },
+          {
+            "code_patterns": [
+              "?3VCCR000[03]??VEX?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              0.667,
+              0.667,
+              0.667,
+              0.667,
+              0.667,
+              0.667,
+              0.667
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "m/s"
+          },
+          {
+            "code_patterns": [
+              "?3VCCR000[03]??VEX?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              0.833,
+              0.833,
+              0.833,
+              0.833,
+              0.833,
+              0.833,
+              0.833
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "m/s"
+          },
+          {
+            "code_patterns": [
+              "?3VCCR000[03]??VEX?"
+            ],
+            "color": "red",
+            "func_samples": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "m/s"
+          },
+          {
+            "code_patterns": [
+              "?3VCCR000[03]??VEX?"
+            ],
+            "color": "gray",
+            "func_samples": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Capping",
+            "rating": "-inf",
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "m/s"
+          }
+        ],
+        "name": "Chest VC"
+      },
+      "criterion_passenger/criterion_chest/criterion_shoulder_belt_load": {
+        "class": "Criterion_ShoulderBeltLoad",
+        "limits": [
+          {
+            "code_patterns": [
+              "?3SEBE????B3FO[X0]?"
+            ],
+            "color": "green",
+            "func_samples": [
+              6.0,
+              6.0,
+              6.0,
+              6.0,
+              6.0,
+              6.0,
+              6.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "0 pt. Modifier",
+            "rating": 0,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?3SEBE????B3FO[X0]?"
+            ],
+            "color": "red",
+            "func_samples": [
+              6.0,
+              6.0,
+              6.0,
+              6.0,
+              6.0,
+              6.0,
+              6.0
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "-2 pt. Modifier",
+            "rating": -2,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          }
+        ],
+        "name": "Modifier Shoulder Belt Load"
+      },
+      "criterion_passenger/criterion_head_neck": {
+        "class": "Criterion_Head_Neck",
+        "limits": [],
+        "name": "Head and Neck"
+      },
+      "criterion_passenger/criterion_head_neck/criterion_head": {
+        "class": "Criterion_Head",
+        "limits": [],
+        "name": "Head"
+      },
+      "criterion_passenger/criterion_head_neck/criterion_head/criterion_head_a3ms": {
+        "class": "Criterion_Head_a3ms",
+        "limits": [
+          {
+            "code_patterns": [
+              "?3HEAD003C??ACR?",
+              "?3HEADCG3C??ACR?"
+            ],
+            "color": "green",
+            "func_samples": [
+              72.0,
+              72.0,
+              72.0,
+              72.0,
+              72.0,
+              72.0,
+              72.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Good",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "9.80665 m / s2"
+          },
+          {
+            "code_patterns": [
+              "?3HEAD003C??ACR?",
+              "?3HEADCG3C??ACR?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              72.0,
+              72.0,
+              72.0,
+              72.0,
+              72.0,
+              72.0,
+              72.0
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "9.80665 m / s2"
+          },
+          {
+            "code_patterns": [
+              "?3HEAD003C??ACR?",
+              "?3HEADCG3C??ACR?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              74.667,
+              74.667,
+              74.667,
+              74.667,
+              74.667,
+              74.667,
+              74.667
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "9.80665 m / s2"
+          },
+          {
+            "code_patterns": [
+              "?3HEAD003C??ACR?",
+              "?3HEADCG3C??ACR?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              77.333,
+              77.333,
+              77.333,
+              77.333,
+              77.333,
+              77.333,
+              77.333
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "9.80665 m / s2"
+          },
+          {
+            "code_patterns": [
+              "?3HEAD003C??ACR?",
+              "?3HEADCG3C??ACR?"
+            ],
+            "color": "red",
+            "func_samples": [
+              80.0,
+              80.0,
+              80.0,
+              80.0,
+              80.0,
+              80.0,
+              80.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "9.80665 m / s2"
+          },
+          {
+            "code_patterns": [
+              "?3HEAD003C??ACR?",
+              "?3HEADCG3C??ACR?"
+            ],
+            "color": "gray",
+            "func_samples": [
+              80.0,
+              80.0,
+              80.0,
+              80.0,
+              80.0,
+              80.0,
+              80.0
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Capping",
+            "rating": "-inf",
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "9.80665 m / s2"
+          }
+        ],
+        "name": "Head a3ms"
+      },
+      "criterion_passenger/criterion_head_neck/criterion_head/criterion_hic_15": {
+        "class": "Criterion_HIC_15",
+        "limits": [
+          {
+            "code_patterns": [
+              "?3HICR0015??00RX",
+              "?3HICRCG15??00RX"
+            ],
+            "color": "green",
+            "func_samples": [
+              500.0,
+              500.0,
+              500.0,
+              500.0,
+              500.0,
+              500.0,
+              500.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Good",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "1"
+          },
+          {
+            "code_patterns": [
+              "?3HICR0015??00RX",
+              "?3HICRCG15??00RX"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              500.0,
+              500.0,
+              500.0,
+              500.0,
+              500.0,
+              500.0,
+              500.0
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "1"
+          },
+          {
+            "code_patterns": [
+              "?3HICR0015??00RX",
+              "?3HICRCG15??00RX"
+            ],
+            "color": "orange",
+            "func_samples": [
+              566.667,
+              566.667,
+              566.667,
+              566.667,
+              566.667,
+              566.667,
+              566.667
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "1"
+          },
+          {
+            "code_patterns": [
+              "?3HICR0015??00RX",
+              "?3HICRCG15??00RX"
+            ],
+            "color": "brown",
+            "func_samples": [
+              633.333,
+              633.333,
+              633.333,
+              633.333,
+              633.333,
+              633.333,
+              633.333
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "1"
+          },
+          {
+            "code_patterns": [
+              "?3HICR0015??00RX",
+              "?3HICRCG15??00RX"
+            ],
+            "color": "red",
+            "func_samples": [
+              700.0,
+              700.0,
+              700.0,
+              700.0,
+              700.0,
+              700.0,
+              700.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "1"
+          },
+          {
+            "code_patterns": [
+              "?3HICR0015??00RX",
+              "?3HICRCG15??00RX"
+            ],
+            "color": "gray",
+            "func_samples": [
+              700.0,
+              700.0,
+              700.0,
+              700.0,
+              700.0,
+              700.0,
+              700.0
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Capping",
+            "rating": "-inf",
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "1"
+          }
+        ],
+        "name": "HIC 15"
+      },
+      "criterion_passenger/criterion_head_neck/criterion_neck": {
+        "class": "Criterion_Neck",
+        "limits": [],
+        "name": "Neck"
+      },
+      "criterion_passenger/criterion_head_neck/criterion_neck/criterion_fx_shear": {
+        "class": "Criterion_Fx_Shear",
+        "limits": [
+          {
+            "code_patterns": [
+              "?3NECKUP00??FOX?"
+            ],
+            "color": "green",
+            "func_samples": [
+              1.9,
+              1.899972,
+              1.8997199999999999,
+              1.8985999999999998,
+              1.8972,
+              1.886,
+              1.8719999999999999
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Good",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "ms",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?3NECKUP00??FOX?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              1.9,
+              1.899972,
+              1.8997199999999999,
+              1.8985999999999998,
+              1.8972,
+              1.886,
+              1.8719999999999999
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "ms",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?3NECKUP00??FOX?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              2.3,
+              2.29996,
+              2.2996,
+              2.298,
+              2.296,
+              2.28,
+              2.26
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": null,
+            "x_unit": "ms",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?3NECKUP00??FOX?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              2.7,
+              2.699948,
+              2.6994800000000003,
+              2.6974,
+              2.6948000000000003,
+              2.6740000000000004,
+              2.648
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": null,
+            "x_unit": "ms",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?3NECKUP00??FOX?"
+            ],
+            "color": "red",
+            "func_samples": [
+              3.1,
+              3.099936,
+              3.09936,
+              3.0968,
+              3.0936,
+              3.068,
+              3.036
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": null,
+            "x_unit": "ms",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?3NECKUP00??FOX?"
+            ],
+            "color": "gray",
+            "func_samples": [
+              3.1,
+              3.099936,
+              3.09936,
+              3.0968,
+              3.0936,
+              3.068,
+              3.036
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Capping",
+            "rating": "-inf",
+            "upper": null,
+            "x_unit": "ms",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?3NECKUP00??FOX?"
+            ],
+            "color": "green",
+            "func_samples": [
+              -1.9,
+              -1.899972,
+              -1.8997199999999999,
+              -1.8985999999999998,
+              -1.8972,
+              -1.886,
+              -1.8719999999999999
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Good",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "ms",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?3NECKUP00??FOX?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              -1.9,
+              -1.899972,
+              -1.8997199999999999,
+              -1.8985999999999998,
+              -1.8972,
+              -1.886,
+              -1.8719999999999999
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "ms",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?3NECKUP00??FOX?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              -2.3,
+              -2.29996,
+              -2.2996,
+              -2.298,
+              -2.296,
+              -2.28,
+              -2.26
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": true,
+            "x_unit": "ms",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?3NECKUP00??FOX?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              -2.7,
+              -2.699948,
+              -2.6994800000000003,
+              -2.6974,
+              -2.6948000000000003,
+              -2.6740000000000004,
+              -2.648
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": true,
+            "x_unit": "ms",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?3NECKUP00??FOX?"
+            ],
+            "color": "red",
+            "func_samples": [
+              -3.1,
+              -3.099936,
+              -3.09936,
+              -3.0968,
+              -3.0936,
+              -3.068,
+              -3.036
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": null,
+            "x_unit": "ms",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?3NECKUP00??FOX?"
+            ],
+            "color": "gray",
+            "func_samples": [
+              -3.1,
+              -3.099936,
+              -3.09936,
+              -3.0968,
+              -3.0936,
+              -3.068,
+              -3.036
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Capping",
+            "rating": "-inf",
+            "upper": true,
+            "x_unit": "ms",
+            "y_unit": "kN"
+          }
+        ],
+        "name": "Neck Fx shear"
+      },
+      "criterion_passenger/criterion_head_neck/criterion_neck/criterion_fz_tension": {
+        "class": "Criterion_Fz_Tension",
+        "limits": [
+          {
+            "code_patterns": [
+              "?3NECKUP00??FOZ?"
+            ],
+            "color": "green",
+            "func_samples": [
+              2.7,
+              2.6999885714285714,
+              2.6998857142857147,
+              2.6994285714285717,
+              2.698857142857143,
+              2.6942857142857144,
+              2.6885714285714286
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Good",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "ms",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?3NECKUP00??FOZ?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              2.7,
+              2.6999885714285714,
+              2.6998857142857147,
+              2.6994285714285717,
+              2.698857142857143,
+              2.6942857142857144,
+              2.6885714285714286
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "ms",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?3NECKUP00??FOZ?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              2.9,
+              2.899988571428571,
+              2.8998857142857144,
+              2.8994285714285715,
+              2.8988571428571426,
+              2.894285714285714,
+              2.8885714285714283
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": null,
+            "x_unit": "ms",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?3NECKUP00??FOZ?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              3.1,
+              3.0999885714285713,
+              3.0998857142857146,
+              3.0994285714285716,
+              3.0988571428571428,
+              3.0942857142857143,
+              3.0885714285714285
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": null,
+            "x_unit": "ms",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?3NECKUP00??FOZ?"
+            ],
+            "color": "red",
+            "func_samples": [
+              3.3,
+              3.299988571428571,
+              3.2998857142857143,
+              3.2994285714285714,
+              3.2988571428571425,
+              3.294285714285714,
+              3.2885714285714283
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": null,
+            "x_unit": "ms",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?3NECKUP00??FOZ?"
+            ],
+            "color": "gray",
+            "func_samples": [
+              3.3,
+              3.299988571428571,
+              3.2998857142857143,
+              3.2994285714285714,
+              3.2988571428571425,
+              3.294285714285714,
+              3.2885714285714283
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Capping",
+            "rating": "-inf",
+            "upper": null,
+            "x_unit": "ms",
+            "y_unit": "kN"
+          }
+        ],
+        "name": "Fz Tension"
+      },
+      "criterion_passenger/criterion_head_neck/criterion_neck/criterion_my_extension": {
+        "class": "Criterion_My_Extension",
+        "limits": [
+          {
+            "code_patterns": [
+              "?3NECKUP00??MOY?"
+            ],
+            "color": "green",
+            "func_samples": [
+              -42,
+              -42,
+              -42,
+              -42,
+              -42,
+              -42,
+              -42
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Good",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "Nm"
+          },
+          {
+            "code_patterns": [
+              "?3NECKUP00??MOY?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              -42,
+              -42,
+              -42,
+              -42,
+              -42,
+              -42,
+              -42
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "Nm"
+          },
+          {
+            "code_patterns": [
+              "?3NECKUP00??MOY?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              -47,
+              -47,
+              -47,
+              -47,
+              -47,
+              -47,
+              -47
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "Nm"
+          },
+          {
+            "code_patterns": [
+              "?3NECKUP00??MOY?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              -52,
+              -52,
+              -52,
+              -52,
+              -52,
+              -52,
+              -52
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "Nm"
+          },
+          {
+            "code_patterns": [
+              "?3NECKUP00??MOY?"
+            ],
+            "color": "red",
+            "func_samples": [
+              -57,
+              -57,
+              -57,
+              -57,
+              -57,
+              -57,
+              -57
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "Nm"
+          },
+          {
+            "code_patterns": [
+              "?3NECKUP00??MOY?"
+            ],
+            "color": "gray",
+            "func_samples": [
+              -57,
+              -57,
+              -57,
+              -57,
+              -57,
+              -57,
+              -57
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Capping",
+            "rating": "-inf",
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "Nm"
+          }
+        ],
+        "name": "My Extension"
+      },
+      "criterion_passenger/criterion_knee_femur_pelvis": {
+        "class": "Criterion_Knee_Femur_Pelvis",
+        "limits": [],
+        "name": "Knee, Femur and Pelvis"
+      },
+      "criterion_passenger/criterion_knee_femur_pelvis/criterion_femur_compression": {
+        "class": "Criterion_Femur_Compression",
+        "limits": [
+          {
+            "code_patterns": [
+              "?3FEMR??00??FOZ?"
+            ],
+            "color": "green",
+            "func_samples": [
+              -3.8,
+              -3.8,
+              -3.8,
+              -3.8,
+              -3.8,
+              -3.8,
+              -3.8
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Good",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "ms",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?3FEMR??00??FOZ?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              -3.8,
+              -3.8,
+              -3.8,
+              -3.8,
+              -3.8,
+              -3.8,
+              -3.8
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "ms",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?3FEMR??00??FOZ?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              -5.557,
+              -5.5569496,
+              -5.556496,
+              -5.554480000000001,
+              -5.55196,
+              -5.5318000000000005,
+              -5.506600000000001
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": true,
+            "x_unit": "ms",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?3FEMR??00??FOZ?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              -7.313,
+              -7.3128994,
+              -7.311993999999999,
+              -7.30797,
+              -7.3029399999999995,
+              -7.2627,
+              -7.2124
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": true,
+            "x_unit": "ms",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?3FEMR??00??FOZ?"
+            ],
+            "color": "red",
+            "func_samples": [
+              -9.07,
+              -9.069849,
+              -9.06849,
+              -9.06245,
+              -9.0549,
+              -8.9945,
+              -8.919
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": true,
+            "x_unit": "ms",
+            "y_unit": "kN"
+          }
+        ],
+        "name": "Femur Compression"
+      },
+      "criterion_passenger/criterion_knee_femur_pelvis/criterion_knee_slider_compression": {
+        "class": "Criterion_Knee_Slider_Compression",
+        "limits": [
+          {
+            "code_patterns": [
+              "?3KNSL??00??DSX?"
+            ],
+            "color": "red",
+            "func_samples": [
+              -15.0,
+              -15.0,
+              -15.0,
+              -15.0,
+              -15.0,
+              -15.0,
+              -15.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "mm"
+          },
+          {
+            "code_patterns": [
+              "?3KNSL??00??DSX?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              -12.0,
+              -12.0,
+              -12.0,
+              -12.0,
+              -12.0,
+              -12.0,
+              -12.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "mm"
+          },
+          {
+            "code_patterns": [
+              "?3KNSL??00??DSX?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              -9.0,
+              -9.0,
+              -9.0,
+              -9.0,
+              -9.0,
+              -9.0,
+              -9.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "mm"
+          },
+          {
+            "code_patterns": [
+              "?3KNSL??00??DSX?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              -6.0,
+              -6.0,
+              -6.0,
+              -6.0,
+              -6.0,
+              -6.0,
+              -6.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "mm"
+          },
+          {
+            "code_patterns": [
+              "?3KNSL??00??DSX?"
+            ],
+            "color": "green",
+            "func_samples": [
+              -6.0,
+              -6.0,
+              -6.0,
+              -6.0,
+              -6.0,
+              -6.0,
+              -6.0
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Good",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "mm"
+          }
+        ],
+        "name": "Knee Slider Compression"
+      },
+      "criterion_passenger/criterion_lowerleg": {
+        "class": "Criterion_LowerLeg",
+        "limits": [],
+        "name": "Lower Leg"
+      },
+      "criterion_passenger/criterion_lowerleg/criterion_tibia_compression": {
+        "class": "Criterion_Tibia_Compression",
+        "limits": [
+          {
+            "code_patterns": [
+              "?3TIBI??????FOZ?"
+            ],
+            "color": "red",
+            "func_samples": [
+              -8,
+              -8,
+              -8,
+              -8,
+              -8,
+              -8,
+              -8
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?3TIBI??????FOZ?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              -6,
+              -6,
+              -6,
+              -6,
+              -6,
+              -6,
+              -6
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?3TIBI??????FOZ?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              -4,
+              -4,
+              -4,
+              -4,
+              -4,
+              -4,
+              -4
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?3TIBI??????FOZ?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              -2,
+              -2,
+              -2,
+              -2,
+              -2,
+              -2,
+              -2
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?3TIBI??????FOZ?"
+            ],
+            "color": "green",
+            "func_samples": [
+              -2,
+              -2,
+              -2,
+              -2,
+              -2,
+              -2,
+              -2
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Good",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          }
+        ],
+        "name": "Tibia Compression"
+      },
+      "criterion_passenger/criterion_lowerleg/criterion_tibia_index": {
+        "class": "Criterion_Tibia_Index",
+        "limits": [
+          {
+            "code_patterns": [
+              "?3TIIN??????000?"
+            ],
+            "color": "green",
+            "func_samples": [
+              0.4,
+              0.4,
+              0.4,
+              0.4,
+              0.4,
+              0.4,
+              0.4
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Good",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "1"
+          },
+          {
+            "code_patterns": [
+              "?3TIIN??????000?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              0.4,
+              0.4,
+              0.4,
+              0.4,
+              0.4,
+              0.4,
+              0.4
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "1"
+          },
+          {
+            "code_patterns": [
+              "?3TIIN??????000?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              0.7,
+              0.7,
+              0.7,
+              0.7,
+              0.7,
+              0.7,
+              0.7
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "1"
+          },
+          {
+            "code_patterns": [
+              "?3TIIN??????000?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "1"
+          },
+          {
+            "code_patterns": [
+              "?3TIIN??????000?"
+            ],
+            "color": "red",
+            "func_samples": [
+              1.3,
+              1.3,
+              1.3,
+              1.3,
+              1.3,
+              1.3,
+              1.3
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Poor",
+            "rating": 0,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "1"
+          }
+        ],
+        "name": "Tibia Index"
+      }
+    },
+    "pages": [
+      "Page_Cover",
+      "Page_Rating_Table",
+      "Page_Driver_Result_Values_Chart",
+      "Page_Driver_Rating_Table",
+      "Page_Driver_Values_Table",
+      "Page_Driver_Belt",
+      "Page_Driver_Head_Acceleration",
+      "Page_Driver_Head_Damage",
+      "Page_Driver_Neck_Load",
+      "Page_Driver_Chest_Compression",
+      "Page_Driver_Abdomen_Compression",
+      "Page_Driver_Femur_Axial_Force",
+      "Page_Driver_Knee_Slider_Compression",
+      "Page_Driver_Tibia_Compression",
+      "Page_Driver_Tibia_Index",
+      "Page_Passenger_Result_Values_Chart",
+      "Page_Passenger_Rating_Table",
+      "Page_Passenger_Values_Table",
+      "Page_Passenger_Belt",
+      "Page_Passenger_Head_Acceleration",
+      "Page_Passenger_Neck_Load",
+      "Page_Passenger_Chest_Deflection",
+      "Page_Passenger_Femur_Axial_Force",
+      "Page_Passenger_Knee_Slider_Compression",
+      "Page_Passenger_Tibia_Compression",
+      "Page_Passenger_Tibia_Index",
+      "Page_OLC",
+      "Page_OLC_Trolley"
+    ]
+  },
+  "report": "EuroNCAP_Frontal_MPDB",
+  "results": {
+    "09203": {
+      "Overall": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_compatibility_modifier": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_compatibility_modifier/criterion_olc_modifier": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      },
+      "criterion_door_opening_during_impact": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": 0
+      },
+      "criterion_driver": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_chest_abdomen": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_chest_abdomen/criterion_abdomen": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_chest_abdomen/criterion_abdomen/criterion_abdomen_compression": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_chest_abdomen/criterion_chest": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_chest_compression": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": -20244650.233544264
+      },
+      "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_shoulder_belt_load": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_head_neck": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_head_neck/criterion_head": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_head_neck/criterion_head/criterion_damage": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_head_neck/criterion_head/criterion_head_a3ms": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": 124.483568219652
+      },
+      "criterion_driver/criterion_head_neck/criterion_head/criterion_hic_15": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": 1060.595254245318
+      },
+      "criterion_driver/criterion_head_neck/criterion_neck": {
+        "color": null,
+        "rating": 4.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_head_neck/criterion_neck/criterion_fx_shear": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": 0.35989067204431846
+      },
+      "criterion_driver/criterion_head_neck/criterion_neck/criterion_fz_tension": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": 1.8053699774279068
+      },
+      "criterion_driver/criterion_head_neck/criterion_neck/criterion_my_extension": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": -11.708611152288245
+      },
+      "criterion_driver/criterion_knee_femur_pelvis": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_femur": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_femur/criterion_femur_compression": {
+        "color": "red",
+        "rating": 0.0,
+        "status": "OK",
+        "value": -10.04032813005745
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_knee": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_knee/criterion_knee_slider_compression": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_pelvis": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_pelvis/criterion_acetabulum_force": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_submarining": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_driver/criterion_lowerleg_foot_ankle": {
+        "color": null,
+        "rating": 2.215290228348533,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_pedal_rearward_displacement": {
+        "color": null,
+        "rating": 4.0,
+        "status": "OK",
+        "value": 0
+      },
+      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_tibia_compression": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": -1.783137346540146
+      },
+      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_tibia_index": {
+        "color": "orange",
+        "rating": 2.215290228348533,
+        "status": "OK",
+        "value": 0.8015768145488359
+      },
+      "criterion_passenger": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_passenger/criterion_chest": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_passenger/criterion_chest/criterion_chest_compression": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      },
+      "criterion_passenger/criterion_chest/criterion_chest_vc": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      },
+      "criterion_passenger/criterion_chest/criterion_shoulder_belt_load": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      },
+      "criterion_passenger/criterion_head_neck": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_passenger/criterion_head_neck/criterion_head": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_passenger/criterion_head_neck/criterion_head/criterion_head_a3ms": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      },
+      "criterion_passenger/criterion_head_neck/criterion_head/criterion_hic_15": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      },
+      "criterion_passenger/criterion_head_neck/criterion_neck": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_passenger/criterion_head_neck/criterion_neck/criterion_fx_shear": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      },
+      "criterion_passenger/criterion_head_neck/criterion_neck/criterion_fz_tension": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      },
+      "criterion_passenger/criterion_head_neck/criterion_neck/criterion_my_extension": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      },
+      "criterion_passenger/criterion_knee_femur_pelvis": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_passenger/criterion_knee_femur_pelvis/criterion_femur_compression": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      },
+      "criterion_passenger/criterion_knee_femur_pelvis/criterion_knee_slider_compression": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      },
+      "criterion_passenger/criterion_lowerleg": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_passenger/criterion_lowerleg/criterion_tibia_compression": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      },
+      "criterion_passenger/criterion_lowerleg/criterion_tibia_index": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      }
+    },
+    "14084": {
+      "Overall": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_compatibility_modifier": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_compatibility_modifier/criterion_olc_modifier": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      },
+      "criterion_door_opening_during_impact": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": 0
+      },
+      "criterion_driver": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_chest_abdomen": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_chest_abdomen/criterion_abdomen": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_chest_abdomen/criterion_abdomen/criterion_abdomen_compression": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_chest_abdomen/criterion_chest": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_chest_compression": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": -31.11494668088617
+      },
+      "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_shoulder_belt_load": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_head_neck": {
+        "color": null,
+        "rating": 3.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_head_neck/criterion_head": {
+        "color": null,
+        "rating": 3.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_head_neck/criterion_head/criterion_damage": {
+        "color": "red",
+        "rating": -1.0,
+        "status": "OK",
+        "value": 13.069038613300279
+      },
+      "criterion_driver/criterion_head_neck/criterion_head/criterion_head_a3ms": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": 54.77641041133814
+      },
+      "criterion_driver/criterion_head_neck/criterion_head/criterion_hic_15": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": 277.7450732639399
+      },
+      "criterion_driver/criterion_head_neck/criterion_neck": {
+        "color": null,
+        "rating": 4.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_head_neck/criterion_neck/criterion_fx_shear": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": 1.1999359579530409
+      },
+      "criterion_driver/criterion_head_neck/criterion_neck/criterion_fz_tension": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": 1.20872196218147
+      },
+      "criterion_driver/criterion_head_neck/criterion_neck/criterion_my_extension": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": -13.283149944531232
+      },
+      "criterion_driver/criterion_knee_femur_pelvis": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_femur": {
+        "color": null,
+        "rating": 4.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_femur/criterion_femur_compression": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": -0.5268480544522959
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_knee": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_knee/criterion_knee_slider_compression": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_pelvis": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_pelvis/criterion_acetabulum_force": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_submarining": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_driver/criterion_lowerleg_foot_ankle": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_pedal_rearward_displacement": {
+        "color": null,
+        "rating": 4.0,
+        "status": "OK",
+        "value": 0
+      },
+      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_tibia_compression": {
+        "color": "yellow",
+        "rating": 3.352749971121848,
+        "status": "OK",
+        "value": -2.972577053160258
+      },
+      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_tibia_index": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      },
+      "criterion_passenger": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_passenger/criterion_chest": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": 4.0
+      },
+      "criterion_passenger/criterion_chest/criterion_chest_compression": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": -17.701969448460297
+      },
+      "criterion_passenger/criterion_chest/criterion_chest_vc": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": -0.08756077622265823
+      },
+      "criterion_passenger/criterion_chest/criterion_shoulder_belt_load": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      },
+      "criterion_passenger/criterion_head_neck": {
+        "color": null,
+        "rating": 4.0,
+        "status": "OK",
+        "value": 4.0
+      },
+      "criterion_passenger/criterion_head_neck/criterion_head": {
+        "color": null,
+        "rating": 4.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_passenger/criterion_head_neck/criterion_head/criterion_head_a3ms": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": 49.44789731765516
+      },
+      "criterion_passenger/criterion_head_neck/criterion_head/criterion_hic_15": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": 230.96161113232725
+      },
+      "criterion_passenger/criterion_head_neck/criterion_neck": {
+        "color": null,
+        "rating": 4.0,
+        "status": "OK",
+        "value": 4.0
+      },
+      "criterion_passenger/criterion_head_neck/criterion_neck/criterion_fx_shear": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": 0.5280437189506695
+      },
+      "criterion_passenger/criterion_head_neck/criterion_neck/criterion_fz_tension": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": 0.589491259926559
+      },
+      "criterion_passenger/criterion_head_neck/criterion_neck/criterion_my_extension": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": -25.165458657041263
+      },
+      "criterion_passenger/criterion_knee_femur_pelvis": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_passenger/criterion_knee_femur_pelvis/criterion_femur_compression": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": -1.9141633467514438
+      },
+      "criterion_passenger/criterion_knee_femur_pelvis/criterion_knee_slider_compression": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      },
+      "criterion_passenger/criterion_lowerleg": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_passenger/criterion_lowerleg/criterion_tibia_compression": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": -1.412325091847133
+      },
+      "criterion_passenger/criterion_lowerleg/criterion_tibia_index": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      }
+    },
+    "AK3T02FO": {
+      "Overall": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_compatibility_modifier": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_compatibility_modifier/criterion_olc_modifier": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      },
+      "criterion_door_opening_during_impact": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": 0
+      },
+      "criterion_driver": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_chest_abdomen": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_chest_abdomen/criterion_abdomen": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_chest_abdomen/criterion_abdomen/criterion_abdomen_compression": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_chest_abdomen/criterion_chest": {
+        "color": null,
+        "rating": 4.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_chest_compression": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": -27.640424739525812
+      },
+      "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_shoulder_belt_load": {
+        "color": "green",
+        "rating": 0.0,
+        "status": "OK",
+        "value": 5.197280279550186
+      },
+      "criterion_driver/criterion_head_neck": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_head_neck/criterion_head": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_head_neck/criterion_head/criterion_damage": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_head_neck/criterion_head/criterion_head_a3ms": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": 47.71624564564192
+      },
+      "criterion_driver/criterion_head_neck/criterion_head/criterion_hic_15": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": 224.27072720427321
+      },
+      "criterion_driver/criterion_head_neck/criterion_neck": {
+        "color": null,
+        "rating": 4.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_head_neck/criterion_neck/criterion_fx_shear": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": 0.43631136515223173
+      },
+      "criterion_driver/criterion_head_neck/criterion_neck/criterion_fz_tension": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": 1.1912899817859819
+      },
+      "criterion_driver/criterion_head_neck/criterion_neck/criterion_my_extension": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": -15.37400417844821
+      },
+      "criterion_driver/criterion_knee_femur_pelvis": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_femur": {
+        "color": null,
+        "rating": 4.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_femur/criterion_femur_compression": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": -0.9427166999719382
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_knee": {
+        "color": null,
+        "rating": 4.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_knee/criterion_knee_slider_compression": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": -0.7088665584335185
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_pelvis": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_pelvis/criterion_acetabulum_force": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_submarining": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_driver/criterion_lowerleg_foot_ankle": {
+        "color": null,
+        "rating": 1.575547448597835,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_pedal_rearward_displacement": {
+        "color": null,
+        "rating": 4.0,
+        "status": "OK",
+        "value": 0
+      },
+      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_tibia_compression": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": -1.814815787828405
+      },
+      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_tibia_index": {
+        "color": "orange",
+        "rating": 1.575547448597835,
+        "status": "OK",
+        "value": 0.9448028100154101
+      },
+      "criterion_passenger": {
+        "color": null,
+        "rating": 14.25087181176993,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_passenger/criterion_chest": {
+        "color": null,
+        "rating": 2.348958043573917,
+        "status": "OK",
+        "value": 2.348958043573917
+      },
+      "criterion_passenger/criterion_chest/criterion_chest_compression": {
+        "color": "orange",
+        "rating": 2.348958043573917,
+        "status": "OK",
+        "value": -30.259089314579306
+      },
+      "criterion_passenger/criterion_chest/criterion_chest_vc": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": -0.09054386076048354
+      },
+      "criterion_passenger/criterion_chest/criterion_shoulder_belt_load": {
+        "color": "green",
+        "rating": 0.0,
+        "status": "OK",
+        "value": 4.879160695571058
+      },
+      "criterion_passenger/criterion_head_neck": {
+        "color": null,
+        "rating": 4.0,
+        "status": "OK",
+        "value": 4.0
+      },
+      "criterion_passenger/criterion_head_neck/criterion_head": {
+        "color": null,
+        "rating": 4.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_passenger/criterion_head_neck/criterion_head/criterion_head_a3ms": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": 40.03967248143437
+      },
+      "criterion_passenger/criterion_head_neck/criterion_head/criterion_hic_15": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": 133.14187375538322
+      },
+      "criterion_passenger/criterion_head_neck/criterion_neck": {
+        "color": null,
+        "rating": 4.0,
+        "status": "OK",
+        "value": 4.0
+      },
+      "criterion_passenger/criterion_head_neck/criterion_neck/criterion_fx_shear": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": 0.70054120640255
+      },
+      "criterion_passenger/criterion_head_neck/criterion_neck/criterion_fz_tension": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": 0.9151664125934598
+      },
+      "criterion_passenger/criterion_head_neck/criterion_neck/criterion_my_extension": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": -12.281220427297281
+      },
+      "criterion_passenger/criterion_knee_femur_pelvis": {
+        "color": null,
+        "rating": 4.0,
+        "status": "OK",
+        "value": 4.0
+      },
+      "criterion_passenger/criterion_knee_femur_pelvis/criterion_femur_compression": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": -1.3412993510041369
+      },
+      "criterion_passenger/criterion_knee_femur_pelvis/criterion_knee_slider_compression": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": -4.9664660763397865
+      },
+      "criterion_passenger/criterion_lowerleg": {
+        "color": null,
+        "rating": 3.901913768196011,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_passenger/criterion_lowerleg/criterion_tibia_compression": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": -1.8982998728452054
+      },
+      "criterion_passenger/criterion_lowerleg/criterion_tibia_index": {
+        "color": "yellow",
+        "rating": 3.901913768196011,
+        "status": "OK",
+        "value": 0.4221080913157
+      }
+    }
+  }
+}

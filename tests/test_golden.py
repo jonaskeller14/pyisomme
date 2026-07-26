@@ -45,6 +45,9 @@ class TestGolden(unittest.TestCase):
     def test_euro_ncap_frontal_50kmh(self):
         self._check("euro_ncap_frontal_50kmh")
 
+    def test_euro_ncap_frontal_mpdb(self):
+        self._check("euro_ncap_frontal_mpdb")
+
     def test_euro_ncap_side_barrier(self):
         self._check("euro_ncap_side_barrier")
 

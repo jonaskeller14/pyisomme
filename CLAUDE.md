@@ -44,7 +44,7 @@ left unrepaired, so never invoke a bare `python`.
 
 Note: tests (`tests/test.py`, `tests/test_report.py`, etc.) read real fixture data from `data/` (e.g. `data/nhtsa/…`, `data/iso-mme-org/…`) and report tests write `.pptx` output into an `out/` directory. Fixture folders are largely untracked and must exist locally for those tests to pass.
 
-**Runtime:** the full suite is ~8 min (111 tests). Everything outside `tests/test_report.py` and
+**Runtime:** the full suite is ~6 min (112 tests). Everything outside `tests/test_report.py` and
 `tests/test_golden.py` runs in ~6 s. Four report tests are opt-in because they take 79–112 s each:
 
 ```bash
@@ -56,7 +56,8 @@ PYISOMME_SLOW=1 .venv/Scripts/python.exe -m unittest tests.test_report   # inclu
 Two test modules exist purely to make the report refactor verifiable — read `tests/golden_utils.py`
 before changing either:
 
-- **`tests/test_golden.py`** — constructs `EuroNCAP_Frontal_50kmh` and `EuroNCAP_Side_Barrier`, then
+- **`tests/test_golden.py`** — constructs `EuroNCAP_Frontal_50kmh`, `EuroNCAP_Frontal_MPDB` and
+  `EuroNCAP_Side_Barrier`, then
   compares them against committed snapshots in `tests/golden/` (**tracked**, unlike `data/`). Two layers:
   a *definition* layer (criterion paths, names, all `Limit` rows — data-independent, so it works even
   where every value is `nan`) compared exactly, and a *results* layer (`value`/`rating`/`color`/`status`)
@@ -65,7 +66,9 @@ before changing either:
 - **`tests/test_report_modules.py`** — imports every module under `pyisomme/report/` and checks that each
   protocol subpackage is reachable as an attribute of `pyisomme.report` *in a fresh interpreter*. Needs no
   fixture data, so it is the one report test that can run in CI. Known breakage sits in explicit
-  `BROKEN_MODULES` / `MISSING_REEXPORTS` sets with `TODO(step-…)` comments, guarded by staleness tests.
+  `BROKEN_MODULES` / `MISSING_REEXPORTS` sets with `TODO(step-…)` comments, guarded by staleness tests
+  that fail if an entry becomes stale. Both sets are **empty** since Step 2 — everything imports and every
+  subpackage is re-exported; re-populate them only with a `TODO(step-…)` naming the owning step.
 
 When a step legitimately changes a number, re-baseline **deliberately** and explain the diff in the
 progress log — the tests never rewrite the files themselves:

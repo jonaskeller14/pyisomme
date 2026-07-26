@@ -49,12 +49,6 @@ class TestReport(unittest.TestCase):
         report.export_pptx("out/EuroNCAP_Frontal_50kmh.pptx")
         report.print_results()
 
-    @unittest.skip(
-        "TODO(step-2, progress item D1): EuroNCAP_Frontal_MPDB cannot be constructed - "
-        "Page_OLC_Trolley.__init__ (frontal_mpdb.py:1279) calls calculate_olc() on the result of "
-        "get_channel('M?MBAR*VEXA') without a None guard, and no fixture carries a trolley channel. "
-        "Re-enable once the lookup is guarded; then add it to tests/golden_utils.BUILDERS."
-    )
     def test_EuroNCAP_Frontal_MPDB(self):
         for channel in self.v3.channels:
             if channel.code.main_location == "TIBI" and channel.code.fine_location_3 in ("00", "??"):
@@ -130,11 +124,6 @@ class TestReport(unittest.TestCase):
         report.export_pptx("out/IIHS_Frontal_Small_Overlap.pptx")
         report.print_results()
 
-    @unittest.skip(
-        "TODO(step-2, progress item D2): pyisomme/report/__init__.py does not import the "
-        "correlation subpackage, so pyisomme.report.correlation raises AttributeError after a "
-        "plain `import pyisomme`. Re-enable once the re-export is added."
-    )
     def test_Correlation(self):
         for channel in self.v3.channels:
             channel.set_code(test_object="1")
@@ -144,11 +133,6 @@ class TestReport(unittest.TestCase):
         report.export_pptx("out/Correlation.pptx")
         report.print_results()
 
-    @unittest.skip(
-        "TODO(step-2, progress item D1): the EuroNCAP MetaReport builds EuroNCAP_Frontal_MPDB "
-        "internally and dies with the same unguarded calculate_olc(None). Re-enable together "
-        "with test_EuroNCAP_Frontal_MPDB."
-    )
     def test_EuroNCAP(self):
         report = pyisomme.report.euro_ncap.euro_ncap.EuroNCAP(
             frontal_50kmh=[[self.v1]],

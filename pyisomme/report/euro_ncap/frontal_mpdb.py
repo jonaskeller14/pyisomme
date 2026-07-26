@@ -180,7 +180,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                         self.criterion_damage = self.Criterion_DAMAGE(self.report, self.isomme, p=self.p)
 
                     def calculation(self):
-                        if np.max(np.abs(self.isomme.get_channel(f"?{self.p}HEAD??00??ACRA").get_data(unit=g0))):
+                        if np.max(np.abs(self.isomme.get_channel(f"?{self.p}HEAD??00??ACRA").get_data(unit=g0))) > 80:
                             logger.info(f"Hard Head contact assumed for p={self.p} in {self.isomme}")
                             self.hard_contact = True
 
@@ -1276,5 +1276,11 @@ class EuroNCAP_Frontal_MPDB(Report):
 
         def __init__(self, report):
             super().__init__(report)
-            self.channels = {isomme: [[isomme.get_channel(f"M?MBAR0000??VEXA", f"M?MBARCG00??VEXA"),
-                                       calculate_olc(isomme.get_channel(f"M?MBAR0000??VEXA", f"M?MBARCG00??VEXA"))[1]]] for isomme in self.report.isomme_list}
+            self.channels = {}
+            for isomme in self.report.isomme_list:
+                channel = isomme.get_channel("M?MBAR0000??VEXA", "M?MBARCG00??VEXA")
+                if channel is None:
+                    logger.info(f"No trolley velocity channel in {isomme}. OLC trolley plot left empty.")
+                    self.channels[isomme] = [[]]
+                    continue
+                self.channels[isomme] = [[channel, calculate_olc(channel)[1]]]

@@ -29,28 +29,11 @@ REPORT_DIR = os.path.dirname(pyisomme.report.__file__)
 # Known-broken modules. Every entry must name the defect and the step that owns
 # it. Shrinking this list is part of Step 2's acceptance criteria.
 # --------------------------------------------------------------------------- #
-BROKEN_MODULES = {
-    # TODO(step-2, review Appendix A5): imports a non-existent
-    # `pyisomme.report.us_ncap.calculate`, and `us_ncap/` has no `__init__.py`.
-    # Plan decision: reduce this report to an honest stub and add the __init__.
-    "pyisomme.report.us_ncap.frontal_56kmh",
-    # NOTE: `pyisomme.report.us_ncap.us_ncap` is *not* listed — it imports cleanly.
-    # Its defect (review Appendix A6: `USNCAP.__init__` iterates the never-assigned
-    # `self.reports`) only fires at construction time, which no import test can see.
-}
+BROKEN_MODULES: set = set()
 
 # Subpackages that exist on disk but `pyisomme/report/__init__.py` does not import,
 # so they are not reachable as attributes of `pyisomme.report`.
-MISSING_REEXPORTS = {
-    # TODO(step-2, progress item D2): `pyisomme.report.correlation` is unreachable
-    # after a plain `import pyisomme` — this is what makes
-    # `tests.test_report.TestReport.test_Correlation` error out.
-    "correlation",
-    # TODO(step-2, review Appendix A5): blocked on us_ncap being importable at all.
-    "us_ncap",
-    # TODO(step-2, progress item D2): imports cleanly, simply never re-exported.
-    "fmvss",
-}
+MISSING_REEXPORTS: set = set()
 
 
 def iter_report_modules() -> list[str]:

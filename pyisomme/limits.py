@@ -17,7 +17,11 @@ logger = logging.getLogger(__name__)
 
 class Limit:
     name: str | None = None
-    rating: float
+    #: Score this limit awards. ``nan`` means "no rating declared" — legitimate for
+    #: limits that only draw a reference line. Rating-consuming paths reject it
+    #: explicitly (see :meth:`Limits.get_limit_ratings`) instead of failing later
+    #: with an ``AttributeError``.
+    rating: float = np.nan
     color: str = "black"
     code_patterns: list[str] | None = None
     func: Callable
@@ -164,8 +168,15 @@ class Limits:
         limits = limit_list_sort(self.find_limits(channel.code))
         if len(limits) == 0:
             raise ValueError(f"No limits found for channel '{channel.code}'.")
-        if None in [limit.rating for limit in limits]:
-            raise ValueError("All limits must have a rating defined.")
+        unrated = [limit for limit in limits if limit.rating is None or (isinstance(limit.rating, float) and np.isnan(limit.rating))]
+        if unrated:
+            raise ValueError(
+                f"Cannot rate channel '{channel.code}': the matching limits "
+                f"{[limit.name for limit in unrated]} declare no rating "
+                f"(code_patterns {[limit.code_patterns for limit in unrated]}). "
+                f"Pass rating=... when constructing them, or use a Limits set that is "
+                f"meant for rating rather than for plotting."
+            )
 
         channel_times = channel.data.index
         channel_values = cast(np.ndarray, channel.get_data())
