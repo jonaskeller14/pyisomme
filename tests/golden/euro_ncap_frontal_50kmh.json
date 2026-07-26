@@ -1,0 +1,4982 @@
+{
+  "definition": {
+    "criteria": {
+      "Overall": {
+        "class": "Criterion_Overall",
+        "limits": [],
+        "name": "Overall"
+      },
+      "criterion_door_opening_during_impact": {
+        "class": "Criterion_DoorOpeningDuringImpact",
+        "limits": [],
+        "name": "Door Opening During Impact"
+      },
+      "criterion_driver": {
+        "class": "Criterion_Driver",
+        "limits": [],
+        "name": "Driver"
+      },
+      "criterion_driver/criterion_chest": {
+        "class": "Criterion_Chest",
+        "limits": [],
+        "name": "Chest"
+      },
+      "criterion_driver/criterion_chest/criterion_SteeringWheelContact": {
+        "class": "Criterion_SteeringWheelContact",
+        "limits": [],
+        "name": "Modifier Chest Steering Wheel Contact"
+      },
+      "criterion_driver/criterion_chest/criterion_chest_deflection": {
+        "class": "Criterion_Chest_Deflection",
+        "limits": [
+          {
+            "code_patterns": [
+              "?1CHST000[03]??DSX?"
+            ],
+            "color": "gray",
+            "func_samples": [
+              -34.0,
+              -34.0,
+              -34.0,
+              -34.0,
+              -34.0,
+              -34.0,
+              -34.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Capping",
+            "rating": "-inf",
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "mm"
+          },
+          {
+            "code_patterns": [
+              "?1CHST000[03]??DSX?"
+            ],
+            "color": "red",
+            "func_samples": [
+              -34.0,
+              -34.0,
+              -34.0,
+              -34.0,
+              -34.0,
+              -34.0,
+              -34.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "mm"
+          },
+          {
+            "code_patterns": [
+              "?1CHST000[03]??DSX?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              -28.667,
+              -28.667,
+              -28.667,
+              -28.667,
+              -28.667,
+              -28.667,
+              -28.667
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "mm"
+          },
+          {
+            "code_patterns": [
+              "?1CHST000[03]??DSX?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              -23.333,
+              -23.333,
+              -23.333,
+              -23.333,
+              -23.333,
+              -23.333,
+              -23.333
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "mm"
+          },
+          {
+            "code_patterns": [
+              "?1CHST000[03]??DSX?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              -18.0,
+              -18.0,
+              -18.0,
+              -18.0,
+              -18.0,
+              -18.0,
+              -18.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "mm"
+          },
+          {
+            "code_patterns": [
+              "?1CHST000[03]??DSX?"
+            ],
+            "color": "green",
+            "func_samples": [
+              -18.0,
+              -18.0,
+              -18.0,
+              -18.0,
+              -18.0,
+              -18.0,
+              -18.0
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Good",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "mm"
+          }
+        ],
+        "name": "Chest Deflection"
+      },
+      "criterion_driver/criterion_chest/criterion_chest_vc": {
+        "class": "Criterion_Chest_VC",
+        "limits": [
+          {
+            "code_patterns": [
+              "?1VCCR000[03]??VEX?"
+            ],
+            "color": "green",
+            "func_samples": [
+              0.5,
+              0.5,
+              0.5,
+              0.5,
+              0.5,
+              0.5,
+              0.5
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Good",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "m/s"
+          },
+          {
+            "code_patterns": [
+              "?1VCCR000[03]??VEX?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              0.5,
+              0.5,
+              0.5,
+              0.5,
+              0.5,
+              0.5,
+              0.5
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "m/s"
+          },
+          {
+            "code_patterns": [
+              "?1VCCR000[03]??VEX?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              0.667,
+              0.667,
+              0.667,
+              0.667,
+              0.667,
+              0.667,
+              0.667
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "m/s"
+          },
+          {
+            "code_patterns": [
+              "?1VCCR000[03]??VEX?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              0.833,
+              0.833,
+              0.833,
+              0.833,
+              0.833,
+              0.833,
+              0.833
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "m/s"
+          },
+          {
+            "code_patterns": [
+              "?1VCCR000[03]??VEX?"
+            ],
+            "color": "red",
+            "func_samples": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "m/s"
+          },
+          {
+            "code_patterns": [
+              "?1VCCR000[03]??VEX?"
+            ],
+            "color": "gray",
+            "func_samples": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Capping",
+            "rating": "-inf",
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "m/s"
+          }
+        ],
+        "name": "Chest VC"
+      },
+      "criterion_driver/criterion_chest/criterion_shoulder_belt_load": {
+        "class": "Criterion_ShoulderBeltLoad",
+        "limits": [
+          {
+            "code_patterns": [
+              "?1SEBE????B3FO[X0]?"
+            ],
+            "color": "green",
+            "func_samples": [
+              6.0,
+              6.0,
+              6.0,
+              6.0,
+              6.0,
+              6.0,
+              6.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "0 pt. Modifier",
+            "rating": 0,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1SEBE????B3FO[X0]?"
+            ],
+            "color": "red",
+            "func_samples": [
+              6.0,
+              6.0,
+              6.0,
+              6.0,
+              6.0,
+              6.0,
+              6.0
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "-2 pt. Modifier",
+            "rating": -2,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          }
+        ],
+        "name": "Modifier Shoulder Belt Load"
+      },
+      "criterion_driver/criterion_femur": {
+        "class": "Criterion_Femur",
+        "limits": [],
+        "name": "Femur"
+      },
+      "criterion_driver/criterion_femur/criterion_femur_axial_force": {
+        "class": "Criterion_Femur_Axial_Force",
+        "limits": [],
+        "name": "Femur Axial Force"
+      },
+      "criterion_driver/criterion_femur/criterion_femur_axial_force/criterion_femur_axial_force_left": {
+        "class": "Criterion_Femur_Axial_Force_Left",
+        "limits": [
+          {
+            "code_patterns": [
+              "?1FEMRLE00??FOZ?"
+            ],
+            "color": "green",
+            "func_samples": [
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Good",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1FEMRLE00??FOZ?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1FEMRLE00??FOZ?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              -3.8,
+              -3.8,
+              -3.8,
+              -3.8,
+              -3.8,
+              -3.8,
+              -3.8
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1FEMRLE00??FOZ?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              -5.0,
+              -5.0,
+              -5.0,
+              -5.0,
+              -5.0,
+              -5.0,
+              -5.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1FEMRLE00??FOZ?"
+            ],
+            "color": "red",
+            "func_samples": [
+              -6.2,
+              -6.2,
+              -6.2,
+              -6.2,
+              -6.2,
+              -6.2,
+              -6.2
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          }
+        ],
+        "name": "Femur Axial Force Left"
+      },
+      "criterion_driver/criterion_femur/criterion_femur_axial_force/criterion_femur_axial_force_right": {
+        "class": "Criterion_Femur_Axial_Force_Right",
+        "limits": [
+          {
+            "code_patterns": [
+              "?1FEMRRI00??FOZ?"
+            ],
+            "color": "green",
+            "func_samples": [
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Good",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1FEMRRI00??FOZ?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1FEMRRI00??FOZ?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              -3.8,
+              -3.8,
+              -3.8,
+              -3.8,
+              -3.8,
+              -3.8,
+              -3.8
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1FEMRRI00??FOZ?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              -5.0,
+              -5.0,
+              -5.0,
+              -5.0,
+              -5.0,
+              -5.0,
+              -5.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1FEMRRI00??FOZ?"
+            ],
+            "color": "red",
+            "func_samples": [
+              -6.2,
+              -6.2,
+              -6.2,
+              -6.2,
+              -6.2,
+              -6.2,
+              -6.2
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          }
+        ],
+        "name": "Femur Axial Force Right"
+      },
+      "criterion_driver/criterion_femur/criterion_submarining": {
+        "class": "Criterion_Submarining",
+        "limits": [],
+        "name": "Submarining"
+      },
+      "criterion_driver/criterion_head": {
+        "class": "Criterion_Head",
+        "limits": [],
+        "name": "Head"
+      },
+      "criterion_driver/criterion_head/criterion_DisplacementSteeringColumn": {
+        "class": "Criterion_DisplacementSteeringColumn",
+        "limits": [],
+        "name": "Modifier for Displacement of Steering Column"
+      },
+      "criterion_driver/criterion_head/criterion_ExceedingForwardExcursionLine": {
+        "class": "Criterion_ExceedingForwardExcursionLine",
+        "limits": [],
+        "name": "Modifier for Exceeding forward excursion line"
+      },
+      "criterion_driver/criterion_head/criterion_HazardousAirbagDeployment": {
+        "class": "Criterion_HazardousAirbagDeployment",
+        "limits": [],
+        "name": "Modifier for Hazardous Airbag Deployment"
+      },
+      "criterion_driver/criterion_head/criterion_IncorrectAirbagDeployment": {
+        "class": "Criterion_IncorrectAirbagDeployment",
+        "limits": [],
+        "name": "Modifier for Incorrect Airbag Deployment"
+      },
+      "criterion_driver/criterion_head/criterion_UnstableAirbagSteeringWheelContact": {
+        "class": "Criterion_UnstableAirbagSteeringWheelContact",
+        "limits": [],
+        "name": "Modifier for Unstable airbag/steering wheel contact"
+      },
+      "criterion_driver/criterion_head/criterion_head_a3ms": {
+        "class": "Criterion_Head_a3ms",
+        "limits": [
+          {
+            "code_patterns": [
+              "?1HEAD003C??ACR?",
+              "?1HEADCG3C??ACR?"
+            ],
+            "color": "green",
+            "func_samples": [
+              72.0,
+              72.0,
+              72.0,
+              72.0,
+              72.0,
+              72.0,
+              72.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Good",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "9.80665 m / s2"
+          },
+          {
+            "code_patterns": [
+              "?1HEAD003C??ACR?",
+              "?1HEADCG3C??ACR?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              72.0,
+              72.0,
+              72.0,
+              72.0,
+              72.0,
+              72.0,
+              72.0
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "9.80665 m / s2"
+          },
+          {
+            "code_patterns": [
+              "?1HEAD003C??ACR?",
+              "?1HEADCG3C??ACR?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              74.667,
+              74.667,
+              74.667,
+              74.667,
+              74.667,
+              74.667,
+              74.667
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "9.80665 m / s2"
+          },
+          {
+            "code_patterns": [
+              "?1HEAD003C??ACR?",
+              "?1HEADCG3C??ACR?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              77.333,
+              77.333,
+              77.333,
+              77.333,
+              77.333,
+              77.333,
+              77.333
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "9.80665 m / s2"
+          },
+          {
+            "code_patterns": [
+              "?1HEAD003C??ACR?",
+              "?1HEADCG3C??ACR?"
+            ],
+            "color": "red",
+            "func_samples": [
+              80.0,
+              80.0,
+              80.0,
+              80.0,
+              80.0,
+              80.0,
+              80.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "9.80665 m / s2"
+          },
+          {
+            "code_patterns": [
+              "?1HEAD003C??ACR?",
+              "?1HEADCG3C??ACR?"
+            ],
+            "color": "gray",
+            "func_samples": [
+              80.0,
+              80.0,
+              80.0,
+              80.0,
+              80.0,
+              80.0,
+              80.0
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Capping",
+            "rating": "-inf",
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "9.80665 m / s2"
+          }
+        ],
+        "name": "Head a3ms"
+      },
+      "criterion_driver/criterion_head/criterion_hic_15": {
+        "class": "Criterion_HIC_15",
+        "limits": [
+          {
+            "code_patterns": [
+              "?1HICR0015??00RX",
+              "?1HICRCG15??00RX"
+            ],
+            "color": "green",
+            "func_samples": [
+              500.0,
+              500.0,
+              500.0,
+              500.0,
+              500.0,
+              500.0,
+              500.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Good",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "1"
+          },
+          {
+            "code_patterns": [
+              "?1HICR0015??00RX",
+              "?1HICRCG15??00RX"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              500.0,
+              500.0,
+              500.0,
+              500.0,
+              500.0,
+              500.0,
+              500.0
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "1"
+          },
+          {
+            "code_patterns": [
+              "?1HICR0015??00RX",
+              "?1HICRCG15??00RX"
+            ],
+            "color": "orange",
+            "func_samples": [
+              566.667,
+              566.667,
+              566.667,
+              566.667,
+              566.667,
+              566.667,
+              566.667
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "1"
+          },
+          {
+            "code_patterns": [
+              "?1HICR0015??00RX",
+              "?1HICRCG15??00RX"
+            ],
+            "color": "brown",
+            "func_samples": [
+              633.333,
+              633.333,
+              633.333,
+              633.333,
+              633.333,
+              633.333,
+              633.333
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "1"
+          },
+          {
+            "code_patterns": [
+              "?1HICR0015??00RX",
+              "?1HICRCG15??00RX"
+            ],
+            "color": "red",
+            "func_samples": [
+              700.0,
+              700.0,
+              700.0,
+              700.0,
+              700.0,
+              700.0,
+              700.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "1"
+          },
+          {
+            "code_patterns": [
+              "?1HICR0015??00RX",
+              "?1HICRCG15??00RX"
+            ],
+            "color": "gray",
+            "func_samples": [
+              700.0,
+              700.0,
+              700.0,
+              700.0,
+              700.0,
+              700.0,
+              700.0
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Capping",
+            "rating": "-inf",
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "1"
+          }
+        ],
+        "name": "HIC 15"
+      },
+      "criterion_driver/criterion_neck": {
+        "class": "Criterion_Neck",
+        "limits": [],
+        "name": "Neck"
+      },
+      "criterion_driver/criterion_neck/criterion_fx_shear": {
+        "class": "Criterion_Fx_shear",
+        "limits": [
+          {
+            "code_patterns": [
+              "?1NECKUP00??FOX?"
+            ],
+            "color": "green",
+            "func_samples": [
+              1.2,
+              1.2,
+              1.2,
+              1.2,
+              1.2,
+              1.2,
+              1.2
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Good",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1NECKUP00??FOX?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              1.2,
+              1.2,
+              1.2,
+              1.2,
+              1.2,
+              1.2,
+              1.2
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1NECKUP00??FOX?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              1.45,
+              1.45,
+              1.45,
+              1.45,
+              1.45,
+              1.45,
+              1.45
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1NECKUP00??FOX?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              1.7,
+              1.7,
+              1.7,
+              1.7,
+              1.7,
+              1.7,
+              1.7
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1NECKUP00??FOX?"
+            ],
+            "color": "red",
+            "func_samples": [
+              1.95,
+              1.95,
+              1.95,
+              1.95,
+              1.95,
+              1.95,
+              1.95
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Poor",
+            "rating": 0,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1NECKUP00??FOX?"
+            ],
+            "color": "green",
+            "func_samples": [
+              -1.2,
+              -1.2,
+              -1.2,
+              -1.2,
+              -1.2,
+              -1.2,
+              -1.2
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Good",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1NECKUP00??FOX?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              -1.2,
+              -1.2,
+              -1.2,
+              -1.2,
+              -1.2,
+              -1.2,
+              -1.2
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1NECKUP00??FOX?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              -1.45,
+              -1.45,
+              -1.45,
+              -1.45,
+              -1.45,
+              -1.45,
+              -1.45
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1NECKUP00??FOX?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              -1.7,
+              -1.7,
+              -1.7,
+              -1.7,
+              -1.7,
+              -1.7,
+              -1.7
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1NECKUP00??FOX?"
+            ],
+            "color": "red",
+            "func_samples": [
+              -1.95,
+              -1.95,
+              -1.95,
+              -1.95,
+              -1.95,
+              -1.95,
+              -1.95
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1NECKUP00??FOX?"
+            ],
+            "color": "gray",
+            "func_samples": [
+              2.7,
+              2.7,
+              2.7,
+              2.7,
+              2.7,
+              2.7,
+              2.7
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Capping",
+            "rating": "-inf",
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1NECKUP00??FOX?"
+            ],
+            "color": "gray",
+            "func_samples": [
+              -2.7,
+              -2.7,
+              -2.7,
+              -2.7,
+              -2.7,
+              -2.7,
+              -2.7
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Capping",
+            "rating": "-inf",
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          }
+        ],
+        "name": "Neck Fx shear"
+      },
+      "criterion_driver/criterion_neck/criterion_fz_tension": {
+        "class": "Criterion_Fz_tension",
+        "limits": [
+          {
+            "code_patterns": [
+              "?1NECKUP00??FOZ?"
+            ],
+            "color": "green",
+            "func_samples": [
+              1.7,
+              1.7,
+              1.7,
+              1.7,
+              1.7,
+              1.7,
+              1.7
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Good",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1NECKUP00??FOZ?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              1.7,
+              1.7,
+              1.7,
+              1.7,
+              1.7,
+              1.7,
+              1.7
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1NECKUP00??FOZ?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              2.007,
+              2.007,
+              2.007,
+              2.007,
+              2.007,
+              2.007,
+              2.007
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1NECKUP00??FOZ?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              2.313,
+              2.313,
+              2.313,
+              2.313,
+              2.313,
+              2.313,
+              2.313
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1NECKUP00??FOZ?"
+            ],
+            "color": "red",
+            "func_samples": [
+              2.62,
+              2.62,
+              2.62,
+              2.62,
+              2.62,
+              2.62,
+              2.62
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Poor",
+            "rating": 0,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1NECKUP00??FOZA"
+            ],
+            "color": "gray",
+            "func_samples": [
+              2.9,
+              2.9,
+              2.9,
+              2.9,
+              2.9,
+              2.9,
+              2.9
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Capping",
+            "rating": "-inf",
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          }
+        ],
+        "name": "Neck Fz tension"
+      },
+      "criterion_driver/criterion_neck/criterion_my_extension": {
+        "class": "Criterion_My_extension",
+        "limits": [
+          {
+            "code_patterns": [
+              "?1NECKUP00??MOY?"
+            ],
+            "color": "green",
+            "func_samples": [
+              -36.0,
+              -36.0,
+              -36.0,
+              -36.0,
+              -36.0,
+              -36.0,
+              -36.0
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Good",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "Nm"
+          },
+          {
+            "code_patterns": [
+              "?1NECKUP00??MOY?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              -36.0,
+              -36.0,
+              -36.0,
+              -36.0,
+              -36.0,
+              -36.0,
+              -36.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "Nm"
+          },
+          {
+            "code_patterns": [
+              "?1NECKUP00??MOY?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              -40.333,
+              -40.333,
+              -40.333,
+              -40.333,
+              -40.333,
+              -40.333,
+              -40.333
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "Nm"
+          },
+          {
+            "code_patterns": [
+              "?1NECKUP00??MOY?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              -44.667,
+              -44.667,
+              -44.667,
+              -44.667,
+              -44.667,
+              -44.667,
+              -44.667
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "Nm"
+          },
+          {
+            "code_patterns": [
+              "?1NECKUP00??MOY?"
+            ],
+            "color": "red",
+            "func_samples": [
+              -49.0,
+              -49.0,
+              -49.0,
+              -49.0,
+              -49.0,
+              -49.0,
+              -49.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "Nm"
+          },
+          {
+            "code_patterns": [
+              "?1NECKUP00??MOY?"
+            ],
+            "color": "gray",
+            "func_samples": [
+              -57.0,
+              -57.0,
+              -57.0,
+              -57.0,
+              -57.0,
+              -57.0,
+              -57.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Capping",
+            "rating": "-inf",
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "Nm"
+          }
+        ],
+        "name": "Neck My extension"
+      },
+      "criterion_front_passenger": {
+        "class": "Criterion_Front_Passenger",
+        "limits": [],
+        "name": "Front Passenger"
+      },
+      "criterion_front_passenger/criterion_chest": {
+        "class": "Criterion_Chest",
+        "limits": [],
+        "name": "Chest"
+      },
+      "criterion_front_passenger/criterion_chest/criterion_chest_deflection": {
+        "class": "Criterion_Chest_Deflection",
+        "limits": [
+          {
+            "code_patterns": [
+              "?3CHST000[03]??DSX?"
+            ],
+            "color": "gray",
+            "func_samples": [
+              -34.0,
+              -34.0,
+              -34.0,
+              -34.0,
+              -34.0,
+              -34.0,
+              -34.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Capping",
+            "rating": "-inf",
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "mm"
+          },
+          {
+            "code_patterns": [
+              "?3CHST000[03]??DSX?"
+            ],
+            "color": "red",
+            "func_samples": [
+              -34.0,
+              -34.0,
+              -34.0,
+              -34.0,
+              -34.0,
+              -34.0,
+              -34.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "mm"
+          },
+          {
+            "code_patterns": [
+              "?3CHST000[03]??DSX?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              -28.667,
+              -28.667,
+              -28.667,
+              -28.667,
+              -28.667,
+              -28.667,
+              -28.667
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "mm"
+          },
+          {
+            "code_patterns": [
+              "?3CHST000[03]??DSX?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              -23.333,
+              -23.333,
+              -23.333,
+              -23.333,
+              -23.333,
+              -23.333,
+              -23.333
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "mm"
+          },
+          {
+            "code_patterns": [
+              "?3CHST000[03]??DSX?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              -18.0,
+              -18.0,
+              -18.0,
+              -18.0,
+              -18.0,
+              -18.0,
+              -18.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "mm"
+          },
+          {
+            "code_patterns": [
+              "?3CHST000[03]??DSX?"
+            ],
+            "color": "green",
+            "func_samples": [
+              -18.0,
+              -18.0,
+              -18.0,
+              -18.0,
+              -18.0,
+              -18.0,
+              -18.0
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Good",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "mm"
+          }
+        ],
+        "name": "Chest Deflection"
+      },
+      "criterion_front_passenger/criterion_chest/criterion_chest_vc": {
+        "class": "Criterion_Chest_VC",
+        "limits": [
+          {
+            "code_patterns": [
+              "?3VCCR000[03]??VEX?"
+            ],
+            "color": "green",
+            "func_samples": [
+              0.5,
+              0.5,
+              0.5,
+              0.5,
+              0.5,
+              0.5,
+              0.5
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Good",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "m/s"
+          },
+          {
+            "code_patterns": [
+              "?3VCCR000[03]??VEX?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              0.5,
+              0.5,
+              0.5,
+              0.5,
+              0.5,
+              0.5,
+              0.5
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "m/s"
+          },
+          {
+            "code_patterns": [
+              "?3VCCR000[03]??VEX?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              0.667,
+              0.667,
+              0.667,
+              0.667,
+              0.667,
+              0.667,
+              0.667
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "m/s"
+          },
+          {
+            "code_patterns": [
+              "?3VCCR000[03]??VEX?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              0.833,
+              0.833,
+              0.833,
+              0.833,
+              0.833,
+              0.833,
+              0.833
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "m/s"
+          },
+          {
+            "code_patterns": [
+              "?3VCCR000[03]??VEX?"
+            ],
+            "color": "red",
+            "func_samples": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "m/s"
+          },
+          {
+            "code_patterns": [
+              "?3VCCR000[03]??VEX?"
+            ],
+            "color": "gray",
+            "func_samples": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Capping",
+            "rating": "-inf",
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "m/s"
+          }
+        ],
+        "name": "Chest VC"
+      },
+      "criterion_front_passenger/criterion_chest/criterion_shoulder_belt_load": {
+        "class": "Criterion_ShoulderBeltLoad",
+        "limits": [
+          {
+            "code_patterns": [
+              "?3SEBE????B3FO[X0]?"
+            ],
+            "color": "green",
+            "func_samples": [
+              6.0,
+              6.0,
+              6.0,
+              6.0,
+              6.0,
+              6.0,
+              6.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "0 pt. Modifier",
+            "rating": 0,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?3SEBE????B3FO[X0]?"
+            ],
+            "color": "red",
+            "func_samples": [
+              6.0,
+              6.0,
+              6.0,
+              6.0,
+              6.0,
+              6.0,
+              6.0
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "-2 pt. Modifier",
+            "rating": -2,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          }
+        ],
+        "name": "Modifier Shoulder Belt Load"
+      },
+      "criterion_front_passenger/criterion_femur": {
+        "class": "Criterion_Femur",
+        "limits": [],
+        "name": "Femur"
+      },
+      "criterion_front_passenger/criterion_femur/criterion_femur_axial_force": {
+        "class": "Criterion_Femur_Axial_Force",
+        "limits": [],
+        "name": "Femur Axial Force"
+      },
+      "criterion_front_passenger/criterion_femur/criterion_femur_axial_force/criterion_femur_axial_force_left": {
+        "class": "Criterion_Femur_Axial_Force_Left",
+        "limits": [
+          {
+            "code_patterns": [
+              "?3FEMRLE00??FOZ?"
+            ],
+            "color": "green",
+            "func_samples": [
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Good",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?3FEMRLE00??FOZ?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?3FEMRLE00??FOZ?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              -3.8,
+              -3.8,
+              -3.8,
+              -3.8,
+              -3.8,
+              -3.8,
+              -3.8
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?3FEMRLE00??FOZ?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              -5.0,
+              -5.0,
+              -5.0,
+              -5.0,
+              -5.0,
+              -5.0,
+              -5.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?3FEMRLE00??FOZ?"
+            ],
+            "color": "red",
+            "func_samples": [
+              -6.2,
+              -6.2,
+              -6.2,
+              -6.2,
+              -6.2,
+              -6.2,
+              -6.2
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          }
+        ],
+        "name": "Femur Axial Force Left"
+      },
+      "criterion_front_passenger/criterion_femur/criterion_femur_axial_force/criterion_femur_axial_force_right": {
+        "class": "Criterion_Femur_Axial_Force_Right",
+        "limits": [
+          {
+            "code_patterns": [
+              "?3FEMRRI00??FOZ?"
+            ],
+            "color": "green",
+            "func_samples": [
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Good",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?3FEMRRI00??FOZ?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?3FEMRRI00??FOZ?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              -3.8,
+              -3.8,
+              -3.8,
+              -3.8,
+              -3.8,
+              -3.8,
+              -3.8
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?3FEMRRI00??FOZ?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              -5.0,
+              -5.0,
+              -5.0,
+              -5.0,
+              -5.0,
+              -5.0,
+              -5.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?3FEMRRI00??FOZ?"
+            ],
+            "color": "red",
+            "func_samples": [
+              -6.2,
+              -6.2,
+              -6.2,
+              -6.2,
+              -6.2,
+              -6.2,
+              -6.2
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          }
+        ],
+        "name": "Femur Axial Force Right"
+      },
+      "criterion_front_passenger/criterion_head": {
+        "class": "Criterion_Head",
+        "limits": [],
+        "name": "Head"
+      },
+      "criterion_front_passenger/criterion_head/criterion_ExceedingForwardExcursionLine": {
+        "class": "Criterion_ExceedingForwardExcursionLine",
+        "limits": [],
+        "name": "Modifier for Exceeding forward excursion line"
+      },
+      "criterion_front_passenger/criterion_head/criterion_HazardousAirbagDeployment": {
+        "class": "Criterion_HazardousAirbagDeployment",
+        "limits": [],
+        "name": "Modifier for Hazardous Airbag Deployment"
+      },
+      "criterion_front_passenger/criterion_head/criterion_IncorrectAirbagDeployment": {
+        "class": "Criterion_IncorrectAirbagDeployment",
+        "limits": [],
+        "name": "Modifier for Incorrect Airbag Deployment"
+      },
+      "criterion_front_passenger/criterion_head/criterion_head_a3ms": {
+        "class": "Criterion_Head_a3ms",
+        "limits": [
+          {
+            "code_patterns": [
+              "?3HEAD003C??ACR?",
+              "?3HEADCG3C??ACR?"
+            ],
+            "color": "green",
+            "func_samples": [
+              72.0,
+              72.0,
+              72.0,
+              72.0,
+              72.0,
+              72.0,
+              72.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Good",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "9.80665 m / s2"
+          },
+          {
+            "code_patterns": [
+              "?3HEAD003C??ACR?",
+              "?3HEADCG3C??ACR?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              72.0,
+              72.0,
+              72.0,
+              72.0,
+              72.0,
+              72.0,
+              72.0
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "9.80665 m / s2"
+          },
+          {
+            "code_patterns": [
+              "?3HEAD003C??ACR?",
+              "?3HEADCG3C??ACR?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              74.667,
+              74.667,
+              74.667,
+              74.667,
+              74.667,
+              74.667,
+              74.667
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "9.80665 m / s2"
+          },
+          {
+            "code_patterns": [
+              "?3HEAD003C??ACR?",
+              "?3HEADCG3C??ACR?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              77.333,
+              77.333,
+              77.333,
+              77.333,
+              77.333,
+              77.333,
+              77.333
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "9.80665 m / s2"
+          },
+          {
+            "code_patterns": [
+              "?3HEAD003C??ACR?",
+              "?3HEADCG3C??ACR?"
+            ],
+            "color": "red",
+            "func_samples": [
+              80.0,
+              80.0,
+              80.0,
+              80.0,
+              80.0,
+              80.0,
+              80.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "9.80665 m / s2"
+          },
+          {
+            "code_patterns": [
+              "?3HEAD003C??ACR?",
+              "?3HEADCG3C??ACR?"
+            ],
+            "color": "gray",
+            "func_samples": [
+              80.0,
+              80.0,
+              80.0,
+              80.0,
+              80.0,
+              80.0,
+              80.0
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Capping",
+            "rating": "-inf",
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "9.80665 m / s2"
+          }
+        ],
+        "name": "Head a3ms"
+      },
+      "criterion_front_passenger/criterion_head/criterion_hic_15": {
+        "class": "Criterion_HIC_15",
+        "limits": [
+          {
+            "code_patterns": [
+              "?3HICR0015??00RX",
+              "?3HICRCG15??00RX"
+            ],
+            "color": "green",
+            "func_samples": [
+              500.0,
+              500.0,
+              500.0,
+              500.0,
+              500.0,
+              500.0,
+              500.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Good",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "1"
+          },
+          {
+            "code_patterns": [
+              "?3HICR0015??00RX",
+              "?3HICRCG15??00RX"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              500.0,
+              500.0,
+              500.0,
+              500.0,
+              500.0,
+              500.0,
+              500.0
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "1"
+          },
+          {
+            "code_patterns": [
+              "?3HICR0015??00RX",
+              "?3HICRCG15??00RX"
+            ],
+            "color": "orange",
+            "func_samples": [
+              566.667,
+              566.667,
+              566.667,
+              566.667,
+              566.667,
+              566.667,
+              566.667
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "1"
+          },
+          {
+            "code_patterns": [
+              "?3HICR0015??00RX",
+              "?3HICRCG15??00RX"
+            ],
+            "color": "brown",
+            "func_samples": [
+              633.333,
+              633.333,
+              633.333,
+              633.333,
+              633.333,
+              633.333,
+              633.333
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "1"
+          },
+          {
+            "code_patterns": [
+              "?3HICR0015??00RX",
+              "?3HICRCG15??00RX"
+            ],
+            "color": "red",
+            "func_samples": [
+              700.0,
+              700.0,
+              700.0,
+              700.0,
+              700.0,
+              700.0,
+              700.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "1"
+          },
+          {
+            "code_patterns": [
+              "?3HICR0015??00RX",
+              "?3HICRCG15??00RX"
+            ],
+            "color": "gray",
+            "func_samples": [
+              700.0,
+              700.0,
+              700.0,
+              700.0,
+              700.0,
+              700.0,
+              700.0
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Capping",
+            "rating": "-inf",
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "1"
+          }
+        ],
+        "name": "HIC 15"
+      },
+      "criterion_front_passenger/criterion_neck": {
+        "class": "Criterion_Neck",
+        "limits": [],
+        "name": "Neck"
+      },
+      "criterion_front_passenger/criterion_neck/criterion_fx_shear": {
+        "class": "Criterion_Fx_shear",
+        "limits": [
+          {
+            "code_patterns": [
+              "?3NECKUP00??FOX?"
+            ],
+            "color": "green",
+            "func_samples": [
+              1.2,
+              1.2,
+              1.2,
+              1.2,
+              1.2,
+              1.2,
+              1.2
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Good",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?3NECKUP00??FOX?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              1.2,
+              1.2,
+              1.2,
+              1.2,
+              1.2,
+              1.2,
+              1.2
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?3NECKUP00??FOX?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              1.45,
+              1.45,
+              1.45,
+              1.45,
+              1.45,
+              1.45,
+              1.45
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?3NECKUP00??FOX?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              1.7,
+              1.7,
+              1.7,
+              1.7,
+              1.7,
+              1.7,
+              1.7
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?3NECKUP00??FOX?"
+            ],
+            "color": "red",
+            "func_samples": [
+              1.95,
+              1.95,
+              1.95,
+              1.95,
+              1.95,
+              1.95,
+              1.95
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Poor",
+            "rating": 0,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?3NECKUP00??FOX?"
+            ],
+            "color": "green",
+            "func_samples": [
+              -1.2,
+              -1.2,
+              -1.2,
+              -1.2,
+              -1.2,
+              -1.2,
+              -1.2
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Good",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?3NECKUP00??FOX?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              -1.2,
+              -1.2,
+              -1.2,
+              -1.2,
+              -1.2,
+              -1.2,
+              -1.2
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?3NECKUP00??FOX?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              -1.45,
+              -1.45,
+              -1.45,
+              -1.45,
+              -1.45,
+              -1.45,
+              -1.45
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?3NECKUP00??FOX?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              -1.7,
+              -1.7,
+              -1.7,
+              -1.7,
+              -1.7,
+              -1.7,
+              -1.7
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?3NECKUP00??FOX?"
+            ],
+            "color": "red",
+            "func_samples": [
+              -1.95,
+              -1.95,
+              -1.95,
+              -1.95,
+              -1.95,
+              -1.95,
+              -1.95
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          }
+        ],
+        "name": "Neck Fx shear"
+      },
+      "criterion_front_passenger/criterion_neck/criterion_fz_tension": {
+        "class": "Criterion_Fz_tension",
+        "limits": [
+          {
+            "code_patterns": [
+              "?3NECKUP00??FOZ?"
+            ],
+            "color": "green",
+            "func_samples": [
+              1.7,
+              1.7,
+              1.7,
+              1.7,
+              1.7,
+              1.7,
+              1.7
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Good",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?3NECKUP00??FOZ?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              1.7,
+              1.7,
+              1.7,
+              1.7,
+              1.7,
+              1.7,
+              1.7
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?3NECKUP00??FOZ?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              2.007,
+              2.007,
+              2.007,
+              2.007,
+              2.007,
+              2.007,
+              2.007
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?3NECKUP00??FOZ?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              2.313,
+              2.313,
+              2.313,
+              2.313,
+              2.313,
+              2.313,
+              2.313
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?3NECKUP00??FOZ?"
+            ],
+            "color": "red",
+            "func_samples": [
+              2.62,
+              2.62,
+              2.62,
+              2.62,
+              2.62,
+              2.62,
+              2.62
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Poor",
+            "rating": 0,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          }
+        ],
+        "name": "Neck Fz tension"
+      },
+      "criterion_front_passenger/criterion_neck/criterion_my_extension": {
+        "class": "Criterion_My_extension",
+        "limits": [
+          {
+            "code_patterns": [
+              "?3NECKUP00??MOY?"
+            ],
+            "color": "green",
+            "func_samples": [
+              -36.0,
+              -36.0,
+              -36.0,
+              -36.0,
+              -36.0,
+              -36.0,
+              -36.0
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Good",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "Nm"
+          },
+          {
+            "code_patterns": [
+              "?3NECKUP00??MOY?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              -36.0,
+              -36.0,
+              -36.0,
+              -36.0,
+              -36.0,
+              -36.0,
+              -36.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "Nm"
+          },
+          {
+            "code_patterns": [
+              "?3NECKUP00??MOY?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              -40.333,
+              -40.333,
+              -40.333,
+              -40.333,
+              -40.333,
+              -40.333,
+              -40.333
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "Nm"
+          },
+          {
+            "code_patterns": [
+              "?3NECKUP00??MOY?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              -44.667,
+              -44.667,
+              -44.667,
+              -44.667,
+              -44.667,
+              -44.667,
+              -44.667
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "Nm"
+          },
+          {
+            "code_patterns": [
+              "?3NECKUP00??MOY?"
+            ],
+            "color": "red",
+            "func_samples": [
+              -49.0,
+              -49.0,
+              -49.0,
+              -49.0,
+              -49.0,
+              -49.0,
+              -49.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "Nm"
+          }
+        ],
+        "name": "Neck My extension"
+      },
+      "criterion_rear_passenger": {
+        "class": "Criterion_Rear_Passenger",
+        "limits": [],
+        "name": "Rear Passenger"
+      },
+      "criterion_rear_passenger/criterion_chest": {
+        "class": "Criterion_Chest",
+        "limits": [],
+        "name": "Chest"
+      },
+      "criterion_rear_passenger/criterion_chest/criterion_chest_deflection": {
+        "class": "Criterion_Chest_Deflection",
+        "limits": [
+          {
+            "code_patterns": [
+              "?6CHST000[03]??DSX?"
+            ],
+            "color": "gray",
+            "func_samples": [
+              -34.0,
+              -34.0,
+              -34.0,
+              -34.0,
+              -34.0,
+              -34.0,
+              -34.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Capping",
+            "rating": "-inf",
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "mm"
+          },
+          {
+            "code_patterns": [
+              "?6CHST000[03]??DSX?"
+            ],
+            "color": "red",
+            "func_samples": [
+              -34.0,
+              -34.0,
+              -34.0,
+              -34.0,
+              -34.0,
+              -34.0,
+              -34.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "mm"
+          },
+          {
+            "code_patterns": [
+              "?6CHST000[03]??DSX?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              -28.667,
+              -28.667,
+              -28.667,
+              -28.667,
+              -28.667,
+              -28.667,
+              -28.667
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "mm"
+          },
+          {
+            "code_patterns": [
+              "?6CHST000[03]??DSX?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              -23.333,
+              -23.333,
+              -23.333,
+              -23.333,
+              -23.333,
+              -23.333,
+              -23.333
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "mm"
+          },
+          {
+            "code_patterns": [
+              "?6CHST000[03]??DSX?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              -18.0,
+              -18.0,
+              -18.0,
+              -18.0,
+              -18.0,
+              -18.0,
+              -18.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "mm"
+          },
+          {
+            "code_patterns": [
+              "?6CHST000[03]??DSX?"
+            ],
+            "color": "green",
+            "func_samples": [
+              -18.0,
+              -18.0,
+              -18.0,
+              -18.0,
+              -18.0,
+              -18.0,
+              -18.0
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Good",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "mm"
+          }
+        ],
+        "name": "Chest Deflection"
+      },
+      "criterion_rear_passenger/criterion_chest/criterion_chest_vc": {
+        "class": "Criterion_Chest_VC",
+        "limits": [
+          {
+            "code_patterns": [
+              "?6VCCR000[03]??VEX?"
+            ],
+            "color": "green",
+            "func_samples": [
+              0.5,
+              0.5,
+              0.5,
+              0.5,
+              0.5,
+              0.5,
+              0.5
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Good",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "m/s"
+          },
+          {
+            "code_patterns": [
+              "?6VCCR000[03]??VEX?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              0.5,
+              0.5,
+              0.5,
+              0.5,
+              0.5,
+              0.5,
+              0.5
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "m/s"
+          },
+          {
+            "code_patterns": [
+              "?6VCCR000[03]??VEX?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              0.667,
+              0.667,
+              0.667,
+              0.667,
+              0.667,
+              0.667,
+              0.667
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "m/s"
+          },
+          {
+            "code_patterns": [
+              "?6VCCR000[03]??VEX?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              0.833,
+              0.833,
+              0.833,
+              0.833,
+              0.833,
+              0.833,
+              0.833
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "m/s"
+          },
+          {
+            "code_patterns": [
+              "?6VCCR000[03]??VEX?"
+            ],
+            "color": "red",
+            "func_samples": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "m/s"
+          },
+          {
+            "code_patterns": [
+              "?6VCCR000[03]??VEX?"
+            ],
+            "color": "gray",
+            "func_samples": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Capping",
+            "rating": "-inf",
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "m/s"
+          }
+        ],
+        "name": "Chest VC"
+      },
+      "criterion_rear_passenger/criterion_chest/criterion_shoulder_belt_load": {
+        "class": "Criterion_ShoulderBeltLoad",
+        "limits": [
+          {
+            "code_patterns": [
+              "?6SEBE????B3FO[X0]?"
+            ],
+            "color": "green",
+            "func_samples": [
+              6.0,
+              6.0,
+              6.0,
+              6.0,
+              6.0,
+              6.0,
+              6.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "0 pt. Modifier",
+            "rating": 0,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?6SEBE????B3FO[X0]?"
+            ],
+            "color": "red",
+            "func_samples": [
+              6.0,
+              6.0,
+              6.0,
+              6.0,
+              6.0,
+              6.0,
+              6.0
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "-2 pt. Modifier",
+            "rating": -2,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          }
+        ],
+        "name": "Modifier Shoulder Belt Load"
+      },
+      "criterion_rear_passenger/criterion_femur": {
+        "class": "Criterion_Femur",
+        "limits": [],
+        "name": "Femur"
+      },
+      "criterion_rear_passenger/criterion_femur/criterion_femur_axial_force": {
+        "class": "Criterion_Femur_Axial_Force",
+        "limits": [],
+        "name": "Femur Axial Force"
+      },
+      "criterion_rear_passenger/criterion_femur/criterion_femur_axial_force/criterion_femur_axial_force_left": {
+        "class": "Criterion_Femur_Axial_Force_Left",
+        "limits": [
+          {
+            "code_patterns": [
+              "?6FEMRLE00??FOZ?"
+            ],
+            "color": "green",
+            "func_samples": [
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Good",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?6FEMRLE00??FOZ?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?6FEMRLE00??FOZ?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              -3.8,
+              -3.8,
+              -3.8,
+              -3.8,
+              -3.8,
+              -3.8,
+              -3.8
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?6FEMRLE00??FOZ?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              -5.0,
+              -5.0,
+              -5.0,
+              -5.0,
+              -5.0,
+              -5.0,
+              -5.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?6FEMRLE00??FOZ?"
+            ],
+            "color": "red",
+            "func_samples": [
+              -6.2,
+              -6.2,
+              -6.2,
+              -6.2,
+              -6.2,
+              -6.2,
+              -6.2
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          }
+        ],
+        "name": "Femur Axial Force Left"
+      },
+      "criterion_rear_passenger/criterion_femur/criterion_femur_axial_force/criterion_femur_axial_force_right": {
+        "class": "Criterion_Femur_Axial_Force_Right",
+        "limits": [
+          {
+            "code_patterns": [
+              "?6FEMRRI00??FOZ?"
+            ],
+            "color": "green",
+            "func_samples": [
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Good",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?6FEMRRI00??FOZ?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6,
+              -2.6
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?6FEMRRI00??FOZ?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              -3.8,
+              -3.8,
+              -3.8,
+              -3.8,
+              -3.8,
+              -3.8,
+              -3.8
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?6FEMRRI00??FOZ?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              -5.0,
+              -5.0,
+              -5.0,
+              -5.0,
+              -5.0,
+              -5.0,
+              -5.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?6FEMRRI00??FOZ?"
+            ],
+            "color": "red",
+            "func_samples": [
+              -6.2,
+              -6.2,
+              -6.2,
+              -6.2,
+              -6.2,
+              -6.2,
+              -6.2
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          }
+        ],
+        "name": "Femur Axial Force Right"
+      },
+      "criterion_rear_passenger/criterion_femur/criterion_submarining": {
+        "class": "Criterion_Submarining",
+        "limits": [],
+        "name": "Submarining"
+      },
+      "criterion_rear_passenger/criterion_head": {
+        "class": "Criterion_Head",
+        "limits": [],
+        "name": "Head"
+      },
+      "criterion_rear_passenger/criterion_head/criterion_ExceedingForwardExcursionLine": {
+        "class": "Criterion_ExceedingForwardExcursionLine",
+        "limits": [],
+        "name": "Modifier for Exceeding forward excursion line"
+      },
+      "criterion_rear_passenger/criterion_head/criterion_HazardousAirbagDeployment": {
+        "class": "Criterion_HazardousAirbagDeployment",
+        "limits": [],
+        "name": "Modifier for Hazardous Airbag Deployment"
+      },
+      "criterion_rear_passenger/criterion_head/criterion_IncorrectAirbagDeployment": {
+        "class": "Criterion_IncorrectAirbagDeployment",
+        "limits": [],
+        "name": "Modifier for Incorrect Airbag Deployment"
+      },
+      "criterion_rear_passenger/criterion_head/criterion_head_a3ms": {
+        "class": "Criterion_Head_a3ms",
+        "limits": [
+          {
+            "code_patterns": [
+              "?6HEAD003C??ACR?",
+              "?6HEADCG3C??ACR?"
+            ],
+            "color": "green",
+            "func_samples": [
+              72.0,
+              72.0,
+              72.0,
+              72.0,
+              72.0,
+              72.0,
+              72.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Good",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "9.80665 m / s2"
+          },
+          {
+            "code_patterns": [
+              "?6HEAD003C??ACR?",
+              "?6HEADCG3C??ACR?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              72.0,
+              72.0,
+              72.0,
+              72.0,
+              72.0,
+              72.0,
+              72.0
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "9.80665 m / s2"
+          },
+          {
+            "code_patterns": [
+              "?6HEAD003C??ACR?",
+              "?6HEADCG3C??ACR?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              74.667,
+              74.667,
+              74.667,
+              74.667,
+              74.667,
+              74.667,
+              74.667
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "9.80665 m / s2"
+          },
+          {
+            "code_patterns": [
+              "?6HEAD003C??ACR?",
+              "?6HEADCG3C??ACR?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              77.333,
+              77.333,
+              77.333,
+              77.333,
+              77.333,
+              77.333,
+              77.333
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "9.80665 m / s2"
+          },
+          {
+            "code_patterns": [
+              "?6HEAD003C??ACR?",
+              "?6HEADCG3C??ACR?"
+            ],
+            "color": "red",
+            "func_samples": [
+              80.0,
+              80.0,
+              80.0,
+              80.0,
+              80.0,
+              80.0,
+              80.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "9.80665 m / s2"
+          },
+          {
+            "code_patterns": [
+              "?6HEAD003C??ACR?",
+              "?6HEADCG3C??ACR?"
+            ],
+            "color": "gray",
+            "func_samples": [
+              80.0,
+              80.0,
+              80.0,
+              80.0,
+              80.0,
+              80.0,
+              80.0
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Capping",
+            "rating": "-inf",
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "9.80665 m / s2"
+          }
+        ],
+        "name": "Head a3ms"
+      },
+      "criterion_rear_passenger/criterion_head/criterion_hic_15": {
+        "class": "Criterion_HIC_15",
+        "limits": [
+          {
+            "code_patterns": [
+              "?6HICR0015??00RX",
+              "?6HICRCG15??00RX"
+            ],
+            "color": "green",
+            "func_samples": [
+              500.0,
+              500.0,
+              500.0,
+              500.0,
+              500.0,
+              500.0,
+              500.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Good",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "1"
+          },
+          {
+            "code_patterns": [
+              "?6HICR0015??00RX",
+              "?6HICRCG15??00RX"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              500.0,
+              500.0,
+              500.0,
+              500.0,
+              500.0,
+              500.0,
+              500.0
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "1"
+          },
+          {
+            "code_patterns": [
+              "?6HICR0015??00RX",
+              "?6HICRCG15??00RX"
+            ],
+            "color": "orange",
+            "func_samples": [
+              566.667,
+              566.667,
+              566.667,
+              566.667,
+              566.667,
+              566.667,
+              566.667
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "1"
+          },
+          {
+            "code_patterns": [
+              "?6HICR0015??00RX",
+              "?6HICRCG15??00RX"
+            ],
+            "color": "brown",
+            "func_samples": [
+              633.333,
+              633.333,
+              633.333,
+              633.333,
+              633.333,
+              633.333,
+              633.333
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "1"
+          },
+          {
+            "code_patterns": [
+              "?6HICR0015??00RX",
+              "?6HICRCG15??00RX"
+            ],
+            "color": "red",
+            "func_samples": [
+              700.0,
+              700.0,
+              700.0,
+              700.0,
+              700.0,
+              700.0,
+              700.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "1"
+          },
+          {
+            "code_patterns": [
+              "?6HICR0015??00RX",
+              "?6HICRCG15??00RX"
+            ],
+            "color": "gray",
+            "func_samples": [
+              700.0,
+              700.0,
+              700.0,
+              700.0,
+              700.0,
+              700.0,
+              700.0
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Capping",
+            "rating": "-inf",
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "1"
+          }
+        ],
+        "name": "HIC 15"
+      },
+      "criterion_rear_passenger/criterion_neck": {
+        "class": "Criterion_Neck",
+        "limits": [],
+        "name": "Neck"
+      },
+      "criterion_rear_passenger/criterion_neck/criterion_fx_shear": {
+        "class": "Criterion_Fx_shear",
+        "limits": [
+          {
+            "code_patterns": [
+              "?6NECKUP00??FOX?"
+            ],
+            "color": "green",
+            "func_samples": [
+              1.2,
+              1.2,
+              1.2,
+              1.2,
+              1.2,
+              1.2,
+              1.2
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Good",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?6NECKUP00??FOX?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              1.2,
+              1.2,
+              1.2,
+              1.2,
+              1.2,
+              1.2,
+              1.2
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?6NECKUP00??FOX?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              1.45,
+              1.45,
+              1.45,
+              1.45,
+              1.45,
+              1.45,
+              1.45
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?6NECKUP00??FOX?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              1.7,
+              1.7,
+              1.7,
+              1.7,
+              1.7,
+              1.7,
+              1.7
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?6NECKUP00??FOX?"
+            ],
+            "color": "red",
+            "func_samples": [
+              1.95,
+              1.95,
+              1.95,
+              1.95,
+              1.95,
+              1.95,
+              1.95
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Poor",
+            "rating": 0,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?6NECKUP00??FOX?"
+            ],
+            "color": "green",
+            "func_samples": [
+              -1.2,
+              -1.2,
+              -1.2,
+              -1.2,
+              -1.2,
+              -1.2,
+              -1.2
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Good",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?6NECKUP00??FOX?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              -1.2,
+              -1.2,
+              -1.2,
+              -1.2,
+              -1.2,
+              -1.2,
+              -1.2
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?6NECKUP00??FOX?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              -1.45,
+              -1.45,
+              -1.45,
+              -1.45,
+              -1.45,
+              -1.45,
+              -1.45
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?6NECKUP00??FOX?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              -1.7,
+              -1.7,
+              -1.7,
+              -1.7,
+              -1.7,
+              -1.7,
+              -1.7
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?6NECKUP00??FOX?"
+            ],
+            "color": "red",
+            "func_samples": [
+              -1.95,
+              -1.95,
+              -1.95,
+              -1.95,
+              -1.95,
+              -1.95,
+              -1.95
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          }
+        ],
+        "name": "Neck Fx shear"
+      },
+      "criterion_rear_passenger/criterion_neck/criterion_fz_tension": {
+        "class": "Criterion_Fz_tension",
+        "limits": [
+          {
+            "code_patterns": [
+              "?6NECKUP00??FOZ?"
+            ],
+            "color": "green",
+            "func_samples": [
+              1.7,
+              1.7,
+              1.7,
+              1.7,
+              1.7,
+              1.7,
+              1.7
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Good",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?6NECKUP00??FOZ?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              1.7,
+              1.7,
+              1.7,
+              1.7,
+              1.7,
+              1.7,
+              1.7
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?6NECKUP00??FOZ?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              2.007,
+              2.007,
+              2.007,
+              2.007,
+              2.007,
+              2.007,
+              2.007
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?6NECKUP00??FOZ?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              2.313,
+              2.313,
+              2.313,
+              2.313,
+              2.313,
+              2.313,
+              2.313
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?6NECKUP00??FOZ?"
+            ],
+            "color": "red",
+            "func_samples": [
+              2.62,
+              2.62,
+              2.62,
+              2.62,
+              2.62,
+              2.62,
+              2.62
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Poor",
+            "rating": 0,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          }
+        ],
+        "name": "Neck Fz tension"
+      },
+      "criterion_rear_passenger/criterion_neck/criterion_my_extension": {
+        "class": "Criterion_My_extension",
+        "limits": [
+          {
+            "code_patterns": [
+              "?6NECKUP00??MOY?"
+            ],
+            "color": "green",
+            "func_samples": [
+              -36.0,
+              -36.0,
+              -36.0,
+              -36.0,
+              -36.0,
+              -36.0,
+              -36.0
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Good",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "Nm"
+          },
+          {
+            "code_patterns": [
+              "?6NECKUP00??MOY?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              -36.0,
+              -36.0,
+              -36.0,
+              -36.0,
+              -36.0,
+              -36.0,
+              -36.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "Nm"
+          },
+          {
+            "code_patterns": [
+              "?6NECKUP00??MOY?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              -40.333,
+              -40.333,
+              -40.333,
+              -40.333,
+              -40.333,
+              -40.333,
+              -40.333
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "Nm"
+          },
+          {
+            "code_patterns": [
+              "?6NECKUP00??MOY?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              -44.667,
+              -44.667,
+              -44.667,
+              -44.667,
+              -44.667,
+              -44.667,
+              -44.667
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "Nm"
+          },
+          {
+            "code_patterns": [
+              "?6NECKUP00??MOY?"
+            ],
+            "color": "red",
+            "func_samples": [
+              -49.0,
+              -49.0,
+              -49.0,
+              -49.0,
+              -49.0,
+              -49.0,
+              -49.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "Nm"
+          }
+        ],
+        "name": "Neck My extension"
+      }
+    },
+    "pages": [
+      "Page_Cover",
+      "Page_Rating_Table",
+      "Page_Driver_Result_Values_Chart",
+      "Page_Driver_Rating_Table",
+      "Page_Driver_Values_Table",
+      "Page_Driver_Belt",
+      "Page_Driver_Head_Acceleration",
+      "Page_Driver_Neck_Load",
+      "Page_Driver_Neck_NIJ",
+      "Page_Driver_Chest_Deflection",
+      "Page_Driver_Femur_Axial_Force",
+      "Page_Front_Passenger_Result_Values_Chart",
+      "Page_Front_Passenger_Rating_Table",
+      "Page_Front_Passenger_Values_Table",
+      "Page_Front_Passenger_Belt",
+      "Page_Front_Passenger_Head_Acceleration",
+      "Page_Front_Passenger_Neck_Load",
+      "Page_Front_Passenger_Neck_NIJ",
+      "Page_Front_Passenger_Chest_Deflection",
+      "Page_Front_Passenger_Femur_Axial_Force",
+      "Page_Rear_Passenger_Result_Values_Chart",
+      "Page_Rear_Passenger_Rating_Table",
+      "Page_Rear_Passenger_Values_Table",
+      "Page_Rear_Passenger_Belt",
+      "Page_Rear_Passenger_Head_Acceleration",
+      "Page_Rear_Passenger_Neck_Load",
+      "Page_Rear_Passenger_Chest_Deflection",
+      "Page_Rear_Passenger_Femur_Axial_Force",
+      "Page_OLC"
+    ]
+  },
+  "report": "EuroNCAP_Frontal_50kmh",
+  "results": {
+    "14084": {
+      "Overall": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_door_opening_during_impact": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": 0
+      },
+      "criterion_driver": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_chest": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_chest/criterion_SteeringWheelContact": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_chest/criterion_chest_deflection": {
+        "color": "brown",
+        "rating": 0.7189641592166287,
+        "status": "OK",
+        "value": -31.11494668088617
+      },
+      "criterion_driver/criterion_chest/criterion_chest_vc": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": -0.10293316121717513
+      },
+      "criterion_driver/criterion_chest/criterion_shoulder_belt_load": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_femur": {
+        "color": null,
+        "rating": 4.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_femur/criterion_femur_axial_force": {
+        "color": null,
+        "rating": 4.0,
+        "status": "OK",
+        "value": -0.5268480544522959
+      },
+      "criterion_driver/criterion_femur/criterion_femur_axial_force/criterion_femur_axial_force_left": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": -0.5268480544522959
+      },
+      "criterion_driver/criterion_femur/criterion_femur_axial_force/criterion_femur_axial_force_right": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": -0.4495683520222348
+      },
+      "criterion_driver/criterion_femur/criterion_submarining": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_driver/criterion_head": {
+        "color": null,
+        "rating": 4.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_head/criterion_DisplacementSteeringColumn": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": 0.0
+      },
+      "criterion_driver/criterion_head/criterion_ExceedingForwardExcursionLine": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_head/criterion_HazardousAirbagDeployment": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_driver/criterion_head/criterion_IncorrectAirbagDeployment": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_driver/criterion_head/criterion_UnstableAirbagSteeringWheelContact": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_driver/criterion_head/criterion_head_a3ms": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": 54.77641041133814
+      },
+      "criterion_driver/criterion_head/criterion_hic_15": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": 277.7450732639399
+      },
+      "criterion_driver/criterion_neck": {
+        "color": null,
+        "rating": 4.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_neck/criterion_fx_shear": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": 1.1999359579530409
+      },
+      "criterion_driver/criterion_neck/criterion_fz_tension": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": 1.20872196218147
+      },
+      "criterion_driver/criterion_neck/criterion_my_extension": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": -13.283149944531232
+      },
+      "criterion_front_passenger": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_front_passenger/criterion_chest": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_front_passenger/criterion_chest/criterion_chest_deflection": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": -17.701969448460297
+      },
+      "criterion_front_passenger/criterion_chest/criterion_chest_vc": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": -0.08756077622265823
+      },
+      "criterion_front_passenger/criterion_chest/criterion_shoulder_belt_load": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      },
+      "criterion_front_passenger/criterion_femur": {
+        "color": null,
+        "rating": 4.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_front_passenger/criterion_femur/criterion_femur_axial_force": {
+        "color": null,
+        "rating": 4.0,
+        "status": "OK",
+        "value": -1.9141633467514438
+      },
+      "criterion_front_passenger/criterion_femur/criterion_femur_axial_force/criterion_femur_axial_force_left": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": -1.9141633467514438
+      },
+      "criterion_front_passenger/criterion_femur/criterion_femur_axial_force/criterion_femur_axial_force_right": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": -0.6645032836373223
+      },
+      "criterion_front_passenger/criterion_head": {
+        "color": null,
+        "rating": 4.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_front_passenger/criterion_head/criterion_ExceedingForwardExcursionLine": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_front_passenger/criterion_head/criterion_HazardousAirbagDeployment": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_front_passenger/criterion_head/criterion_IncorrectAirbagDeployment": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_front_passenger/criterion_head/criterion_head_a3ms": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": 49.44789731765516
+      },
+      "criterion_front_passenger/criterion_head/criterion_hic_15": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": 230.96161113232725
+      },
+      "criterion_front_passenger/criterion_neck": {
+        "color": null,
+        "rating": 4.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_front_passenger/criterion_neck/criterion_fx_shear": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": 0.5280437189506695
+      },
+      "criterion_front_passenger/criterion_neck/criterion_fz_tension": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": 0.589491259926559
+      },
+      "criterion_front_passenger/criterion_neck/criterion_my_extension": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": -25.165458657041263
+      },
+      "criterion_rear_passenger": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_rear_passenger/criterion_chest": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_rear_passenger/criterion_chest/criterion_chest_deflection": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      },
+      "criterion_rear_passenger/criterion_chest/criterion_chest_vc": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      },
+      "criterion_rear_passenger/criterion_chest/criterion_shoulder_belt_load": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      },
+      "criterion_rear_passenger/criterion_femur": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_rear_passenger/criterion_femur/criterion_femur_axial_force": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_rear_passenger/criterion_femur/criterion_femur_axial_force/criterion_femur_axial_force_left": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      },
+      "criterion_rear_passenger/criterion_femur/criterion_femur_axial_force/criterion_femur_axial_force_right": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      },
+      "criterion_rear_passenger/criterion_femur/criterion_submarining": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_rear_passenger/criterion_head": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_rear_passenger/criterion_head/criterion_ExceedingForwardExcursionLine": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_rear_passenger/criterion_head/criterion_HazardousAirbagDeployment": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_rear_passenger/criterion_head/criterion_IncorrectAirbagDeployment": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_rear_passenger/criterion_head/criterion_head_a3ms": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      },
+      "criterion_rear_passenger/criterion_head/criterion_hic_15": {
+        "color": null,
+        "rating": "nan",
+        "status": "PENDING",
+        "value": "nan"
+      },
+      "criterion_rear_passenger/criterion_neck": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_rear_passenger/criterion_neck/criterion_fx_shear": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      },
+      "criterion_rear_passenger/criterion_neck/criterion_fz_tension": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      },
+      "criterion_rear_passenger/criterion_neck/criterion_my_extension": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      }
+    },
+    "AK3T02FO": {
+      "Overall": {
+        "color": null,
+        "rating": 6.629785311042667,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_door_opening_during_impact": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": 0
+      },
+      "criterion_driver": {
+        "color": null,
+        "rating": 13.586894797344472,
+        "status": "OK",
+        "value": 13.586894797344472
+      },
+      "criterion_driver/criterion_chest": {
+        "color": null,
+        "rating": 1.5868947973444718,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_chest/criterion_SteeringWheelContact": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_chest/criterion_chest_deflection": {
+        "color": "orange",
+        "rating": 1.5868947973444718,
+        "status": "OK",
+        "value": -27.640424739525812
+      },
+      "criterion_driver/criterion_chest/criterion_chest_vc": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": -0.07816763967096933
+      },
+      "criterion_driver/criterion_chest/criterion_shoulder_belt_load": {
+        "color": "green",
+        "rating": 0.0,
+        "status": "OK",
+        "value": 5.197280279550186
+      },
+      "criterion_driver/criterion_femur": {
+        "color": null,
+        "rating": 4.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_femur/criterion_femur_axial_force": {
+        "color": null,
+        "rating": 4.0,
+        "status": "OK",
+        "value": -0.9427166999719382
+      },
+      "criterion_driver/criterion_femur/criterion_femur_axial_force/criterion_femur_axial_force_left": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": -0.9427166999719382
+      },
+      "criterion_driver/criterion_femur/criterion_femur_axial_force/criterion_femur_axial_force_right": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": -0.49873928037100485
+      },
+      "criterion_driver/criterion_femur/criterion_submarining": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_driver/criterion_head": {
+        "color": null,
+        "rating": 4.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_head/criterion_DisplacementSteeringColumn": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": 0.0
+      },
+      "criterion_driver/criterion_head/criterion_ExceedingForwardExcursionLine": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_head/criterion_HazardousAirbagDeployment": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_driver/criterion_head/criterion_IncorrectAirbagDeployment": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_driver/criterion_head/criterion_UnstableAirbagSteeringWheelContact": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_driver/criterion_head/criterion_head_a3ms": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": 47.71624564564192
+      },
+      "criterion_driver/criterion_head/criterion_hic_15": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": 224.27072720427321
+      },
+      "criterion_driver/criterion_neck": {
+        "color": null,
+        "rating": 4.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_neck/criterion_fx_shear": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": 0.43631136515223173
+      },
+      "criterion_driver/criterion_neck/criterion_fz_tension": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": 1.1912899817859819
+      },
+      "criterion_driver/criterion_neck/criterion_my_extension": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": -15.37400417844821
+      },
+      "criterion_front_passenger": {
+        "color": null,
+        "rating": 12.932246446826197,
+        "status": "OK",
+        "value": 12.932246446826197
+      },
+      "criterion_front_passenger/criterion_chest": {
+        "color": null,
+        "rating": 0.9322464468261961,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_front_passenger/criterion_chest/criterion_chest_deflection": {
+        "color": "brown",
+        "rating": 0.9322464468261961,
+        "status": "OK",
+        "value": -30.259089314579306
+      },
+      "criterion_front_passenger/criterion_chest/criterion_chest_vc": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": -0.09054386076048354
+      },
+      "criterion_front_passenger/criterion_chest/criterion_shoulder_belt_load": {
+        "color": "green",
+        "rating": 0.0,
+        "status": "OK",
+        "value": 4.879160695571058
+      },
+      "criterion_front_passenger/criterion_femur": {
+        "color": null,
+        "rating": 4.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_front_passenger/criterion_femur/criterion_femur_axial_force": {
+        "color": null,
+        "rating": 4.0,
+        "status": "OK",
+        "value": -1.3412993510041369
+      },
+      "criterion_front_passenger/criterion_femur/criterion_femur_axial_force/criterion_femur_axial_force_left": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": -1.3412993510041369
+      },
+      "criterion_front_passenger/criterion_femur/criterion_femur_axial_force/criterion_femur_axial_force_right": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": -0.3223301423090319
+      },
+      "criterion_front_passenger/criterion_head": {
+        "color": null,
+        "rating": 4.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_front_passenger/criterion_head/criterion_ExceedingForwardExcursionLine": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_front_passenger/criterion_head/criterion_HazardousAirbagDeployment": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_front_passenger/criterion_head/criterion_IncorrectAirbagDeployment": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_front_passenger/criterion_head/criterion_head_a3ms": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": 40.03967248143437
+      },
+      "criterion_front_passenger/criterion_head/criterion_hic_15": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": 133.14187375538322
+      },
+      "criterion_front_passenger/criterion_neck": {
+        "color": null,
+        "rating": 4.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_front_passenger/criterion_neck/criterion_fx_shear": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": 0.70054120640255
+      },
+      "criterion_front_passenger/criterion_neck/criterion_fz_tension": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": 0.9151664125934598
+      },
+      "criterion_front_passenger/criterion_neck/criterion_my_extension": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": -12.281220427297281
+      },
+      "criterion_rear_passenger": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_rear_passenger/criterion_chest": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_rear_passenger/criterion_chest/criterion_chest_deflection": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      },
+      "criterion_rear_passenger/criterion_chest/criterion_chest_vc": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      },
+      "criterion_rear_passenger/criterion_chest/criterion_shoulder_belt_load": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      },
+      "criterion_rear_passenger/criterion_femur": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_rear_passenger/criterion_femur/criterion_femur_axial_force": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_rear_passenger/criterion_femur/criterion_femur_axial_force/criterion_femur_axial_force_left": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      },
+      "criterion_rear_passenger/criterion_femur/criterion_femur_axial_force/criterion_femur_axial_force_right": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      },
+      "criterion_rear_passenger/criterion_femur/criterion_submarining": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_rear_passenger/criterion_head": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_rear_passenger/criterion_head/criterion_ExceedingForwardExcursionLine": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_rear_passenger/criterion_head/criterion_HazardousAirbagDeployment": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_rear_passenger/criterion_head/criterion_IncorrectAirbagDeployment": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_rear_passenger/criterion_head/criterion_head_a3ms": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      },
+      "criterion_rear_passenger/criterion_head/criterion_hic_15": {
+        "color": null,
+        "rating": "nan",
+        "status": "PENDING",
+        "value": "nan"
+      },
+      "criterion_rear_passenger/criterion_neck": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_rear_passenger/criterion_neck/criterion_fx_shear": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      },
+      "criterion_rear_passenger/criterion_neck/criterion_fz_tension": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      },
+      "criterion_rear_passenger/criterion_neck/criterion_my_extension": {
+        "color": null,
+        "rating": "nan",
+        "status": "ERROR",
+        "value": "nan"
+      }
+    }
+  }
+}

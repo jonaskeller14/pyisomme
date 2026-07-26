@@ -1,0 +1,1251 @@
+{
+  "definition": {
+    "criteria": {
+      "Overall": {
+        "class": "Criterion_Overall",
+        "limits": [],
+        "name": "Overall"
+      },
+      "criterion_abdomen": {
+        "class": "Criterion_Abdomen",
+        "limits": [],
+        "name": "Abdomen"
+      },
+      "criterion_abdomen/criterion_abdomen_lateral_compression": {
+        "class": "Criterion_Abdomen_Lateral_Compression",
+        "limits": [
+          {
+            "code_patterns": [
+              "?1ABRI??0[012]??DSY?"
+            ],
+            "color": "gray",
+            "func_samples": [
+              -65,
+              -65,
+              -65,
+              -65,
+              -65,
+              -65,
+              -65
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Capping",
+            "rating": "-inf",
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "mm"
+          },
+          {
+            "code_patterns": [
+              "?1ABRI??0[012]??DSY?"
+            ],
+            "color": "red",
+            "func_samples": [
+              -65,
+              -65,
+              -65,
+              -65,
+              -65,
+              -65,
+              -65
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "mm"
+          },
+          {
+            "code_patterns": [
+              "?1ABRI??0[012]??DSY?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              -59,
+              -59,
+              -59,
+              -59,
+              -59,
+              -59,
+              -59
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "mm"
+          },
+          {
+            "code_patterns": [
+              "?1ABRI??0[012]??DSY?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              -53,
+              -53,
+              -53,
+              -53,
+              -53,
+              -53,
+              -53
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "mm"
+          },
+          {
+            "code_patterns": [
+              "?1ABRI??0[012]??DSY?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              -47,
+              -47,
+              -47,
+              -47,
+              -47,
+              -47,
+              -47
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "mm"
+          },
+          {
+            "code_patterns": [
+              "?1ABRI??0[012]??DSY?"
+            ],
+            "color": "green",
+            "func_samples": [
+              -47,
+              -47,
+              -47,
+              -47,
+              -47,
+              -47,
+              -47
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Good",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "mm"
+          }
+        ],
+        "name": "Abdomen Lateral Compression"
+      },
+      "criterion_abdomen/criterion_abdomen_lateral_vc": {
+        "class": "Criterion_Abdomen_Lateral_VC",
+        "limits": [
+          {
+            "code_patterns": [
+              "?1VCAR??????VEYC"
+            ],
+            "color": "red",
+            "func_samples": [
+              -1,
+              -1,
+              -1,
+              -1,
+              -1,
+              -1,
+              -1
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "m/s"
+          },
+          {
+            "code_patterns": [
+              "?1VCAR??????VEYC"
+            ],
+            "color": "green",
+            "func_samples": [
+              -1,
+              -1,
+              -1,
+              -1,
+              -1,
+              -1,
+              -1
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Good",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "m/s"
+          },
+          {
+            "code_patterns": [
+              "?1VCAR??????VEYC"
+            ],
+            "color": "green",
+            "func_samples": [
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Good",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "m/s"
+          },
+          {
+            "code_patterns": [
+              "?1VCAR??????VEYC"
+            ],
+            "color": "red",
+            "func_samples": [
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Poor",
+            "rating": 0,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "m/s"
+          }
+        ],
+        "name": "Modifier Abdomen Lateral Viscous Criterion"
+      },
+      "criterion_chest": {
+        "class": "Criterion_Chest",
+        "limits": [],
+        "name": "Chest"
+      },
+      "criterion_chest/criterion_chest_lateral_compression": {
+        "class": "Criterion_Chest_Lateral_Compression",
+        "limits": [
+          {
+            "code_patterns": [
+              "?1TRRI??0[0123]??DSY?"
+            ],
+            "color": "gray",
+            "func_samples": [
+              -50.0,
+              -50.0,
+              -50.0,
+              -50.0,
+              -50.0,
+              -50.0,
+              -50.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Capping",
+            "rating": "-inf",
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "mm"
+          },
+          {
+            "code_patterns": [
+              "?1TRRI??0[0123]??DSY?"
+            ],
+            "color": "red",
+            "func_samples": [
+              -50.0,
+              -50.0,
+              -50.0,
+              -50.0,
+              -50.0,
+              -50.0,
+              -50.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "mm"
+          },
+          {
+            "code_patterns": [
+              "?1TRRI??0[0123]??DSY?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              -42.667,
+              -42.667,
+              -42.667,
+              -42.667,
+              -42.667,
+              -42.667,
+              -42.667
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "mm"
+          },
+          {
+            "code_patterns": [
+              "?1TRRI??0[0123]??DSY?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              -35.333,
+              -35.333,
+              -35.333,
+              -35.333,
+              -35.333,
+              -35.333,
+              -35.333
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "mm"
+          },
+          {
+            "code_patterns": [
+              "?1TRRI??0[0123]??DSY?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              -28.0,
+              -28.0,
+              -28.0,
+              -28.0,
+              -28.0,
+              -28.0,
+              -28.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "mm"
+          },
+          {
+            "code_patterns": [
+              "?1TRRI??0[0123]??DSY?"
+            ],
+            "color": "green",
+            "func_samples": [
+              -28.0,
+              -28.0,
+              -28.0,
+              -28.0,
+              -28.0,
+              -28.0,
+              -28.0
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Good",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "mm"
+          }
+        ],
+        "name": "Chest Lateral Compression"
+      },
+      "criterion_chest/criterion_chest_lateral_vc": {
+        "class": "Criterion_Chest_Lateral_VC",
+        "limits": [
+          {
+            "code_patterns": [
+              "?1VCCR??????VEYC"
+            ],
+            "color": "red",
+            "func_samples": [
+              -1,
+              -1,
+              -1,
+              -1,
+              -1,
+              -1,
+              -1
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "m/s"
+          },
+          {
+            "code_patterns": [
+              "?1VCCR??????VEYC"
+            ],
+            "color": "green",
+            "func_samples": [
+              -1,
+              -1,
+              -1,
+              -1,
+              -1,
+              -1,
+              -1
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Good",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "m/s"
+          },
+          {
+            "code_patterns": [
+              "?1VCCR??????VEYC"
+            ],
+            "color": "green",
+            "func_samples": [
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Good",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "m/s"
+          },
+          {
+            "code_patterns": [
+              "?1VCCR??????VEYC"
+            ],
+            "color": "red",
+            "func_samples": [
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Poor",
+            "rating": 0,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "m/s"
+          }
+        ],
+        "name": "Modifier Chest Lateral Viscous Criterion"
+      },
+      "criterion_chest/criterion_shoulder_lateral_force": {
+        "class": "Criterion_Shoulder_Lateral_Force",
+        "limits": [
+          {
+            "code_patterns": [
+              "?1SHLD0000??FOY?",
+              "?1SHLDLE00??FOY?",
+              "?1SHLDRI00??FOY?"
+            ],
+            "color": "red",
+            "func_samples": [
+              -3,
+              -3,
+              -3,
+              -3,
+              -3,
+              -3,
+              -3
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1SHLD0000??FOY?",
+              "?1SHLDLE00??FOY?",
+              "?1SHLDRI00??FOY?"
+            ],
+            "color": "green",
+            "func_samples": [
+              -3,
+              -3,
+              -3,
+              -3,
+              -3,
+              -3,
+              -3
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Good",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1SHLD0000??FOY?",
+              "?1SHLDLE00??FOY?",
+              "?1SHLDRI00??FOY?"
+            ],
+            "color": "green",
+            "func_samples": [
+              3,
+              3,
+              3,
+              3,
+              3,
+              3,
+              3
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Good",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1SHLD0000??FOY?",
+              "?1SHLDLE00??FOY?",
+              "?1SHLDRI00??FOY?"
+            ],
+            "color": "red",
+            "func_samples": [
+              3.0,
+              3.0,
+              3.0,
+              3.0,
+              3.0,
+              3.0,
+              3.0
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Poor",
+            "rating": 0,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          }
+        ],
+        "name": "Modifier Shoulder Lateral Force"
+      },
+      "criterion_head": {
+        "class": "Criterion_Head",
+        "limits": [],
+        "name": "Head"
+      },
+      "criterion_head/criterion_head_a3ms": {
+        "class": "Criterion_Head_a3ms",
+        "limits": [
+          {
+            "code_patterns": [
+              "?1HEAD003C??ACR?",
+              "?1HEADCG3C??ACR?"
+            ],
+            "color": "green",
+            "func_samples": [
+              72.0,
+              72.0,
+              72.0,
+              72.0,
+              72.0,
+              72.0,
+              72.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Good",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "9.80665 m / s2"
+          },
+          {
+            "code_patterns": [
+              "?1HEAD003C??ACR?",
+              "?1HEADCG3C??ACR?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              72.0,
+              72.0,
+              72.0,
+              72.0,
+              72.0,
+              72.0,
+              72.0
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "9.80665 m / s2"
+          },
+          {
+            "code_patterns": [
+              "?1HEAD003C??ACR?",
+              "?1HEADCG3C??ACR?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              74.667,
+              74.667,
+              74.667,
+              74.667,
+              74.667,
+              74.667,
+              74.667
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "9.80665 m / s2"
+          },
+          {
+            "code_patterns": [
+              "?1HEAD003C??ACR?",
+              "?1HEADCG3C??ACR?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              77.333,
+              77.333,
+              77.333,
+              77.333,
+              77.333,
+              77.333,
+              77.333
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "9.80665 m / s2"
+          },
+          {
+            "code_patterns": [
+              "?1HEAD003C??ACR?",
+              "?1HEADCG3C??ACR?"
+            ],
+            "color": "red",
+            "func_samples": [
+              80.0,
+              80.0,
+              80.0,
+              80.0,
+              80.0,
+              80.0,
+              80.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "9.80665 m / s2"
+          },
+          {
+            "code_patterns": [
+              "?1HEAD003C??ACR?",
+              "?1HEADCG3C??ACR?"
+            ],
+            "color": "gray",
+            "func_samples": [
+              80.0,
+              80.0,
+              80.0,
+              80.0,
+              80.0,
+              80.0,
+              80.0
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Capping",
+            "rating": "-inf",
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "9.80665 m / s2"
+          }
+        ],
+        "name": "Head a3ms"
+      },
+      "criterion_head/criterion_hic_15": {
+        "class": "Criterion_HIC_15",
+        "limits": [
+          {
+            "code_patterns": [
+              "?1HICR0015??00RX",
+              "?1HICRCG15??00RX"
+            ],
+            "color": "green",
+            "func_samples": [
+              500.0,
+              500.0,
+              500.0,
+              500.0,
+              500.0,
+              500.0,
+              500.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Good",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "1"
+          },
+          {
+            "code_patterns": [
+              "?1HICR0015??00RX",
+              "?1HICRCG15??00RX"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              500.0,
+              500.0,
+              500.0,
+              500.0,
+              500.0,
+              500.0,
+              500.0
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "1"
+          },
+          {
+            "code_patterns": [
+              "?1HICR0015??00RX",
+              "?1HICRCG15??00RX"
+            ],
+            "color": "orange",
+            "func_samples": [
+              566.667,
+              566.667,
+              566.667,
+              566.667,
+              566.667,
+              566.667,
+              566.667
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "1"
+          },
+          {
+            "code_patterns": [
+              "?1HICR0015??00RX",
+              "?1HICRCG15??00RX"
+            ],
+            "color": "brown",
+            "func_samples": [
+              633.333,
+              633.333,
+              633.333,
+              633.333,
+              633.333,
+              633.333,
+              633.333
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "1"
+          },
+          {
+            "code_patterns": [
+              "?1HICR0015??00RX",
+              "?1HICRCG15??00RX"
+            ],
+            "color": "red",
+            "func_samples": [
+              700.0,
+              700.0,
+              700.0,
+              700.0,
+              700.0,
+              700.0,
+              700.0
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "1"
+          },
+          {
+            "code_patterns": [
+              "?1HICR0015??00RX",
+              "?1HICRCG15??00RX"
+            ],
+            "color": "gray",
+            "func_samples": [
+              700.0,
+              700.0,
+              700.0,
+              700.0,
+              700.0,
+              700.0,
+              700.0
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Capping",
+            "rating": "-inf",
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "1"
+          }
+        ],
+        "name": "HIC 15"
+      },
+      "criterion_pelvis": {
+        "class": "Criterion_Pelvis",
+        "limits": [],
+        "name": "Pelvis"
+      },
+      "criterion_pelvis/criterion_pubic_symphysis_force": {
+        "class": "Criterion_Pubic_Symphysis_Force",
+        "limits": [
+          {
+            "code_patterns": [
+              "?1PUBC0000??FOY?"
+            ],
+            "color": "gray",
+            "func_samples": [
+              -2.8,
+              -2.8,
+              -2.8,
+              -2.8,
+              -2.8,
+              -2.8,
+              -2.8
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Capping",
+            "rating": "-inf",
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1PUBC0000??FOY?"
+            ],
+            "color": "red",
+            "func_samples": [
+              -2.8,
+              -2.8,
+              -2.8,
+              -2.8,
+              -2.8,
+              -2.8,
+              -2.8
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1PUBC0000??FOY?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              -2.433,
+              -2.433,
+              -2.433,
+              -2.433,
+              -2.433,
+              -2.433,
+              -2.433
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1PUBC0000??FOY?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              -2.067,
+              -2.067,
+              -2.067,
+              -2.067,
+              -2.067,
+              -2.067,
+              -2.067
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1PUBC0000??FOY?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              -1.7,
+              -1.7,
+              -1.7,
+              -1.7,
+              -1.7,
+              -1.7,
+              -1.7
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1PUBC0000??FOY?"
+            ],
+            "color": "green",
+            "func_samples": [
+              -1.7,
+              -1.7,
+              -1.7,
+              -1.7,
+              -1.7,
+              -1.7,
+              -1.7
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Good",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1PUBC0000??FOY?"
+            ],
+            "color": "green",
+            "func_samples": [
+              1.7,
+              1.7,
+              1.7,
+              1.7,
+              1.7,
+              1.7,
+              1.7
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Good",
+            "rating": 4,
+            "upper": true,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1PUBC0000??FOY?"
+            ],
+            "color": "yellow",
+            "func_samples": [
+              1.7,
+              1.7,
+              1.7,
+              1.7,
+              1.7,
+              1.7,
+              1.7
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Adequate",
+            "rating": 4,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1PUBC0000??FOY?"
+            ],
+            "color": "orange",
+            "func_samples": [
+              2.067,
+              2.067,
+              2.067,
+              2.067,
+              2.067,
+              2.067,
+              2.067
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Marginal",
+            "rating": 2.669,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1PUBC0000??FOY?"
+            ],
+            "color": "brown",
+            "func_samples": [
+              2.433,
+              2.433,
+              2.433,
+              2.433,
+              2.433,
+              2.433,
+              2.433
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Weak",
+            "rating": 1.329,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1PUBC0000??FOY?"
+            ],
+            "color": "red",
+            "func_samples": [
+              2.8,
+              2.8,
+              2.8,
+              2.8,
+              2.8,
+              2.8,
+              2.8
+            ],
+            "linestyle": "-",
+            "lower": null,
+            "name": "Poor",
+            "rating": 0,
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          },
+          {
+            "code_patterns": [
+              "?1PUBC0000??FOY?"
+            ],
+            "color": "gray",
+            "func_samples": [
+              2.8,
+              2.8,
+              2.8,
+              2.8,
+              2.8,
+              2.8,
+              2.8
+            ],
+            "linestyle": "-",
+            "lower": true,
+            "name": "Capping",
+            "rating": "-inf",
+            "upper": null,
+            "x_unit": "s",
+            "y_unit": "kN"
+          }
+        ],
+        "name": "Pubic Symphysis Force"
+      }
+    },
+    "pages": [
+      "Page_Cover",
+      "Page_Values_Chart",
+      "Page_Rating_Table",
+      "Page_Values_Table",
+      "Page_Head_Acceleration",
+      "Page_Shoulder_Lateral_Force",
+      "Page_Chest_Lateral_Compression",
+      "Page_Chest_Lateral_VC",
+      "Page_Abdomen_Lateral_Compression",
+      "Page_Abdomen_Lateral_VC",
+      "Page_Pubic_Symphysis_Force"
+    ]
+  },
+  "report": "EuroNCAP_Side_Barrier",
+  "results": {
+    "AK3T02FO": {
+      "Overall": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_abdomen": {
+        "color": null,
+        "rating": 4.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_abdomen/criterion_abdomen_lateral_compression": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": -29.999974011961132
+      },
+      "criterion_abdomen/criterion_abdomen_lateral_vc": {
+        "color": "green",
+        "rating": 4,
+        "status": "OK",
+        "value": -0.10802741778356122
+      },
+      "criterion_chest": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_chest/criterion_chest_lateral_compression": {
+        "color": "yellow",
+        "rating": 3.6369882162934313,
+        "status": "OK",
+        "value": -29.999974011961132
+      },
+      "criterion_chest/criterion_chest_lateral_vc": {
+        "color": "red",
+        "rating": 4,
+        "status": "OK",
+        "value": 106.7126607482126
+      },
+      "criterion_chest/criterion_shoulder_lateral_force": {
+        "color": "red",
+        "rating": 0,
+        "status": "OK",
+        "value": -3.999995661823441
+      },
+      "criterion_head": {
+        "color": null,
+        "rating": 4.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_head/criterion_head_a3ms": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": 47.71624564564192
+      },
+      "criterion_head/criterion_hic_15": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": 224.27072720427321
+      },
+      "criterion_pelvis": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_pelvis/criterion_pubic_symphysis_force": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": -2.999998145742896
+      }
+    }
+  }
+}

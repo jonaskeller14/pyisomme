@@ -44,9 +44,37 @@ left unrepaired, so never invoke a bare `python`.
 
 Note: tests (`tests/test.py`, `tests/test_report.py`, etc.) read real fixture data from `data/` (e.g. `data/nhtsa/…`, `data/iso-mme-org/…`) and report tests write `.pptx` output into an `out/` directory. Fixture folders are largely untracked and must exist locally for those tests to pass.
 
-**Runtime:** everything outside `tests/test_report.py` runs in ~6 s; the 13 report tests take ~12 min
-together (`test_EuroNCAP` alone several minutes). Run report tests individually while iterating — a
-full `discover` will blow past a 10-minute command timeout.
+**Runtime:** the full suite is ~8 min (111 tests). Everything outside `tests/test_report.py` and
+`tests/test_golden.py` runs in ~6 s. Four report tests are opt-in because they take 79–112 s each:
+
+```bash
+PYISOMME_SLOW=1 .venv/Scripts/python.exe -m unittest tests.test_report   # include the slow four
+```
+
+### The refactor safety net
+
+Two test modules exist purely to make the report refactor verifiable — read `tests/golden_utils.py`
+before changing either:
+
+- **`tests/test_golden.py`** — constructs `EuroNCAP_Frontal_50kmh` and `EuroNCAP_Side_Barrier`, then
+  compares them against committed snapshots in `tests/golden/` (**tracked**, unlike `data/`). Two layers:
+  a *definition* layer (criterion paths, names, all `Limit` rows — data-independent, so it works even
+  where every value is `nan`) compared exactly, and a *results* layer (`value`/`rating`/`color`/`status`)
+  compared with **no-regression** semantics: known numbers must stay identical, but a `nan` becoming a
+  number — or an `ERROR` becoming `NA` — is reported as an improvement and tolerated. `nan == nan` (G9).
+- **`tests/test_report_modules.py`** — imports every module under `pyisomme/report/` and checks that each
+  protocol subpackage is reachable as an attribute of `pyisomme.report` *in a fresh interpreter*. Needs no
+  fixture data, so it is the one report test that can run in CI. Known breakage sits in explicit
+  `BROKEN_MODULES` / `MISSING_REEXPORTS` sets with `TODO(step-…)` comments, guarded by staleness tests.
+
+When a step legitimately changes a number, re-baseline **deliberately** and explain the diff in the
+progress log — the tests never rewrite the files themselves:
+
+```bash
+.venv/Scripts/python.exe -m tests.golden_regen                       # all
+.venv/Scripts/python.exe -m tests.golden_regen euro_ncap_side_barrier
+git diff tests/golden/
+```
 
 ## Core Architecture
 

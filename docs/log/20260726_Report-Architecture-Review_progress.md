@@ -13,7 +13,7 @@ what was done, what was decided, and what was deliberately left alone.
 | Step | Title | Status | Branch / commit |
 |---|---|---|---|
 | 0 | Fix and standardise the Python environment | ☑ done | `refactor/step-0-env` |
-| 1 | Safety net: golden tests + import smoke test | ☐ todo | |
+| 1 | Safety net: golden tests + import smoke test | ⚠ done with deviations | `refactor/step-1-safety-net` |
 | 2 | Fix known defects (Appendix A1, A5, A6, A9) | ☐ todo | |
 | 3 | Typing and lint (P5) | ☐ todo | |
 | 4 | Manual inputs as a declared concept (P11) | ☐ todo | |
@@ -235,3 +235,104 @@ Both root causes are **new** — neither appears in the review's Appendix A (gre
   would not have caught it.
 - Baseline for later steps: any of the 87 passing tests turning red is a regression caused by that step;
   the 3 errors above are pre-existing.
+
+---
+
+### Step 1 — Safety net: golden tests + import smoke test
+
+**Date:** 2026-07-26 · **Branch:** `refactor/step-1-safety-net` · **Commit(s):** see branch tip
+**Outcome:** done with deviations (two, both approved by the maintainer during the session — see below)
+
+**What was implemented**
+- `tests/golden_utils.py` — tree walk, serialisation, comparison, fixture builders, `BUILDERS` registry.
+- `tests/test_golden.py` — 2 golden tests + 2 coverage guards + 12 unit tests of the comparison logic
+  itself (the latter need no fixture data and run instantly).
+- `tests/golden_regen.py` — `python -m tests.golden_regen [stem …]`. The tests never self-heal.
+- `tests/golden/euro_ncap_frontal_50kmh.json` (129 kB) and `tests/golden/euro_ncap_side_barrier.json`
+  (31 kB), both **committed**.
+- `tests/test_report_modules.py` — import smoke test + subpackage re-export test.
+- `tests/test_report.py` — 4 slow tests behind `@slow` (`PYISOMME_SLOW=1`), 3 broken tests `@unittest.skip`
+  with `TODO(step-2, …)` reasons.
+- `CLAUDE.md` — documents the net, the regeneration command and `PYISOMME_SLOW`.
+
+**Decisions taken**
+
+- **The golden net has two layers, not one.** The maintainer opened the exported 50 km/h PPTX and observed
+  "a lot of nan". Measured: of 64 criterion nodes per test, only 35/31 carry a non-nan `value`
+  (55 %/48 %) — but 48/41 carry a non-nan `rating` (75 %/64 %), and most remaining nans are *structural*
+  (aggregate nodes such as `criterion_driver/criterion_chest` carry a rating and leave `value` at nan by
+  design, status `OK`, `na_reason` `None`). A pure value golden would therefore be thin, so a
+  **definition layer** was added: 64 criterion paths + names + **172 `Limit` rows** + 29 page classes,
+  all captured with zero dependence on measurement data. This is a slice of Step 12's `describe()` (P8)
+  pulled forward — **deviation from the plan**, taken because it is the layer that makes the sparse
+  fixtures stop mattering for Steps 5, 6 and 10 (which move limits and code patterns around).
+- **Results use no-regression semantics, not exact match** (maintainer's proposal, adopted). A known
+  value/rating/color must stay identical (`rel_tol=1e-9`); a `nan` may stay `nan` *or become a number*,
+  which is printed as a tolerated "improvement". Status may only move **up** `ERROR < PENDING < NA < OK`.
+  This is deliberately looser than the plan's exact match and is what lets Step 3's `require_channel`
+  (`ERROR → NA`) land without a re-baseline, while still failing on any lost or changed number.
+- **Golden set = `EuroNCAP_Frontal_50kmh` + `EuroNCAP_Side_Barrier`** (maintainer's choice), *not*
+  `EuroNCAP_Frontal_MPDB` as the plan assumed — MPDB cannot be constructed at all (item D1). Side Barrier
+  was chosen over `UN_Side_Barrier_R95` on measured coverage: 13 nodes at **100 % rating coverage** and 48
+  limit rows in 5 s, versus 7 nodes at 57 % and 15 limit rows. Its inputs come from `create_sample`, which
+  is deterministic (`linspace`/`sin`, no RNG — `channel.py:567`), so synthetic channels are a legitimate
+  way to raise coverage later without sourcing real ISO-MME data.
+- **Slow tests are skipped, not deleted** (maintainer asked for "comment out + TODO"). Implemented as
+  `@unittest.skipUnless(os.environ.get("PYISOMME_SLOW"), …)` rather than commented-out code: same effect,
+  but the test stays visible as *skipped* in the output, stays parseable, and cannot silently rot against
+  a refactor. **Note for the maintainer's post-refactor review: these four tests currently PASS.** They
+  were parked for turnaround time (79–112 s each), not because of missing data.
+- **Keys are attribute paths** (`criterion_driver/criterion_head/criterion_hic_15`), stored alongside each
+  criterion's `name`. Steps 7–8 rename attributes when `sub()` descriptors land; that will show up as
+  "criterion disappeared" + "new criterion" pairs and needs a deliberate regeneration. Accepted — the
+  alternative (keying by protocol name) collides where `name` is `None`.
+
+**Behaviour changes**
+- None in `pyisomme/` — no library code was touched (verified: `git diff` against the Step 0 tip touches
+  only `tests/` and `CLAUDE.md`).
+
+**Verification** (commands run and their result)
+- `.venv/Scripts/python.exe -m unittest tests.test_report_modules -v` → **OK**, 5 tests, 8.2 s.
+- `.venv/Scripts/python.exe -m tests.golden_regen` → 64 criteria / 172 limit rows / 2 tests, and
+  13 criteria / 48 limit rows / 1 test. Numbers match the independent coverage probe exactly.
+- `.venv/Scripts/python.exe -m unittest tests.test_golden` run **twice**: OK, 16 tests, 59.3 s then 57.7 s
+  — no nondeterminism, and zero "improvement" lines (so the goldens describe the current state exactly).
+- **Net proven to fail (both layers), then reverted:**
+  - definition layer — HIC Good limit `500.000 → 501.000` (`frontal_50kmh.py:183`) produced 3 regressions,
+    naming `criterion_{driver,front_passenger,rear_passenger}/criterion_head/criterion_hic_15`.
+  - results layer — Chest Deflection `np.min → np.max` (`frontal_50kmh.py:438`, a plausible refactor slip)
+    produced 4 regressions with before/after numbers, e.g.
+    `criterion_driver/…/criterion_chest_deflection.value: -27.640424739525812 -> 0.15536177772070078`.
+    Notably `rating` did *not* move (it is computed from the channel, not from `value`), so a value-only
+    defect would have been invisible without this layer.
+  - `git status --porcelain pyisomme/` clean afterwards.
+- `.venv/Scripts/python.exe -m unittest discover -s tests` → **OK (skipped=7)**, 111 tests, 465.7 s.
+  The full suite now fits in a single command run again (it did not before — see Step 0).
+
+**Deviations from the plan / left undone**
+- Second golden is Side Barrier, not MPDB (blocked by D1) — see Decisions.
+- Definition layer added ahead of Step 12 — see Decisions.
+- Results comparison is no-regression rather than exact — see Decisions.
+- Plan's "`python -m tests.golden_regen` **or** an env var" — only the module entry point was built. An
+  env var that rewrites goldens during a test run was deliberately not added: it makes accidental
+  self-healing too easy.
+
+**Discovered during this step**
+- `pyisomme.report.us_ncap.us_ncap` **imports fine** — the plan (Appendix A6) implies it is import-broken,
+  but its defect is a runtime `AttributeError` in `__init__`, which no import test can see. It is
+  therefore *not* in `BROKEN_MODULES`; only `us_ncap.frontal_56kmh` (A5) is.
+- The D2 re-export failure is invisible to an in-process check: importing any submodule binds it onto its
+  parent package, so once one test touches `pyisomme.report.correlation.correlation` the attribute exists.
+  `TestReportSubpackageReexports` therefore shells out to a **fresh interpreter**. Verified by hand:
+  `euro_ncap`/`un`/`iihs` → `True`; `correlation`/`fmvss`/`us_ncap` → `False`.
+
+**Notes for the next session (Step 2)**
+- Step 2's acceptance criterion "import smoke test passes with an empty or strictly smaller skip list"
+  now means: remove `pyisomme.report.us_ncap.frontal_56kmh` from `BROKEN_MODULES` (A5) and shrink
+  `MISSING_REEXPORTS` (D2, one line in `pyisomme/report/__init__.py`). The staleness guards will fail if a
+  fix lands without the list being updated — that is intentional.
+- Fixing D1 (the unguarded `calculate_olc`) unblocks three skipped tests at once
+  (`test_EuroNCAP_Frontal_MPDB`, `test_EuroNCAP`) and lets MPDB be added to `golden_utils.BUILDERS`.
+  Worth doing early in Step 2 even though the plan's Appendix-A list does not mention it.
+- When a step changes a number on purpose: run `python -m tests.golden_regen <stem>`, paste the
+  `git diff tests/golden/` summary into that step's entry, and say why.
