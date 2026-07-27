@@ -10,20 +10,24 @@ therefore raises :class:`NotImplementedError` rather than a confusing
 The report is deliberately absent from ``REPORTS`` in ``pyisomme/__main__.py`` and
 is out of scope for the report refactor (plan Step 2, review Appendix A5).
 """
+
+from __future__ import annotations
 from pyisomme.calculate import calculate_p_head_hic15_ais_3plus
+from pyisomme.isomme import Isomme
 from pyisomme.report.report import Report
 from pyisomme.report.criterion import Criterion
 from pyisomme.report.us_ncap.limits import Limit_1, Limit_2, Limit_3, Limit_4, Limit_5
 
 import logging
 import numpy as np
+from typing import Any
 
 
 logger = logging.getLogger(__name__)
 
 
-class USNCAP_Frontal_56kmh(Report):
-    def __init__(self, *args, **kwargs):
+class USNCAP_Frontal_56kmh(Report["USNCAP_Frontal_56kmh.Criterion_Overall"]):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         raise NotImplementedError(
             "USNCAP_Frontal_56kmh is an unfinished stub: Criterion_Passenger is not "
             "defined and the driver's chest/femur/neck criteria are empty. See the "
@@ -35,7 +39,7 @@ class USNCAP_Frontal_56kmh(Report):
         p_driver: int = 1
         p_passenger: int = 3
 
-        def __init__(self, report, isomme):
+        def __init__(self, report: Report, isomme: Isomme) -> None:
             super().__init__(report, isomme)
 
             p_driver = isomme.get_test_info("Driver position object 1")
@@ -44,7 +48,9 @@ class USNCAP_Frontal_56kmh(Report):
             self.p_passenger = 1 if self.p_driver != 1 else self.p_passenger
 
             self.criterion_driver = self.Criterion_Driver(report, isomme, p=self.p_driver)
-            self.criterion_passenger = self.Criterion_Passenger(report, isomme, p=self.p_passenger)
+            # Criterion_Passenger is referenced but never defined -- one of the two reasons
+            # this report is a stub (see module docstring). Kept visible rather than deleted.
+            self.criterion_passenger = self.Criterion_Passenger(report, isomme, p=self.p_passenger)  # type: ignore[attr-defined]
 
         def calculation(self) -> None:
             self.criterion_driver.calculate()
@@ -58,15 +64,17 @@ class USNCAP_Frontal_56kmh(Report):
         class Criterion_Driver(Criterion):
             name = "Driver"
 
-            def __init__(self, report, isomme, p):
+            def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                 super().__init__(report, isomme)
 
                 self.p = p
 
                 self.criterion_head = self.Criterion_Head(report, isomme, p=self.p)
-                self.criterion_chest = self.Criterion_Chest(report, isomme, p=self.p)
-                self.criterion_femur = self.Criterion_Femur(report, isomme, p=self.p)
-                self.criterion_neck = self.Criterion_Neck(report, isomme, p=self.p)
+                # Chest/femur/neck are empty `pass` placeholders: they have no calculation()
+                # and do not accept `p`. The other reason this report is a stub.
+                self.criterion_chest = self.Criterion_Chest(report, isomme, p=self.p)  # type: ignore[abstract, call-arg]
+                self.criterion_femur = self.Criterion_Femur(report, isomme, p=self.p)  # type: ignore[abstract, call-arg]
+                self.criterion_neck = self.Criterion_Neck(report, isomme, p=self.p)  # type: ignore[abstract, call-arg]
 
             def calculation(self) -> None:
                 self.criterion_head.calculate()
@@ -80,7 +88,7 @@ class USNCAP_Frontal_56kmh(Report):
             class Criterion_Head(Criterion):
                 name = "Head"
 
-                def __init__(self, report, isomme, p):
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
 
                     self.p = p
@@ -94,7 +102,7 @@ class USNCAP_Frontal_56kmh(Report):
                     ])
 
                 def calculation(self) -> None:
-                    self.channel = calculate_p_head_hic15_ais_3plus(self.isomme.get_channel(f"?{self.p}HEAD0000??ACRA", f"?{self.p}HEADCG00??ACRA"), dummy="H3")
+                    self.channel = calculate_p_head_hic15_ais_3plus(self.require_channel(f"?{self.p}HEAD0000??ACRA", f"?{self.p}HEADCG00??ACRA"), dummy="H3")
                     self.value = np.max(self.channel.get_data())
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=True)  # stars
 

@@ -25,7 +25,7 @@ class Code(str):
                 f"Invalid code '{code}'. Code must be 16 characters long, containing only "
                 "letters, digits and '?' wildcards."
             )
-        return super(Code, cls).__new__(cls, code)
+        return super().__new__(cls, code)
 
     def __init__(self, code: str) -> None:
         super().__init__()

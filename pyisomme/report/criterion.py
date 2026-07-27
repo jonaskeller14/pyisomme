@@ -8,9 +8,15 @@ from pyisomme.errors import MissingData, Status
 import numpy as np
 import logging
 from abc import abstractmethod
+from typing import TYPE_CHECKING, Any, TypeVar
+
+if TYPE_CHECKING:
+    from pyisomme.report.report import Report
 
 
 logger = logging.getLogger(__name__)
+
+T = TypeVar("T")
 
 
 class Criterion:
@@ -22,8 +28,11 @@ class Criterion:
     color: str | tuple | None = None
     status: Status = Status.PENDING
     na_reason: MissingData | None = None
+    report: Report
+    isomme: Isomme
+    p: int
 
-    def __init__(self, report, isomme: Isomme):
+    def __init__(self, report: Report, isomme: Isomme) -> None:
         self.report = report
         self.isomme = isomme
         self.limits = Limits(name=report.name, limit_list=[])
@@ -32,7 +41,7 @@ class Criterion:
         self.limits.limit_list.extend(limit_list)
         self.report.limits[self.isomme].limit_list.extend(limit_list)
 
-    def require(self, value, *what):
+    def require(self, value: T | None, *what: Any) -> T:
         """
         Return ``value`` unless it is ``None``, in which case raise :class:`MissingData`.
 
@@ -44,20 +53,24 @@ class Criterion:
             raise MissingData(*what)
         return value
 
-    def require_channel(self, *code_patterns: str, **kwargs) -> Channel:
+    def require_channel(self, *code_patterns: str, isomme: Isomme | None = None, **kwargs: Any) -> Channel:
         """
         Like ``self.isomme.get_channel(...)`` but raise :class:`MissingData` (naming the
         requested patterns) instead of returning ``None`` when no channel is available.
 
         The requested patterns *are* the criterion's input requirement, so there is no
         separate requirement list to keep in sync.
+
+        ``isomme`` selects a different test than the criterion's own — used by the
+        correlation-style reports that compare against a reference test.
         """
-        channel = self.isomme.get_channel(*code_patterns, **kwargs)
+        source = self.isomme if isomme is None else isomme
+        channel = source.get_channel(*code_patterns, **kwargs)
         if channel is None:
             raise MissingData(*code_patterns)
         return channel
 
-    def require_test_info(self, *labels: str):
+    def require_test_info(self, *labels: str) -> str:
         """Fetch a test-info field, raising :class:`MissingData` if it is absent."""
         value = self.isomme.get_test_info(*labels)
         if value is None:
@@ -83,7 +96,7 @@ class Criterion:
     def calculation(self) -> None:
         pass
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Criterion({self.name if self.name is not None else self.__class__.__name__})"
 
     def get_subcriterion(self, *criterion_types: type[Criterion]) -> Criterion | None:

@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+from pyisomme.isomme import Isomme
 from pyisomme.report.page import Page_Cover, Page_Plot_nxn, Page_Criterion_Values_Chart, Page_Criterion_Values_Table
 from pyisomme.report.report import Report
 from pyisomme.report.criterion import Criterion
@@ -8,19 +11,20 @@ from pyisomme.report.euro_ncap.side_pole import EuroNCAP_Side_Pole
 
 import logging
 import numpy as np
+from typing import Any
 
 
 logger = logging.getLogger(__name__)
 
 
-class UN_Side_Barrier_R95(Report):
+class UN_Side_Barrier_R95(Report["UN_Side_Barrier_R95.Criterion_Overall"]):
     name = "UN-R95 | Barrier Side Impact at 50 km/h"
     protocol = "12.09.2023"
     protocols = {
         "12.09.2023": "Revision 4 (12.09.2023) [references/UN-R95/B04.qtu738801n2c4t17t97571269on1fn63832377126.pdf]"
     }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
         self.pages = [
@@ -38,7 +42,7 @@ class UN_Side_Barrier_R95(Report):
         name = "Overall"
         p: int = 1
 
-        def __init__(self, report, isomme):
+        def __init__(self, report: Report, isomme: Isomme) -> None:
             super().__init__(report, isomme)
 
             p = isomme.get_test_info("Driver position object 1")
@@ -55,7 +59,7 @@ class UN_Side_Barrier_R95(Report):
         class Criterion_Dummy(Criterion):
             name = "Dummy"
 
-            def __init__(self, report, isomme, p):
+            def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                 super().__init__(report, isomme)
 
                 self.p = p
@@ -87,7 +91,7 @@ class UN_Side_Barrier_R95(Report):
             class Criterion_Chest_Lateral_Deflection(Criterion):
                 name = "Chest Lateral Deflection"
 
-                def __init__(self, report, isomme, p):
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
 
                     self.p = p
@@ -99,7 +103,7 @@ class UN_Side_Barrier_R95(Report):
                     ])
 
                 def calculation(self) -> None:
-                    self.channel = self.isomme.get_channel(f"?{self.p}RIBSLE00??DSYC").convert_unit("mm")
+                    self.channel = self.require_channel(f"?{self.p}RIBSLE00??DSYC").convert_unit("mm")
                     self.value = np.min(self.channel.get_data())
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                     self.color = self.limits.get_limit_min_color(self.channel)
@@ -107,7 +111,7 @@ class UN_Side_Barrier_R95(Report):
             class Criterion_Chest_Lateral_VC(Criterion):
                 name = "Chest Lateral VC"
 
-                def __init__(self, report, isomme, p):
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
 
                     self.p = p
@@ -119,8 +123,8 @@ class UN_Side_Barrier_R95(Report):
                         Limit_Fail([f"?{self.p}VCCR00????VEY?", f"?{self.p}VCCRLE????VEY?", f"?{self.p}VCCRRI????VEY?"], func=lambda x: 1, y_unit="m/s", lower=True),
                     ])
 
-                def calculation(self):
-                    self.channel = self.isomme.get_channel(f"?{self.p}VCCRLE00??VEYC").convert_unit("m/s")
+                def calculation(self) -> None:
+                    self.channel = self.require_channel(f"?{self.p}VCCRLE00??VEYC").convert_unit("m/s")
                     self.value = np.min(self.channel.get_data())
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                     self.color = self.limits.get_limit_min_color(self.channel)
@@ -131,7 +135,7 @@ class UN_Side_Barrier_R95(Report):
             class Criterion_Abdomen_Force(Criterion):
                 name = "Abdomen Peak Force"
 
-                def __init__(self, report, isomme, p):
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
 
                     self.p = p
@@ -142,16 +146,17 @@ class UN_Side_Barrier_R95(Report):
                     ])
 
                 def calculation(self) -> None:
-                    self.channel = self.isomme.get_channel(f"?{self.p}ABDOLE00??FOYB").convert_unit("kN")
+                    self.channel = self.require_channel(f"?{self.p}ABDOLE00??FOYB").convert_unit("kN")
                     self.value = np.min(self.channel.get_data())
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                     self.color = self.limits.get_limit_min_color(self.channel)
 
     class Page_Values_Chart(Page_Criterion_Values_Chart):
+        report: UN_Side_Barrier_R95
         name = "Values Chart"
         title = "Values"
 
-        def __init__(self, report):
+        def __init__(self, report: UN_Side_Barrier_R95) -> None:
             super().__init__(report)
 
             self.criteria = {isomme: [
@@ -163,10 +168,11 @@ class UN_Side_Barrier_R95(Report):
             ] for isomme in self.report.isomme_list}
 
     class Page_Values_Table(Page_Criterion_Values_Table):
+        report: UN_Side_Barrier_R95
         name = "Values Table"
         title = "Values"
 
-        def __init__(self, report):
+        def __init__(self, report: UN_Side_Barrier_R95) -> None:
             super().__init__(report)
 
             self.criteria = {isomme: [
@@ -181,13 +187,14 @@ class UN_Side_Barrier_R95(Report):
         pass
 
     class Page_Chest_Lateral_Deflection(Page_Plot_nxn):
+        report: UN_Side_Barrier_R95
         name: str = "Chest Lateral Deflection"
         title: str = "Chest Lateral Deflection"
         nrows: int = 3
         ncols: int = 2
         sharey: bool = True
 
-        def __init__(self, report):
+        def __init__(self, report: UN_Side_Barrier_R95) -> None:
             super().__init__(report)
             self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p}RIBSLEUP??DSYC"],
                                       [f"?{self.report.criterion_overall[isomme].p}RIBSRIUP??DSYC"],
@@ -197,13 +204,14 @@ class UN_Side_Barrier_R95(Report):
                                       [f"?{self.report.criterion_overall[isomme].p}RIBSRILO??DSYC"]] for isomme in self.report.isomme_list}
 
     class Page_Chest_Lateral_VC(Page_Plot_nxn):
+        report: UN_Side_Barrier_R95
         name: str = "Chest Lateral VC"
         title: str = "Chest Lateral VC"
         nrows: int = 3
         ncols: int = 2
         sharey: bool = True
 
-        def __init__(self, report):
+        def __init__(self, report: UN_Side_Barrier_R95) -> None:
             super().__init__(report)
             self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p}VCCRLEUP??VEYC"],
                                       [f"?{self.report.criterion_overall[isomme].p}VCCRRIUP??VEYC"],
@@ -216,13 +224,14 @@ class UN_Side_Barrier_R95(Report):
         pass
 
     class Page_Abdomen_Force(Page_Plot_nxn):
+        report: UN_Side_Barrier_R95
         name: str = "Abdomen Force"
         title: str = "Abdomen Force"
         nrows: int = 3
         ncols: int = 2
         sharey: bool = True
 
-        def __init__(self, report):
+        def __init__(self, report: UN_Side_Barrier_R95) -> None:
             super().__init__(report)
             self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p}ABDOLEFR??FOYB"],
                                       [f"?{self.report.criterion_overall[isomme].p}ABDORIFR??FOYB"],

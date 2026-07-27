@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+from pyisomme.isomme import Isomme
 from pyisomme.report.page import Page_Cover, Page_Criterion_Values_Table
 from pyisomme.report.report import Report
 from pyisomme.report.criterion import Criterion
@@ -9,19 +12,20 @@ from pyisomme.report.euro_ncap.side_pole import EuroNCAP_Side_Pole
 
 import logging
 import numpy as np
+from typing import Any
 
 
 logger = logging.getLogger(__name__)
 
 
-class EuroNCAP_Side_Farside_VTC(Report):
+class EuroNCAP_Side_Farside_VTC(Report["EuroNCAP_Side_Farside_VTC.Criterion_Overall"]):
     name = "Euro NCAP | Virtual Far Side Simulations"
     protocol = "1.0"
     protocols = {
         "1.0": "Version 1.0 (15.06.2023) [references/Euro-NCAP/euro-ncap-vtc-simulation-and-assessment-protocol-v10.pdf]"
     }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
         self.pages = [
@@ -36,10 +40,11 @@ class EuroNCAP_Side_Farside_VTC(Report):
         ]
 
     class Criterion_Overall(Criterion):
+        report: EuroNCAP_Side_Farside_VTC
         name = "Overall"
         p: int = 1
 
-        def __init__(self, report, isomme):
+        def __init__(self, report: Report, isomme: Isomme) -> None:
             super().__init__(report, isomme)
 
             p_driver = isomme.get_test_info("Driver position object 1")
@@ -59,10 +64,11 @@ class EuroNCAP_Side_Farside_VTC(Report):
             ])
 
         class Criterion_Validation_ISO_Scores(Criterion):
+            report: EuroNCAP_Side_Farside_VTC
             name = "Validation ISO Scores"
             criteria_iso_score: list[Criterion]
 
-            def __init__(self, report, isomme, p):
+            def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                 super().__init__(report, isomme)
 
                 self.p = p
@@ -135,9 +141,11 @@ class EuroNCAP_Side_Farside_VTC(Report):
 
             class Criterion_Individual_ISO_Score(Criterion):
                 name = "Individual ISO-Score"
-                ref_channel: Channel
+                # Deliberately optional: a missing channel leaves the score at nan rather
+                # than marking the criterion n/a (see the guard in calculation()).
+                ref_channel: Channel | None = None
 
-                def __init__(self, report, isomme, p: int):
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
 
                     self.p = p
@@ -148,7 +156,7 @@ class EuroNCAP_Side_Farside_VTC(Report):
                     ])
 
                 def calculation(self) -> None:
-                    if None not in (self.channel, self.ref_channel):
+                    if self.channel is not None and self.ref_channel is not None:
                         self.value = Correlation_ISO18571(reference_channel=self.ref_channel,
                                                           comparison_channel=self.channel).overall_rating()
                         self.rating = True if self.value >= 0.5 else False
@@ -251,6 +259,7 @@ class EuroNCAP_Side_Farside_VTC(Report):
                     super().calculation()
 
             class Criterion_B_Pillar_Acceleration_X(Criterion_Individual_ISO_Score):
+                report: EuroNCAP_Side_Farside_VTC
                 name = "B-Pillar Acceleration X"
 
                 def calculation(self) -> None:
@@ -259,6 +268,7 @@ class EuroNCAP_Side_Farside_VTC(Report):
                     super().calculation()
 
             class Criterion_B_Pillar_Acceleration_Y(Criterion_Individual_ISO_Score):
+                report: EuroNCAP_Side_Farside_VTC
                 name = "B-Pillar Acceleration Y"
 
                 def calculation(self) -> None:
@@ -267,6 +277,7 @@ class EuroNCAP_Side_Farside_VTC(Report):
                     super().calculation()
 
             class Criterion_B_Pillar_Acceleration_Z(Criterion_Individual_ISO_Score):
+                report: EuroNCAP_Side_Farside_VTC
                 name = "B-Pillar Acceleration Z"
 
                 def calculation(self) -> None:
@@ -287,7 +298,7 @@ class EuroNCAP_Side_Farside_VTC(Report):
                 values: np.ndarray
                 weights: np.ndarray
 
-                def __init__(self, report, isomme, *criteria_individual_iso_score):
+                def __init__(self, report: Report, isomme: Isomme, *criteria_individual_iso_score: Criterion) -> None:
                     super().__init__(report, isomme)
 
                     self.criteria_individual_iso_score = criteria_individual_iso_score
@@ -298,10 +309,11 @@ class EuroNCAP_Side_Farside_VTC(Report):
                     ])
 
                 def calculation(self) -> None:
+                    channels = [self.require(c.channel, c.name) for c in self.criteria_individual_iso_score]
                     self.values = np.array([c.value for c in self.criteria_individual_iso_score])
 
-                    unit = self.criteria_individual_iso_score[0].channel.unit
-                    channel_abs_max = np.array([np.max(np.abs(c.channel.get_data(unit=unit))) for c in self.criteria_individual_iso_score])
+                    unit = channels[0].unit
+                    channel_abs_max = np.array([np.max(np.abs(channel.get_data(unit=unit))) for channel in channels])
                     self.weights = np.array([channel_abs_max_i / np.sum(channel_abs_max) for channel_abs_max_i in channel_abs_max])
 
                     self.value = np.dot(self.weights, self.values)
@@ -326,7 +338,7 @@ class EuroNCAP_Side_Farside_VTC(Report):
         class Criterion_Validation_Injury_Criteria(Criterion):
             name = "Validation Injury Criteria"
 
-            def __init__(self, report, isomme, p):
+            def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                 super().__init__(report, isomme)
 
                 self.p = p
@@ -352,14 +364,14 @@ class EuroNCAP_Side_Farside_VTC(Report):
                 r_ac_test: float = np.nan
                 r_ac_sim: float = np.nan
 
-                def __init__(self, report, isomme, p):
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
 
                     self.p = p
 
                 def calculation(self) -> None:
-                    self.channel = self.isomme.get_channel(f"?{self.p}HICR0015??00RX", f"?{self.p}HICRCG15??00RX")
-                    self.ref_channel = self.report.isomme_list[0].get_channel(f"?{self.p}HICR0015??00RX", f"?{self.p}HICRCG15??00RX")
+                    self.channel = self.require_channel(f"?{self.p}HICR0015??00RX", f"?{self.p}HICRCG15??00RX")
+                    self.ref_channel = self.require_channel(f"?{self.p}HICR0015??00RX", f"?{self.p}HICRCG15??00RX", isomme=self.report.isomme_list[0])
 
                     self.ac_test = self.ref_channel.get_data()[0]
                     self.ac_sim = self.channel.get_data()[0]
@@ -381,14 +393,14 @@ class EuroNCAP_Side_Farside_VTC(Report):
                 r_ac_test: float = np.nan
                 r_ac_sim: float = np.nan
 
-                def __init__(self, report, isomme, p):
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
 
                     self.p = p
 
                 def calculation(self) -> None:
-                    self.channel = self.isomme.get_channel(f"?{self.p}HEAD003C??ACRX", f"?{self.p}HEADCG3C??ACRX")
-                    self.ref_channel = self.report.isomme_list[0].get_channel(f"?{self.p}HEAD003C??ACRX", f"?{self.p}HEADCG3C??ACRX")
+                    self.channel = self.require_channel(f"?{self.p}HEAD003C??ACRX", f"?{self.p}HEADCG3C??ACRX")
+                    self.ref_channel = self.require_channel(f"?{self.p}HEAD003C??ACRX", f"?{self.p}HEADCG3C??ACRX", isomme=self.report.isomme_list[0])
 
                     self.ac_test = self.ref_channel.get_data(unit=g0)[0]
                     self.ac_sim = self.channel.get_data(unit=g0)[0]
@@ -403,12 +415,13 @@ class EuroNCAP_Side_Farside_VTC(Report):
 
 
     class Page_Validation_ISO_Score_Table(Page_Criterion_Values_Table):
+        report: EuroNCAP_Side_Farside_VTC
         name = "Validation ISO-Score Table"
         title = "Validation ISO-Score"
         row_label = staticmethod(lambda criterion: f"{criterion.name}")
         cell_text = staticmethod(lambda criterion: f"{criterion.value:.1%}")
 
-        def __init__(self, report):
+        def __init__(self, report: EuroNCAP_Side_Farside_VTC) -> None:
             super().__init__(report)
 
             self.criteria = {isomme: [
@@ -436,12 +449,13 @@ class EuroNCAP_Side_Farside_VTC(Report):
             ] for isomme in self.report.isomme_list[1:]}
 
     class Page_Validation_Injury_Criteria_Percentage_Table(Page_Criterion_Values_Table):
+        report: EuroNCAP_Side_Farside_VTC
         name = "Validation Injury-Criteria Percentage Table"
         title = "Validation Injury-Criteria Percentage"
         row_label = staticmethod(lambda criterion: f"{criterion.name}")
         cell_text = staticmethod(lambda criterion: f"{criterion.r_ac_sim:.1%}\n{criterion.value:.1%}")
 
-        def __init__(self, report):
+        def __init__(self, report: EuroNCAP_Side_Farside_VTC) -> None:
             super().__init__(report)
 
             self.criteria = {isomme: [

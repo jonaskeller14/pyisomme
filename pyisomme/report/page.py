@@ -11,23 +11,28 @@ from matplotlib.colors import to_rgb
 import numpy as np
 import io
 import os
+from pptx.presentation import Presentation
 from pptx.util import Inches
 from abc import abstractmethod
 from datetime import datetime
-from typing import Callable
+from typing import TYPE_CHECKING, Any, Callable
+
+if TYPE_CHECKING:
+    from pyisomme.report.report import Report
 
 
 class Page:
     name: str
+    report: Report[Any]
 
-    def __init__(self, report):
+    def __init__(self, report: Report[Any]) -> None:
         self.report = report
 
     @abstractmethod
-    def construct(self, presentation) -> None:
+    def construct(self, presentation: Presentation) -> None:
         pass
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Page({self.name})"
 
 
@@ -36,12 +41,12 @@ class Page_Cover(Page):
     title: str
     subtitle: str
 
-    def __init__(self, report):
+    def __init__(self, report: Report[Any]) -> None:
         super().__init__(report)
         self.title = report.title
-        self.subtitle = f'{report.name}\n{" | ".join([isomme.test_number for isomme in report.isomme_list])}'
+        self.subtitle = f'{report.name}\n{" | ".join([str(isomme.test_number) for isomme in report.isomme_list])}'
 
-    def construct(self, presentation):
+    def construct(self, presentation: Presentation) -> None:
         title_slide_layout = presentation.slide_layouts[0]
         slide = presentation.slides.add_slide(title_slide_layout)
         slide.shapes.title.text = self.title
@@ -52,7 +57,7 @@ class Page_Content(Page):
     title: str | None = None
     footer: str = f"{datetime.now().strftime('%d.%m.%Y')} | {os.getlogin()}"
 
-    def construct(self, presentation) -> None:
+    def construct(self, presentation: Presentation) -> None:
         title_slide_layout = presentation.slide_layouts[1]
         slide = presentation.slides.add_slide(title_slide_layout)
         slide.shapes.title.text = self.title
@@ -76,11 +81,11 @@ class Page_Criterion_Table(Page_Content):
     row_label: Callable
     cell_text: Callable
 
-    def __init__(self, report):
+    def __init__(self, report: Report[Any]) -> None:
         super().__init__(report)
         self.criteria = {}
 
-    def construct(self, presentation):
+    def construct(self, presentation: Presentation) -> None:
         super().construct(presentation)
         slide = presentation.slides[-1]
 
@@ -135,11 +140,11 @@ class Page_Criterion_Rating_Table(Page_Criterion_Table):
 class Page_Criterion_Values_Chart(Page_Content):
     criteria: dict[Isomme, list[Criterion]]
 
-    def __init__(self, report):
+    def __init__(self, report: Report[Any]) -> None:
         super().__init__(report)
         self.criteria = {}
 
-    def construct(self, presentation):
+    def construct(self, presentation: Presentation) -> None:
         super().construct(presentation)
         slide = presentation.slides[-1]
 
@@ -168,8 +173,8 @@ class Page_Criterion_Values_Chart(Page_Content):
         for idx, c1 in enumerate(list(self.criteria.values())[0]):
             for c2_list in list(self.criteria.values())[1:]:
                 c2 = c2_list[idx]
-                if None in (c1.channel, c2.channel):
-                    x_limit1 = x_limit2 = 0
+                if c1.channel is None or c2.channel is None:
+                    x_limit1 = x_limit2 = 0.0
                 else:
                     x_limit1 = c1.limits.get_limit_min_x(c1.channel)
                     x_limit2 = c2.limits.get_limit_min_x(c2.channel)
@@ -180,13 +185,13 @@ class Page_Criterion_Values_Chart(Page_Content):
         # Calculate Column Factor
         col_factors = np.nanmax(1.1 * np.abs(line_values), axis=0)
 
-        for idx_isomme, criteria in enumerate(self.criteria.values()):
+        for criteria in self.criteria.values():
             for idx_col, criterion in enumerate(criteria):
                 if not criterion.limits.limit_list:
                     continue
 
                 if criterion.channel is None:
-                    x_limit = 0
+                    x_limit = 0.0
                 else:
                     x_limit = criterion.limits.get_limit_min_x(criterion.channel)
 
@@ -195,14 +200,14 @@ class Page_Criterion_Values_Chart(Page_Content):
                     col_factors[idx_col] = np.nanmax([col_factor_limit, col_factors[idx_col]])
 
         # Plot Bars
-        for idx_isomme, (isomme, criteria) in enumerate(self.criteria.items()):
+        for idx_isomme, criteria in enumerate(self.criteria.values()):
             for idx_col, criterion in enumerate(criteria):
                 limits = limit_list_sort(criterion.limits.limit_list, sym=True)
 
                 limit_values = []
-                for idx, limit in enumerate(limits):
+                for limit in limits:
                     if criterion.channel is None:
-                        x_limit = 0
+                        x_limit = 0.0
                     else:
                         x_limit = criterion.limits.get_limit_min_x(criterion.channel)
                     limit_values.append(abs(limit.func(x_limit)) if not np.isinf(abs(limit.func(x_limit))) else col_factors[idx_col])
@@ -255,7 +260,7 @@ class Page_Criterion_Values_Chart(Page_Content):
 
 
 class Page_Plot_nxn(Page_Content):
-    channels: dict[Isomme, list[list[Channel | str]]]
+    channels: dict[Isomme, list[list[Channel | str | None]]]
     nrows: int = 1
     ncols: int = 1
     sharex: bool = False
@@ -263,12 +268,12 @@ class Page_Plot_nxn(Page_Content):
     xlim: tuple[float | int, float | int] | None = None
     ylim: tuple[float | int, float | int] | None = None
 
-    def __init__(self, report):
+    def __init__(self, report: Report[Any]) -> None:
         super().__init__(report)
         if self.title is None:
             self.title = self.name
 
-    def construct(self, presentation):
+    def construct(self, presentation: Presentation) -> None:
         super().construct(presentation)
         slide = presentation.slides[-1]
 
@@ -299,7 +304,7 @@ class Page_Plot_nxn(Page_Content):
 
 
 class Page_Line_Table(Page_Content):
-    channels: dict[Isomme, list[list[Channel | str]]]
+    channels: dict[Isomme, list[list[Channel | str | None]]]
     cell_texts: list[np.ndarray | list[list]]
     row_labels: list[np.ndarray | list]
     col_labels: list[np.ndarray | list]
@@ -313,7 +318,7 @@ class Page_Line_Table(Page_Content):
     xlim: tuple[float | int, float | int] | None = None
     ylim: tuple[float | int, float | int] | None = None
 
-    def construct(self, presentation):
+    def construct(self, presentation: Presentation) -> None:
         super().construct(presentation)
         slide = presentation.slides[-1]
 
@@ -352,11 +357,21 @@ class Page_OLC(Page_Line_Table):
     nrows: int = 1
     ncols: int = 2
 
-    def __init__(self, report):
+    @staticmethod
+    def _olc_cell_text(isomme: Isomme) -> str:
+        # NOTE: the availability check deliberately uses a *narrower* pattern set than the
+        # lookup it guards — a test carrying only "10VEH0OLC??VEXX" renders as nan. Kept
+        # as-is; see the progress log (deferred item D7).
+        channel = isomme.get_channel("10VEH0OLC??VEXX", "14BPIL0OLC??VEXX", "10SEAT0OLC??VEXX")
+        if channel is None or isomme.get_channel("14BPIL0OLC??VEXX", "10SEAT0OLC??VEXX") is None:
+            return f"{np.nan:.2f}"
+        return f"{channel.get_data(unit=Unit(g0))[0]:.2f}"
+
+    def __init__(self, report: Report[Any]) -> None:
         super().__init__(report)
 
         self.channels = {isomme: [[isomme.get_channel("10VEHCCG00??VEXA", "14BPIL??????VEXA", "10SEATLERE??VEXA"),
                                    isomme.get_channel("10VEH0OLC??VEXA", "14BPIL0OLC??VEXA", "10SEAT0OLC??VEXA")]] for isomme in self.report.isomme_list}
-        self.cell_texts = [[[f'{isomme.get_channel("10VEH0OLC??VEXX", "14BPIL0OLC??VEXX", "10SEAT0OLC??VEXX").get_data(unit=Unit(g0))[0] if isomme.get_channel("14BPIL0OLC??VEXX", "10SEAT0OLC??VEXX") is not None else np.nan:.2f}'] for isomme in self.report.isomme_list]]
+        self.cell_texts = [[[self._olc_cell_text(isomme)] for isomme in self.report.isomme_list]]
         self.col_labels = [["OLC [g]"]]
         self.row_labels = [[isomme.test_number for isomme in self.report.isomme_list]]

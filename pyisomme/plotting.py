@@ -50,7 +50,7 @@ class Plot_Line(Plot):
     legend: bool = True
 
     def __init__(self,
-                 channels: dict[Isomme, list[list[Channel | str]]],
+                 channels: dict[Isomme, list[list[Channel | str | None]]],
                  nrows: int | None = None,
                  ncols: int | None = None,
                  xlim: tuple[float, float] | None = None,
@@ -354,7 +354,7 @@ class Plot_Table(Plot):
 
 class Plot_Line_Table(Plot_Line, Plot_Table):
     def __init__(self,
-                 channels: dict[Isomme, list[list[Channel | str]]],
+                 channels: dict[Isomme, list[list[Channel | str | None]]],
                  cell_texts: list[np.ndarray | list[list]],
                  row_labels: list[np.ndarray | list],
                  col_labels: list[np.ndarray | list],

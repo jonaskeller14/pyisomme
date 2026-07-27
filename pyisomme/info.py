@@ -35,7 +35,7 @@ class Info(list):
             if o_name not in self:
                 self[o_name] = o_value
             else:
-                for idx, (name, value) in enumerate(self):
+                for idx, (name, _value) in enumerate(self):
                     if name == o_name:
                         self[idx] = (o_name, o_value)
         return self

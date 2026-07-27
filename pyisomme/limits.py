@@ -25,8 +25,9 @@ class Limit:
     color: str = "black"
     code_patterns: list[str] | None = None
     func: Callable
-    x_unit: str | Unit | None = "s"
-    y_unit: str | Unit | None = "1"
+    # ``int`` is accepted because dimensionless limits are written ``y_unit=1``.
+    x_unit: str | Unit | int | None = "s"
+    y_unit: str | Unit | int | None = "1"
     linestyle: str = "-"
     lower: bool | None = None
     upper: bool | None = None
@@ -39,8 +40,8 @@ class Limit:
                  rating: float | None = None,
                  lower: bool | None = None,
                  upper: bool | None = None,
-                 x_unit: str | Unit | None = None,
-                 y_unit: str | Unit | None = None):
+                 x_unit: str | Unit | int | None = None,
+                 y_unit: str | Unit | int | None = None):
         if code_patterns is not None:
             self.code_patterns = code_patterns
         if self.code_patterns is None:
@@ -104,10 +105,12 @@ class Limit:
 
 
 class Limits:
-    name: str
+    # None is accepted because criteria pass ``Report.name`` straight through and the
+    # base ``Report`` leaves it unset. The container name is not rendered anywhere.
+    name: str | None
     limit_list: list
 
-    def __init__(self, name: str = "Unnamed Limits", limit_list: list | None = None):
+    def __init__(self, name: str | None = "Unnamed Limits", limit_list: list | None = None):
         self.name = name
         self.limit_list = [] if limit_list is None else limit_list
 
@@ -184,12 +187,12 @@ class Limits:
         if interpolate:
             limit_ratings = []
             limit_data = {limit: limit.get_data(channel_times, x_unit="s", y_unit=channel.unit) for limit in limits}
-            for idx, (channel_time, channel_value) in enumerate(zip(channel_times, channel_values)):
+            for idx, (_channel_time, channel_value) in enumerate(zip(channel_times, channel_values)):
                 limit_ratings.append(np.interp(channel_value, [limit_data[limit][idx] for limit in limits], [limit.rating for limit in limits]))
         else:
             limit_ratings = []
             limit_data = {limit: limit.get_data(channel_times, x_unit="s", y_unit=channel.unit) for limit in limits}
-            for idx, (channel_time, channel_value) in enumerate(zip(channel_times, channel_values)):
+            for idx, (_channel_time, channel_value) in enumerate(zip(channel_times, channel_values)):
                 for limit, data in limit_data.items():
                     if limit.upper and channel_value < data[idx]:
                         limit_ratings.append(limit.rating)
@@ -243,7 +246,7 @@ class Limits:
 
         limits_with_lower_rating = np.zeros_like(limit_data, dtype=bool)
         limits_with_higher_rating = np.zeros_like(limit_data, dtype=bool)
-        for idx, (limit, data) in enumerate(zip(limit_list, limit_data)):
+        for idx, (limit, _data) in enumerate(zip(limit_list, limit_data)):
             limits_with_lower_rating[idx, :] = limit.rating < np.array([other_limit.rating for other_limit in limits])
             limits_with_higher_rating[idx, :] = limit.rating > np.array([other_limit.rating for other_limit in limits])
 
@@ -314,7 +317,7 @@ class Limits:
         return f"Limits({self.name})"
 
 
-def limit_list_sort(limit_list: list[Limit], x: list = [0], sym=False) -> list:
+def limit_list_sort(limit_list: list[Limit], x: list | None = None, sym=False) -> list:
     # TODO: convert unit to unit of first limit
     # TODO: add argument x to evaluate at different position than 0 (default=0)
     # TODO: evaluate at multiple positions an only consider positions where values are not the same and take order with most counts

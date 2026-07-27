@@ -10,7 +10,7 @@ from pyisomme.sources import read_text_with_fallback, FolderSource, ZipSource, T
 
 class TestReadTextWithFallback(unittest.TestCase):
     def test_utf8(self):
-        self.assertEqual(read_text_with_fallback("Prüfung".encode("utf-8")), "Prüfung")
+        self.assertEqual(read_text_with_fallback("Prüfung".encode()), "Prüfung")
 
     def test_iso_8859_1_fallback(self):
         # 0xFC ("ü") is invalid UTF-8 but valid ISO-8859-1 -> must fall back, not raise.

@@ -42,7 +42,7 @@ class ArchiveSource(ABC):
         """Return one member decoded to text via :func:`read_text_with_fallback`."""
         return read_text_with_fallback(self.read_bytes(name))
 
-    def close(self) -> None:
+    def close(self) -> None:  # noqa: B027 - deliberate no-op default, not every source holds a handle
         """Release any underlying handle. No-op by default."""
 
     def __enter__(self) -> ArchiveSource:

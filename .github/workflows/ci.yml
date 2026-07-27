@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   lint:
-    name: Lint (ruff)
+    name: Lint (ruff + mypy + import smoke test)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -20,15 +20,26 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
 
-      - name: Install ruff
-        run: pip install ruff
+      # mypy needs the real dependency signatures and the import smoke test needs
+      # the package importable; both come from the dev extra (which pins ruff/mypy).
+      - name: Install package with dev extras
+        run: pip install -e ".[dev]"
 
-      # Non-blocking for now: report style/lint issues without failing the
-      # workflow while the codebase doesn't yet have a lint baseline.
+      # Blocking since refactor step 3: the baseline is clean, keep it that way.
       - name: Run ruff
-        continue-on-error: true
         run: ruff check .
+
+      # Scoped to pyisomme/report/ by [tool.mypy] in pyproject.toml.
+      - name: Run mypy
+        run: mypy
+
+      # The one report test that needs no fixture data from data/: it imports every
+      # module under pyisomme/report/ and checks the protocol subpackage re-exports.
+      - name: Import smoke test
+        run: python -m unittest tests.test_report_modules
 
   test:
     name: Test (py${{ matrix.python-version }})

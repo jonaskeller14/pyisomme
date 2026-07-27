@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pyisomme import Channel
+from pyisomme.isomme import Isomme
 from pyisomme.report.page import Page_Cover, Page_Criterion_Table
 from pyisomme.report.report import Report
 from pyisomme.report.criterion import Criterion
@@ -8,12 +9,17 @@ from pyisomme.correlation import Correlation_ISO18571
 
 import logging
 import numpy as np
+from typing import Any, cast
 
 
 logger = logging.getLogger(__name__)
 
 
-class Correlation(Report):
+def _curve_sort_key(criterion: Correlation.Criterion_Overall.Criterion_Curve_Correlation) -> str:
+    return str(criterion.channel_r.code) if criterion.channel_r is not None else ""
+
+
+class Correlation(Report["Correlation.Criterion_Overall"]):
     name = "Correlation"
     protocol = "ISO-18571:2024"
     protocols = {
@@ -21,7 +27,7 @@ class Correlation(Report):
                           "[https://www.iso.org/standard/85791.html][https://openvt.eu/validation-metrics/ISO18571]",
     }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
         self.pages = [
@@ -33,9 +39,9 @@ class Correlation(Report):
         name = "Overall"
         is_reference: bool | None = None
         is_comparison: bool | None = None
-        criteria: list
+        criteria: list[Correlation.Criterion_Overall.Criterion_Curve_Correlation]
 
-        def __init__(self, report, isomme):
+        def __init__(self, report: Report, isomme: Isomme) -> None:
             super().__init__(report, isomme)
 
             isomme_r = self.report.isomme_list[0]
@@ -51,7 +57,7 @@ class Correlation(Report):
                                                                       channel_r=isomme_r.get_channel(channel_r.code.set(filter_class="D")),
                                                                       channel_c=isomme_c.get_channel(channel_r.code.set(filter_class="D"), calculate=False, integrate=False, differentiate=False)))
 
-        def calculation(self):
+        def calculation(self) -> None:
             if not self.is_comparison:
                 return
 
@@ -65,7 +71,7 @@ class Correlation(Report):
             channel_r: Channel | None = None
             channel_c: Channel | None = None
 
-            def __init__(self, report, isomme, channel_r: Channel, channel_c: Channel):
+            def __init__(self, report: Report, isomme: Isomme, channel_r: Channel | None, channel_c: Channel | None) -> None:
                 self.name = f"{channel_c.code if channel_c is not None else np.nan}"
 
                 super().__init__(report, isomme)
@@ -73,19 +79,22 @@ class Correlation(Report):
                 self.channel_r = channel_r
                 self.channel_c = channel_c
 
-            def calculation(self):
+            def calculation(self) -> None:
                 if self.channel_r is not None and self.channel_c is not None and self.channel_r is not self.channel_c:
                     self.value = Correlation_ISO18571(reference_channel=self.channel_r,
                                                       comparison_channel=self.channel_c).overall_rating()
                     self.color = "green" if self.value > 0.75 else "orange" if self.value > 0.5 else "red"
 
     class Page_Correlation_Overall_Rating_Table(Page_Criterion_Table):
+        report: Correlation
         name = "Correlation Overall Rating Table"
         title = "Correlation Overall Rating"
         row_label = staticmethod(lambda criterion: f"{criterion.name}")
         cell_text = staticmethod(lambda criterion: f"{criterion.value:.1%}")
 
-        def __init__(self, report):
+        def __init__(self, report: Correlation) -> None:
             super().__init__(report)
 
-            self.criteria = {isomme: sorted(self.report.criterion_overall[isomme].criteria, key=lambda criterion: criterion.channel_r.code) for isomme in self.report.isomme_list}
+            self.criteria = {isomme: cast("list[Criterion]",
+                                          sorted(self.report.criterion_overall[isomme].criteria, key=_curve_sort_key))
+                             for isomme in self.report.isomme_list}

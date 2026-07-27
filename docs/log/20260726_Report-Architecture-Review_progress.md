@@ -15,7 +15,7 @@ what was done, what was decided, and what was deliberately left alone.
 | 0 | Fix and standardise the Python environment | ☑ done | `refactor/step-0-env` |
 | 1 | Safety net: golden tests + import smoke test | ⚠ done with deviations | `refactor/step-1-safety-net` |
 | 2 | Fix known defects (Appendix A1, A5, A6, A9) | ⚠ done with deviations | `refactor/step-2-known-defects` |
-| 3 | Typing and lint (P5) | ☐ todo | |
+| 3 | Typing and lint (P5) | ⚠ done with deviations | `refactor/step-3-typing-lint` |
 | 4 | Manual inputs as a declared concept (P11) | ☐ todo | |
 | 5 | Limit scales: helpers + equivalence proof (P3a) | ☐ todo | |
 | 6 | `PeakCriterion` + migrate leaves (P4 + P3b) | ☐ todo | |
@@ -60,6 +60,8 @@ Things noticed mid-step that belong to a later step (or to no step at all). Reco
 | D4 | `us_ncap/side_mdb.py` and `us_ncap/side_pole.py` contain nothing but two unused imports — no report class at all. Left untouched in Step 2 (ruff will flag the unused imports). | 2 | Step 3 (lint) — or delete them |
 | D5 | `Criterion` declares `calculation()` `@abstractmethod` but does **not** use `ABCMeta`, so it is not enforced: `class Criterion_Chest(Criterion): pass` instantiates happily and only fails at calculate time. Several such empty placeholders exist in `us_ncap/frontal_56kmh.py`. | 2 | Step 7 (framework) |
 | D6 | `USNCAP.__init__` still advertises five load-case parameters (`frontal_56kmh`, `frontal_mpdb`, `side_pole`, `side_barrier`, `side_farside`) that no `us_ncap` module implements. Signature left as-is because narrowing it would be guessing at the intended US-NCAP structure. | 2 | whoever finishes US-NCAP |
+| D7 | `Page_OLC` (`page.py`) guards its OLC lookup with a **narrower** pattern set than the lookup it protects: it dereferences `get_channel("10VEH0OLC??VEXX", "14BPIL0OLC??VEXX", "10SEAT0OLC??VEXX")` but only checks `get_channel("14BPIL0OLC??VEXX", "10SEAT0OLC??VEXX")`. A test carrying only the `10VEH…` channel therefore renders `nan` although the data is there. Behaviour preserved verbatim in Step 3 (moved into `Page_OLC._olc_cell_text` with a NOTE); it is a page-content bug, not a typing one. | 3 | Step 11 (pages select from the tree) |
+| D8 | Running **all 13** tests of `tests.test_report` in one process (`PYISOMME_SLOW=1 … -m unittest tests.test_report`) dies with a Windows stack overflow (exit `0xC00000FD`) right after `test_EuroNCAP_Side_Pole`. **Pre-existing** — reproduced identically on the Step-2 tip (`a0d55d4`) in a clean worktree. Every one of the 13 passes when run alone, and `discover -s tests` (which skips the slow four) is unaffected. Likely resource exhaustion across ~200 matplotlib figures / pptx exports in one interpreter. | 3 | unassigned — needs a real diagnosis, not a refactor step |
 
 ---
 
@@ -457,3 +459,163 @@ now **empty**; the three `@unittest.skip`s in `tests/test_report.py` (`test_Euro
 - CI (A14) is still `continue-on-error: true` on both jobs and only triggers on `master`; Step 3 owns
   making the lint job blocking and adding `tests/test_report_modules.py` to it — that test needs no
   fixtures and, as of this step, passes with both skip lists empty.
+
+---
+
+### Step 3 — Typing and lint (P5)
+
+**Date:** 2026-07-27 · **Branch:** `refactor/step-3-typing-lint` (from the Step 2 tip `a0d55d4`) ·
+**Commit(s):** see branch tip
+**Outcome:** done with deviations (three, listed below) — plus one **incident**, see the last section.
+
+**What was implemented**
+
+- **`Report` is generic in its overall criterion.** `class Report(Generic[C])` with
+  `criterion_overall: dict[Isomme, C]` and a typed `overall(isomme) -> C`. All 14 concrete reports that
+  own a `Criterion_Overall` now declare `class X(Report["X.Criterion_Overall"])`. The string forward-ref
+  to an inner class works at runtime on 3.9 (`Generic.__class_getitem__` accepts `str`) and mypy resolves
+  it — verified before adopting it. One `cast(C, self.Criterion_Overall(...))` in `Report.__init__` is the
+  price: the language cannot say "this inner class is `type[C]`".
+- **Every signature under `pyisomme/report/` is annotated** — `disallow_untyped_defs` is on and there are
+  **0** unannotated defs left (468 `no-untyped-def` at the start). 297 `__init__(self, report: …)`, all
+  `calculation(self) -> None`, all `construct(self, presentation: Presentation) -> None`.
+- **`require_channel` migration (F3).** 104 call sites in report modules now use
+  `self.require_channel(...)` instead of `self.isomme.get_channel(...)`. `require_channel` gained an
+  `isomme=` keyword so the VTC report's reference-test lookups can use it too. Measured effect on a full
+  `PYISOMME_SLOW=1 tests.test_report` log: **94 `AttributeError: 'NoneType' …` tracebacks before → 0 after.**
+  Only 16 raw `get_channel` calls remain in report code, all in `side_farside_vtc`'s
+  `Criterion_Individual_ISO_Score` subclasses, which *deliberately* tolerate a missing channel (see below).
+- **95 `report: <ConcreteReport>` narrowings** on the `Page`/`Criterion` classes that walk
+  `report.criterion_overall` / `report.Criterion_Overall`. This is what makes the F2 chains checkable.
+- **`pyproject.toml`:** `[tool.mypy]` scoped to `pyisomme/report/` (core modules analysed but silenced via
+  `follow_imports = "silent"`), `[tool.ruff]` with `E`/`F`/`W`/`B`/`UP`, `mypy`/`ruff` added to the `dev`
+  extra, `py.typed` created and added to `package-data`.
+- **CI:** the lint job installs the dev extra and now runs **ruff, mypy and `tests/test_report_modules.py`
+  blocking** (`continue-on-error` removed). The test job stays non-blocking — `data/` is still untracked.
+- **`CLAUDE.md`:** new "Static checking" section documenting the scoping, the generic `Report[C]` pattern,
+  the `require_channel` rule and the known `tests.test_report` crash.
+
+**Decisions taken**
+
+- **Criterion `__init__` takes the base `Report`, not the concrete report.** ~25 criterion *and page*
+  classes are reused across reports (`EuroNCAP_Side_Barrier` borrows `EuroNCAP_Side_Pole`'s pages,
+  `frontal_mpdb` borrows `frontal_50kmh`'s criteria, …). Narrowing their parameter is simply false, so
+  those classes keep `report: Report` and their tree-walks stay unchecked. That is F8/F7 duplication,
+  owned by Steps 9–11; typing exposes it rather than papering over it.
+- **`report:` narrowing is applied per class, not globally.** Only classes that actually dereference the
+  criterion tree get it. The alternative (making `Page`/`Criterion` generic in the report type) would have
+  meant ~300 noisier declarations for the same result.
+- **`E501` is not enforced.** The repo's longest line is 261 chars and the long ones are channel-pattern
+  one-liners in `calculate.py`/`providers.py` — reformatting them is neither this step's scope nor
+  obviously an improvement. Line length is left to a future formatter decision; every other `E`/`F`/`W`/
+  `B`/`UP` rule is on and clean. `docs/` (notebooks) is excluded from ruff.
+- **`ANN` was not enabled** although the plan mentions it. mypy's `disallow_untyped_defs` already covers
+  exactly what `ANN` would add for `report/`, and `ANN` additionally demands annotations on lambdas, of
+  which the page classes have many. Recorded rather than improvised.
+- **The `us_ncap` stub's known breakage is now three `# type: ignore[…]` comments**, each naming the
+  defect (undefined `Criterion_Passenger`; `pass`-bodied `Criterion_Chest/Femur/Neck` that are abstract
+  and reject `p`). With `warn_unused_ignores = true` these are staleness guards, the same trick
+  `BROKEN_MODULES` plays in `tests/test_report_modules.py`.
+- **`us_ncap/side_mdb.py` and `side_pole.py` (D4) were kept, not deleted.** Ruff removed their two unused
+  imports, which left them empty; each now carries a docstring saying it is a placeholder, so the `USNCAP`
+  docstring that points at them stays true.
+- **`side_farside_vtc`'s guarded channel lookups were left alone.** `Criterion_Individual_ISO_Score`
+  explicitly tolerates a missing channel (score stays `nan`, status `OK`). Converting it to
+  `require_channel` would turn `OK` into `NA` — a *downgrade* under the golden net's status ordering, i.e.
+  a behaviour change with no mandate. Only the annotation (`ref_channel: Channel | None = None`) and the
+  guard style (`None not in (…)` → explicit `is not None`, so mypy can narrow) changed. The two
+  *unguarded* classes in the same file (`Criterion_HIC_15`, `Criterion_Head_a3ms`) were migrated.
+
+**Behaviour changes**
+
+1. **`Status.ERROR` → `Status.NA` at 51 criterion nodes** in the golden set (frontal_50kmh + MPDB). This is
+   the intended `require_channel` effect: a missing channel is now "n/a, naming the pattern" instead of a
+   swallowed `AttributeError` logged as a bug. No `value`, `rating` or `color` moved with it.
+2. **A real defect found by mypy and fixed:** `frontal_mpdb.py` (MPDB passenger head) read
+   `self.rating = np.value = np.min([...])` — `np.value`, not `self.value`. It was assigning an attribute
+   **onto the numpy module** and leaving the criterion's own `value` at `nan`. mypy: *"Module has no
+   attribute 'value'"*. Fixed to `self.value`. Effect, before → after:
+   `criterion_passenger/criterion_head_neck/criterion_head.value`: `nan → 4.0` for tests **14084** and
+   **AK3T02FO** (09203 has no passenger head data and stays `nan`). `rating` was already correct.
+3. `float(...)` wrapping around 8 `np.interp` / `np.nanmean` / `np.max` results assigned to
+   `value`/`rating`. Value-exact (`np.float64 → float`); NaN propagation untouched (G9).
+4. `Page_Cover` subtitle now joins `str(isomme.test_number)`; a `None` test number renders `"None"`
+   instead of raising `TypeError`. `Limits(name=...)` accepts `None` (already the de-facto behaviour) and
+   `Limit(x_unit=/y_unit=)` accepts `int` (`y_unit=1` is used 16 times) — annotation-only.
+5. `Correlation`'s page sort key is `None`-safe: a criterion whose `channel_r` is missing sorts first
+   instead of raising `AttributeError` during page construction.
+6. Nothing else. `EuroNCAP` MetaReport's `super().__init__(isomme_list=[], *args, **kwargs)` became
+   `super().__init__([], *args, **kwargs)` — same call, minus the "multiple values for keyword" ambiguity.
+
+**Goldens re-baselined deliberately.** `python -m tests.golden_regen`, then `git diff tests/golden/`:
+**exactly 53 changes — 51 × `"status": ERROR → NA` and 2 × `"value": nan → 4.0`**, i.e. items 1 and 2
+above and nothing else. `euro_ncap_side_barrier.json` is unchanged. Re-baselining (rather than letting the
+net keep printing them as tolerated improvements) matters: with `ERROR` as the stored baseline, a later
+step regressing `NA` back to `ERROR` would **not** be caught.
+
+**Verification** (commands run and their result)
+- `.venv/Scripts/python.exe -m mypy` → **Success: no issues found in 33 source files**
+  (baseline before this step, same config pointed at the whole package: **566 errors in 28 files** —
+  468 `no-untyped-def`, 43 `union-attr`, 29 `arg-type`, …).
+- `.venv/Scripts/python.exe -m ruff check .` → **All checks passed!** (baseline: 85 errors).
+- `.venv/Scripts/python.exe -m unittest discover -s tests` → **OK (skipped=4)**, **112 tests**, 356.7 s —
+  identical to the Step-2 baseline (112 / skipped=4).
+- `.venv/Scripts/python.exe -m unittest tests.test_golden` → **OK**, 17 tests, and after the re-baseline
+  **zero** improvement lines.
+- `.venv/Scripts/python.exe -m unittest tests.test_report_modules tests.test_limits` → **OK**, 7 tests.
+- The four opt-in slow tests, run **individually**: `test_EuroNCAP_Side_Farside_VTC` OK (24.6 s),
+  `test_IIHS_Frontal_Small_Overlap` OK, `test_UN_Frontal_50kmh_R137` OK (13.8 s),
+  `test_UN_Frontal_56kmh_ODB_R94` OK (25.9 s). Running the whole module at once crashes — see D8, it is
+  pre-existing and was reproduced on `a0d55d4`.
+- **Acceptance criterion "a deliberate typo is reported by mypy" — verified on a scratch file, then
+  deleted.** All four probes behaved as P5 promises:
+  - `report.overall(v1).criterion_drivr` → `"Criterion_Overall" has no attribute "criterion_drivr";
+    maybe "criterion_driver"…` `[attr-defined]`
+  - `report.overall(v1).criterion_driver.criterion_head.criterion_hic_15.rating` → revealed type
+    `builtins.float`
+  - `…criterion_head.hard_contct = False` → `"Criterion_Head" has no attribute "hard_contct"; maybe
+    "hard_contact"?` — **this is F13, the review's most dangerous finding, caught statically**
+  - `…criterion_head.hard_contact = "yes"` → `Incompatible types in assignment (expression has type
+    "str", variable has type "bool")`
+
+**Deviations from the plan / left undone**
+- `E501` not enforced and `ANN` not enabled — see Decisions.
+- The plan's "~61 `Optional` sites" turned out to be 104 once indirect derefs
+  (`self.channel = get_channel(...)` followed by `self.channel.get_data()`) were counted; all are migrated.
+- Cross-report-reused classes keep the base `Report` and remain unchecked — see Decisions. Concretely:
+  25 classes across `side_pole.py`, `frontal_50kmh.py`, `frontal_mpdb.py`.
+- CI's **test** job is still `continue-on-error: true` (fixtures untracked), as the plan allows.
+
+**Incident — local fixture data under `data/` was deleted**
+
+While confirming that D8's crash is pre-existing, this session created a `git worktree` at `a0d55d4` and,
+because `data/` is untracked, linked the fixture folders into it with Windows directory junctions
+(`mklink /J`). `git worktree remove --force` then followed those junctions and recursively deleted the
+**targets**: `data/iso-mme-org`, `data/nhtsa`, `data/pdb-org`, `data/tests` and `data/vtc-loadcase-example`
+are now empty directories. Nothing tracked was lost (`git status` shows 0 deleted tracked files), and
+`tests/golden/*.json` plus `out/` are intact — all of this step's verification, including the full suite
+and the golden re-baseline, ran **before** the deletion, on the real data.
+
+The Recycle Bin does not contain them (git deletes directly). `data/README.md` documents public download
+URLs for `iso-mme-org` (iso-mme.org forum) and `nhtsa` (NHTSA vehicle database); `pdb-org`, `tests` and
+`vtc-loadcase-example` have no documented source. **Restoring `data/` is a prerequisite for running
+`tests/test_report.py`, `tests/test_golden.py` and `tests/test.py` again** — the lint-side checks
+(ruff, mypy, `tests/test_report_modules.py`) need no fixtures and still pass.
+
+Never link untracked data into a git worktree on Windows. If a baseline comparison needs the fixtures,
+copy them, or run the comparison via `git stash` in the main tree.
+
+**Notes for the next session (Step 4 — manual inputs as a declared concept)**
+- **Check `data/` before doing anything.** If the fixture folders are still empty, the golden tests cannot
+  run and Step 4's acceptance criteria ("golden tests pass") are unreachable — restore them first.
+- Step 4's headline risk (F13, a typo'd manual input being a silent no-op) is **already caught statically**
+  as of this step, for every input reachable through `report.overall(...)`. Step 4's `__setattr__` guard is
+  now the *runtime* backstop for users who do not run mypy, not the only line of defence — worth saying so
+  in its design, and worth reconsidering how much machinery it needs.
+- The manual inputs are all plain class attributes with concrete types today, so `Manual[T, manual(...)]`
+  must stay type-transparent or it will *remove* the checking this step just added. Verify with the same
+  four probes above after migrating.
+- Q6 (tri-state `hard_contact`) is still unanswered and still gates part of Step 4.
+- `Criterion.p: int` is now declared on the base class. Step 4's interim F15 fix (re-reading the position
+  in `calculation()`) and Step 7's `Ctx` both touch it; it is deliberately *not* `Optional`, because every
+  criterion that has a position sets it in `__init__`.

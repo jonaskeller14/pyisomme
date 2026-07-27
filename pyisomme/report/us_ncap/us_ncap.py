@@ -9,14 +9,19 @@ and died with ``AttributeError`` (review Appendix A6); it now says so explicitly
 
 Out of scope for the report refactor (plan Step 2) — see the sibling module docstring.
 """
+
+from __future__ import annotations
+
 from pyisomme.report.report import MetaReport
+
+from typing import Any
 
 
 class USNCAP(MetaReport):
     name = "US-NCAP"
     title = "US-NCAP"
 
-    def __init__(self, frontal_56kmh: list, frontal_mpdb: list, side_pole: list, side_barrier: list, side_farside: list, *args, **kwargs):
+    def __init__(self, frontal_56kmh: list, frontal_mpdb: list, side_pole: list, side_barrier: list, side_farside: list, *args: Any, **kwargs: Any) -> None:
         raise NotImplementedError(
             "USNCAP is an unfinished stub: none of its load-case sub-reports are "
             "implemented (frontal_56kmh is a stub; side_mdb and side_pole define no "

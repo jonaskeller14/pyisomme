@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 from pyisomme.unit import Unit, g0
+from pyisomme.isomme import Isomme
 from pyisomme.report.page import Page_Cover, Page_Criterion_Rating_Table, Page_Criterion_Values_Chart, Page_Criterion_Values_Table
 from pyisomme.report.report import Report
 from pyisomme.report.criterion import Criterion
@@ -8,12 +11,13 @@ from pyisomme.report.euro_ncap.frontal_mpdb import EuroNCAP_Frontal_MPDB
 
 import logging
 import numpy as np
+from typing import Any
 
 
 logger = logging.getLogger(__name__)
 
 
-class UN_Frontal_50kmh_R137(Report):
+class UN_Frontal_50kmh_R137(Report["UN_Frontal_50kmh_R137.Criterion_Overall"]):
     name = "UN-R137 | Frontal-Impact against Rigid Wall with 100 % Overlap at 50 km/h"
     protocol = "12.09.2023"
     protocols = {
@@ -21,7 +25,7 @@ class UN_Frontal_50kmh_R137(Report):
         "12.09.2023": "Revision 2 (12.09.2023) [references/UN-R137/B04.80k7388018sqd01x91957452w3utcf63832377452.pdf]"
     }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
         self.pages = [
@@ -44,11 +48,12 @@ class UN_Frontal_50kmh_R137(Report):
         ]
 
     class Criterion_Overall(Criterion):
+        report: UN_Frontal_50kmh_R137
         name = "Overall"
         p_driver: int = 1
         p_passenger: int = 3
 
-        def __init__(self, report, isomme):
+        def __init__(self, report: Report, isomme: Isomme) -> None:
             super().__init__(report, isomme)
 
             p_driver = isomme.get_test_info("Driver position object 1")
@@ -71,7 +76,7 @@ class UN_Frontal_50kmh_R137(Report):
         class Criterion_Driver(Criterion):
             name = "Driver"
 
-            def __init__(self, report, isomme, p):
+            def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                 super().__init__(report, isomme)
 
                 self.p = p
@@ -110,7 +115,7 @@ class UN_Frontal_50kmh_R137(Report):
                 name = "Head Performance Criterion (HPC 36)"
                 head_contact: bool = True
 
-                def __init__(self, report, isomme, p):
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
 
                     self.p = p
@@ -120,9 +125,9 @@ class UN_Frontal_50kmh_R137(Report):
                         Limit_Fail([f"?{self.p}HICR0036??00RX", f"?{self.p}HICRCG36??00RX"], func=lambda x: 1000, y_unit=1, lower=True),
                     ])
 
-                def calculation(self):
+                def calculation(self) -> None:
                     if self.head_contact:
-                        self.channel = self.isomme.get_channel(f"?{self.p}HICR0036??00RX", f"?{self.p}HICRCG36??00RX")
+                        self.channel = self.require_channel(f"?{self.p}HICR0036??00RX", f"?{self.p}HICRCG36??00RX")
                         self.value = self.channel.get_data()[0]
                         self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                         self.color = self.limits.get_limit_min_color(self.channel)
@@ -133,7 +138,7 @@ class UN_Frontal_50kmh_R137(Report):
             class Criterion_Head_a3ms(Criterion):
                 name = "Head a3ms"
 
-                def __init__(self, report, isomme, p):
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
 
                     self.p = p
@@ -143,8 +148,8 @@ class UN_Frontal_50kmh_R137(Report):
                         Limit_Fail([f"?{self.p}HEAD003C??ACR?", f"?{self.p}HEADCG3C??ACR?"], func=lambda x: 80, y_unit=Unit(g0), lower=True),
                     ])
 
-                def calculation(self):
-                    self.channel = self.isomme.get_channel(f"?{self.p}HEAD003C??ACRX", f"?{self.p}HEADCG3C??ACRX")
+                def calculation(self) -> None:
+                    self.channel = self.require_channel(f"?{self.p}HEAD003C??ACRX", f"?{self.p}HEADCG3C??ACRX")
                     self.value = self.channel.get_data(unit=g0)[0]
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                     self.color = self.limits.get_limit_min_color(self.channel)
@@ -152,7 +157,7 @@ class UN_Frontal_50kmh_R137(Report):
             class Criterion_Neck_Fz_tension(Criterion):
                 name = "Neck Fz tension"
 
-                def __init__(self, report, isomme, p):
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
 
                     self.p = p
@@ -162,8 +167,8 @@ class UN_Frontal_50kmh_R137(Report):
                         Limit_Fail([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: 3.3, y_unit="kN", lower=True),
                     ])
 
-                def calculation(self):
-                    self.channel = self.isomme.get_channel(f"?{self.p}NECKUP00??FOZA").convert_unit("kN")
+                def calculation(self) -> None:
+                    self.channel = self.require_channel(f"?{self.p}NECKUP00??FOZA").convert_unit("kN")
                     self.value = np.max(self.channel.get_data())
                     self.rating = self.limits.get_limit_min_rating(self.channel)
                     self.color = self.limits.get_limit_min_color(self.channel)
@@ -171,7 +176,7 @@ class UN_Frontal_50kmh_R137(Report):
             class Criterion_Neck_Fx_shear(Criterion):
                 name = "Neck Fx shear"
 
-                def __init__(self, report, isomme, p):
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
 
                     self.p = p
@@ -183,8 +188,8 @@ class UN_Frontal_50kmh_R137(Report):
                         Limit_Fail([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -3.1, y_unit="kN", upper=True),
                     ])
 
-                def calculation(self):
-                    self.channel = self.isomme.get_channel(f"?{self.p}NECKUP00??FOXA").convert_unit("kN")
+                def calculation(self) -> None:
+                    self.channel = self.require_channel(f"?{self.p}NECKUP00??FOXA").convert_unit("kN")
                     self.value = self.channel.get_data(unit="kN")[np.argmax(np.abs(self.channel.get_data()))]
                     self.rating = self.limits.get_limit_min_rating(self.channel)
                     self.color = self.limits.get_limit_min_color(self.channel)
@@ -192,7 +197,7 @@ class UN_Frontal_50kmh_R137(Report):
             class Criterion_Neck_My_extension(Criterion):
                 name = "Neck My extension"
 
-                def __init__(self, report, isomme, p):
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
 
                     self.p = p
@@ -202,8 +207,8 @@ class UN_Frontal_50kmh_R137(Report):
                         Limit_Fail([f"?{self.p}NECKUP00??MOY?"], func=lambda x: -57, y_unit="Nm", upper=True),
                     ])
 
-                def calculation(self):
-                    self.channel = self.isomme.get_channel(f"?{self.p}NECKUP00??MOYB")
+                def calculation(self) -> None:
+                    self.channel = self.require_channel(f"?{self.p}NECKUP00??MOYB")
                     self.value = np.min(self.channel.get_data(unit="Nm"))
                     self.rating = self.limits.get_limit_min_rating(self.channel)
                     self.color = self.limits.get_limit_min_color(self.channel)
@@ -211,7 +216,7 @@ class UN_Frontal_50kmh_R137(Report):
             class Criterion_Chest_Deflection(Criterion):
                 name = "Chest Deflection"
 
-                def __init__(self, report, isomme, p):
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
 
                     self.p = p
@@ -221,8 +226,8 @@ class UN_Frontal_50kmh_R137(Report):
                         Limit_Pass([f"?{self.p}CHST000[03]??DSX?"], func=lambda x: -42, y_unit="mm", lower=True),
                     ])
 
-                def calculation(self):
-                    self.channel = self.isomme.get_channel(f"?{self.p}CHST0000??DSXC").convert_unit("mm")
+                def calculation(self) -> None:
+                    self.channel = self.require_channel(f"?{self.p}CHST0000??DSXC").convert_unit("mm")
                     self.value = np.min(self.channel.get_data())
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                     self.color = self.limits.get_limit_min_color(self.channel)
@@ -230,7 +235,7 @@ class UN_Frontal_50kmh_R137(Report):
             class Criterion_Chest_VC(Criterion):
                 name = "Chest VC"
 
-                def __init__(self, report, isomme, p):
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
 
                     self.p = p
@@ -242,8 +247,8 @@ class UN_Frontal_50kmh_R137(Report):
                         Limit_Fail([f"?{self.p}VCCR000[03]??VEX?"], func=lambda x: 1, y_unit="m/s", lower=True),
                     ])
 
-                def calculation(self):
-                    self.channel = self.isomme.get_channel(f"?{self.p}VCCR0003??VEXC", f"?{self.p}VCCR0000??VEXC").convert_unit("m/s")
+                def calculation(self) -> None:
+                    self.channel = self.require_channel(f"?{self.p}VCCR0003??VEXC", f"?{self.p}VCCR0000??VEXC").convert_unit("m/s")
                     self.value = np.min(self.channel.get_data())
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                     self.color = self.limits.get_limit_min_color(self.channel)
@@ -251,7 +256,7 @@ class UN_Frontal_50kmh_R137(Report):
             class Criterion_Femur_Compression(Criterion):
                 name = "Femur Compression"
 
-                def __init__(self, report, isomme, p):
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
 
                     self.p = p
@@ -261,16 +266,17 @@ class UN_Frontal_50kmh_R137(Report):
                         Limit_Pass([f"?{self.p}FEMR??00??FOZ?"], func=lambda x: -9.07, y_unit="kN", x_unit="ms", lower=True),
                     ])
 
-                def calculation(self):
-                    self.channel = self.isomme.get_channel(f"?{self.p}FEMR0000??FOZB").convert_unit("kN")
+                def calculation(self) -> None:
+                    self.channel = self.require_channel(f"?{self.p}FEMR0000??FOZB").convert_unit("kN")
                     self.value = self.limits.get_limit_min_y(self.channel)
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                     self.color = self.limits.get_limit_min_color(self.channel)
 
         class Criterion_Passenger(Criterion):
+            report: UN_Frontal_50kmh_R137
             name = "Passenger"
 
-            def __init__(self, report, isomme, p):
+            def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                 super().__init__(report, isomme)
 
                 self.p = p
@@ -308,7 +314,7 @@ class UN_Frontal_50kmh_R137(Report):
             class Criterion_Neck_Fz_tension(Criterion):
                 name = "Neck Fz tension"
 
-                def __init__(self, report, isomme, p):
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
 
                     self.p = p
@@ -318,8 +324,8 @@ class UN_Frontal_50kmh_R137(Report):
                         Limit_Fail([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: 2.9, y_unit="kN", lower=True),
                     ])
 
-                def calculation(self):
-                    self.channel = self.isomme.get_channel(f"?{self.p}NECKUP00??FOZA").convert_unit("kN")
+                def calculation(self) -> None:
+                    self.channel = self.require_channel(f"?{self.p}NECKUP00??FOZA").convert_unit("kN")
                     self.value = np.max(self.channel.get_data())
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                     self.color = self.limits.get_limit_min_color(self.channel)
@@ -327,7 +333,7 @@ class UN_Frontal_50kmh_R137(Report):
             class Criterion_Neck_Fx_shear(Criterion):
                 name = "Neck Fx shear"
 
-                def __init__(self, report, isomme, p):
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
 
                     self.p = p
@@ -339,8 +345,8 @@ class UN_Frontal_50kmh_R137(Report):
                         Limit_Fail([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -2.9, y_unit="kN", upper=True),
                     ])
 
-                def calculation(self):
-                    self.channel = self.isomme.get_channel(f"?{self.p}NECKUP00??FOXA").convert_unit("kN")
+                def calculation(self) -> None:
+                    self.channel = self.require_channel(f"?{self.p}NECKUP00??FOXA").convert_unit("kN")
                     self.value = self.channel.get_data(unit="kN")[np.argmax(np.abs(self.channel.get_data()))]
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                     self.color = self.limits.get_limit_min_color(self.channel)
@@ -348,7 +354,7 @@ class UN_Frontal_50kmh_R137(Report):
             class Criterion_Chest_Deflection(Criterion):
                 name = "Chest Deflection"
 
-                def __init__(self, report, isomme, p):
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
 
                     self.p = p
@@ -358,8 +364,8 @@ class UN_Frontal_50kmh_R137(Report):
                         Limit_Pass([f"?{self.p}CHST000[03]??DSX?"], func=lambda x: -42 if self.report.protocol == "22.06.2016" else -34, y_unit="mm", lower=True),
                     ])
 
-                def calculation(self):
-                    self.channel = self.isomme.get_channel(f"?{self.p}CHST0000??DSXC").convert_unit("mm")
+                def calculation(self) -> None:
+                    self.channel = self.require_channel(f"?{self.p}CHST0000??DSXC").convert_unit("mm")
                     self.value = np.min(self.channel.get_data())
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                     self.color = self.limits.get_limit_min_color(self.channel)
@@ -367,7 +373,7 @@ class UN_Frontal_50kmh_R137(Report):
             class Criterion_Femur_Compression(Criterion):
                 name = "Femur Compression"
 
-                def __init__(self, report, isomme, p):
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
 
                     self.p = p
@@ -377,18 +383,19 @@ class UN_Frontal_50kmh_R137(Report):
                         Limit_Pass([f"?{self.p}FEMR??00??FOZ?"], func=lambda x: -7, y_unit="kN", x_unit="ms", lower=True),
                     ])
 
-                def calculation(self):
-                    self.channel = self.isomme.get_channel(f"?{self.p}FEMR0000??FOZB").convert_unit("kN")
+                def calculation(self) -> None:
+                    self.channel = self.require_channel(f"?{self.p}FEMR0000??FOZB").convert_unit("kN")
                     self.value = self.limits.get_limit_min_y(self.channel)
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                     self.color = self.limits.get_limit_min_color(self.channel)
 
     class Page_Rating_Table(Page_Criterion_Rating_Table):
+        report: UN_Frontal_50kmh_R137
         name = "Rating"
         title = "Rating"
         cell_text = staticmethod(lambda criterion: f"{criterion.rating:.0f}")
 
-        def __init__(self, report):
+        def __init__(self, report: UN_Frontal_50kmh_R137) -> None:
             super().__init__(report)
 
             self.criteria = {isomme: [
@@ -398,10 +405,11 @@ class UN_Frontal_50kmh_R137(Report):
             ] for isomme in self.report.isomme_list}
 
     class Page_Driver_Result_Values_Chart(Page_Criterion_Values_Chart):
+        report: UN_Frontal_50kmh_R137
         name = "Driver Result Values Chart"
         title = "Driver Result"
 
-        def __init__(self, report):
+        def __init__(self, report: UN_Frontal_50kmh_R137) -> None:
             super().__init__(report)
 
             self.criteria = {isomme: [
@@ -416,10 +424,11 @@ class UN_Frontal_50kmh_R137(Report):
             ] for isomme in self.report.isomme_list}
 
     class Page_Driver_Values_Table(Page_Criterion_Values_Table):
+        report: UN_Frontal_50kmh_R137
         name = "Driver Values Table"
         title = "Driver Values"
 
-        def __init__(self, report):
+        def __init__(self, report: UN_Frontal_50kmh_R137) -> None:
             super().__init__(report)
 
             self.criteria = {isomme: [
@@ -446,10 +455,11 @@ class UN_Frontal_50kmh_R137(Report):
         pass
 
     class Page_Passenger_Result_Values_Chart(Page_Criterion_Values_Chart):
+        report: UN_Frontal_50kmh_R137
         name = "Passenger Result Values Chart"
         title = "Passenger Result"
 
-        def __init__(self, report):
+        def __init__(self, report: UN_Frontal_50kmh_R137) -> None:
             super().__init__(report)
 
             self.criteria = {isomme: [
@@ -464,10 +474,11 @@ class UN_Frontal_50kmh_R137(Report):
             ] for isomme in self.report.isomme_list}
 
     class Page_Passenger_Values_Table(Page_Criterion_Values_Table):
+        report: UN_Frontal_50kmh_R137
         name: str = "Passenger Values Table"
         title: str = "Passenger Values"
 
-        def __init__(self, report):
+        def __init__(self, report: UN_Frontal_50kmh_R137) -> None:
             super().__init__(report)
 
             self.criteria = {isomme: [

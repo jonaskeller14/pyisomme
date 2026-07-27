@@ -51,6 +51,34 @@ Note: tests (`tests/test.py`, `tests/test_report.py`, etc.) read real fixture da
 PYISOMME_SLOW=1 .venv/Scripts/python.exe -m unittest tests.test_report   # include the slow four
 ```
 
+Known limitation: running **all 13** report tests in one process (i.e. `tests.test_report` with
+`PYISOMME_SLOW=1`) dies with a Windows stack overflow (exit `0xC00000FD`) partway through, somewhere
+after `test_EuroNCAP_Side_Pole`. This is pre-existing (reproduced on the Step-2 tip) and unrelated to
+correctness — every one of those tests passes when run on its own. Run the slow four individually.
+
+### Static checking
+
+Both are configured in [pyproject.toml](pyproject.toml) and both are **blocking in CI** since refactor
+step 3, so keep them clean:
+
+```bash
+.venv/Scripts/python.exe -m ruff check .        # whole repo (docs/ notebooks excluded)
+.venv/Scripts/python.exe -m mypy                # scoped to pyisomme/report/ by [tool.mypy] files=
+```
+
+- `mypy` is deliberately scoped to `pyisomme/report/` with `disallow_untyped_defs`. The core modules are
+  still analysed (report/ needs their signatures) but their own errors are silenced through a
+  `follow_imports = "silent"` override — widen `files` and drop that override when the core is annotated.
+- `Report` is generic in its overall criterion: a concrete report declares
+  `class X(Report["X.Criterion_Overall"])`, so `report.overall(isomme).criterion_driver…` — and any
+  manual-input assignment on it — is checked end to end. `Page`/`Criterion` subclasses that walk the tree
+  narrow `report:` to the concrete report class; classes reused **across** reports keep the base `Report`
+  and stay unchecked (that duplication is what steps 9–10 remove).
+- `Criterion.require_channel(...)` replaces `self.isomme.get_channel(...)` at every site that
+  dereferences the result. A missing channel is a clean `Status.NA` naming the pattern, not an
+  `AttributeError` swallowed into `Status.ERROR`. Do not reintroduce the raw call in a criterion.
+- `pyisomme/py.typed` ships the annotations to downstream users.
+
 ### The refactor safety net
 
 Two test modules exist purely to make the report refactor verifiable — read `tests/golden_utils.py`

@@ -26,7 +26,7 @@ class Correlation_ISO18571:
         reference_curve = np.vstack((time, reference_channel.get_data(t=time))).T
         comparison_curve = np.vstack((time, comparison_channel.get_data(t=time, unit=reference_channel.unit))).T
 
-        self.iso18571 = ISO18571(reference_curve=reference_curve, comparison_curve=comparison_curve, *args, **kwargs)
+        self.iso18571 = ISO18571(*args, reference_curve=reference_curve, comparison_curve=comparison_curve, **kwargs)
 
     def __getattr__(self, attr):
         return getattr(self.iso18571, attr)

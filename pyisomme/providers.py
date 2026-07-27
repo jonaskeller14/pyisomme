@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Callable, Sequence
+from typing import TYPE_CHECKING, Callable
+from collections.abc import Sequence
 import fnmatch
 import numpy as np
 import pandas as pd
@@ -36,7 +37,7 @@ class ChannelProvider:
         """Whether this provider can (attempt to) build the requested ``code``."""
         raise NotImplementedError
 
-    def build(self, isomme: "Isomme", code: Code) -> Channel | None:
+    def build(self, isomme: Isomme, code: Code) -> Channel | None:
         """Synthesize the channel, or return ``None`` if a required input is absent."""
         raise NotImplementedError
 
@@ -50,14 +51,14 @@ class _FnProvider(ChannelProvider):
 
     def __init__(self,
                  match: Callable[[Code], bool],
-                 build: Callable[["Isomme", Code], Channel | None]):
+                 build: Callable[[Isomme, Code], Channel | None]):
         self._match = match
         self._build = build
 
     def matches(self, code: Code) -> bool:
         return self._match(code)
 
-    def build(self, isomme: "Isomme", code: Code) -> Channel | None:
+    def build(self, isomme: Isomme, code: Code) -> Channel | None:
         return self._build(isomme, code)
 
 
@@ -86,7 +87,7 @@ class AggregatePairProvider(ChannelProvider):
     def matches(self, code: Code) -> bool:
         return self._match(code)
 
-    def build(self, isomme: "Isomme", code: Code) -> Channel | None:
+    def build(self, isomme: Isomme, code: Code) -> Channel | None:
         channels = [isomme.get_channel(code.set(**{self.vary: member})) for member in self.members]
         if any(channel is None for channel in channels):
             return None
@@ -114,7 +115,7 @@ class AggregatePairProvider(ChannelProvider):
 # Each returns None on missing inputs so get_channel falls through to the next provider.
 # --------------------------------------------------------------------------------------- #
 
-def _build_resultant(isomme: "Isomme", code: Code) -> Channel | None:
+def _build_resultant(isomme: Isomme, code: Code) -> Channel | None:
     channel_xyz = [isomme.get_channel(code.set(direction=direction)) for direction in "XYZ"]
     if all(channel is not None for channel in channel_xyz):
         return calculate_resultant(*channel_xyz)
@@ -124,14 +125,14 @@ def _build_resultant(isomme: "Isomme", code: Code) -> Channel | None:
     return None
 
 
-def _build_bric(isomme: "Isomme", code: Code) -> Channel | None:
+def _build_bric(isomme: Isomme, code: Code) -> Channel | None:
     channel_head_av_xyz = [isomme.get_channel(code.set(main_location="HEAD", physical_dimension="AV", direction=direction, filter_class="D")) for direction in "XYZ"]
     if all(channel is not None for channel in channel_head_av_xyz):
         return calculate_bric(*channel_head_av_xyz)
     return None
 
 
-def _build_hic(isomme: "Isomme", code: Code) -> Channel | None:
+def _build_hic(isomme: Isomme, code: Code) -> Channel | None:
     head_channel = isomme.get_channel(code.set(main_location="HEAD",
                                                fine_location_1="??",
                                                fine_location_2="00",
@@ -142,7 +143,7 @@ def _build_hic(isomme: "Isomme", code: Code) -> Channel | None:
     return None
 
 
-def _build_xms(isomme: "Isomme", code: Code) -> Channel | None:
+def _build_xms(isomme: Isomme, code: Code) -> Channel | None:
     channel = isomme.get_channel(code.set(fine_location_2="00",
                                           filter_class="A" if not code.main_location == "THSP" else "C"))
     if channel is not None:
@@ -150,7 +151,7 @@ def _build_xms(isomme: "Isomme", code: Code) -> Channel | None:
     return None
 
 
-def _build_damage(isomme: "Isomme", code: Code) -> Channel | None:
+def _build_damage(isomme: Isomme, code: Code) -> Channel | None:
     if code.filter_class == "X":
         channel_xyz = [isomme.get_channel(code.set(fine_location_1="00", fine_location_2="00", direction=direction, filter_class="A"),
                                           code.set(fine_location_1="CG", fine_location_2="00", direction=direction, filter_class="A")) for direction in "XYZ"]
@@ -178,7 +179,7 @@ def _build_damage(isomme: "Isomme", code: Code) -> Channel | None:
     return None
 
 
-def _build_neck_total_moment(isomme: "Isomme", code: Code) -> Channel | None:
+def _build_neck_total_moment(isomme: Isomme, code: Code) -> Channel | None:
     if code.fine_location_1 == "UP":
         if code.direction == "X":
             if code.filter_class == "X":
@@ -228,7 +229,7 @@ def _build_neck_total_moment(isomme: "Isomme", code: Code) -> Channel | None:
     return None
 
 
-def _build_nij(isomme: "Isomme", code: Code) -> Channel | None:
+def _build_nij(isomme: Isomme, code: Code) -> Channel | None:
     if code.filter_class == "X":
         c_fz = isomme.get_channel(code.set(main_location="NECK", fine_location_1="UP", fine_location_2="00", physical_dimension="FO", direction="Z", filter_class="B"))
         c_mocy = isomme.get_channel(code.set(main_location="NECK", fine_location_1="UP", fine_location_2="00", physical_dimension="MO", direction="Y", filter_class="B"))
@@ -260,7 +261,7 @@ def _build_nij(isomme: "Isomme", code: Code) -> Channel | None:
     return None
 
 
-def _build_vc(isomme: "Isomme", code: Code) -> Channel | None:
+def _build_vc(isomme: Isomme, code: Code) -> Channel | None:
     # Viscous Criterion (Chest and Abdomen) (min/max of fine_location_1=LE and fine_location_1=RI)
     if code.main_location == "VCCR":
         if code.filter_class == "X":
@@ -427,7 +428,7 @@ def _build_vc(isomme: "Isomme", code: Code) -> Channel | None:
     return None
 
 
-def _build_kthc_min(isomme: "Isomme", code: Code) -> Channel | None:
+def _build_kthc_min(isomme: Isomme, code: Code) -> Channel | None:
     channel_left = isomme.get_channel(code.set(fine_location_1="LE"))
     channel_right = isomme.get_channel(code.set(fine_location_1="RI"))
     if channel_left is not None and channel_right is not None:
@@ -440,14 +441,14 @@ def _build_kthc_min(isomme: "Isomme", code: Code) -> Channel | None:
     return None
 
 
-def _build_kthc_femur_impulse(isomme: "Isomme", code: Code) -> Channel | None:
+def _build_kthc_femur_impulse(isomme: Isomme, code: Code) -> Channel | None:
     channel_foz = isomme.get_channel(code.set(main_location="FEMR", physical_dimension="FO", filter_class="B"))
     if channel_foz is not None:
         return calculate_femur_impulse(channel_foz)
     return None
 
 
-def _build_tibia_index(isomme: "Isomme", code: Code) -> Channel | None:
+def _build_tibia_index(isomme: Isomme, code: Code) -> Channel | None:
     channel_MOX = isomme.get_channel(code.set(main_location="TIBI", physical_dimension="MO", direction="X"))
     channel_MOY = isomme.get_channel(code.set(main_location="TIBI", physical_dimension="MO", direction="Y"))
     channel_FOZ = isomme.get_channel(code.set(main_location="TIBI", physical_dimension="FO", direction="Z"))
@@ -457,7 +458,7 @@ def _build_tibia_index(isomme: "Isomme", code: Code) -> Channel | None:
     return None
 
 
-def _build_chest_pc_score(isomme: "Isomme", code: Code) -> Channel | None:
+def _build_chest_pc_score(isomme: Isomme, code: Code) -> Channel | None:
     channel_le_up_ds = isomme.get_channel(code.set(fine_location_1="LE", fine_location_2="UP"))
     channel_ri_up_ds = isomme.get_channel(code.set(fine_location_1="RI", fine_location_2="UP"))
     channel_le_lo_ds = isomme.get_channel(code.set(fine_location_1="LE", fine_location_2="LO"))
@@ -470,7 +471,7 @@ def _build_chest_pc_score(isomme: "Isomme", code: Code) -> Channel | None:
     return None
 
 
-def _build_chst_irtracc_min(isomme: "Isomme", code: Code) -> Channel | None:
+def _build_chst_irtracc_min(isomme: Isomme, code: Code) -> Channel | None:
     channels = [isomme.get_channel(code.set(fine_location_1=fine_location_1, fine_location_2=fine_location_2)) for fine_location_1, fine_location_2 in (("LE", "UP"), ("RI", "UP"), ("LE", "LO"), ("RI", "LO"))]
     if all(channel is not None for channel in channels) and all(channel.code.fine_location_3 in ("TH", "T3", "00", "??") for channel in channels):
         time = time_intersect(*channels)
@@ -481,7 +482,7 @@ def _build_chst_irtracc_min(isomme: "Isomme", code: Code) -> Channel | None:
     return None
 
 
-def _build_abdo_irtracc_min(isomme: "Isomme", code: Code) -> Channel | None:
+def _build_abdo_irtracc_min(isomme: Isomme, code: Code) -> Channel | None:
     channels = [isomme.get_channel(code.set(fine_location_1=fine_location_1, fine_location_2=fine_location_2)) for fine_location_1, fine_location_2 in (("LE", "00"), ("RI", "00"))]
     if all(channel is not None for channel in channels) and all(channel.code.fine_location_3 in ("TH", "T3", "00", "??") for channel in channels):
         time = time_intersect(*channels)
@@ -492,7 +493,7 @@ def _build_abdo_irtracc_min(isomme: "Isomme", code: Code) -> Channel | None:
     return None
 
 
-def _build_thor_irtracc(isomme: "Isomme", code: Code) -> Channel | None:
+def _build_thor_irtracc(isomme: Isomme, code: Code) -> Channel | None:
     if code.physical_dimension == "DC":
         delta = 15.65 if code.fine_location_2 == "UP" else -15.65 if code.fine_location_2 == "LO" else 0  # [mm]
         if code.direction == "X":
@@ -549,7 +550,7 @@ def _build_thor_irtracc(isomme: "Isomme", code: Code) -> Channel | None:
     return None
 
 
-def _build_worldsid_trri_min(isomme: "Isomme", code: Code) -> Channel | None:
+def _build_worldsid_trri_min(isomme: Isomme, code: Code) -> Channel | None:
     channel_01 = isomme.get_channel(code.set(fine_location_2="01"))
     channel_02 = isomme.get_channel(code.set(fine_location_2="02"))
     channel_03 = isomme.get_channel(code.set(fine_location_2="03"))
@@ -562,7 +563,7 @@ def _build_worldsid_trri_min(isomme: "Isomme", code: Code) -> Channel | None:
     return None
 
 
-def _build_worldsid_abri_min(isomme: "Isomme", code: Code) -> Channel | None:
+def _build_worldsid_abri_min(isomme: Isomme, code: Code) -> Channel | None:
     channel_01 = isomme.get_channel(code.set(fine_location_2="01"))
     channel_02 = isomme.get_channel(code.set(fine_location_2="02"))
     if channel_01 is not None and channel_02 is not None:
@@ -574,7 +575,7 @@ def _build_worldsid_abri_min(isomme: "Isomme", code: Code) -> Channel | None:
     return None
 
 
-def _build_worldsid_rib_irtracc(isomme: "Isomme", code: Code) -> Channel | None:
+def _build_worldsid_rib_irtracc(isomme: Isomme, code: Code) -> Channel | None:
     if code.physical_dimension == "DC" and code.direction == "Y":
         channel_dc0 = isomme.get_channel(code.set(physical_dimension="DC", direction="0"))
         channel_anz = isomme.get_channel(code.set(physical_dimension="AN", direction="Z"))
@@ -595,7 +596,7 @@ def _build_worldsid_rib_irtracc(isomme: "Isomme", code: Code) -> Channel | None:
     return None
 
 
-def _build_olc(isomme: "Isomme", code: Code) -> Channel | None:
+def _build_olc(isomme: Isomme, code: Code) -> Channel | None:
     tmp = code.set(fine_location_1="??", fine_location_2="??")
     if code.filter_class == "X":
         tmp = code.set(filter_class="A")

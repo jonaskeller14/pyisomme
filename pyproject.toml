@@ -38,11 +38,13 @@ requires-python = ">=3.9"
 include = ["pyisomme*"]
 
 [tool.setuptools.package-data]
-"pyisomme" = ["channel_codes.xml"]
+"pyisomme" = ["channel_codes.xml", "py.typed"]
 
 [project.optional-dependencies]
 dev = [
     "objective_rating_metrics~=1.3",
+    "mypy~=1.19",
+    "ruff~=0.15",
 ]
 
 [project.urls]
@@ -50,3 +52,62 @@ Homepage = "https://github.com/jonaskeller14/pyisomme"
 
 [project.scripts]
 pyisomme = "pyisomme.__main__:main"
+
+# --------------------------------------------------------------------------
+# Static checking
+#
+# mypy is deliberately scoped to pyisomme/report/ for now (refactor step 3):
+# that is where the criterion trees and the ~530 unchecked attribute chains
+# live. The core modules are still *analysed* (report/ needs their signatures)
+# but their own errors are silenced via follow_imports. Widen `files` and drop
+# the override once the core is annotated too.
+# --------------------------------------------------------------------------
+[tool.mypy]
+python_version = "3.9"
+files = ["pyisomme/report"]
+ignore_missing_imports = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+
+[[tool.mypy.overrides]]
+module = [
+    "pyisomme",
+    "pyisomme.__main__",
+    "pyisomme.calculate",
+    "pyisomme.channel",
+    "pyisomme.code",
+    "pyisomme.correlation",
+    "pyisomme.errors",
+    "pyisomme.info",
+    "pyisomme.isomme",
+    "pyisomme.limits",
+    "pyisomme.parsing",
+    "pyisomme.plotting",
+    "pyisomme.providers",
+    "pyisomme.sources",
+    "pyisomme.unit",
+    "pyisomme.utils",
+]
+follow_imports = "silent"
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+
+[tool.ruff]
+target-version = "py39"
+extend-exclude = [".venv", "out", "data", "docs", "head-trajectory-calculation"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "B", "UP"]
+ignore = [
+    "E501",    # line length: channel-pattern expressions are deliberately one-liners here
+    "E741",    # ambiguous variable name (l/I/O) - used for physical symbols
+    "B008",    # function call in default argument
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Re-export modules: names are imported for their side effect of being bound.
+"pyisomme/__init__.py" = ["F401", "F403"]
+"pyisomme/report/__init__.py" = ["F401"]
+"pyisomme/report/*/__init__.py" = ["F401"]

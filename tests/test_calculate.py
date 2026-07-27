@@ -20,10 +20,10 @@ class TestCalculate(unittest.TestCase):
         iso.add_sample_channel(code="11HEAD0000THAAXP", unit="rad/s^2", y_range=[0, 8e5])
         iso.add_sample_channel(code="11HEAD0000THAAYP", unit="rad/s^2", y_range=[0, 5e5])
         iso.add_sample_channel(code="11HEAD0000THAAZP", unit="rad/s^2", y_range=[0, 3e5])
-        assert iso.get_channel(f"?1HEADDAMA??AAX?") is not None
-        assert iso.get_channel(f"?1HEADDAMA??AAY?") is not None
-        assert iso.get_channel(f"?1HEADDAMA??AAZ?") is not None
-        assert iso.get_channel(f"?1HEADDAMA??AAR?") is not None
+        assert iso.get_channel("?1HEADDAMA??AAX?") is not None
+        assert iso.get_channel("?1HEADDAMA??AAY?") is not None
+        assert iso.get_channel("?1HEADDAMA??AAZ?") is not None
+        assert iso.get_channel("?1HEADDAMA??AAR?") is not None
 
     def test_calculate_neck_MOCx(self):
         v1 = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "11391"), "??NECK*")

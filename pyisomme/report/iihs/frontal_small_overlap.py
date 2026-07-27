@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+from pyisomme.isomme import Isomme
 from pyisomme.report.criterion import Criterion
 from pyisomme.report.page import Page_Cover, Page_Criterion_Values_Chart, Page_Criterion_Values_Table, \
     Page_Criterion_Rating_Table
@@ -8,19 +11,20 @@ from pyisomme.report.iihs.limits import Limit_G, Limit_A, Limit_M, Limit_P
 
 import logging
 import numpy as np
+from typing import Any
 
 
 logger = logging.getLogger(__name__)
 
 
-class IIHS_Frontal_Small_Overlap(Report):
+class IIHS_Frontal_Small_Overlap(Report["IIHS_Frontal_Small_Overlap.Criterion_Overall"]):
     name = "IIHS | Frontal Impact against Small Overlap Barrier with 25% Overlap at 64 km/h"
     protocol = "VII"
     protocols = {
         "VII": "Version VII (04.2024) [references/IIHS/small_overlap_rating_protocol.pdf]",
     }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
         self.pages = [
@@ -37,7 +41,7 @@ class IIHS_Frontal_Small_Overlap(Report):
         name = "Overall"
         p_driver: int = 1
 
-        def __init__(self, report, isomme):
+        def __init__(self, report: Report, isomme: Isomme) -> None:
             super().__init__(report, isomme)
 
             p_driver = isomme.get_test_info("Driver position object 1")
@@ -46,7 +50,7 @@ class IIHS_Frontal_Small_Overlap(Report):
 
             self.criterion_driver = self.Criterion_Driver(report, isomme, p=self.p_driver)
 
-        def calculation(self):
+        def calculation(self) -> None:
             self.criterion_driver.calculate()
 
             self.rating = self.criterion_driver.rating
@@ -54,7 +58,7 @@ class IIHS_Frontal_Small_Overlap(Report):
         class Criterion_Driver(Criterion):
             name = "Driver"
 
-            def __init__(self, report, isomme, p):
+            def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                 super().__init__(report, isomme)
 
                 self.p = p
@@ -64,7 +68,7 @@ class IIHS_Frontal_Small_Overlap(Report):
                 self.criterion_thigh_hip = self.Criterion_Thigh_Hip(report, isomme, p=self.p)
                 self.criterion_leg_foot = self.Criterion_Leg_Foot(report, isomme, p=self.p)
 
-            def calculation(self):
+            def calculation(self) -> None:
                 self.criterion_head_neck.calculate()
                 self.criterion_chest.calculate()
                 self.criterion_thigh_hip.calculate()
@@ -75,7 +79,7 @@ class IIHS_Frontal_Small_Overlap(Report):
             class Criterion_Head_Neck(Criterion):
                 name = "Head & Neck"
 
-                def __init__(self, report, isomme, p):
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
 
                     self.p = p
@@ -88,7 +92,7 @@ class IIHS_Frontal_Small_Overlap(Report):
                     self.criterion_fz_compression_corridor = self.Criterion_Fz_Compression_Corridor(report, isomme, p=self.p)
                     self.criterion_fx_shear_corridor = self.Criterion_Fx_Shear_Corridor(report, isomme, p=self.p)
 
-                def calculation(self):
+                def calculation(self) -> None:
                     self.criterion_hic_15.calculate()
                     self.criterion_nij.calculate()
                     self.criterion_fz_tension.calculate()
@@ -110,7 +114,7 @@ class IIHS_Frontal_Small_Overlap(Report):
                 class Criterion_HIC_15(Criterion):
                     name = "HIC 15"
 
-                    def __init__(self, report, isomme, p):
+                    def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                         super().__init__(report, isomme)
 
                         self.p = p
@@ -122,8 +126,8 @@ class IIHS_Frontal_Small_Overlap(Report):
                             Limit_P([f"?{self.p}HICR??15??00RX"], func=lambda x: 840, y_unit=1, lower=True, rating=-20),
                         ])
 
-                    def calculation(self):
-                        self.channel = self.isomme.get_channel(f"?{self.p}HICR??15??00RX")
+                    def calculation(self) -> None:
+                        self.channel = self.require_channel(f"?{self.p}HICR??15??00RX")
                         self.value = self.channel.get_data()[0]
                         self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                         self.color = self.limits.get_limit_min_color(self.channel)
@@ -131,7 +135,7 @@ class IIHS_Frontal_Small_Overlap(Report):
                 class Criterion_NIJ(Criterion):
                     name = "NIJ"
 
-                    def __init__(self, report, isomme, p):
+                    def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                         super().__init__(report, isomme)
 
                         self.p = p
@@ -143,8 +147,8 @@ class IIHS_Frontal_Small_Overlap(Report):
                             Limit_P([f"?{self.p}NIJCIP????00Y?"], func=lambda x: 1.2, y_unit=1, lower=True, rating=-20),
                         ])
 
-                    def calculation(self):
-                        self.channel = self.isomme.get_channel(f"?{self.p}NIJCIP00??00YB")
+                    def calculation(self) -> None:
+                        self.channel = self.require_channel(f"?{self.p}NIJCIP00??00YB")
                         self.value = np.max(self.channel.get_data())
                         self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                         self.color = self.limits.get_limit_min_color(self.channel)
@@ -152,7 +156,7 @@ class IIHS_Frontal_Small_Overlap(Report):
                 class Criterion_Fz_Tension(Criterion):
                     name = "Neck Fz Tension"
 
-                    def __init__(self, report, isomme, p):
+                    def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                         super().__init__(report, isomme)
 
                         self.p = p
@@ -164,8 +168,8 @@ class IIHS_Frontal_Small_Overlap(Report):
                             Limit_P([f"?{self.p}NECKUP00??FOZ?"], lambda x: 4.0, y_unit="kN", lower=True, rating=-20),
                         ])
 
-                    def calculation(self):
-                        self.channel = self.isomme.get_channel(f"?{self.p}NECKUP00??FOZB").convert_unit("kN")
+                    def calculation(self) -> None:
+                        self.channel = self.require_channel(f"?{self.p}NECKUP00??FOZB").convert_unit("kN")
                         self.value = np.max(self.channel.get_data())
                         self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                         self.color = self.limits.get_limit_min_color(self.channel)
@@ -173,7 +177,7 @@ class IIHS_Frontal_Small_Overlap(Report):
                 class Criterion_Fz_Compression(Criterion):
                     name = "Neck Fz Compression"
 
-                    def __init__(self, report, isomme, p):
+                    def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                         super().__init__(report, isomme)
 
                         self.p = p
@@ -185,8 +189,8 @@ class IIHS_Frontal_Small_Overlap(Report):
                             Limit_P([f"?{self.p}NECKUP00??FOZ?"], lambda x: -4.8, y_unit="kN", upper=True, rating=-20),
                         ])
 
-                    def calculation(self):
-                        self.channel = self.isomme.get_channel(f"?{self.p}NECKUP00??FOZB").convert_unit("kN")
+                    def calculation(self) -> None:
+                        self.channel = self.require_channel(f"?{self.p}NECKUP00??FOZB").convert_unit("kN")
                         self.value = np.min(self.channel.get_data())
                         self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                         self.color = self.limits.get_limit_min_color(self.channel)
@@ -194,7 +198,7 @@ class IIHS_Frontal_Small_Overlap(Report):
                 class Criterion_Fz_Tension_Corridor(Criterion):
                     name = "Neck Fz Tension Corridor"
 
-                    def __init__(self, report, isomme, p):
+                    def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                         super().__init__(report, isomme)
 
                         self.p = p
@@ -204,8 +208,8 @@ class IIHS_Frontal_Small_Overlap(Report):
                             Limit_A([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: np.interp(x, [0, 35, 45], [3.3, 2.9, 1.1]), x_unit="ms", y_unit="kN", lower=True, rating=-2),
                         ])
 
-                    def calculation(self):
-                        self.channel = self.isomme.get_channel(f"?{self.p}NECKUP00??FOZB").convert_unit("kN")
+                    def calculation(self) -> None:
+                        self.channel = self.require_channel(f"?{self.p}NECKUP00??FOZB").convert_unit("kN")
                         self.value = self.limits.get_limit_min_y(self.channel)
                         self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                         self.color = self.limits.get_limit_min_color(self.channel)
@@ -213,7 +217,7 @@ class IIHS_Frontal_Small_Overlap(Report):
                 class Criterion_Fz_Compression_Corridor(Criterion):
                     name = "Neck Fx Compression Corridor"
 
-                    def __init__(self, report, isomme, p):
+                    def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                         super().__init__(report, isomme)
 
                         self.p = p
@@ -223,8 +227,8 @@ class IIHS_Frontal_Small_Overlap(Report):
                             Limit_A([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: np.interp(x, [0, 30], [-4, -1.1]), x_unit="ms", y_unit="kN", upper=True, rating=-2),
                         ])
 
-                    def calculation(self):
-                        self.channel = self.isomme.get_channel(f"?{self.p}NECKUP00??FOZB").convert_unit("kN")
+                    def calculation(self) -> None:
+                        self.channel = self.require_channel(f"?{self.p}NECKUP00??FOZB").convert_unit("kN")
                         self.value = self.limits.get_limit_min_y(self.channel)
                         self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                         self.color = self.limits.get_limit_min_color(self.channel)
@@ -232,7 +236,7 @@ class IIHS_Frontal_Small_Overlap(Report):
                 class Criterion_Fx_Shear_Corridor(Criterion):
                     name = "Neck Fx Shear Corridor"
 
-                    def __init__(self, report, isomme, p):
+                    def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                         super().__init__(report, isomme)
 
                         self.p = p
@@ -245,8 +249,8 @@ class IIHS_Frontal_Small_Overlap(Report):
                             Limit_A([f"?{self.p}NECKUP00??FOX?"], func=lambda x: np.interp(x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1]), x_unit="ms", y_unit="kN", lower=True, rating=-2),
                         ])
 
-                    def calculation(self):
-                        self.channel = self.isomme.get_channel(f"?{self.p}NECKUP00??FOXB").convert_unit("kN")
+                    def calculation(self) -> None:
+                        self.channel = self.require_channel(f"?{self.p}NECKUP00??FOXB").convert_unit("kN")
                         self.value = self.limits.get_limit_min_y(self.channel)
                         self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                         self.color = self.limits.get_limit_min_color(self.channel)
@@ -254,7 +258,7 @@ class IIHS_Frontal_Small_Overlap(Report):
             class Criterion_Chest(Criterion):
                 name = "Chest"
 
-                def __init__(self, report, isomme, p):
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
 
                     self.p = p
@@ -280,7 +284,7 @@ class IIHS_Frontal_Small_Overlap(Report):
                 class Criterion_Acceleration(Criterion):
                     name = "Thoracic Spine Acceleration (3ms)"  # TODO: nicht THSP?
 
-                    def __init__(self, report, isomme, p):
+                    def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                         super().__init__(report, isomme)
 
                         self.p = p
@@ -293,7 +297,7 @@ class IIHS_Frontal_Small_Overlap(Report):
                         ])
 
                     def calculation(self) -> None:
-                        self.channel = self.isomme.get_channel(f"?{self.p}CHST003C??ACRX").convert_unit(g0)
+                        self.channel = self.require_channel(f"?{self.p}CHST003C??ACRX").convert_unit(g0)
                         self.value = self.channel.get_data()[0]
                         self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                         self.color = self.limits.get_limit_min_color(self.channel)
@@ -301,7 +305,7 @@ class IIHS_Frontal_Small_Overlap(Report):
                 class Criterion_Deflection(Criterion):
                     name = "Sternum Deflection"
 
-                    def __init__(self, report, isomme, p):
+                    def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                         super().__init__(report, isomme)
 
                         self.p = p
@@ -314,7 +318,7 @@ class IIHS_Frontal_Small_Overlap(Report):
                         ])
 
                     def calculation(self) -> None:
-                        self.channel = self.isomme.get_channel(f"1{self.p}CHST0000??DSXC").convert_unit("mm")
+                        self.channel = self.require_channel(f"1{self.p}CHST0000??DSXC").convert_unit("mm")
                         self.value = np.min(self.channel.get_data())
                         self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                         self.color = self.limits.get_limit_min_color(self.channel)
@@ -322,7 +326,7 @@ class IIHS_Frontal_Small_Overlap(Report):
                 class Criterion_Deflection_Rate(Criterion):
                     name = "Sternum Deflection Rate"
 
-                    def __init__(self, report, isomme, p):
+                    def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                         super().__init__(report, isomme)
 
                         self.p = p
@@ -335,7 +339,7 @@ class IIHS_Frontal_Small_Overlap(Report):
                         ])
 
                     def calculation(self) -> None:
-                        self.channel = self.isomme.get_channel(f"1{self.p}CHST0000??VEXC").convert_unit("m/s")
+                        self.channel = self.require_channel(f"1{self.p}CHST0000??VEXC").convert_unit("m/s")
                         self.value = np.min(self.channel.get_data())
                         self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                         self.color = self.limits.get_limit_min_color(self.channel)
@@ -343,7 +347,7 @@ class IIHS_Frontal_Small_Overlap(Report):
                 class Criterion_VC(Criterion):
                     name = "Viscous Criterion"
 
-                    def __init__(self, report, isomme, p):
+                    def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                         super().__init__(report, isomme)
 
                         self.p = p
@@ -361,7 +365,7 @@ class IIHS_Frontal_Small_Overlap(Report):
                         ])
 
                     def calculation(self) -> None:
-                        self.channel = self.isomme.get_channel(f"1{self.p}VCCR0000??VEXC").convert_unit("m/s")
+                        self.channel = self.require_channel(f"1{self.p}VCCR0000??VEXC").convert_unit("m/s")
                         self.value = self.channel.get_data()[np.argmax(np.abs(self.channel.get_data()))]
                         self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                         self.color = self.limits.get_limit_min_color(self.channel)
@@ -369,7 +373,7 @@ class IIHS_Frontal_Small_Overlap(Report):
             class Criterion_Thigh_Hip(Criterion):
                 name = "Tight & Hip"
 
-                def __init__(self, report, isomme, p):
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
 
                     self.p = p
@@ -384,7 +388,7 @@ class IIHS_Frontal_Small_Overlap(Report):
                 class Criterion_KTH(Criterion):
                     name = "Knee Thigh Hip Injury Risk (KTH)"
 
-                    def __init__(self, report, isomme, p):
+                    def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                         super().__init__(report, isomme)
 
                         self.p = p
@@ -399,7 +403,7 @@ class IIHS_Frontal_Small_Overlap(Report):
                     def calculation(self) -> None:
                         #TODO: rechts und links separat berechnen, da sonst integral zu groß wenn channel mit get_channel() berechnet wird (minum links rechts mit zeitversatz)
                         pass
-                        channel_femur_impulse = ...
+                        # channel_femur_impulse = ...
                         # channel_femur_force = ...
                         # self.channel = Channel(code=channel_femur_impulse.code.set(physical_dimension="00"),
                         #                        data=...,
@@ -410,7 +414,7 @@ class IIHS_Frontal_Small_Overlap(Report):
             class Criterion_Leg_Foot(Criterion):
                 name = "Leg & Foot"
 
-                def __init__(self, report, isomme, p):
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
 
                     self.p = p
@@ -436,7 +440,7 @@ class IIHS_Frontal_Small_Overlap(Report):
                 class Criterion_Tibia_Femur_Displacemnt(Criterion):
                     name = "Tibia/Femur Displacement"
 
-                    def __init__(self, report, isomme, p):
+                    def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                         super().__init__(report, isomme)
 
                         self.p = p
@@ -451,7 +455,7 @@ class IIHS_Frontal_Small_Overlap(Report):
                 class Criterion_Tibia_Index(Criterion):
                     name = "Tibia Index"
 
-                    def __init__(self, report, isomme, p):
+                    def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                         super().__init__(report, isomme)
 
                         self.p = p
@@ -466,7 +470,7 @@ class IIHS_Frontal_Small_Overlap(Report):
                 class Criterion_Tibia_Axial_Force(Criterion):
                     name = "Tibia Axial Force"
 
-                    def __init__(self, report, isomme, p):
+                    def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                         super().__init__(report, isomme)
 
                         self.p = p
@@ -482,7 +486,7 @@ class IIHS_Frontal_Small_Overlap(Report):
                 class Criterion_Foot_Acceleration(Criterion):
                     name = "Foot Acceleration"
 
-                    def __init__(self, report, isomme, p):
+                    def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                         super().__init__(report, isomme)
 
                         self.p = p
@@ -495,7 +499,7 @@ class IIHS_Frontal_Small_Overlap(Report):
                         ])
 
                     def calculation(self) -> None:
-                        self.channel = self.isomme.get_channel(f"?{self.p}FOOT0000??ACRA").convert_unit(g0)
+                        self.channel = self.require_channel(f"?{self.p}FOOT0000??ACRA").convert_unit(g0)
                         self.value = np.max(self.channel.get_data())
                         self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                         self.color = self.limits.get_limit_min_color(self.channel)
@@ -511,10 +515,11 @@ class IIHS_Frontal_Small_Overlap(Report):
                 pass
 
     class Page_Driver_Result_Values_Chart(Page_Criterion_Values_Chart):
+        report: IIHS_Frontal_Small_Overlap
         name = "Driver Result Values Chart"
         title = "Driver Result"
 
-        def __init__(self, report):
+        def __init__(self, report: IIHS_Frontal_Small_Overlap) -> None:
             super().__init__(report)
 
             self.criteria = {isomme: [
@@ -537,10 +542,11 @@ class IIHS_Frontal_Small_Overlap(Report):
             ] for isomme in self.report.isomme_list}
 
     class Page_Driver_Rating_Table(Page_Criterion_Rating_Table):
+        report: IIHS_Frontal_Small_Overlap
         name = "Driver Rating Table"
         title = "Driver Rating"
 
-        def __init__(self, report):
+        def __init__(self, report: IIHS_Frontal_Small_Overlap) -> None:
             super().__init__(report)
 
             self.criteria = {isomme: [
@@ -552,10 +558,11 @@ class IIHS_Frontal_Small_Overlap(Report):
             ] for isomme in self.report.isomme_list}
 
     class Page_Driver_Values_Table(Page_Criterion_Values_Table):
+        report: IIHS_Frontal_Small_Overlap
         name = "Driver Values Table"
         title = "Driver Values"
 
-        def __init__(self, report):
+        def __init__(self, report: IIHS_Frontal_Small_Overlap) -> None:
             super().__init__(report)
 
             self.criteria = {isomme: [

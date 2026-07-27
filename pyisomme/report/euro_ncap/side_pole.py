@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+from pyisomme.isomme import Isomme
 from pyisomme.report.page import Page_Cover, Page_Plot_nxn, Page_Criterion_Rating_Table, Page_Criterion_Values_Chart, \
     Page_Criterion_Values_Table
 from pyisomme.unit import g0
@@ -7,19 +10,20 @@ from pyisomme.report.euro_ncap.limits import Limit_G, Limit_P, Limit_C, Limit_M,
 
 import logging
 import numpy as np
+from typing import Any
 
 
 logger = logging.getLogger(__name__)
 
 
-class EuroNCAP_Side_Pole(Report):
+class EuroNCAP_Side_Pole(Report["EuroNCAP_Side_Pole.Criterion_Overall"]):
     name = "Euro NCAP | Pole Side Impact at 32 km/h"
     protocol = "9.3"
     protocols = {
         "9.3": "Version 9.3 (05.12.2023) [references/Euro-NCAP/euro-ncap-assessment-protocol-aop-v93.pdf]"
     }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
         self.pages = [
@@ -42,7 +46,7 @@ class EuroNCAP_Side_Pole(Report):
         name = "Overall"
         p: int = 1
 
-        def __init__(self, report, isomme):
+        def __init__(self, report: Report, isomme: Isomme) -> None:
             super().__init__(report, isomme)
 
             self.criterion_head = self.Criterion_Head(self.report, self.isomme, p=self.p)
@@ -50,7 +54,7 @@ class EuroNCAP_Side_Pole(Report):
             self.criterion_abdomen = self.Criterion_Abdomen(self.report, self.isomme, p=self.p)
             self.criterion_pelvis = self.Criterion_Pelvis(self.report, self.isomme, p=self.p)
 
-        def calculation(self):
+        def calculation(self) -> None:
             self.criterion_head.calculate()
             self.criterion_chest.calculate()
             self.criterion_abdomen.calculate()
@@ -62,12 +66,12 @@ class EuroNCAP_Side_Pole(Report):
                 self.criterion_abdomen.rating,
                 self.criterion_pelvis.rating
             ])
-            self.rating = np.interp(self.rating, [0, 16], [0, 16], left=0, right=np.nan)
+            self.rating = float(np.interp(self.rating, [0, 16], [0, 16], left=0, right=np.nan))
 
         class Criterion_Head(Criterion):
             name = "Head"
 
-            def __init__(self, report, isomme, p):
+            def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                 super().__init__(report, isomme)
 
                 self.p = p
@@ -76,7 +80,7 @@ class EuroNCAP_Side_Pole(Report):
                 self.criterion_head_a3ms = self.Criterion_Head_a3ms(self.report, self.isomme, p=self.p)
                 self.criterion_direct_head_contact_with_the_pole = self.Criterion_DirectHeadContactWithThePole(report, isomme)
 
-            def calculation(self):
+            def calculation(self) -> None:
                 self.criterion_hic_15.calculate()
                 self.criterion_head_a3ms.calculate()
                 self.criterion_direct_head_contact_with_the_pole.calculate()
@@ -90,7 +94,7 @@ class EuroNCAP_Side_Pole(Report):
             class Criterion_HIC_15(Criterion):
                 name = "HIC 15"
 
-                def __init__(self, report, isomme, p):
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
 
                     self.p = p
@@ -100,8 +104,8 @@ class EuroNCAP_Side_Pole(Report):
                         Limit_C([f"?{self.p}HICR0015??00RX", f"?{self.p}HICRCG15??00RX"], func=lambda x: 700.000, y_unit=1, lower=True),
                     ])
 
-                def calculation(self):
-                    self.channel = self.isomme.get_channel(f"?{self.p}HICR0015??00RX", f"?{self.p}HICRCG15??00RX")
+                def calculation(self) -> None:
+                    self.channel = self.require_channel(f"?{self.p}HICR0015??00RX", f"?{self.p}HICRCG15??00RX")
                     self.value = self.channel.get_data()[0]
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                     self.color = self.limits.get_limit_min_color(self.channel)
@@ -109,7 +113,7 @@ class EuroNCAP_Side_Pole(Report):
             class Criterion_Head_a3ms(Criterion):
                 name = "Head a3ms"
 
-                def __init__(self, report, isomme, p):
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
 
                     self.p = p
@@ -119,8 +123,8 @@ class EuroNCAP_Side_Pole(Report):
                         Limit_C([f"?{self.p}HEAD003C??ACR?", f"?{self.p}HEADCG3C??ACR?"], func=lambda x: 80.000, y_unit=g0, lower=True),
                     ])
 
-                def calculation(self):
-                    self.channel = self.isomme.get_channel(f"?{self.p}HEAD003C??ACRX", f"?{self.p}HEADCG3C??ACRX")
+                def calculation(self) -> None:
+                    self.channel = self.require_channel(f"?{self.p}HEAD003C??ACRX", f"?{self.p}HEADCG3C??ACRX")
                     self.value = self.channel.get_data(unit=g0)[0]
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                     self.color = self.limits.get_limit_min_color(self.channel)
@@ -137,7 +141,7 @@ class EuroNCAP_Side_Pole(Report):
         class Criterion_Chest(Criterion):
             name = "Chest"
 
-            def __init__(self, report, isomme, p):
+            def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                 super().__init__(report, isomme)
 
                 self.p = p
@@ -160,7 +164,7 @@ class EuroNCAP_Side_Pole(Report):
             class Criterion_Chest_Lateral_Compression(Criterion):
                 name = "Chest Lateral Compression"
 
-                def __init__(self, report, isomme, p):
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
 
                     self.p = p
@@ -175,7 +179,7 @@ class EuroNCAP_Side_Pole(Report):
                     ])
 
                 def calculation(self) -> None:
-                    self.channel = self.isomme.get_channel(f"?{self.p}TRRI??00??DSYC").convert_unit("mm")
+                    self.channel = self.require_channel(f"?{self.p}TRRI??00??DSYC").convert_unit("mm")
                     self.value = np.min(self.channel.get_data())
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=True)
                     self.color = self.limits.get_limit_min_color(self.channel)
@@ -183,7 +187,7 @@ class EuroNCAP_Side_Pole(Report):
             class Criterion_Chest_Lateral_VC(Criterion):
                 name = "Modifier Chest Lateral Viscous Criterion"
 
-                def __init__(self, report, isomme, p):
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
 
                     self.p = p
@@ -196,7 +200,7 @@ class EuroNCAP_Side_Pole(Report):
                     ])
 
                 def calculation(self) -> None:
-                    self.channel = self.isomme.get_channel(f"?{self.p}VCCR??00??VEYC")
+                    self.channel = self.require_channel(f"?{self.p}VCCR??00??VEYC")
                     self.value = self.channel.get_data()[np.argmax(np.abs(self.channel.get_data()))]
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                     self.color = self.limits.get_limit_min_color(self.channel)
@@ -204,7 +208,7 @@ class EuroNCAP_Side_Pole(Report):
             class Criterion_Shoulder_Lateral_Force(Criterion):
                 name = "Modifier Shoulder Lateral Force"
 
-                def __init__(self, report, isomme, p):
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
 
                     self.p = p
@@ -217,7 +221,7 @@ class EuroNCAP_Side_Pole(Report):
                     ])
 
                 def calculation(self) -> None:
-                    self.channel = self.isomme.get_channel(f"?{self.p}SHLD0000??FOYB").convert_unit("kN")
+                    self.channel = self.require_channel(f"?{self.p}SHLD0000??FOYB").convert_unit("kN")
                     self.value = self.channel.get_data()[np.argmax(np.abs(self.channel.get_data()))]
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                     self.color = self.limits.get_limit_min_color(self.channel)
@@ -225,7 +229,7 @@ class EuroNCAP_Side_Pole(Report):
         class Criterion_Abdomen(Criterion):
             name = "Abdomen"
 
-            def __init__(self, report, isomme, p):
+            def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                 super().__init__(report, isomme)
 
                 self.p = p
@@ -245,7 +249,7 @@ class EuroNCAP_Side_Pole(Report):
             class Criterion_Abdomen_Lateral_Compression(Criterion):
                 name = "Abdomen Lateral Compression"
 
-                def __init__(self, report, isomme, p):
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
 
                     self.p = p
@@ -260,7 +264,7 @@ class EuroNCAP_Side_Pole(Report):
                     ])
 
                 def calculation(self) -> None:
-                    self.channel = self.isomme.get_channel(f"?{self.p}ABRI??00??DSYC").convert_unit("mm")
+                    self.channel = self.require_channel(f"?{self.p}ABRI??00??DSYC").convert_unit("mm")
                     self.value = np.min(self.channel.get_data())
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=True)
                     self.color = self.limits.get_limit_min_color(self.channel)
@@ -268,7 +272,7 @@ class EuroNCAP_Side_Pole(Report):
             class Criterion_Abdomen_Lateral_VC(Criterion):
                 name = "Modifier Abdomen Lateral Viscous Criterion"
 
-                def __init__(self, report, isomme, p):
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
 
                     self.p = p
@@ -281,7 +285,7 @@ class EuroNCAP_Side_Pole(Report):
                     ])
 
                 def calculation(self) -> None:
-                    self.channel = self.isomme.get_channel(f"?{self.p}VCAR??00??VEYC")
+                    self.channel = self.require_channel(f"?{self.p}VCAR??00??VEYC")
                     self.value = self.channel.get_data()[np.argmax(np.abs(self.channel.get_data()))]
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                     self.color = self.limits.get_limit_min_color(self.channel)
@@ -289,7 +293,7 @@ class EuroNCAP_Side_Pole(Report):
         class Criterion_Pelvis(Criterion):
             name = "Pelvis"
 
-            def __init__(self, report, isomme, p):
+            def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                 super().__init__(report, isomme)
 
                 self.p = p
@@ -304,7 +308,7 @@ class EuroNCAP_Side_Pole(Report):
             class Criterion_Pubic_Symphysis_Force(Criterion):
                 name = "Pubic Symphysis Force"
 
-                def __init__(self, report, isomme, p):
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
 
                     self.p = p
@@ -326,7 +330,7 @@ class EuroNCAP_Side_Pole(Report):
                     ])
 
                 def calculation(self) -> None:
-                    self.channel = self.isomme.get_channel(f"?{self.p}PUBC0000??FOYB").convert_unit("kN")
+                    self.channel = self.require_channel(f"?{self.p}PUBC0000??FOYB").convert_unit("kN")
                     self.value = self.channel.get_data()[np.argmax(np.abs(self.channel.get_data()))]
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=True)
                     self.color = self.limits.get_limit_min_color(self.channel)
@@ -335,7 +339,7 @@ class EuroNCAP_Side_Pole(Report):
         name = "Values Chart"
         title = "Values"
 
-        def __init__(self, report):
+        def __init__(self, report: Report) -> None:
             super().__init__(report)
 
             self.criteria = {isomme: [
@@ -354,7 +358,7 @@ class EuroNCAP_Side_Pole(Report):
         name = "Values Table"
         title = "Values"
 
-        def __init__(self, report):
+        def __init__(self, report: Report) -> None:
             super().__init__(report)
 
             self.criteria = {isomme: [
@@ -372,7 +376,7 @@ class EuroNCAP_Side_Pole(Report):
         name: str = "Rating Table"
         title: str = "Rating"
 
-        def __init__(self, report):
+        def __init__(self, report: Report) -> None:
             super().__init__(report)
 
             self.criteria = {isomme: [
@@ -390,7 +394,7 @@ class EuroNCAP_Side_Pole(Report):
         ncols: int = 2
         sharey: bool = True
 
-        def __init__(self, report):
+        def __init__(self, report: Report) -> None:
             super().__init__(report)
             self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p}HEAD??????AC{xyzr}A"] for xyzr in "XYZR"] for isomme in self.report.isomme_list}
 
@@ -401,7 +405,7 @@ class EuroNCAP_Side_Pole(Report):
         ncols: int = 2
         sharey: bool = True
 
-        def __init__(self, report):
+        def __init__(self, report: Report) -> None:
             super().__init__(report)
             self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p}TRRILE01??DSYC"],
                                       [f"?{self.report.criterion_overall[isomme].p}TRRIRI01??DSYC"],
@@ -417,7 +421,7 @@ class EuroNCAP_Side_Pole(Report):
         ncols: int = 2
         sharey: bool = True
 
-        def __init__(self, report):
+        def __init__(self, report: Report) -> None:
             super().__init__(report)
             self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p}VCCRLE01??DSYC"],
                                       [f"?{self.report.criterion_overall[isomme].p}VCCRRI01??DSYC"],
@@ -433,7 +437,7 @@ class EuroNCAP_Side_Pole(Report):
         ncols = 2
         sharey = True
 
-        def __init__(self, report):
+        def __init__(self, report: Report) -> None:
             super().__init__(report)
             self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p}SHLDLE00??FOYC"],
                                       [f"?{self.report.criterion_overall[isomme].p}SHLDRI00??FOYC"]] for isomme in self.report.isomme_list}
@@ -445,7 +449,7 @@ class EuroNCAP_Side_Pole(Report):
         ncols: int = 2
         sharey: bool = True
 
-        def __init__(self, report):
+        def __init__(self, report: Report) -> None:
             super().__init__(report)
             self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p}ABRILE01??DSYC"],
                                       [f"?{self.report.criterion_overall[isomme].p}ABRIRI01??DSYC"],
@@ -459,7 +463,7 @@ class EuroNCAP_Side_Pole(Report):
         ncols: int = 2
         sharey: bool = True
 
-        def __init__(self, report):
+        def __init__(self, report: Report) -> None:
             super().__init__(report)
             self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p}VCARLE01??VEYC"],
                                       [f"?{self.report.criterion_overall[isomme].p}VCARRI01??VEYC"],
@@ -470,6 +474,6 @@ class EuroNCAP_Side_Pole(Report):
         name: str = "Pubic Symphysis Force"
         title: str = "Pubic Symphysis Force"
 
-        def __init__(self, report):
+        def __init__(self, report: Report) -> None:
             super().__init__(report)
             self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p}PUBC0000??FOYB"]] for isomme in self.report.isomme_list}

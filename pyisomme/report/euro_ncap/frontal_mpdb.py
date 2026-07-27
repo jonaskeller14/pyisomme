@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+from pyisomme.isomme import Isomme
 from pyisomme.report.page import Page_Cover, Page_OLC, Page_Plot_nxn, Page_Criterion_Values_Table, Page_Criterion_Rating_Table, Page_Criterion_Values_Chart
 from pyisomme.report.report import Report
 from pyisomme.limits import Limit
@@ -9,19 +12,20 @@ from pyisomme.unit import g0
 
 import logging
 import numpy as np
+from typing import Any
 
 
 logger = logging.getLogger(__name__)
 
 
-class EuroNCAP_Frontal_MPDB(Report):
+class EuroNCAP_Frontal_MPDB(Report["EuroNCAP_Frontal_MPDB.Criterion_Overall"]):
     name = "Euro NCAP | Frontal-Impact against MPDB with 50 % Overlap at 50/50 km/h"
     protocol = "9.3"
     protocols = {
         "9.3": "Version 9.3 (05.12.2023) [references/Euro-NCAP/euro-ncap-assessment-protocol-aop-v93.pdf]"
     }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
         self.pages = [
@@ -60,11 +64,12 @@ class EuroNCAP_Frontal_MPDB(Report):
         ]
 
     class Criterion_Overall(Criterion):
+        report: EuroNCAP_Frontal_MPDB
         name: str = "Overall"
         p_driver: int = 1
         p_passenger: int = 3
 
-        def __init__(self, report, isomme):
+        def __init__(self, report: Report, isomme: Isomme) -> None:
             super().__init__(report, isomme)
 
             p_driver = isomme.get_test_info("Driver position object 1")
@@ -78,7 +83,7 @@ class EuroNCAP_Frontal_MPDB(Report):
             self.criterion_door_opening_during_impact = EuroNCAP_Frontal_50kmh.Criterion_Overall.Criterion_DoorOpeningDuringImpact(report, isomme)
             self.criterion_compatibility_modifier = self.Criterion_Compatibility_Modifier(report, isomme)
 
-        def calculation(self):
+        def calculation(self) -> None:
             logger.info("Calculate Driver")
             self.criterion_driver.calculate()
             logger.info("Calculate Passenger")
@@ -113,12 +118,12 @@ class EuroNCAP_Frontal_MPDB(Report):
             ])
 
             # Capping (-np.inf) leads to 0 points. More than 16 points should not be possible if sub-criteria defined correctly
-            self.rating = np.interp(self.rating, [0, 16], [0, 16], left=0, right=np.nan)
+            self.rating = float(np.interp(self.rating, [0, 16], [0, 16], left=0, right=np.nan))
 
         class Criterion_Driver(Criterion):
             name = "Driver"
 
-            def __init__(self, report, isomme, p):
+            def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                 super().__init__(report, isomme)
 
                 self.p = p
@@ -128,7 +133,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                 self.criterion_knee_femur_pelvis = self.Criterion_Knee_Femur_Pelvis(report, isomme, p=self.p)
                 self.criterion_lowerleg_foot_ankle = self.Criterion_LowerLeg_Foot_Ankle(report, isomme, p=self.p)
 
-            def calculation(self):
+            def calculation(self) -> None:
                 self.criterion_head_neck.calculate()
                 self.criterion_chest_abdomen.calculate()
                 self.criterion_knee_femur_pelvis.calculate()
@@ -146,7 +151,7 @@ class EuroNCAP_Frontal_MPDB(Report):
 
                 steering_wheel_airbag_exists: bool = True
 
-                def __init__(self, report, isomme, p: int):
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
 
                     self.p = p
@@ -154,7 +159,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                     self.criterion_head = self.Criterion_Head(report, isomme, p=self.p)
                     self.criterion_neck = self.Criterion_Neck(report, isomme, p=self.p)
 
-                def calculation(self):
+                def calculation(self) -> None:
                     if not self.steering_wheel_airbag_exists:
                         self.rating = 0
                     else:
@@ -170,7 +175,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                     name = "Head"
                     hard_contact: bool = True
 
-                    def __init__(self, report, isomme, p: int):
+                    def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                         super().__init__(report, isomme)
 
                         self.p = p
@@ -179,8 +184,8 @@ class EuroNCAP_Frontal_MPDB(Report):
                         self.criterion_head_a3ms = EuroNCAP_Frontal_50kmh.Criterion_Overall.Criterion_Driver.Criterion_Head.Criterion_Head_a3ms(report, isomme, p=self.p)
                         self.criterion_damage = self.Criterion_DAMAGE(self.report, self.isomme, p=self.p)
 
-                    def calculation(self):
-                        if np.max(np.abs(self.isomme.get_channel(f"?{self.p}HEAD??00??ACRA").get_data(unit=g0))) > 80:
+                    def calculation(self) -> None:
+                        if np.max(np.abs(self.require_channel(f"?{self.p}HEAD??00??ACRA").get_data(unit=g0))) > 80:
                             logger.info(f"Hard Head contact assumed for p={self.p} in {self.isomme}")
                             self.hard_contact = True
 
@@ -199,7 +204,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                     class Criterion_DAMAGE(Criterion):
                         name = "Modifier for Brain Injury - DAMAGE"
 
-                        def __init__(self, report, isomme, p: int):
+                        def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                             super().__init__(report, isomme)
 
                             self.p = p
@@ -211,7 +216,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                             ])
 
                         def calculation(self) -> None:
-                            self.channel = self.isomme.get_channel(f"?{self.p}HEADDAMA??AARA")
+                            self.channel = self.require_channel(f"?{self.p}HEADDAMA??AARA")
                             self.value = np.max(self.channel.get_data())
                             self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                             self.color = self.limits.get_limit_min_color(self.channel)
@@ -219,7 +224,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                 class Criterion_Neck(Criterion):
                     name = "Neck"
 
-                    def __init__(self, report, isomme, p):
+                    def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                         super().__init__(report, isomme)
 
                         self.p = p
@@ -228,7 +233,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                         self.criterion_fz_tension = self.Criterion_Fz_Tension(report, isomme, p)
                         self.criterion_fx_shear = self.Criterion_Fx_Shear(report, isomme, p)
 
-                    def calculation(self):
+                    def calculation(self) -> None:
                         self.criterion_my_extension.calculate()
                         self.criterion_fz_tension.calculate()
                         self.criterion_fx_shear.calculate()
@@ -242,7 +247,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                     class Criterion_My_Extension(Criterion):
                         name = "Neck My extension"
 
-                        def __init__(self, report, isomme, p):
+                        def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                             super().__init__(report, isomme)
 
                             self.p = p
@@ -256,8 +261,8 @@ class EuroNCAP_Frontal_MPDB(Report):
                                 Limit_C([f"?{self.p}NECKUP00??MOY?"], func=lambda x: -57, y_unit="Nm", upper=True),
                             ])
 
-                        def calculation(self):
-                            self.channel = self.isomme.get_channel(f"?{self.p}NECKUP00??MOYB")
+                        def calculation(self) -> None:
+                            self.channel = self.require_channel(f"?{self.p}NECKUP00??MOYB")
                             self.value = np.min(self.channel.get_data(unit="Nm"))
                             self.rating = self.limits.get_limit_min_rating(self.channel)
                             self.color = self.limits.get_limit_min_color(self.channel)
@@ -265,7 +270,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                     class Criterion_Fz_Tension(Criterion):
                         name = "Neck Fz tension"
 
-                        def __init__(self, report, isomme, p):
+                        def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                             super().__init__(report, isomme)
 
                             self.p = p
@@ -279,8 +284,8 @@ class EuroNCAP_Frontal_MPDB(Report):
                                 Limit_C([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: 3.3, y_unit="kN", x_unit="ms", lower=True),
                             ])
 
-                        def calculation(self):
-                            self.channel = self.isomme.get_channel(f"?{self.p}NECKUP00??FOZA").convert_unit("kN")
+                        def calculation(self) -> None:
+                            self.channel = self.require_channel(f"?{self.p}NECKUP00??FOZA").convert_unit("kN")
                             self.value = np.max(self.channel.get_data())
                             self.rating = self.limits.get_limit_min_rating(self.channel)
                             self.color = self.limits.get_limit_min_color(self.channel)
@@ -288,7 +293,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                     class Criterion_Fx_Shear(Criterion):
                         name = "Neck Fx shear"
 
-                        def __init__(self, report, isomme, p):
+                        def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                             super().__init__(report, isomme)
 
                             self.p = p
@@ -309,8 +314,8 @@ class EuroNCAP_Frontal_MPDB(Report):
                                 Limit_C([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -3.1, y_unit="kN", x_unit="ms", upper=True),
                             ])
 
-                        def calculation(self):
-                            self.channel = self.isomme.get_channel(f"?{self.p}NECKUP00??FOXA").convert_unit("kN")
+                        def calculation(self) -> None:
+                            self.channel = self.require_channel(f"?{self.p}NECKUP00??FOXA").convert_unit("kN")
                             self.value = self.channel.get_data()[np.argmax(np.abs(self.channel.get_data()))]
                             self.rating = self.limits.get_limit_min_rating(self.channel)
                             self.color = self.limits.get_limit_min_color(self.channel)
@@ -318,7 +323,7 @@ class EuroNCAP_Frontal_MPDB(Report):
             class Criterion_Chest_Abdomen(Criterion):
                 name = "Chest and Abdomen"
 
-                def __init__(self, report, isomme, p):
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
 
                     self.p = p
@@ -326,7 +331,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                     self.criterion_chest = self.Criterion_Chest(report, isomme, p)
                     self.criterion_abdomen = self.Criterion_Abdomen(report, isomme, p)
 
-                def calculation(self):
+                def calculation(self) -> None:
                     self.criterion_chest.calculate()
                     self.criterion_abdomen.calculate()
 
@@ -339,7 +344,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                 class Criterion_Chest(Criterion):
                     name = "Chest"
 
-                    def __init__(self, report, isomme, p):
+                    def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                         super().__init__(report, isomme)
 
                         self.p = p
@@ -348,7 +353,7 @@ class EuroNCAP_Frontal_MPDB(Report):
 
                         self.criterion_shoulder_belt_load = EuroNCAP_Frontal_50kmh.Criterion_Overall.Criterion_Driver.Criterion_Chest.Criterion_ShoulderBeltLoad(report, isomme, p=self.p)
 
-                    def calculation(self):
+                    def calculation(self) -> None:
                         self.criterion_chest_compression.calculate()
 
                         self.rating = self.criterion_chest_compression.rating
@@ -360,7 +365,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                     class Criterion_Chest_Compression(Criterion):
                         name = "Chest Compression"
 
-                        def __init__(self, report, isomme, p):
+                        def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                             super().__init__(report, isomme)
 
                             self.p = p
@@ -374,8 +379,8 @@ class EuroNCAP_Frontal_MPDB(Report):
                                 Limit_G([f"?{self.p}CHST??????DSX?"], func=lambda x: -35.000, y_unit="mm", lower=True),
                             ])
 
-                        def calculation(self):
-                            self.channel = self.isomme.get_channel(f"?{self.p}CHST0000??DSXC").convert_unit("mm")
+                        def calculation(self) -> None:
+                            self.channel = self.require_channel(f"?{self.p}CHST0000??DSXC").convert_unit("mm")
                             self.value = np.min(self.channel.get_data())
                             self.rating = self.limits.get_limit_min_rating(self.channel)
                             self.color = self.limits.get_limit_min_color(self.channel)
@@ -383,14 +388,14 @@ class EuroNCAP_Frontal_MPDB(Report):
                 class Criterion_Abdomen(Criterion):
                     name = "Abdomen"
 
-                    def __init__(self, report, isomme, p):
+                    def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                         super().__init__(report, isomme)
 
                         self.p = p
 
                         self.criterion_abdomen_compression = self.Criterion_Abdomen_Compression(report, isomme, p=self.p)
 
-                    def calculation(self):
+                    def calculation(self) -> None:
                         self.criterion_abdomen_compression.calculate()
 
                         self.rating = self.criterion_abdomen_compression.rating
@@ -398,7 +403,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                     class Criterion_Abdomen_Compression(Criterion):
                         name = "Abdomen Compression"
 
-                        def __init__(self, report, isomme, p):
+                        def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                             super().__init__(report, isomme)
 
                             self.p = p
@@ -408,8 +413,8 @@ class EuroNCAP_Frontal_MPDB(Report):
                                 Limit_G([f"?{self.p}ABDO??????DSX?"], func=lambda x: -88, y_unit="mm", lower=True),
                             ])
 
-                        def calculation(self):
-                            self.channel = self.isomme.get_channel(f"?{self.p}ABDO0000??DSXC").convert_unit("mm")
+                        def calculation(self) -> None:
+                            self.channel = self.require_channel(f"?{self.p}ABDO0000??DSXC").convert_unit("mm")
                             self.value = np.min(self.channel.get_data())
                             self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                             self.color = self.limits.get_limit_min_color(self.channel)
@@ -417,7 +422,7 @@ class EuroNCAP_Frontal_MPDB(Report):
             class Criterion_Knee_Femur_Pelvis(Criterion):
                 name = "Knee, Femur and Pelvis"
 
-                def __init__(self, report, isomme, p):
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
 
                     self.p = p
@@ -428,7 +433,7 @@ class EuroNCAP_Frontal_MPDB(Report):
 
                     self.criterion_submarining = EuroNCAP_Frontal_50kmh.Criterion_Overall.Criterion_Driver.Criterion_Femur.Criterion_Submarining(report, isomme, p=self.p)
 
-                def calculation(self):
+                def calculation(self) -> None:
                     self.criterion_pelvis.calculate()
                     self.criterion_femur.calculate()
                     self.criterion_knee.calculate()
@@ -447,14 +452,14 @@ class EuroNCAP_Frontal_MPDB(Report):
                 class Criterion_Pelvis(Criterion):
                     name = "Pelvis"
 
-                    def __init__(self, report, isomme, p):
+                    def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                         super().__init__(report, isomme)
 
                         self.p = p
 
                         self.criterion_acetabulum_force = self.Criterion_Acetabulum_Force(report, isomme, p=self.p)
 
-                    def calculation(self):
+                    def calculation(self) -> None:
                         self.criterion_acetabulum_force.calculate()
 
                         self.rating = self.criterion_acetabulum_force.rating
@@ -462,7 +467,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                     class Criterion_Acetabulum_Force(Criterion):
                         name = "Acetabulum Force"
 
-                        def __init__(self, report, isomme, p):
+                        def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                             super().__init__(report, isomme)
 
                             self.p = p
@@ -475,8 +480,8 @@ class EuroNCAP_Frontal_MPDB(Report):
                                 Limit_G([f"?{self.p}ACTB??00??FOR?"], func=lambda x: -3.280, y_unit="kN", lower=True),
                             ])
 
-                        def calculation(self):
-                            self.channel = self.isomme.get_channel(f"?{self.p}ACTB0000??FORB").convert_unit("kN")
+                        def calculation(self) -> None:
+                            self.channel = self.require_channel(f"?{self.p}ACTB0000??FORB").convert_unit("kN")
                             self.value = np.min(self.channel.get_data())
                             self.rating = self.limits.get_limit_min_rating(self.channel)
                             self.color = self.limits.get_limit_min_color(self.channel)
@@ -484,14 +489,14 @@ class EuroNCAP_Frontal_MPDB(Report):
                 class Criterion_Femur(Criterion):
                     name = "Femur"
 
-                    def __init__(self, report, isomme, p):
+                    def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                         super().__init__(report, isomme)
 
                         self.p = p
 
                         self.criterion_femur_compression = self.Criterion_Femur_Compression(report, isomme, p=self.p)
 
-                    def calculation(self):
+                    def calculation(self) -> None:
                         self.criterion_femur_compression.calculate()
 
                         self.rating = self.criterion_femur_compression.rating
@@ -499,7 +504,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                     class Criterion_Femur_Compression(Criterion):
                         name = "Femur Compression"
 
-                        def __init__(self, report, isomme, p):
+                        def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                             super().__init__(report, isomme)
 
                             self.p = p
@@ -512,8 +517,8 @@ class EuroNCAP_Frontal_MPDB(Report):
                                 Limit_P([f"?{self.p}FEMR??00??FOZ?"], func=lambda x: np.interp(x, [0, 10], [-9.070, -7.560]), y_unit="kN", x_unit="ms", upper=True),
                             ])
 
-                        def calculation(self):
-                            self.channel = self.isomme.get_channel(f"?{self.p}FEMR0000??FOZB").convert_unit("kN")
+                        def calculation(self) -> None:
+                            self.channel = self.require_channel(f"?{self.p}FEMR0000??FOZB").convert_unit("kN")
                             self.value = self.limits.get_limit_min_y(self.channel)
                             self.rating = self.limits.get_limit_min_rating(self.channel)
                             self.color = self.limits.get_limit_min_color(self.channel)
@@ -521,14 +526,14 @@ class EuroNCAP_Frontal_MPDB(Report):
                 class Criterion_Knee(Criterion):
                     name = "Knee"
 
-                    def __init__(self, report, isomme, p):
+                    def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                         super().__init__(report, isomme)
 
                         self.p = p
 
                         self.criterion_knee_slider_compression = self.Criterion_Knee_Slider_Compression(report, isomme, p=self.p)
 
-                    def calculation(self):
+                    def calculation(self) -> None:
                         self.criterion_knee_slider_compression.calculate()
 
                         self.rating = self.criterion_knee_slider_compression.rating
@@ -536,7 +541,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                     class Criterion_Knee_Slider_Compression(Criterion):
                         name = "Knee Slider Compression"
 
-                        def __init__(self, report, isomme, p):
+                        def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                             super().__init__(report, isomme)
 
                             self.p = p
@@ -549,8 +554,8 @@ class EuroNCAP_Frontal_MPDB(Report):
                                 Limit_G([f"?{self.p}KNSL??00??DSX?"], func=lambda x: -6.00, y_unit="mm", lower=True),
                             ])
 
-                        def calculation(self):
-                            self.channel = self.isomme.get_channel(f"?{self.p}KNSL0000??DSXC").convert_unit("mm")
+                        def calculation(self) -> None:
+                            self.channel = self.require_channel(f"?{self.p}KNSL0000??DSXC").convert_unit("mm")
                             self.value = np.min(self.channel.get_data())
                             self.rating = self.limits.get_limit_min_rating(self.channel)
                             self.color = self.limits.get_limit_min_color(self.channel)
@@ -558,7 +563,7 @@ class EuroNCAP_Frontal_MPDB(Report):
             class Criterion_LowerLeg_Foot_Ankle(Criterion):
                 name = "Lower Leg, Foot and Ankle"
 
-                def __init__(self, report, isomme, p):
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
 
                     self.p = p
@@ -567,7 +572,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                     self.criterion_tibia_compression = self.Criterion_Tibia_Compression(report, isomme, p=self.p)
                     self.criterion_pedal_rearward_displacement = self.Criterion_Pedal_Rearward_Displacement(report, isomme, p=self.p)
 
-                def calculation(self):
+                def calculation(self) -> None:
                     self.criterion_tibia_index.calculate()
                     self.criterion_tibia_compression.calculate()
                     self.criterion_pedal_rearward_displacement.calculate()
@@ -581,7 +586,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                 class Criterion_Tibia_Index(Criterion):
                     name = "Tibia Index"
 
-                    def __init__(self, report, isomme, p):
+                    def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                         super().__init__(report, isomme)
 
                         self.p = p
@@ -594,8 +599,8 @@ class EuroNCAP_Frontal_MPDB(Report):
                             Limit_P([f"?{self.p}TIIN??????000?"], func=lambda x: 1.3, y_unit="1", lower=True),
                         ])
 
-                    def calculation(self):
-                        self.channel = self.isomme.get_channel(f"?{self.p}TIIN0000??000B")
+                    def calculation(self) -> None:
+                        self.channel = self.require_channel(f"?{self.p}TIIN0000??000B")
                         self.value = np.max(self.channel.get_data())
                         self.rating = self.limits.get_limit_min_rating(self.channel)
                         self.color = self.limits.get_limit_min_color(self.channel)
@@ -603,7 +608,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                 class Criterion_Tibia_Compression(Criterion):
                     name = "Tibia Compression"
 
-                    def __init__(self, report, isomme, p):
+                    def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                         super().__init__(report, isomme)
 
                         self.p = p
@@ -616,8 +621,8 @@ class EuroNCAP_Frontal_MPDB(Report):
                             Limit_G([f"?{self.p}TIBI??????FOZ?"], func=lambda x: -2, y_unit="kN", lower=True),
                         ])
 
-                    def calculation(self):
-                        self.channel = self.isomme.get_channel(f"?{self.p}TIBI0000??FOZB").convert_unit("kN")
+                    def calculation(self) -> None:
+                        self.channel = self.require_channel(f"?{self.p}TIBI0000??FOZB").convert_unit("kN")
                         self.value = np.min(self.channel.get_data())
                         self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=True)
                         self.color = self.limits.get_limit_min_color(self.channel)
@@ -626,19 +631,20 @@ class EuroNCAP_Frontal_MPDB(Report):
                     name = "Pedal Rearward Displacement"
                     pedal_rearward_displacement: float = 0
 
-                    def __init__(self, report, isomme, p):
+                    def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                         super().__init__(report, isomme)
 
                         self.p = p
 
-                    def calculation(self):
+                    def calculation(self) -> None:
                         self.value = self.pedal_rearward_displacement
-                        self.rating = np.interp(self.value, [100, 200], [4, 0], left=4)
+                        self.rating = float(np.interp(self.value, [100, 200], [4, 0], left=4))
 
         class Criterion_Passenger(Criterion):
+            report: EuroNCAP_Frontal_MPDB
             name = "Passenger"
 
-            def __init__(self, report, isomme, p):
+            def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                 super().__init__(report, isomme)
 
                 self.p = p
@@ -648,7 +654,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                 self.criterion_knee_femur_pelvis = self.Criterion_Knee_Femur_Pelvis(report, isomme, p)
                 self.criterion_lowerleg = self.Criterion_LowerLeg(report, isomme, p)
 
-            def calculation(self):
+            def calculation(self) -> None:
                 self.criterion_head_neck.calculate()
                 self.criterion_chest.calculate()
                 self.criterion_knee_femur_pelvis.calculate()
@@ -664,7 +670,7 @@ class EuroNCAP_Frontal_MPDB(Report):
             class Criterion_Head_Neck(Criterion):
                 name = "Head and Neck"
 
-                def __init__(self, report, isomme, p):
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
 
                     self.p = p
@@ -672,7 +678,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                     self.criterion_head = self.Criterion_Head(report, isomme, p)
                     self.criterion_neck = self.Criterion_Neck(report, isomme, p)
 
-                def calculation(self):
+                def calculation(self) -> None:
                     self.criterion_head.calculate()
                     self.criterion_neck.calculate()
 
@@ -684,7 +690,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                 class Criterion_Head(Criterion):
                     name = "Head"
 
-                    def __init__(self, report, isomme, p):
+                    def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                         super().__init__(report, isomme)
 
                         self.p = p
@@ -692,11 +698,11 @@ class EuroNCAP_Frontal_MPDB(Report):
                         self.criterion_hic_15 = EuroNCAP_Frontal_50kmh.Criterion_Overall.Criterion_Driver.Criterion_Head.Criterion_HIC_15(report, isomme, p=self.p)
                         self.criterion_head_a3ms = EuroNCAP_Frontal_50kmh.Criterion_Overall.Criterion_Driver.Criterion_Head.Criterion_Head_a3ms(report, isomme, p=self.p)
 
-                    def calculation(self):
+                    def calculation(self) -> None:
                         self.criterion_hic_15.calculate()
                         self.criterion_head_a3ms.calculate()
 
-                        self.rating = np.value = np.min([
+                        self.rating = self.value = np.min([
                             self.criterion_hic_15.rating,
                             self.criterion_head_a3ms.rating,
                         ])
@@ -704,7 +710,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                 class Criterion_Neck(Criterion):
                     name = "Neck"
 
-                    def __init__(self, report, isomme, p):
+                    def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                         super().__init__(report, isomme)
 
                         self.p = p
@@ -713,7 +719,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                         self.criterion_fz_tension = self.Criterion_Fz_Tension(report, isomme, p)
                         self.criterion_my_extension = self.Criterion_My_Extension(report, isomme, p)
 
-                    def calculation(self):
+                    def calculation(self) -> None:
                         self.criterion_fx_shear.calculate()
                         self.criterion_fz_tension.calculate()
                         self.criterion_my_extension.calculate()
@@ -727,7 +733,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                     class Criterion_Fx_Shear(Criterion):
                         name = "Neck Fx shear"
 
-                        def __init__(self, report, isomme, p):
+                        def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                             super().__init__(report, isomme)
 
                             self.p = p
@@ -748,8 +754,8 @@ class EuroNCAP_Frontal_MPDB(Report):
                                 Limit_C([f"?{self.p}NECKUP00??FOX?"], func=lambda x: np.interp(x, [0, 25, 35, 45], [-3.1, -1.5, -1.5, -1.1]), y_unit="kN", x_unit="ms", upper=True),
                             ])
 
-                        def calculation(self):
-                            self.channel = self.isomme.get_channel(f"?{self.p}NECKUP00??FOXA").convert_unit("kN")
+                        def calculation(self) -> None:
+                            self.channel = self.require_channel(f"?{self.p}NECKUP00??FOXA").convert_unit("kN")
                             self.value = self.limits.get_limit_min_y(self.channel)
                             self.rating = self.limits.get_limit_min_rating(self.channel)
                             self.color = self.limits.get_limit_min_color(self.channel)
@@ -757,7 +763,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                     class Criterion_Fz_Tension(Criterion):
                         name = "Fz Tension"
 
-                        def __init__(self, report, isomme, p):
+                        def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                             super().__init__(report, isomme)
 
                             self.p = p
@@ -772,7 +778,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                             ])
 
                         def calculation(self) -> None:
-                            self.channel = self.isomme.get_channel(f"?{self.p}NECKUP00??FOZA").convert_unit("kN")
+                            self.channel = self.require_channel(f"?{self.p}NECKUP00??FOZA").convert_unit("kN")
                             self.value = self.limits.get_limit_min_y(self.channel)
                             self.rating = self.limits.get_limit_min_rating(self.channel)
                             self.color = self.limits.get_limit_min_color(self.channel)
@@ -780,7 +786,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                     class Criterion_My_Extension(Criterion):
                         name = "My Extension"
 
-                        def __init__(self, report, isomme, p):
+                        def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                             super().__init__(report, isomme)
 
                             self.p = p
@@ -795,7 +801,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                             ])
 
                         def calculation(self) -> None:
-                            self.channel = self.isomme.get_channel(f"?{self.p}NECKUP00??MOYB").convert_unit("Nm")
+                            self.channel = self.require_channel(f"?{self.p}NECKUP00??MOYB").convert_unit("Nm")
                             self.value = np.min(self.channel.get_data())
                             self.rating = self.limits.get_limit_min_rating(self.channel)
                             self.color = self.limits.get_limit_min_color(self.channel)
@@ -803,7 +809,7 @@ class EuroNCAP_Frontal_MPDB(Report):
             class Criterion_Chest(Criterion):
                 name = "Chest"
 
-                def __init__(self, report, isomme, p):
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
 
                     self.p = p
@@ -829,7 +835,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                 class Criterion_Chest_Compression(Criterion):
                     name = "Chest Compression"
 
-                    def __init__(self, report, isomme, p):
+                    def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                         super().__init__(report, isomme)
 
                         self.p = p
@@ -843,16 +849,17 @@ class EuroNCAP_Frontal_MPDB(Report):
                             Limit_G([f"?{self.p}CHST000[03]??DSX?"], func=lambda x: -22.000, y_unit="mm", lower=True),
                         ])
 
-                    def calculation(self):
-                        self.channel = self.isomme.get_channel(f"?{self.p}CHST0003??DSXC", f"?{self.p}CHST0000??DSXC").convert_unit("mm")
+                    def calculation(self) -> None:
+                        self.channel = self.require_channel(f"?{self.p}CHST0003??DSXC", f"?{self.p}CHST0000??DSXC").convert_unit("mm")
                         self.value = np.min(self.channel.get_data())
                         self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=True)
                         self.color = self.limits.get_limit_min_color(self.channel)
 
             class Criterion_Knee_Femur_Pelvis(Criterion):
+                report: EuroNCAP_Frontal_MPDB
                 name = "Knee, Femur and Pelvis"
 
-                def __init__(self, report, isomme, p):
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
 
                     self.p = p
@@ -860,7 +867,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                     self.criterion_femur_compression = self.report.Criterion_Overall.Criterion_Driver.Criterion_Knee_Femur_Pelvis.Criterion_Femur.Criterion_Femur_Compression(report, isomme, p)
                     self.criterion_knee_slider_compression = self.report.Criterion_Overall.Criterion_Driver.Criterion_Knee_Femur_Pelvis.Criterion_Knee.Criterion_Knee_Slider_Compression(report, isomme, p)
 
-                def calculation(self):
+                def calculation(self) -> None:
                     self.criterion_femur_compression.calculate()
                     self.criterion_knee_slider_compression.calculate()
 
@@ -870,9 +877,10 @@ class EuroNCAP_Frontal_MPDB(Report):
                     ])
 
             class Criterion_LowerLeg(Criterion):
+                report: EuroNCAP_Frontal_MPDB
                 name = "Lower Leg"
 
-                def __init__(self, report, isomme, p):
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
 
                     self.p = p
@@ -880,7 +888,7 @@ class EuroNCAP_Frontal_MPDB(Report):
                     self.criterion_tibia_index = self.report.Criterion_Overall.Criterion_Driver.Criterion_LowerLeg_Foot_Ankle.Criterion_Tibia_Index(report, isomme, p=self.p)
                     self.criterion_tibia_compression = self.report.Criterion_Overall.Criterion_Driver.Criterion_LowerLeg_Foot_Ankle.Criterion_Tibia_Compression(report, isomme, p=self.p)
 
-                def calculation(self):
+                def calculation(self) -> None:
                     self.criterion_tibia_index.calculate()
                     self.criterion_tibia_compression.calculate()
 
@@ -892,14 +900,14 @@ class EuroNCAP_Frontal_MPDB(Report):
         class Criterion_Compatibility_Modifier(Criterion):
             name = "Compatibility Modifier"
 
-            def __init__(self, report, isomme):
+            def __init__(self, report: Report, isomme: Isomme) -> None:
                 super().__init__(report, isomme)
 
                 self.criterion_olc_modifier = self.Criterion_OLC_Modifier(report, isomme)
                 # self.criterion_sd_modifier = self.Criterion_SD_Modifier(report, isomme)
                 # self.criterion_bo_modifier = self.Criterion_BO_Modifier(report, isomme)
 
-            def calculation(self):
+            def calculation(self) -> None:
                 self.criterion_olc_modifier.calculate()
                 # self.criterion_sd_modifier.calculate()
                 # self.criterion_bo_modifier.calculate()
@@ -909,22 +917,22 @@ class EuroNCAP_Frontal_MPDB(Report):
                     # self.criterion_sd_modifier.rating,
                     # self.criterion_bo_modifier.rating
                 ])
-                self.rating = np.interp(self.value, [-8, 0], [-8, 0])  # penalty will not exceed -8 pts.
+                self.rating = float(np.interp(self.value, [-8, 0], [-8, 0]))  # penalty will not exceed -8 pts.
 
             class Criterion_OLC_Modifier(Criterion):
                 name = "Occupant Load Criterion (OLC) Modifier"
 
-                def __init__(self, report, isomme):
+                def __init__(self, report: Report, isomme: Isomme) -> None:
                     super().__init__(report, isomme)
 
                     self.extend_limit_list([
-                        Limit([f"M?MBAR0OLC??VEX?"], func=lambda x: 25, y_unit=g0, name="0 pt. Modifier", rating=0, upper=True),
-                        Limit([f"M?MBAR0OLC??VEX?"], func=lambda x: 25, y_unit=g0, name="-2..0 pt. Modifier", rating=0, lower=True),
-                        Limit([f"M?MBAR0OLC??VEX?"], func=lambda x: 40, y_unit=g0, name="-2 pt. Modifier", rating=-2, lower=True),
+                        Limit(["M?MBAR0OLC??VEX?"], func=lambda x: 25, y_unit=g0, name="0 pt. Modifier", rating=0, upper=True),
+                        Limit(["M?MBAR0OLC??VEX?"], func=lambda x: 25, y_unit=g0, name="-2..0 pt. Modifier", rating=0, lower=True),
+                        Limit(["M?MBAR0OLC??VEX?"], func=lambda x: 40, y_unit=g0, name="-2 pt. Modifier", rating=-2, lower=True),
                     ])
 
-                def calculation(self):
-                    self.channel = calculate_olc(self.isomme.get_channel(f"M?MBAR0000??VEXA", f"M?MBARCG00??VEXA"))[0]
+                def calculation(self) -> None:
+                    self.channel = calculate_olc(self.require_channel("M?MBAR0000??VEXA", "M?MBARCG00??VEXA"))[0]
                     self.value = self.channel.get_data(unit=g0)[0]
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=True)
 
@@ -935,10 +943,11 @@ class EuroNCAP_Frontal_MPDB(Report):
                 pass
 
     class Page_Rating_Table(Page_Criterion_Rating_Table):
+        report: EuroNCAP_Frontal_MPDB
         name = "Rating"
         title = "Rating"
 
-        def __init__(self, report):
+        def __init__(self, report: EuroNCAP_Frontal_MPDB) -> None:
             super().__init__(report)
 
             self.criteria = {isomme: [
@@ -951,10 +960,11 @@ class EuroNCAP_Frontal_MPDB(Report):
 
 
     class Page_Driver_Result_Values_Chart(Page_Criterion_Values_Chart):
+        report: EuroNCAP_Frontal_MPDB
         name = "Driver Result Values Chart"
         title = "Driver Result"
 
-        def __init__(self, report):
+        def __init__(self, report: EuroNCAP_Frontal_MPDB) -> None:
             super().__init__(report)
 
             self.criteria = {isomme: [
@@ -975,10 +985,11 @@ class EuroNCAP_Frontal_MPDB(Report):
             ] for isomme in self.report.isomme_list}
 
     class Page_Driver_Rating_Table(Page_Criterion_Rating_Table):
+        report: EuroNCAP_Frontal_MPDB
         name = "Driver Rating Table"
         title = "Driver Rating"
 
-        def __init__(self, report):
+        def __init__(self, report: EuroNCAP_Frontal_MPDB) -> None:
             super().__init__(report)
 
             self.criteria = {isomme: [
@@ -990,10 +1001,11 @@ class EuroNCAP_Frontal_MPDB(Report):
             ] for isomme in self.report.isomme_list}
 
     class Page_Driver_Values_Table(Page_Criterion_Values_Table):
+        report: EuroNCAP_Frontal_MPDB
         name = "Driver Values Table"
         title = "Driver Values"
 
-        def __init__(self, report):
+        def __init__(self, report: EuroNCAP_Frontal_MPDB) -> None:
             super().__init__(report)
 
             self.criteria = {isomme: [
@@ -1020,13 +1032,14 @@ class EuroNCAP_Frontal_MPDB(Report):
         pass
 
     class Page_Driver_Head_Damage(Page_Plot_nxn):
+        report: EuroNCAP_Frontal_MPDB
         name = "Driver Head DAMAGE"
         title = "Driver Head DAMAGE"
         nrows = 2
         ncols = 2
         sharey = True
 
-        def __init__(self, report):
+        def __init__(self, report: EuroNCAP_Frontal_MPDB) -> None:
             super().__init__(report)
             self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p_driver}HEADDAMA??AAXA"],
                                       [f"?{self.report.criterion_overall[isomme].p_driver}HEADDAMA??AAYA"],
@@ -1037,13 +1050,14 @@ class EuroNCAP_Frontal_MPDB(Report):
         pass
 
     class Page_Driver_Chest_Compression(Page_Plot_nxn):
+        report: EuroNCAP_Frontal_MPDB
         name = "Driver Chest Compression"
         title = "Driver Chest Compression"
         nrows = 2
         ncols = 2
         sharey = True
 
-        def __init__(self, report):
+        def __init__(self, report: EuroNCAP_Frontal_MPDB) -> None:
             super().__init__(report)
             self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p_driver}CHSTLEUP??DSXC"],
                                       [f"?{self.report.criterion_overall[isomme].p_driver}CHSTRIUP??DSXC"],
@@ -1051,12 +1065,13 @@ class EuroNCAP_Frontal_MPDB(Report):
                                       [f"?{self.report.criterion_overall[isomme].p_driver}CHSTRILO??DSXC"]] for isomme in self.report.isomme_list}
 
     class Page_Driver_Abdomen_Compression(Page_Plot_nxn):
+        report: EuroNCAP_Frontal_MPDB
         name = "Driver Abdomen Compression"
         title = "Driver Abdomen Compression"
         nrows = 1
         ncols = 2
 
-        def __init__(self, report):
+        def __init__(self, report: EuroNCAP_Frontal_MPDB) -> None:
             super().__init__(report)
             self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p_driver}ABDOLE00??DSXC"],
                                       [f"?{self.report.criterion_overall[isomme].p_driver}ABDORI00??DSXC"]] for isomme in self.report.isomme_list}
@@ -1071,7 +1086,7 @@ class EuroNCAP_Frontal_MPDB(Report):
         ncols = 2
         sharey = True
 
-        def __init__(self, report):
+        def __init__(self, report: Report) -> None:
             super().__init__(report)
             self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p_driver}TIBILEUP??FOZB"],
                                       [f"?{self.report.criterion_overall[isomme].p_driver}TIBIRIUP??FOZB"],
@@ -1085,7 +1100,7 @@ class EuroNCAP_Frontal_MPDB(Report):
         ncols = 2
         sharey = True
 
-        def __init__(self, report):
+        def __init__(self, report: Report) -> None:
             super().__init__(report)
             self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p_driver}TIINLEUP??000B"],
                                       [f"?{self.report.criterion_overall[isomme].p_driver}TIINRIUP??000B"],
@@ -1099,16 +1114,17 @@ class EuroNCAP_Frontal_MPDB(Report):
         ncols = 2
         sharey = True
 
-        def __init__(self, report):
+        def __init__(self, report: Report) -> None:
             super().__init__(report)
             self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p_driver}KNSLLE00??DSXC"],
                                       [f"?{self.report.criterion_overall[isomme].p_driver}KNSLRI00??DSXC"]]for isomme in self.report.isomme_list}
 
     class Page_Passenger_Result_Values_Chart(Page_Criterion_Values_Chart):
+        report: EuroNCAP_Frontal_MPDB
         name = "Passenger Result Values Chart"
         title = "Passenger Result"
 
-        def __init__(self, report):
+        def __init__(self, report: EuroNCAP_Frontal_MPDB) -> None:
             super().__init__(report)
 
             self.criteria = {isomme: [
@@ -1127,11 +1143,12 @@ class EuroNCAP_Frontal_MPDB(Report):
             ] for isomme in self.report.isomme_list}
 
     class Page_Passenger_Rating_Table(Page_Criterion_Rating_Table):
+        report: EuroNCAP_Frontal_MPDB
         name: str = "Passenger Rating Table"
         title: str = "Passenger Rating"
         table_content: dict
 
-        def __init__(self, report):
+        def __init__(self, report: EuroNCAP_Frontal_MPDB) -> None:
             super().__init__(report)
 
             self.criteria = {isomme: [
@@ -1143,10 +1160,11 @@ class EuroNCAP_Frontal_MPDB(Report):
             ] for isomme in self.report.isomme_list}
 
     class Page_Passenger_Values_Table(Page_Criterion_Values_Table):
+        report: EuroNCAP_Frontal_MPDB
         name: str = "Passenger Values Table"
         title: str = "Passenger Values"
 
-        def __init__(self, report):
+        def __init__(self, report: EuroNCAP_Frontal_MPDB) -> None:
             super().__init__(report)
 
             self.criteria = {isomme: [
@@ -1165,13 +1183,14 @@ class EuroNCAP_Frontal_MPDB(Report):
             ] for isomme in self.report.isomme_list}
 
     class Page_Passenger_Belt(Page_Plot_nxn):
+        report: EuroNCAP_Frontal_MPDB
         name: str = "Passenger Belt"
         title: str = "Passenger Belt"
         nrows: int = 3
         ncols: int = 2
         sharey: bool = False
 
-        def __init__(self, report):
+        def __init__(self, report: EuroNCAP_Frontal_MPDB) -> None:
             super().__init__(report)
             self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p_passenger}SEBE000[30]B1FO[X0]C"],
                                       [f"?{self.report.criterion_overall[isomme].p_passenger}SEBE000[30]B2FO[X0]C"],
@@ -1187,7 +1206,7 @@ class EuroNCAP_Frontal_MPDB(Report):
         ncols: int = 2
         sharey: bool = True
 
-        def __init__(self, report):
+        def __init__(self, report: Report) -> None:
             super().__init__(report)
             self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p_passenger}HEAD??????AC{xyzr}A"] for xyzr in "XYZR"] for isomme in self.report.isomme_list}
 
@@ -1198,7 +1217,7 @@ class EuroNCAP_Frontal_MPDB(Report):
         ncols: int = 2
         sharey: bool = False
 
-        def __init__(self, report):
+        def __init__(self, report: Report) -> None:
             super().__init__(report)
             self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p_passenger}NECKUP00??MOYB"],
                                       [f"?{self.report.criterion_overall[isomme].p_passenger}NECKUP00??FOZA"],
@@ -1210,7 +1229,7 @@ class EuroNCAP_Frontal_MPDB(Report):
         nrows: int = 1
         ncols: int = 2
 
-        def __init__(self, report):
+        def __init__(self, report: Report) -> None:
             super().__init__(report)
             self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p_passenger}CHST000???DSXC"],
                                       [f"?{self.report.criterion_overall[isomme].p_passenger}VCCR000???VEXC"]] for isomme in self.report.isomme_list}
@@ -1222,7 +1241,7 @@ class EuroNCAP_Frontal_MPDB(Report):
         ncols: int = 2
         sharey: bool = True
 
-        def __init__(self, report):
+        def __init__(self, report: Report) -> None:
             super().__init__(report)
             self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p_passenger}FEMRLE00??FOZB"],
                                       [f"?{self.report.criterion_overall[isomme].p_passenger}FEMRRI00??FOZB"]] for isomme in self.report.isomme_list}
@@ -1234,7 +1253,7 @@ class EuroNCAP_Frontal_MPDB(Report):
         ncols = 2
         sharey = True
 
-        def __init__(self, report):
+        def __init__(self, report: Report) -> None:
             super().__init__(report)
             self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p_passenger}KNSLLE00??DSXC"],
                                       [f"?{self.report.criterion_overall[isomme].p_passenger}KNSLRI00??DSXC"]]for isomme in self.report.isomme_list}
@@ -1246,7 +1265,7 @@ class EuroNCAP_Frontal_MPDB(Report):
         ncols = 2
         sharey = True
 
-        def __init__(self, report):
+        def __init__(self, report: Report) -> None:
             super().__init__(report)
             self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p_passenger}TIBILEUP??FOZB"],
                                       [f"?{self.report.criterion_overall[isomme].p_passenger}TIBIRIUP??FOZB"],
@@ -1260,7 +1279,7 @@ class EuroNCAP_Frontal_MPDB(Report):
         ncols = 2
         sharey = True
 
-        def __init__(self, report):
+        def __init__(self, report: Report) -> None:
             super().__init__(report)
             self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p_passenger}TIINLEUP??000B"],
                                       [f"?{self.report.criterion_overall[isomme].p_passenger}TIINRIUP??000B"],
@@ -1274,7 +1293,7 @@ class EuroNCAP_Frontal_MPDB(Report):
         nrows: int = 1
         ncols: int = 1
 
-        def __init__(self, report):
+        def __init__(self, report: EuroNCAP_Frontal_MPDB) -> None:
             super().__init__(report)
             self.channels = {}
             for isomme in self.report.isomme_list:

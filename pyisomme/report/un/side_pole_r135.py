@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 from pyisomme import Unit, g0
+from pyisomme.isomme import Isomme
 from pyisomme.report.page import Page_Cover, Page_Criterion_Values_Chart, Page_Criterion_Values_Table, Page_Plot_nxn
 from pyisomme.report.report import Report
 from pyisomme.report.criterion import Criterion
@@ -7,19 +10,20 @@ from pyisomme.report.euro_ncap.side_pole import EuroNCAP_Side_Pole
 
 import logging
 import numpy as np
+from typing import Any
 
 
 logger = logging.getLogger(__name__)
 
 
-class UN_Side_Pole_R135(Report):
+class UN_Side_Pole_R135(Report["UN_Side_Pole_R135.Criterion_Overall"]):
     name = "UN-R135 | Pole Side Impact at 32 km/h"
     protocol = "05.02.2016"
     protocols = {
         "05.02.2016": "Revision 1 (05.02.2016) [references/UN-R135/B04.hcu736002y3cij636z760633yex36763590547033.pdf]"
     }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
         self.pages = [
@@ -39,7 +43,7 @@ class UN_Side_Pole_R135(Report):
         name = "Overall"
         p: int = 1
 
-        def __init__(self, report, isomme):
+        def __init__(self, report: Report, isomme: Isomme) -> None:
             super().__init__(report, isomme)
 
             p = isomme.get_test_info("Driver position object 1")
@@ -56,7 +60,7 @@ class UN_Side_Pole_R135(Report):
         class Criterion_Dummy(Criterion):
             name = "Dummy"
 
-            def __init__(self, report, isomme, p):
+            def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                 super().__init__(report, isomme)
 
                 self.p = p
@@ -69,7 +73,7 @@ class UN_Side_Pole_R135(Report):
                 self.criterion_pubic_symphysis_force = self.Criterion_Pubic_Symphysis_Force(report, isomme, p=self.p)
 
 
-            def calculation(self):
+            def calculation(self) -> None:
                 self.criterion_hic_36.calculate()
                 self.criterion_shoulder_lateral_force.calculate()
                 self.criterion_chest_resultant_compression.calculate()
@@ -89,7 +93,7 @@ class UN_Side_Pole_R135(Report):
             class Criterion_HIC_36(Criterion):
                 name = "HIC 36"
 
-                def __init__(self, report, isomme, p):
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
 
                     self.p = p
@@ -99,8 +103,8 @@ class UN_Side_Pole_R135(Report):
                         Limit_Fail([f"?{self.p}HICR0036??00RX", f"?{self.p}HICRCG36??00RX"], func=lambda x: 1000, y_unit=1, lower=True),
                     ])
 
-                def calculation(self):
-                    self.channel = self.isomme.get_channel(f"?{self.p}HICR0036??00RX", f"?{self.p}HICRCG36??00RX")
+                def calculation(self) -> None:
+                    self.channel = self.require_channel(f"?{self.p}HICR0036??00RX", f"?{self.p}HICRCG36??00RX")
                     self.value = self.channel.get_data()[0]
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                     self.color = self.limits.get_limit_min_color(self.channel)
@@ -108,7 +112,7 @@ class UN_Side_Pole_R135(Report):
             class Criterion_Shoulder_Lateral_Force(Criterion):
                 name = "Shoulder Lateral Force"
 
-                def __init__(self, report, isomme, p):
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
 
                     self.p = p
@@ -121,7 +125,7 @@ class UN_Side_Pole_R135(Report):
                     ])
 
                 def calculation(self) -> None:
-                    self.channel = self.isomme.get_channel(f"?{self.p}SHLD0000??FOYB").convert_unit("kN")
+                    self.channel = self.require_channel(f"?{self.p}SHLD0000??FOYB").convert_unit("kN")
                     self.value = self.channel.get_data()[np.argmax(np.abs(self.channel.get_data()))]
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                     self.color = self.limits.get_limit_min_color(self.channel)
@@ -129,7 +133,7 @@ class UN_Side_Pole_R135(Report):
             class Criterion_Chest_Resultant_Compression(Criterion):
                 name = "Chest Resultant Compression"
 
-                def __init__(self, report, isomme, p):
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
 
                     self.p = p
@@ -140,7 +144,7 @@ class UN_Side_Pole_R135(Report):
                     ])
 
                 def calculation(self) -> None:
-                    self.channel = self.isomme.get_channel(f"?{self.p}TRRI??00??DSRB").convert_unit("mm")
+                    self.channel = self.require_channel(f"?{self.p}TRRI??00??DSRB").convert_unit("mm")
                     self.value = np.min(self.channel.get_data())
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                     self.color = self.limits.get_limit_min_color(self.channel)
@@ -148,7 +152,7 @@ class UN_Side_Pole_R135(Report):
             class Criterion_Abdomen_Resultant_Compression(Criterion):
                 name = "Abdomen Resultant Compression"
 
-                def __init__(self, report, isomme, p):
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
 
                     self.p = p
@@ -159,7 +163,7 @@ class UN_Side_Pole_R135(Report):
                     ])
 
                 def calculation(self) -> None:
-                    self.channel = self.isomme.get_channel(f"?{self.p}ABRI??00??DSRB").convert_unit("mm")
+                    self.channel = self.require_channel(f"?{self.p}ABRI??00??DSRB").convert_unit("mm")
                     self.value = np.min(self.channel.get_data())
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                     self.color = self.limits.get_limit_min_color(self.channel)
@@ -167,7 +171,7 @@ class UN_Side_Pole_R135(Report):
             class Criterion_Spine_T12_a3ms(Criterion):
                 name = "Spine T12 Acceleration a3ms"
 
-                def __init__(self, report, isomme, p):
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
 
                     self.p = p
@@ -178,7 +182,7 @@ class UN_Side_Pole_R135(Report):
                     ])
 
                 def calculation(self) -> None:
-                    self.channel = self.isomme.get_channel(f"1{self.p}THSP123C??ACRX").convert_unit(Unit(g0))
+                    self.channel = self.require_channel(f"1{self.p}THSP123C??ACRX").convert_unit(Unit(g0))
                     self.value = np.max(self.channel.get_data())
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                     self.color = self.limits.get_limit_min_color(self.channel)
@@ -186,7 +190,7 @@ class UN_Side_Pole_R135(Report):
             class Criterion_Pubic_Symphysis_Force(Criterion):
                 name = "Pubic Symphysis Force"
 
-                def __init__(self, report, isomme, p):
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
 
                     self.p = p
@@ -199,16 +203,17 @@ class UN_Side_Pole_R135(Report):
                     ])
 
                 def calculation(self) -> None:
-                    self.channel = self.isomme.get_channel(f"?{self.p}PUBC0000??FOYB").convert_unit("kN")
+                    self.channel = self.require_channel(f"?{self.p}PUBC0000??FOYB").convert_unit("kN")
                     self.value = self.channel.get_data()[np.argmax(np.abs(self.channel.get_data()))]
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=True)
                     self.color = self.limits.get_limit_min_color(self.channel)
 
     class Page_Values_Chart(Page_Criterion_Values_Chart):
+        report: UN_Side_Pole_R135
         name = "Values Chart"
         title = "Values"
 
-        def __init__(self, report):
+        def __init__(self, report: UN_Side_Pole_R135) -> None:
             super().__init__(report)
 
             self.criteria = {isomme: [
@@ -222,10 +227,11 @@ class UN_Side_Pole_R135(Report):
 
 
     class Page_Values_Table(Page_Criterion_Values_Table):
+        report: UN_Side_Pole_R135
         name = "Values Table"
         title = "Values"
 
-        def __init__(self, report):
+        def __init__(self, report: UN_Side_Pole_R135) -> None:
             super().__init__(report)
 
             self.criteria = {isomme: [
@@ -244,13 +250,14 @@ class UN_Side_Pole_R135(Report):
         pass
 
     class Page_Chest_Absolute_Compression(Page_Plot_nxn):
+        report: UN_Side_Pole_R135
         name: str = "Chest Absolute Compression"
         title: str = "Chest Absolute Compression"
         nrows: int = 3
         ncols: int = 2
         sharey: bool = True
 
-        def __init__(self, report):
+        def __init__(self, report: UN_Side_Pole_R135) -> None:
             super().__init__(report)
             self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p}TRRILE01??DSRB"],
                                       [f"?{self.report.criterion_overall[isomme].p}TRRIRI01??DSRB"],
@@ -260,13 +267,14 @@ class UN_Side_Pole_R135(Report):
                                       [f"?{self.report.criterion_overall[isomme].p}TRRIRI04??DSRB"]] for isomme in self.report.isomme_list}
 
     class Page_Abdomen_Resultant_Compression(Page_Plot_nxn):
+        report: UN_Side_Pole_R135
         name: str = "Abdomen Resultant Compression"
         title: str = "Abdomen Resultant Compression"
         nrows: int = 2
         ncols: int = 2
         sharey: bool = True
 
-        def __init__(self, report):
+        def __init__(self, report: UN_Side_Pole_R135) -> None:
             super().__init__(report)
             self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p}ABRILE01??DSRB"],
                                       [f"?{self.report.criterion_overall[isomme].p}ABRIRI01??DSRB"],
@@ -274,13 +282,14 @@ class UN_Side_Pole_R135(Report):
                                       [f"?{self.report.criterion_overall[isomme].p}ABRIRI03??DSRB"]] for isomme in self.report.isomme_list}
 
     class Page_Spine_T12_Acceleration(Page_Plot_nxn):
+        report: UN_Side_Pole_R135
         name: str = "Spine T12 Acceleration"
         title: str = "Spine T12 Acceleration"
         nrows: int = 2
         ncols: int = 2
         sharey: bool = True
 
-        def __init__(self, report):
+        def __init__(self, report: UN_Side_Pole_R135) -> None:
             super().__init__(report)
             self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p}THSP1200??AC{xyzr}C"] for xyzr in "XYZR"] for isomme in self.report.isomme_list}
 

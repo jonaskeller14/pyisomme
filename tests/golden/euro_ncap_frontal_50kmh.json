@@ -4252,7 +4252,7 @@
       "criterion_driver/criterion_chest/criterion_shoulder_belt_load": {
         "color": null,
         "rating": "nan",
-        "status": "ERROR",
+        "status": "NA",
         "value": "nan"
       },
       "criterion_driver/criterion_femur": {
@@ -4384,7 +4384,7 @@
       "criterion_front_passenger/criterion_chest/criterion_shoulder_belt_load": {
         "color": null,
         "rating": "nan",
-        "status": "ERROR",
+        "status": "NA",
         "value": "nan"
       },
       "criterion_front_passenger/criterion_femur": {
@@ -4486,19 +4486,19 @@
       "criterion_rear_passenger/criterion_chest/criterion_chest_deflection": {
         "color": null,
         "rating": "nan",
-        "status": "ERROR",
+        "status": "NA",
         "value": "nan"
       },
       "criterion_rear_passenger/criterion_chest/criterion_chest_vc": {
         "color": null,
         "rating": "nan",
-        "status": "ERROR",
+        "status": "NA",
         "value": "nan"
       },
       "criterion_rear_passenger/criterion_chest/criterion_shoulder_belt_load": {
         "color": null,
         "rating": "nan",
-        "status": "ERROR",
+        "status": "NA",
         "value": "nan"
       },
       "criterion_rear_passenger/criterion_femur": {
@@ -4516,13 +4516,13 @@
       "criterion_rear_passenger/criterion_femur/criterion_femur_axial_force/criterion_femur_axial_force_left": {
         "color": null,
         "rating": "nan",
-        "status": "ERROR",
+        "status": "NA",
         "value": "nan"
       },
       "criterion_rear_passenger/criterion_femur/criterion_femur_axial_force/criterion_femur_axial_force_right": {
         "color": null,
         "rating": "nan",
-        "status": "ERROR",
+        "status": "NA",
         "value": "nan"
       },
       "criterion_rear_passenger/criterion_femur/criterion_submarining": {
@@ -4558,7 +4558,7 @@
       "criterion_rear_passenger/criterion_head/criterion_head_a3ms": {
         "color": null,
         "rating": "nan",
-        "status": "ERROR",
+        "status": "NA",
         "value": "nan"
       },
       "criterion_rear_passenger/criterion_head/criterion_hic_15": {
@@ -4576,19 +4576,19 @@
       "criterion_rear_passenger/criterion_neck/criterion_fx_shear": {
         "color": null,
         "rating": "nan",
-        "status": "ERROR",
+        "status": "NA",
         "value": "nan"
       },
       "criterion_rear_passenger/criterion_neck/criterion_fz_tension": {
         "color": null,
         "rating": "nan",
-        "status": "ERROR",
+        "status": "NA",
         "value": "nan"
       },
       "criterion_rear_passenger/criterion_neck/criterion_my_extension": {
         "color": null,
         "rating": "nan",
-        "status": "ERROR",
+        "status": "NA",
         "value": "nan"
       }
     },
@@ -4872,19 +4872,19 @@
       "criterion_rear_passenger/criterion_chest/criterion_chest_deflection": {
         "color": null,
         "rating": "nan",
-        "status": "ERROR",
+        "status": "NA",
         "value": "nan"
       },
       "criterion_rear_passenger/criterion_chest/criterion_chest_vc": {
         "color": null,
         "rating": "nan",
-        "status": "ERROR",
+        "status": "NA",
         "value": "nan"
       },
       "criterion_rear_passenger/criterion_chest/criterion_shoulder_belt_load": {
         "color": null,
         "rating": "nan",
-        "status": "ERROR",
+        "status": "NA",
         "value": "nan"
       },
       "criterion_rear_passenger/criterion_femur": {
@@ -4902,13 +4902,13 @@
       "criterion_rear_passenger/criterion_femur/criterion_femur_axial_force/criterion_femur_axial_force_left": {
         "color": null,
         "rating": "nan",
-        "status": "ERROR",
+        "status": "NA",
         "value": "nan"
       },
       "criterion_rear_passenger/criterion_femur/criterion_femur_axial_force/criterion_femur_axial_force_right": {
         "color": null,
         "rating": "nan",
-        "status": "ERROR",
+        "status": "NA",
         "value": "nan"
       },
       "criterion_rear_passenger/criterion_femur/criterion_submarining": {
@@ -4944,7 +4944,7 @@
       "criterion_rear_passenger/criterion_head/criterion_head_a3ms": {
         "color": null,
         "rating": "nan",
-        "status": "ERROR",
+        "status": "NA",
         "value": "nan"
       },
       "criterion_rear_passenger/criterion_head/criterion_hic_15": {
@@ -4962,19 +4962,19 @@
       "criterion_rear_passenger/criterion_neck/criterion_fx_shear": {
         "color": null,
         "rating": "nan",
-        "status": "ERROR",
+        "status": "NA",
         "value": "nan"
       },
       "criterion_rear_passenger/criterion_neck/criterion_fz_tension": {
         "color": null,
         "rating": "nan",
-        "status": "ERROR",
+        "status": "NA",
         "value": "nan"
       },
       "criterion_rear_passenger/criterion_neck/criterion_my_extension": {
         "color": null,
         "rating": "nan",
-        "status": "ERROR",
+        "status": "NA",
         "value": "nan"
       }
     }

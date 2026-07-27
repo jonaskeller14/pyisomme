@@ -11,7 +11,7 @@ from pyisomme.info import Info
 
 from tqdm.auto import tqdm
 from tqdm.contrib.logging import logging_redirect_tqdm
-from typing import Literal, Optional
+from typing import Literal
 import os
 import glob
 import re
@@ -43,7 +43,7 @@ class Isomme:
         self.channels = [] if channels is None else channels
         self.channel_info = Info([]) if channel_info is None else Info(channel_info)
 
-    def get_test_info(self, *labels) -> Optional[str]:
+    def get_test_info(self, *labels) -> str | None:
         """
         Get test info by giving one or multiple label(s) to identify information.
         Regex or fnmatch patterns possible.
@@ -61,7 +61,7 @@ class Isomme:
                     continue
         return None
 
-    def get_channel_info(self, *labels) -> Optional[str]:
+    def get_channel_info(self, *labels) -> str | None:
         """
         Get channel info by giving one or multiple label(s) to identify information.
         Regex or fnmmatch pattern possible.
@@ -376,8 +376,7 @@ class Isomme:
         return item in self.channels
 
     def __iter__(self):
-        for channel in self.channels:
-            yield channel
+        yield from self.channels
 
     def __hash__(self) -> int:
         return hash(self.test_number or "Unnamed ISOMME")
