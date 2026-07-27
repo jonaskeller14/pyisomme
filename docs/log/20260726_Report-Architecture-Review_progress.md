@@ -17,6 +17,7 @@ what was done, what was decided, and what was deliberately left alone.
 | 2 | Fix known defects (Appendix A1, A5, A6, A9) | ⚠ done with deviations | `refactor/step-2-known-defects` |
 | 3 | Typing and lint (P5) | ⚠ done with deviations | `refactor/step-3-typing-lint` |
 | 3b | Criterion trees lifted to module level (maintainer request) | ☑ done | `refactor/step-3-typing-lint` |
+| 3c | `data/` restored; one golden value re-baselined | ☑ done | `refactor/step-3-typing-lint` |
 | 4 | Manual inputs as a declared concept (P11) | ☐ todo | |
 | 5 | Limit scales: helpers + equivalence proof (P3a) | ☐ todo | |
 | 6 | `PeakCriterion` + migrate leaves (P4 + P3b) | ☐ todo | |
@@ -723,3 +724,80 @@ Step 12's `describe()` supersedes it; fold it in there.
   lands, `Overall` is the natural place to hang the declaration order.
 - Cross-protocol reuse is now explicit imports of `Overall` trees. Step 10 (shared criteria library) can
   start from that list: `grep -rn "import Overall as" pyisomme/report/`.
+
+---
+
+### Step 3c — `data/` restored; one golden value re-baselined (H3 → HF passenger dummy)
+
+**Date:** 2026-07-27 · **Branch:** `refactor/step-3-typing-lint` · **Commit(s):** see branch tip
+**Outcome:** done
+
+**What happened**
+
+The maintainer re-downloaded the fixtures the Step-3 incident destroyed. `data/iso-mme-org` (28 MB) and
+`data/nhtsa` (151 MB) are back, and `data/README.md` now records the two corrections applied to the NHTSA
+`14084` test that were previously undocumented:
+
+- `CHST DS fix unit m --> μm`
+- `set dummy in channel codes 11 H3 and 13 HF`
+
+Re-running `tests/test_golden.py` against the restored data left **one** regression:
+
+```
+results[14084]: criterion_front_passenger/criterion_chest/criterion_chest_vc.value:
+    -0.08756077622265823 -> -0.10722683291437828
+```
+
+**Diagnosis — the old golden was wrong, the new value is right.**
+
+`calculate_vc` (`calculate.py:745`) selects its deformation constant from the channel's dummy code
+(`fine_location_3`): `H3 → 0.229 m`, `HF → 0.187 m`, both with scaling factor 1.3. VC is inversely
+proportional to that constant, so re-tagging position 13 from `H3` to `HF` — the Hybrid III **5th
+percentile female**, which is what actually sits in the front passenger seat of that test — scales the
+value by `0.229 / 0.187`. Measured:
+
+| | |
+|---|---|
+| new / old value | `1.2245989304812837` |
+| `0.229 / 0.187` | `1.2245989304812834` |
+| difference | `2.2e-16` (floating-point exact) |
+
+The driver stays `H3` and its VC is unchanged, which is exactly why the maintainer's observation ("this
+error only occurs for passenger") pinned it. The pre-incident golden was baselined from a fixture that
+mislabelled the passenger dummy; the number that changed is a **fixture correction surfacing**, not a
+code regression.
+
+**Action:** `python -m tests.golden_regen euro_ncap_frontal_50kmh`. `git diff tests/golden/` is exactly
+one line — the value above. The definition layer is untouched (still 64 criteria / 172 limit rows), and
+`rating` (4.0) and `color` (green) do not move, because both values fall in the same limit band.
+
+**Verification**
+- `.venv/Scripts/python.exe -m unittest tests.test_golden` → `euro_ncap_frontal_50kmh` and
+  `euro_ncap_side_barrier` **pass with zero improvement lines**; `euro_ncap_frontal_mpdb` errors on a
+  missing fixture (below).
+- `.venv/Scripts/python.exe -m unittest discover -s tests` → **102 tests, 11 errors**, every one a
+  `FileNotFoundError` for a fixture folder that has not been restored yet. Was 90/15 while `data/` was
+  empty, and 112/0 (4 skipped) before the incident.
+- `mypy` → Success; `ruff check .` → All checks passed; `tests.test_report_structure` +
+  `tests.test_report_modules` → OK, 7 tests.
+
+**Fixtures still missing — 11 errors are waiting on these, no code change involved**
+
+| Path | Blocks |
+|---|---|
+| `data/nhtsa/09203` | the **whole** `tests/test_report.py` module (module-level `v3`, so it cannot even import → all 13 report tests) and `golden_utils.build_euro_ncap_frontal_mpdb` → the MPDB golden |
+| `data/tests/{ascii,utf-8,windows-1252,iso-8859-1}` and their `.zip` variants | `tests/test_parsing.py` (8 tests), `tests/test_isomme.py::test_read` / `test_write` |
+| `data/vtc-loadcase-example/{test,sim}` | `test_EuroNCAP_Side_Farside_VTC` (currently masked by the `09203` import failure) |
+| `data/pdb-org` | nothing that is collected today |
+
+`data/README.md` documents public sources for `iso-mme-org` and `nhtsa` but not for `09203`,
+`data/tests` or `vtc-loadcase-example`. Once `09203` is back, run
+`python -m tests.golden_regen euro_ncap_frontal_mpdb` and check the diff: the MPDB golden was baselined
+from the same pre-correction `14084` fixture, so **expect the same H3 → HF VC shift there**, plus
+whatever the `CHST DS` unit fix moves. Both are fixture corrections; neither is a code regression.
+
+**Notes for the next session**
+- The golden net is live again for two of the three reports. Do not start Step 4 until MPDB is either
+  restored or explicitly parked.
+- `tests/test_report_structure.py` (step 3b) is unaffected by any of this — it needs no fixtures — and is
+  the check to lean on while `data/` is incomplete.
