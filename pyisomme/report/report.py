@@ -4,6 +4,7 @@ from pyisomme.isomme import Isomme
 from pyisomme.report.page import Page, Page_Cover
 from pyisomme.limits import Limits
 from pyisomme.report.criterion import Criterion
+from pyisomme.report.manual import suggest
 
 from pptx import Presentation
 from pptx.presentation import Presentation as PptxPresentation
@@ -13,7 +14,7 @@ import numpy as np
 import time
 import logging
 from pathlib import Path
-from typing import Generic, TypeVar, cast
+from typing import Any, Generic, TypeVar, cast
 
 
 logger = logging.getLogger(__name__)
@@ -76,6 +77,70 @@ class Report(Generic[C]):
                 self.criterion_overall[isomme].calculate()
         return self
 
+    def _input_key(self, isomme: Isomme) -> str:
+        return str(isomme.test_number)
+
+    def get_inputs(self) -> dict[str, dict[str, Any]]:
+        """
+        Every manual input of every test, ``{test: {path: value}}``.
+
+        JSON-serialisable by construction (inputs are scalars), so the manual
+        assumptions behind a run can be stored beside the ISO-MME container and
+        replayed with :meth:`set_inputs` — see :meth:`print_inputs` for a
+        human-readable listing.
+        """
+        return {
+            self._input_key(isomme): {
+                path: getattr(criterion, spec.name)
+                for path, criterion, spec in self.criterion_overall[isomme].iter_inputs()
+            }
+            for isomme in self.isomme_list
+        }
+
+    def set_inputs(self, inputs: dict[str, dict[str, Any]]) -> Report[C]:
+        """
+        Apply a mapping produced by :meth:`get_inputs`.
+
+        Unknown tests and unknown input paths raise — a saved file that no
+        longer matches the report is a mistake worth hearing about, not
+        something to apply halfway.
+        """
+        by_key = {self._input_key(isomme): isomme for isomme in self.isomme_list}
+        for key, values in inputs.items():
+            if key not in by_key:
+                raise KeyError(f"{self}: no test {key!r}. Available: {sorted(by_key)}")
+            criteria = {path: (criterion, spec)
+                        for path, criterion, spec in self.criterion_overall[by_key[key]].iter_inputs()}
+            for path, value in values.items():
+                if path not in criteria:
+                    raise KeyError(
+                        f"{self}: test {key!r} has no manual input {path!r}."
+                        f"{suggest(path, frozenset(criteria))}"
+                    )
+                criterion, spec = criteria[path]
+                setattr(criterion, spec.name, value)
+        return self
+
+    def print_inputs(self) -> Report[C]:
+        """
+        List every manual input with its path, current value, default, unit and doc.
+
+        The marker in front of the path says where the value comes from:
+        ``*`` set by the user, ``~`` derived by the report (a position implied by
+        ``p_driver``, a value read out of the test info), blank the declared default.
+        """
+        for isomme in self.isomme_list:
+            print(isomme)
+            for path, criterion, spec in self.criterion_overall[isomme].iter_inputs():
+                value = getattr(criterion, spec.name)
+                marker = "*" if criterion.input_is_set(spec.name) else (" " if value == spec.default else "~")
+                unit = f" [{spec.unit}]" if spec.unit else ""
+                doc = f" — {spec.doc}" if spec.doc else ""
+                source = f" (source: {spec.source})" if spec.source else ""
+                print(f"\t{marker} {path}: {value!r}{unit} "
+                      f"(default {spec.default!r}, {spec.type_name()}){doc}{source}")
+        return self
+
     def print_results(self) -> Report[C]:
         def print_subcriteria_results(criterion: Criterion, intend: str = "\t") -> None:
             print(f"{intend}{criterion.name if criterion.name is not None else criterion.__class__.__name__}: "
@@ -130,4 +195,25 @@ class MetaReport(Report[Criterion]):
     def print_results(self) -> MetaReport:
         for report in self.reports:
             report.print_results()
+        return self
+
+    def _report_key(self, report: Report) -> str:
+        return report.name or type(report).__name__
+
+    def get_inputs(self) -> dict[str, Any]:
+        """``{sub-report: {test: {path: value}}}`` — a meta-report owns no criteria itself."""
+        return {self._report_key(report): report.get_inputs() for report in self.reports}
+
+    def set_inputs(self, inputs: dict[str, Any]) -> MetaReport:
+        by_key = {self._report_key(report): report for report in self.reports}
+        for key, values in inputs.items():
+            if key not in by_key:
+                raise KeyError(f"{self}: no sub-report {key!r}. Available: {sorted(by_key)}")
+            by_key[key].set_inputs(values)
+        return self
+
+    def print_inputs(self) -> MetaReport:
+        for report in self.reports:
+            print(self._report_key(report))
+            report.print_inputs()
         return self

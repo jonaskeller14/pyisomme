@@ -16,6 +16,7 @@ from pyisomme.calculate import calculate_p_head_hic15_ais_3plus
 from pyisomme.isomme import Isomme
 from pyisomme.report.report import Report
 from pyisomme.report.criterion import Criterion
+from pyisomme.report.manual import Manual, manual
 from pyisomme.report.us_ncap.limits import Limit_1, Limit_2, Limit_3, Limit_4, Limit_5
 
 import logging
@@ -28,16 +29,20 @@ logger = logging.getLogger(__name__)
 
 class Overall(Criterion):
     name = "Overall"
-    p_driver: int = 1
-    p_passenger: int = 3
+    p_driver: Manual[int, manual(1, source="test report", doc=(
+        "Channel-code position of the driver. Defaults to the "
+        "'Driver position object 1' test-info field when the test carries it."))]
+    p_passenger: Manual[int, manual(3, source="test report", doc=(
+        "Channel-code position of the front passenger. Derived from p_driver "
+        "(1 for a right-hand-drive test) unless set explicitly."))]
 
     def __init__(self, report: Report, isomme: Isomme) -> None:
         super().__init__(report, isomme)
 
         p_driver = isomme.get_test_info("Driver position object 1")
         if p_driver is not None:
-            self.p_driver = int(p_driver)
-        self.p_passenger = 1 if self.p_driver != 1 else self.p_passenger
+            self.set_derived_input("p_driver", int(p_driver))
+        self.set_derived_input("p_passenger", 1 if self.p_driver != 1 else 3)
 
         self.criterion_driver = self.Criterion_Driver(report, isomme, p=self.p_driver)
         # Criterion_Passenger is referenced but never defined -- one of the two reasons

@@ -17,6 +17,12 @@ An incremental refactor of the report architecture is in progress. Before touchi
 
 Invariants that must survive the refactor: NaN propagation is intentional (never swap in `np.nan*` to hide missing data); the criterion tree is eagerly constructed and user-mutable (manual inputs are set between construction and `calculate()`); criterion nesting stays.
 
+**Every step ends with a manual review — do not commit it yourself.** Finish the work, append the progress
+entry, leave everything in the working tree, and hand over a summary: what changed file by file, what was
+verified (commands and their output), what deviates from the plan, what is still open. The maintainer
+reads the diff and decides; commit only when explicitly asked to. This applies to the refactor steps and
+to any other change in this repo.
+
 ## Commands
 
 **Use the repo venv** — the `python` on `PATH` is a broken Anaconda 3.12 (numpy 2.3.5 against a scipy
@@ -138,6 +144,44 @@ Reports live under [pyisomme/report/](pyisomme/report/), one subpackage per prot
 - **`Limit`/`Limits`** ([pyisomme/limits.py](pyisomme/limits.py)) — threshold curves/values matched to channels by code patterns; used both for rating criteria and for drawing limit bars in plots. Per-protocol limit definitions live in each subpackage's `limits.py`.
 
 To add a new report/load case: create a module in the appropriate protocol subpackage; define its criterion tree as a module-level `class Overall(Criterion)`; declare `class X(Report[Overall])` with `Criterion_Overall = Overall` and its `name`/`title`/`protocols`; register the class in that subpackage's `__init__.py`; add it to the `REPORTS` list in [pyisomme/__main__.py](pyisomme/__main__.py) so it is reachable from the `report` CLI command; and add it to `REPORTS` in [tests/test_report_structure.py](tests/test_report_structure.py) (a coverage guard fails otherwise).
+
+### Manual inputs
+
+A value the report cannot measure — an engineer's judgement, a hand measurement, a seating
+assumption — is a **manual input**: the user overwrites it between constructing the report and
+calling `calculate()`. Since refactor step 4 they are *declared*, in
+[pyisomme/report/manual.py](pyisomme/report/manual.py):
+
+```python
+class Criterion_Submarining(Criterion):
+    submarining: Manual[bool, manual(False, source="video", unit=None,
+                                     doc="Pelvis slid under the lap belt")]
+```
+
+- **No `= False`.** The `manual(...)` default is installed as the class attribute the first time a
+  criterion of that class is constructed, so `self.submarining` reads work unchanged.
+- `Manual` is `typing.Annotated`, so mypy still sees a plain `bool` — everything step 3 made
+  checkable stays checkable. Declare it with `Manual[T, manual(...)]`, never as a bare attribute:
+  an undeclared class attribute is *not* a manual input and will not be enumerated.
+- **`Criterion.__setattr__` rejects any name the class does not declare**, with a "did you mean …?"
+  suggestion, and rejects a wrongly typed value (`bool` is deliberately not accepted for a `float`).
+  Its `value` parameter is typed `Undeclared` — an uninhabited class — **on purpose**: a type checker
+  consults `__setattr__` only for names the class does not declare, so this keeps step 3's static catch of
+  `criterion.hard_contct = False` while a `value: Any` would widen *every* assignment to `Any` and
+  delete it. Do not relax that annotation.
+  Assigning a `Criterion` (a subcriterion) or a `_`-prefixed name is exempt at runtime.
+- `report.print_inputs()` lists every input with path, value, default, unit, doc and source;
+  `get_inputs()` / `set_inputs()` round-trip through JSON, so the manual assumptions behind a run can
+  be stored beside the ISO-MME container and replayed. `MetaReport` nests one level deeper, keyed by
+  sub-report.
+- **Inputs are read in `calculation()`, never in `__init__`** (F15). The exception is the seating
+  position: children are *constructed* with `p=`, which is baked into their limits' code patterns, so
+  each `Overall` calls `sync_positions()` at the top of `calculation()` and uses
+  `Criterion.rebuild_child()` to rebuild an occupant subtree when its position changed — preserving
+  the subtree's manual inputs and dropping its stale report-level limits. Step 7's lazy `Ctx`
+  replaces this.
+
+[tests/test_manual_inputs.py](tests/test_manual_inputs.py) covers all of it and needs no fixture data.
 
 ### Plotting
 

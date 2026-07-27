@@ -274,6 +274,7 @@ class Overall(Criterion):
 
         class Criterion_Reference_ISO_Score(Criterion):
             name = "Reference ISO-Score"
+            criteria_individual_iso_score: tuple[Criterion, ...]
             values: np.ndarray
             weights: np.ndarray
 

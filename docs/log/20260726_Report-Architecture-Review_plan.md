@@ -15,12 +15,20 @@ Each step is sized for **one fresh session**. A session's job:
 2. Consult the review doc **only** for the finding/proposal IDs your step names — do not read it end to end.
 3. Implement **only that step**. Do not opportunistically fix things belonging to later steps; note them in the progress file instead.
 4. Verify against the step's *Acceptance criteria*.
-5. Append a session entry to `20260726_Report-Architecture-Review_progress.md` and commit.
+5. Append a session entry to `20260726_Report-Architecture-Review_progress.md`.
+6. **Stop — do not commit.** Hand the step over for manual review (see *Manual review gate* below).
 
 ### Ground rules (apply to every step)
 
 - **Python:** always use the repo venv — `.venv/Scripts/python.exe` on Windows. The `python` on `PATH` is a broken Anaconda 3.12 (numpy 2.3.5 vs. scipy built for <1.29) and cannot even `import pyisomme`. See Step 0.
-- **Git:** one branch per step (`refactor/step-<n>-<slug>`), branched from `dev`. One commit (or a small logical series) per step. Never commit to `master`.
+- **Git:** one branch per step (`refactor/step-<n>-<slug>`), branched from `dev`. One commit (or a small logical series) per step, created **only after the maintainer has reviewed the step** (see below). Never commit to `master`.
+- **Manual review gate — a session never commits on its own.** Every step ends with the work *staged or
+  unstaged in the working tree*, not in a commit. The session's last action is a handover summary:
+  what changed (file by file), what was verified (commands and their output), what deviates from the
+  plan, and what is still open. The maintainer reads the diff, then either asks for changes or says
+  "commit" — only then does a commit happen, and only then does the step's status board row move to
+  done. Recording the progress entry is *not* the same as being finished; the entry is part of what is
+  under review, so write it before handing over.
 - **Scope discipline:** if a step turns out to require something the plan did not anticipate, record it in the progress file and **stop** — do not improvise a larger change.
 - **Invariant G9 — NaN propagation is intentional.** `np.min`/`np.sum`/`np.max` (propagating) must stay the default. Never "fix" a `nan` by switching to a `nan*` variant. The single deliberate `np.nanmean` (`frontal_50kmh.py:89`) stays.
 - **Invariant G8 — the criterion tree is eagerly constructed and user-mutable.** Users set manual inputs between construction and `calculate()`. No lazy child construction, ever.

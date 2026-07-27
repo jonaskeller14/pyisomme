@@ -6,6 +6,10 @@ Rationale lives in [`20260726_Report-Architecture-Review.md`](20260726_Report-Ar
 **Every session must append an entry below before finishing.** A fresh session reads this file to learn
 what was done, what was decided, and what was deliberately left alone.
 
+**No session commits its own work.** A step ends uncommitted, with its entry written and a handover
+summary for the maintainer — see *Manual review gate* in the plan. The entry is part of what is
+reviewed; a row only reaches ☑/⚠ once the maintainer has approved and the commit exists.
+
 ---
 
 ## Status board
@@ -18,7 +22,7 @@ what was done, what was decided, and what was deliberately left alone.
 | 3 | Typing and lint (P5) | ⚠ done with deviations | `refactor/step-3-typing-lint` |
 | 3b | Criterion trees lifted to module level (maintainer request) | ☑ done | `refactor/step-3-typing-lint` |
 | 3c | `data/` restored; one golden value re-baselined | ☑ done | `refactor/step-3-typing-lint` |
-| 4 | Manual inputs as a declared concept (P11) | ☐ todo | |
+| 4 | Manual inputs as a declared concept (P11) | ⚠ done with deviations | `refactor/step-4-manual-inputs` |
 | 5 | Limit scales: helpers + equivalence proof (P3a) | ☐ todo | |
 | 6 | `PeakCriterion` + migrate leaves (P4 + P3b) | ☐ todo | |
 | 7 | `sub()` + `Ctx` framework (P1 + P2) | ☐ todo | |
@@ -29,7 +33,8 @@ what was done, what was decided, and what was deliberately left alone.
 | 12 | `validate()` + `describe()` (P7 + P8) | ☐ todo | |
 | 13 | Status propagation and rendering (P10) | ☐ todo | |
 
-Status values: ☐ todo · ◐ in progress · ☑ done · ⚠ done with deviations · ✖ blocked
+Status values: ☐ todo · ◐ in progress · ⏳ awaiting review (work complete, uncommitted, with the
+maintainer) · ☑ done · ⚠ done with deviations · ✖ blocked
 
 ---
 
@@ -47,6 +52,8 @@ Things a session hit that need a human (usually a protocol/PDF) decision. Add he
 | Q6 | **Step 4** — should `hard_contact` become tri-state (`None` = derive from curve, so a video observation of *no* contact can override a >80 g curve)? This changes the default behaviour. | (plan) | |
 | Q7 | **A4b** — `p_driver`/`p_front_passenger`/`p_rear_passenger` are consumed in `Criterion_Overall.__init__`, so overriding them post-construction moves the **plots** but not the **criteria**. Not a protocol question — it is F15, scheduled for Step 4 (interim) / Step 7 (`Ctx`). Listed here only so the Step-2 acceptance criterion's A-list is complete. | 2 | *no maintainer input needed — owned by Steps 4/7* |
 | Q8 | **A1 follow-up** — with A1 fixed, MPDB now matches `frontal_50kmh`: a >80 g head peak forces `hard_contact = True` even when the user set `False` (the A2 "video OR curve" semantics). Verified on the fixtures: 190.94 g overrides `False`; 55.80 g / 48.12 g no longer do. Is that OR-direction right for MPDB too, or should MPDB differ? | 2 | |
+| Q9 | **MPDB golden re-baseline** — with `data/nhtsa/09203` restored, `tests/test_golden.py` reproduces exactly what Step 3c predicted for MPDB: one regression (`14084` front-passenger chest VC `-0.08756 → -0.10723`, the H3 → HF fixture correction, ratio `0.229/0.187` to 2e-16) plus 10 tolerated improvements (driver + passenger tibia index `nan → ` number, `NA → OK` — the same fixture correction supplying the dummy code `calculate_tibia_index` needs). Both are fixture corrections, not code regressions, and both predate Step 4. Run `python -m tests.golden_regen euro_ncap_frontal_mpdb`? | 4 | **answered — done.** The maintainer had `09203`'s own metadata fixed first (`data/nhtsa/09203/fix_channel_metadata.py`, commit `c91608c`: dummy `21…→TH` / `24…→H3`, CHST/DS unit `m → μm`), which added a *third* correction — driver chest compression `-20244650.23 → -20.24 mm`, rating `-inf → 4.0`, colour gray → green. Re-baselined in `7d40c04`; all 17 golden tests pass. |
+| Q10 | **Step 4** — `side_farside.py`'s `max_head_score` / `max_neck_score` / `max_chest_score` (`= 4`, read via a back-reference, never assigned anywhere) were **not** declared as manual inputs: they read as protocol constants, i.e. Step 12's `max_rating`, not as engineer's judgement. Confirm, or should they be settable? | 4 | |
 
 ---
 
@@ -64,6 +71,9 @@ Things noticed mid-step that belong to a later step (or to no step at all). Reco
 | D6 | `USNCAP.__init__` still advertises five load-case parameters (`frontal_56kmh`, `frontal_mpdb`, `side_pole`, `side_barrier`, `side_farside`) that no `us_ncap` module implements. Signature left as-is because narrowing it would be guessing at the intended US-NCAP structure. | 2 | whoever finishes US-NCAP |
 | D7 | `Page_OLC` (`page.py`) guards its OLC lookup with a **narrower** pattern set than the lookup it protects: it dereferences `get_channel("10VEH0OLC??VEXX", "14BPIL0OLC??VEXX", "10SEAT0OLC??VEXX")` but only checks `get_channel("14BPIL0OLC??VEXX", "10SEAT0OLC??VEXX")`. A test carrying only the `10VEH…` channel therefore renders `nan` although the data is there. Behaviour preserved verbatim in Step 3 (moved into `Page_OLC._olc_cell_text` with a NOTE); it is a page-content bug, not a typing one. | 3 | Step 11 (pages select from the tree) |
 | D8 | Running **all 13** tests of `tests.test_report` in one process (`PYISOMME_SLOW=1 … -m unittest tests.test_report`) dies with a Windows stack overflow (exit `0xC00000FD`) right after `test_EuroNCAP_Side_Pole`. **Pre-existing** — reproduced identically on the Step-2 tip (`a0d55d4`) in a clean worktree. Every one of the 13 passes when run alone, and `discover -s tests` (which skips the slow four) is unaffected. Likely resource exhaustion across ~200 matplotlib figures / pptx exports in one interpreter. | 3 | unassigned — needs a real diagnosis, not a refactor step |
+| D9 | **D8's cause is not matplotlib/pptx.** Reproduced in Step 4 with a script that only *constructs and calculates* the 13 reports on synthetic channels — no plotting, no export: same `0xC00000FD`, right after the 8th report. Confirmed pre-existing by running the identical script against the stashed Step-3 tree: same crash, same point, identical ERROR-node counts (24/20/2/4/4/2/0). So a much cheaper repro exists and the "matplotlib figures" hypothesis is out. | 4 | joins D8 — unassigned |
+| D10 | `Report.export_pptx` re-runs `page.__init__(page.report)` (A8) *after* `calculate()`. With Step 4's `sync_positions()` the criteria now follow a position set **before** `calculate()`, but a position set **between** `calculate()` and `export_pptx()` still moves only the plots. Deliberately not guarded here: A8 is Step 11's and `Ctx` is Step 7's. | 4 | Steps 7 / 11 |
+| D11 | `data/nhtsa/09203` and `data/nhtsa/v15036ISO.zip` (lost in the Step-3 incident) were **restored** in Step 4 from NHTSA. Their URL pattern is `…/vehdb/v<10000-block>/v<100-block>/v<id>ISO.zip`, so 09203 lives under `v00000/v09200/` — note the first segment is `v00000`, not `v09000`; a `HEAD` request 403s, a ranged `GET` works. Undocumented in `data/README.md`; the two remaining gaps (`data/tests/*`, `data/vtc-loadcase-example/*`) still have no public source. | 4 | `data/README.md` upkeep |
 
 ---
 
@@ -73,8 +83,9 @@ Append newest entries at the bottom. Template:
 
 ```markdown
 ### Step <n> — <title>
-**Date:** YYYY-MM-DD · **Branch:** refactor/step-<n>-<slug> · **Commit(s):** <sha>
+**Date:** YYYY-MM-DD · **Branch:** refactor/step-<n>-<slug> · **Commit(s):** <sha, or "uncommitted — awaiting review">
 **Outcome:** done / done with deviations / blocked
+**Review:** ☐ pending · ☑ approved YYYY-MM-DD  ← the session writes ☐; only the commit flips it
 
 **What was implemented**
 - …
@@ -801,3 +812,241 @@ whatever the `CHST DS` unit fix moves. Both are fixture corrections; neither is 
   restored or explicitly parked.
 - `tests/test_report_structure.py` (step 3b) is unaffected by any of this — it needs no fixtures — and is
   the check to lean on while `data/` is incomplete.
+
+---
+
+### Step 4 — Manual inputs as a declared concept (P11)
+
+**Date:** 2026-07-27 · **Branch:** `refactor/step-4-manual-inputs` (from the Step-3c tip `701b56e`) ·
+**Commit(s):** see branch tip — reviewed and approved by the maintainer before committing
+**Outcome:** done with deviations (four, listed below)
+
+**Prerequisite cleared first: `data/nhtsa/09203` restored**
+
+Step 3c's note said "do not start Step 4 until MPDB is either restored or explicitly parked". It is
+restored, not parked: `09203` was re-downloaded from NHTSA, and `v15036ISO.zip` (whose absence the
+`09203` failure had been masking in `tests/test_report.py`) with it. URL shape and the `v00000` gotcha
+are recorded as D11.
+
+`09203` turned out to carry the **same two raw-export defects as `14084`**, so at the maintainer's
+request it got its own `data/nhtsa/09203/fix_channel_metadata.py` (commit `c91608c`) before the goldens
+were trusted: the dummy slot filled (`21…` = position 1 = **THOR** → `TH`, identified by the four CRUX
+IR-TRACC deflections tagged `[THORTEST]`; `24…` = position 4 = **Hybrid III** → `H3`, a single
+`24CHST000000DSXP`), and the CHST/DS unit corrected `m → μm`, which puts the deflections at 3–41 mm
+(30.27 mm for the THOR left-upper resultant, −40.60 mm for the Hybrid III) instead of a factor of a
+million out. The MPDB golden was then re-baselined deliberately in `7d40c04` — 14 lines, definition
+layer untouched — closing Q9. **All 17 golden tests now pass**, so this step's "goldens are
+value-neutral" claim below is measured against a green net, not a known-failing one.
+
+Both commits are *fixture* work, not Step-4 work; they sit on this branch only because that is where
+the missing data surfaced.
+
+**What was implemented**
+
+- **`pyisomme/report/manual.py`** — the declaration idiom.
+  `Manual[bool, manual(False, unit=…, doc=…, source=…)]`, where `Manual` is `typing.Annotated`, so a
+  type checker still sees a plain `bool`. `manual(...)` carries the **default**, so a declaration needs
+  no `= False`; the default is installed as the class attribute the first time a criterion of that class
+  is constructed. Also `declared_inputs(cls)` (MRO walk + cache), `settable_names(cls)`, `InputSpec`
+  and the runtime type check.
+- **Annotations are resolved lazily, and only the ones that matter.** `typing.get_type_hints` is
+  unusable here: report modules annotate `report: EuroNCAP_Frontal_50kmh` on criteria defined *before*
+  the report class exists, so resolving a whole class raises `NameError`. Instead each raw annotation
+  string is tested for the substring `manual(` and only those are `eval`-ed, in their own module's
+  globals, at criterion-construction time (never at import time). Failure logs a warning rather than
+  breaking the import.
+- **`Criterion.__setattr__` guard (F13).** Rejects any name the class does not declare — with a
+  `difflib` "Did you mean 'hard_contact'?" — and rejects a wrongly typed value. "Declared" means
+  *anything* in the class body across the MRO: annotated framework fields, plain class attributes and
+  manual inputs alike. No hand-maintained whitelist, so a new field never needs registering. Assigning
+  a `Criterion` (subcriteria are attached dynamically) or a `_`-prefixed name is exempt.
+- **`Report.get_inputs()` / `set_inputs()` / `print_inputs()` (F14).** `{test: {path: value}}`, JSON-safe
+  by construction. `set_inputs` raises on an unknown test or path (with a suggestion) rather than
+  applying half a file. `MetaReport` overrides all three to nest one level deeper, keyed by sub-report.
+  Supporting walkers on `Criterion`: `get_children()`, `walk()`, `iter_inputs()`, `get_input_specs()`.
+- **F15 interim fix — `sync_positions()` + `Criterion.rebuild_child()`.** Each `Overall` that threads a
+  position now calls `sync_positions()` at the top of `calculation()`; if an occupant's `p` no longer
+  matches the input, `rebuild_child()` reconstructs that subtree, **preserving its manual inputs** and
+  removing its stale limits from the report-level list. Applied to `euro_ncap/frontal_50kmh`,
+  `euro_ncap/frontal_mpdb`, `un/frontal_50kmh_r137`, `un/frontal_56kmh_odb_r94`,
+  `iihs/frontal_small_overlap`.
+- **41 manual inputs migrated** across 8 modules (`euro_ncap/frontal_50kmh` 27, `euro_ncap/frontal_mpdb` 5,
+  `euro_ncap/side_pole` 1, `un/frontal_50kmh_r137` 3, `un/frontal_56kmh_odb_r94` 2,
+  `iihs/frontal_small_overlap` 1, `us_ncap/frontal_56kmh` 2), each with `doc`, `source` and — where it
+  has one — `unit`. Defaults are preserved **literally** (e.g. `pedal_rearward_displacement` keeps the
+  integer `0`, not `0.0`) so the migration cannot move a number.
+- `tests/test_manual_inputs.py` — 29 tests, **no fixture data**; added to the blocking CI lint job.
+  `CLAUDE.md` gains a "Manual inputs" section.
+
+**Decisions taken**
+
+- **The `__setattr__` guard is hidden behind `if not TYPE_CHECKING:`.** *(Superseded — see the
+  2026-07-27 follow-up entry at the end of this log: the guard is now a plain method whose `value`
+  parameter is typed `Never`, which preserves the property below without the visibility hack.)* A
+  `__setattr__` that mypy can see makes it accept *every* attribute assignment, which silently deletes
+  Step 3's static catch of `criterion.hard_contct = False` — measured: with the guard visible, that
+  probe stopped erroring. Hidden, all four Step-3 probes fire again and the runtime guard still runs.
+  The two layers are complementary (mypy for those who run it, the guard for notebook users), and the
+  comment in `criterion.py` says so, because the obvious "cleanup" is to un-hide it.
+- **"Settable" = anything declared in the class body, not an explicit whitelist.** The plan proposed an
+  explicit set of framework field names. Deriving it from `vars()` + `__annotations__` over the MRO is
+  strictly better: it needs no upkeep, and it covers the ~30 non-input class attributes the reports
+  already carry (`values`, `weights`, `ac_test`, `channel_r`, …) without listing them. The one thing it
+  found — `Criterion_Reference_ISO_Score.criteria_individual_iso_score`, assigned in `__init__` but
+  declared nowhere — is now an annotation.
+- **Type checking rejects `bool` for a numeric input** even though `isinstance(True, int)` is true,
+  and accepts `int` for a `float`. The whole point is catching `submarining = "yes"`-shaped mistakes;
+  letting `forward_excursion = True` through would be the same bug with a different literal.
+- **Not every plain class attribute became a manual input.** Computed fields stay plain:
+  `correlation`'s `is_reference`/`is_comparison`/`channel_r`/`channel_c`, `side_farside_vtc`'s
+  `ref_channel`/`ac_*`/`r_ac_*`. `side_farside`'s `max_*_score` are protocol constants — Step 12's
+  `max_rating`, not judgement — so they are excluded too, but that is a judgement call: **Q10**.
+- **`hard_contact` stays `bool`, not tri-state.** Q6 is unanswered, and the plan says: without approval,
+  add the declaration only and keep the default. Done — the declaration's `doc` states the current
+  "video OR curve" semantics explicitly so the question is visible at the point of use.
+- **`rebuild_child` rather than "re-read the position in `calculation()`".** The plan's phrasing does not
+  survive contact with the code: `p` is interpolated into the limits' `code_patterns` f-strings at
+  construction, so re-reading it would leave a criterion looking up position 3 while rating against
+  position 1's limits — nan ratings, silently. Rebuilding the subtree is the smallest change that is
+  actually correct, and the input preservation it needs is exactly the machinery this step adds. It
+  also removes the old subtree's limits from `report.limits[isomme]`, otherwise the plots would grow
+  duplicate limit bars (regression-tested).
+
+**Behaviour changes**
+
+- **None to any computed value.** All three goldens produce output *identical* to the pre-step baseline
+  measured on the same tree (`git stash`). Measured twice: first against the goldens as they stood
+  (50kmh and side_barrier clean, MPDB showing exactly the pre-existing fixture diff, before **and**
+  after the step), then again after the `09203` fix and MPDB re-baseline — **17/17 golden tests OK, zero
+  improvement lines**. `tests/golden/report_structure.json` (13 reports, 273 criteria) is unchanged,
+  which is the direct evidence that no default moved.
+- **New failure modes, all deliberate:** a typo'd manual-input assignment now raises `AttributeError`
+  instead of silently creating an attribute; a wrongly typed one raises `TypeError`. Both fire at the
+  assignment, i.e. *before* `calculate()`, so neither can be swallowed into `Status.ERROR`.
+- **F15:** `report.overall(v1).p_driver = 3` now moves the criteria as well as the plots. Previously the
+  criteria kept position 1 while `Page_Driver_*` drew position 3 — a silently inconsistent report.
+  Verified: `criterion_driver.p`, the nested `criterion_hic_15.p`, and the rebuilt limits'
+  `code_patterns` all follow, `p_front_passenger` re-derives to 1, and manual inputs set on the old
+  subtree survive the rebuild.
+- Nothing else. No `pyisomme/` file outside `report/` was touched.
+
+**Verification** (commands run and their result)
+
+- `.venv/Scripts/python.exe -m mypy` → **Success: no issues found in 34 source files**.
+- `.venv/Scripts/python.exe -m ruff check .` → **All checks passed!**
+- **Type transparency proven** (scratch file, then deleted). `Manual[T, manual(...)]` must not cost the
+  checking Step 3 bought. All four Step-3 probes still fire, and the revealed types are the bare ones:
+  - `hard_contact` → `builtins.bool`; `p_driver` → `builtins.int`; `hic_15.rating` → `builtins.float`
+  - `criterion_drivr` → `"Overall" has no attribute "criterion_drivr"; maybe "criterion_driver"…`
+  - `hard_contct = False` → `"Criterion_Head" has no attribute "hard_contct"; maybe "hard_contact"?`
+  - `hard_contact = "yes"` / `submarining = "yes"` → `Incompatible types in assignment`
+- `.venv/Scripts/python.exe -m unittest tests.test_manual_inputs` → **OK**.
+- `.venv/Scripts/python.exe -m unittest tests.test_report_structure tests.test_report_modules` → **OK**,
+  7 tests — the structural snapshot is unchanged.
+- **Guard swept over every report:** construct + calculate all 13, each in a fresh interpreter, counting
+  `Status.ERROR` nodes and grepping the log for guard messages → **0 guard hits, 13/13 reports**.
+- `.venv/Scripts/python.exe -m unittest tests.test_golden` → **OK, 17 tests, zero improvement lines**
+  (after the `09203` fixture fix and the MPDB re-baseline — Q9). Before those two commits the run was
+  identical on this tree and on the stashed pre-step tree: 50kmh and side_barrier clean, MPDB failing
+  on the one pre-existing fixture-correction regression. Either way, Step 4 moves nothing.
+- `.venv/Scripts/python.exe -m unittest discover -s tests` → **139 tests, 10 errors, 0 failures**.
+  Baseline on the same tree with this step stashed: **102 tests, 10 errors, 0 failures** — same error
+  set; the +37 are this step's tests. The 10 errors are all `FileNotFoundError` for fixtures the Step-3
+  incident destroyed that have **no public source**
+  (`data/vtc-loadcase-example/{test,sim}` — which alone breaks the import of the whole
+  `tests/test_report.py` module — and `data/tests/{ascii,utf-8,windows-1252,iso-8859-1}`).
+
+**Deviations from the plan / left undone**
+
+- **Tri-state `hard_contact` not implemented** — Q6 unanswered; the plan's fallback ("keep the current
+  default, add the declaration only") was taken.
+- **The F15 fix is a subtree rebuild, not a re-read** — see Decisions. Same observable outcome, and
+  Step 7's `Ctx` still supersedes it cleanly.
+- **`validate()`-style "every declared input is actually read by some `calculation()`"** was not added;
+  the review files that under P7/Step 12 and it needs an AST pass. Worth doing there — this step makes
+  the input half of that check trivial.
+- **PPTX traceability (P11's fourth bullet — deviating inputs rendered in the output)** is explicitly
+  out of scope per the plan (Step 13). `print_inputs()` marks deviations with `*` in the meantime.
+- Nothing was committed — manual review gate.
+
+**Notes for the next session (Step 5 — limit-scale helpers)**
+
+- **Step 5 changes no report module**, so `tests/golden/report_structure.json` must stay byte-identical;
+  it is the cheapest check available and it needs no fixtures.
+- The equivalence proof Step 5 asks for compares generated `Limit` objects against today's literals.
+  `tests/golden_utils.serialise_limit` already encodes exactly the fields the plan lists
+  (`func` samples, `upper`/`lower`, `color`, `rating`, `y_unit`) — reuse it rather than writing a
+  second encoder.
+- The golden net is **fully green** again (17/17) as of `7d40c04`, and all three fixtures are now
+  metadata-correct. Any golden movement you see in Step 5 is yours.
+- `Manual[...]` is now the declaration idiom for anything user-settable. If a limit helper grows a
+  user-tunable knob, declare it the same way — and remember its class-attribute default comes from
+  `manual(...)`, not from an `=`.
+
+---
+
+## 2026-07-27 — Follow-up to Step 4: un-hiding the `__setattr__` guard
+
+Not a plan step. Maintainer review of Step 4 objected to the `if not TYPE_CHECKING:` block in
+`criterion.py` and asked for a cleaner construction with the same guarantees.
+
+**What changed**
+
+- [pyisomme/report/criterion.py](../../pyisomme/report/criterion.py) — `Criterion.__setattr__` is a
+  normal method again, dedented out of the `if not TYPE_CHECKING:` block. Its body is unchanged; only
+  the `value` annotation moved from `Any` to a new module-level **uninhabited class** `Undeclared`,
+  documented in its docstring.
+- [CLAUDE.md](../../CLAUDE.md) — the "Manual inputs" bullet now describes the `Undeclared` annotation
+  and says not to relax it, instead of telling the reader not to un-hide the block.
+
+**Why this works** (the mechanism the Step-4 entry had wrong)
+
+Step 4 concluded "a `__setattr__` mypy can see makes it accept *every* attribute assignment". That is
+true only for `value: Any`. Mypy consults `__setattr__` **solely for names the class does not
+declare** — a declared attribute is still checked against its own annotation. So an *uninhabited*
+value type leaves every legitimate assignment alone and turns an undeclared name into an
+`[assignment]` error. Both layers survive with no visibility trick.
+
+`Undeclared` is a bespoke empty class rather than `NoReturn`/`Never`, which would type-check
+identically. The only difference is the error text: mypy prints the alias target for `NoReturn`
+(`variable has type "Never"` — opaque) but the class name for a real class
+(`variable has type "Undeclared"`). Pyright prints `"Undeclared"` either way. One line of code to
+make the one degraded message legible, and it aligns the two checkers.
+
+The one regression is that message: an undeclared name now reads
+`Incompatible types in assignment (expression has type "bool", variable has type "Undeclared")`
+instead of `"Criterion_Head" has no attribute "hard_contct"; maybe "hard_contact"?` — it no longer
+names the attribute or suggests the spelling. It still fails, at the same line, and the runtime guard
+still prints the "did you mean" version. Judged an acceptable trade for deleting the hack; the
+`attr-defined` message cannot be kept without hiding `__setattr__` again.
+
+**Verification** (commands run and their result)
+
+- `.venv/Scripts/python.exe -m mypy` → **Success: no issues found in 34 source files**.
+- `.venv/Scripts/python.exe -m ruff check .` → **All checks passed!**
+- **Static catch re-proven** (scratch file against the real `EuroNCAP_Frontal_50kmh` tree, then
+  deleted). Exactly three errors, on exactly the three bad lines:
+  - `head.hard_contact = "yes"` → `expression has type "str", variable has type "bool"` — the manual
+    input still checks as `bool`, not as `Undeclared`
+  - `head.hard_contct = True` → `variable has type "Undeclared"`
+  - `overall.p_drivr = 1` → `variable has type "Undeclared"`
+  - clean: `head.hard_contact = True`, `overall.p_driver = 1`, `head.value = 3.0`, `head.name = "Head"`
+- **Pyright checked too** (`npx pyright@latest`, 1.1.411, on the same probe inside the repo, then
+  deleted) — it is the engine behind VS Code's Pylance, and `pyisomme/py.typed` means *downstream
+  users'* editors check their code against these annotations whether they asked for it or not. Same
+  four errors, no false positives: `Cannot assign to attribute "hard_contact" for class
+  "Criterion_Head" — "Literal['yes']" is not assignable to "bool"` for the type error, and
+  `Argument of type "Literal[True]" cannot be assigned to parameter "value" of type "Undeclared" in
+  function "__setattr__"` for each typo.
+- Probed separately that a subcriterion assigned in `__init__` without a class-level declaration
+  (`self.criterion_head = Head()`) is still inferred and still assignable from outside — the pattern
+  every `Overall` uses — as are `_`-prefixed names.
+- `.venv/Scripts/python.exe -m unittest tests.test_manual_inputs tests.test_report_structure
+  tests.test_report_modules` → **OK, 44 tests**. Runtime guard behaviour is untouched.
+- `.venv/Scripts/python.exe -m unittest discover -s tests` → **139 tests, 10 errors, 0 failures** —
+  the same missing-fixture `FileNotFoundError` set as the Step-4 entry records. No change.
+
+**Deviations / left undone**
+
+- The `[attr-defined]`-style "did you mean" message is lost statically (see above); nothing else.
+- Nothing was committed — manual review gate.

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pyisomme.isomme import Isomme
 from pyisomme.report.criterion import Criterion
+from pyisomme.report.manual import Manual, manual
 from pyisomme.report.page import Page_Cover, Page_Criterion_Values_Chart, Page_Criterion_Values_Table, \
     Page_Criterion_Rating_Table
 from pyisomme.report.report import Report
@@ -19,18 +20,28 @@ logger = logging.getLogger(__name__)
 
 class Overall(Criterion):
     name = "Overall"
-    p_driver: int = 1
+    p_driver: Manual[int, manual(1, source="test report", doc=(
+        "Channel-code position of the driver. Defaults to the "
+        "'Driver position object 1' test-info field when the test carries it."))]
 
     def __init__(self, report: Report, isomme: Isomme) -> None:
         super().__init__(report, isomme)
 
         p_driver = isomme.get_test_info("Driver position object 1")
         if p_driver is not None:
-            self.p_driver = int(p_driver)
+            self.set_derived_input("p_driver", int(p_driver))
 
         self.criterion_driver = self.Criterion_Driver(report, isomme, p=self.p_driver)
 
+    def sync_positions(self) -> None:
+        """Honour a seating position set after construction (F15) — see ``Criterion.rebuild_child``."""
+        if self.criterion_driver.p != self.p_driver:
+            logger.info(f"{self}: rebuilding criterion_driver for position {self.p_driver}")
+            self.rebuild_child("criterion_driver", p=self.p_driver)
+
     def calculation(self) -> None:
+        self.sync_positions()
+
         self.criterion_driver.calculate()
 
         self.rating = self.criterion_driver.rating

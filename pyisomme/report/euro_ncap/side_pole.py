@@ -6,6 +6,7 @@ from pyisomme.report.page import Page_Cover, Page_Plot_nxn, Page_Criterion_Ratin
 from pyisomme.unit import g0
 from pyisomme.report.report import Report
 from pyisomme.report.criterion import Criterion
+from pyisomme.report.manual import Manual, manual
 from pyisomme.report.euro_ncap.limits import Limit_G, Limit_P, Limit_C, Limit_M, Limit_A, Limit_W
 
 import logging
@@ -105,7 +106,8 @@ class Overall(Criterion):
 
         class Criterion_DirectHeadContactWithThePole(Criterion):
             name = "Direct head contact with the pole"
-            direct_head_contact_with_the_pole: bool = False
+            direct_head_contact_with_the_pole: Manual[bool, manual(False, source="video", doc=(
+                "Direct head contact with the pole. Caps the head box (−inf → 0 points)."))]
 
             def calculation(self) -> None:
                 self.value = self.direct_head_contact_with_the_pole

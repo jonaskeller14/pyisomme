@@ -6,6 +6,7 @@ from pyisomme.isomme import Isomme
 from pyisomme.report.page import Page_Cover, Page_OLC, Page_Criterion_Rating_Table, Page_Plot_nxn, Page_Criterion_Values_Chart, Page_Criterion_Values_Table
 from pyisomme.report.report import Report
 from pyisomme.report.criterion import Criterion
+from pyisomme.report.manual import Manual, manual
 from pyisomme.report.euro_ncap.limits import Limit_G, Limit_P, Limit_C, Limit_M, Limit_A, Limit_W
 
 import logging
@@ -19,25 +20,63 @@ logger = logging.getLogger(__name__)
 class Overall(Criterion):
     report: EuroNCAP_Frontal_50kmh
     name = "Overall"
-    p_driver: int = 1
-    p_front_passenger: int = 3
-    p_rear_passenger: int = 6
+    p_driver: Manual[int, manual(1, source="test report", doc=(
+        "Channel-code position of the driver. Defaults to the "
+        "'Driver position object 1' test-info field when the test carries it."))]
+    p_front_passenger: Manual[int, manual(3, source="test report", doc=(
+        "Channel-code position of the front passenger. Derived from p_driver "
+        "(1 for a right-hand-drive test) unless set explicitly."))]
+    p_rear_passenger: Manual[int, manual(6, source="test report", doc=(
+        "Channel-code position of the rear passenger. Derived from p_driver "
+        "(4 for a right-hand-drive test) unless set explicitly."))]
 
     def __init__(self, report: Report, isomme: Isomme) -> None:
         super().__init__(report, isomme)
 
         p_driver = isomme.get_test_info("Driver position object 1")
         if p_driver is not None:
-            self.p_driver = int(p_driver)
-        self.p_front_passenger = 1 if self.p_driver != 1 else self.p_front_passenger
-        self.p_rear_passenger = 4 if self.p_driver != 1 else self.p_rear_passenger
+            self.set_derived_input("p_driver", int(p_driver))
+        self.derive_positions()
 
         self.criterion_driver = self.Criterion_Driver(report, isomme, p=self.p_driver)
         self.criterion_front_passenger = self.Criterion_Front_Passenger(report, isomme, p=self.p_front_passenger)
         self.criterion_rear_passenger = self.Criterion_Rear_Passenger(report, isomme, p=self.p_rear_passenger)
         self.criterion_door_opening_during_impact = self.Criterion_DoorOpeningDuringImpact(report, isomme)
 
+    def derive_positions(self) -> None:
+        """
+        Fill the passenger positions from ``p_driver``.
+
+        The common case is that only the driver position is known — it comes out
+        of the test info, or the user sets it — and the vehicle is either left- or
+        right-hand drive. A passenger position the user set explicitly is left
+        alone (see :meth:`Criterion.set_derived_input`).
+        """
+        right_hand_drive = self.p_driver != 1
+        self.set_derived_input("p_front_passenger", 1 if right_hand_drive else 3)
+        self.set_derived_input("p_rear_passenger", 4 if right_hand_drive else 6)
+
+    def sync_positions(self) -> None:
+        """
+        Honour a seating position set *after* construction (F15, interim fix).
+
+        The occupant subtrees bake their position into their limits' code
+        patterns at construction time, so a changed position cannot simply be
+        re-read — the affected subtree is rebuilt, manual inputs and all. Step 7's
+        lazy ``Ctx`` resolution replaces this.
+        """
+        self.derive_positions()
+
+        for attr, p in (("criterion_driver", self.p_driver),
+                        ("criterion_front_passenger", self.p_front_passenger),
+                        ("criterion_rear_passenger", self.p_rear_passenger)):
+            if getattr(self, attr).p != p:
+                logger.info(f"{self}: rebuilding {attr} for position {p}")
+                self.rebuild_child(attr, p=p)
+
     def calculation(self) -> None:
+        self.sync_positions()
+
         logger.info("Calculate Driver")
         self.criterion_driver.calculate()
         logger.info("Calculate Front Passenger")
@@ -60,7 +99,9 @@ class Overall(Criterion):
     class Criterion_Driver(Criterion):
         report: EuroNCAP_Frontal_50kmh
         name = "Driver"
-        steering_wheel_airbag_exists: bool = True
+        steering_wheel_airbag_exists: Manual[bool, manual(True, source="test report", doc=(
+            "Is a steering-wheel airbag fitted? Without one the head and neck "
+            "boxes score 0."))]
 
         def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
             super().__init__(report, isomme)
@@ -88,7 +129,9 @@ class Overall(Criterion):
         class Criterion_Head(Criterion):
             report: EuroNCAP_Frontal_50kmh
             name = "Head"
-            hard_contact: bool = True
+            hard_contact: Manual[bool, manual(True, source="video", doc=(
+                "Was hard head contact observed? A head-acceleration peak above "
+                "80 g forces this to True regardless (Appendix A2: 'video OR curve')."))]
 
             def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                 super().__init__(report, isomme)
@@ -180,7 +223,8 @@ class Overall(Criterion):
 
             class Criterion_UnstableAirbagSteeringWheelContact(Criterion):
                 name = "Modifier for Unstable airbag/steering wheel contact"
-                unstable_airbag_steering_wheel_contact: bool = False
+                unstable_airbag_steering_wheel_contact: Manual[bool, manual(False, source="video", doc=(
+                    "Unstable contact between head and airbag/steering wheel. −1 point."))]
 
                 def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
@@ -192,7 +236,8 @@ class Overall(Criterion):
 
             class Criterion_HazardousAirbagDeployment(Criterion):
                 name = "Modifier for Hazardous Airbag Deployment"
-                hazardous_airbag_deployment: bool = False
+                hazardous_airbag_deployment: Manual[bool, manual(False, source="video", doc=(
+                    "Hazardous airbag deployment observed. −1 point."))]
 
                 def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
@@ -204,7 +249,8 @@ class Overall(Criterion):
 
             class Criterion_IncorrectAirbagDeployment(Criterion):
                 name = "Modifier for Incorrect Airbag Deployment"
-                incorrect_airbag_deployment: bool = False
+                incorrect_airbag_deployment: Manual[bool, manual(False, source="video", doc=(
+                    "Incorrect airbag deployment observed. −1 point."))]
 
                 def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
@@ -217,9 +263,15 @@ class Overall(Criterion):
             class Criterion_DisplacementSteeringColumn(Criterion):
                 report: EuroNCAP_Frontal_50kmh
                 name = "Modifier for Displacement of Steering Column"
-                displacement_steering_column_rearwards: float = 0.0  # in mm
-                displacement_steering_column_upwards: float = 0.0  # in mm
-                displacement_steering_column_lateral: float = 0.0  # in mm
+                displacement_steering_column_rearwards: Manual[float, manual(
+                    0.0, unit="mm", source="measurement",
+                    doc="Rearward displacement of the steering column (limit 100 mm).")]
+                displacement_steering_column_upwards: Manual[float, manual(
+                    0.0, unit="mm", source="measurement",
+                    doc="Upward displacement of the steering column (limit 80 mm).")]
+                displacement_steering_column_lateral: Manual[float, manual(
+                    0.0, unit="mm", source="measurement",
+                    doc="Lateral displacement of the steering column (limit 100 mm).")]
 
                 def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
@@ -240,9 +292,14 @@ class Overall(Criterion):
 
             class Criterion_ExceedingForwardExcursionLine(Criterion):
                 name = "Modifier for Exceeding forward excursion line"
-                forward_excursion: float = 0.0  # in mm
-                simulation_contact_seat_H3: bool = False
-                simulation_hic_15_H3: float = 0.0
+                forward_excursion: Manual[float, manual(
+                    0.0, unit="mm", source="video",
+                    doc="Forward head excursion beyond the excursion line.")]
+                simulation_contact_seat_H3: Manual[bool, manual(
+                    False, source="simulation",
+                    doc="Hybrid-III simulation shows head contact with the front seat.")]
+                simulation_hic_15_H3: Manual[float, manual(
+                    0.0, source="simulation", doc="HIC15 from the Hybrid-III simulation.")]
 
                 def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
@@ -430,7 +487,8 @@ class Overall(Criterion):
             class Criterion_SteeringWheelContact(Criterion):
                 report: EuroNCAP_Frontal_50kmh
                 name = "Modifier Chest Steering Wheel Contact"
-                steering_wheel_contact: bool = False
+                steering_wheel_contact: Manual[bool, manual(False, source="video", doc=(
+                    "Chest contact with the steering wheel (driver only). −1 point."))]
 
                 def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
@@ -543,7 +601,8 @@ class Overall(Criterion):
 
             class Criterion_Submarining(Criterion):
                 name = "Submarining"
-                submarining: bool = False
+                submarining: Manual[bool, manual(False, source="video", doc=(
+                    "Pelvis slid under the lap belt. Caps the femur box at 0 points."))]
 
                 def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
@@ -584,7 +643,9 @@ class Overall(Criterion):
         class Criterion_Head(Criterion):
             report: EuroNCAP_Frontal_50kmh
             name = "Head"
-            hard_contact: bool = True
+            hard_contact: Manual[bool, manual(True, source="video", doc=(
+                "Was hard head contact observed? A head-acceleration peak above "
+                "80 g forces this to True regardless (Appendix A2: 'video OR curve')."))]
 
             def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                 super().__init__(report, isomme)
@@ -621,7 +682,8 @@ class Overall(Criterion):
 
             class Criterion_HazardousAirbagDeployment(Criterion):
                 name = "Modifier for Hazardous Airbag Deployment"
-                hazardous_airbag_deployment: bool = False
+                hazardous_airbag_deployment: Manual[bool, manual(False, source="video", doc=(
+                    "Hazardous airbag deployment observed. −1 point."))]
 
                 def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
@@ -633,7 +695,8 @@ class Overall(Criterion):
 
             class Criterion_IncorrectAirbagDeployment(Criterion):
                 name = "Modifier for Incorrect Airbag Deployment"
-                incorrect_airbag_deployment: bool = False
+                incorrect_airbag_deployment: Manual[bool, manual(False, source="video", doc=(
+                    "Incorrect airbag deployment observed. −1 point."))]
 
                 def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
@@ -645,9 +708,14 @@ class Overall(Criterion):
 
             class Criterion_ExceedingForwardExcursionLine(Criterion):
                 name = "Modifier for Exceeding forward excursion line"
-                forward_excursion: float = 0.0  # in mm
-                simulation_contact_seat_H3: bool = False
-                simulation_hic_15_H3: float = 0.0
+                forward_excursion: Manual[float, manual(
+                    0.0, unit="mm", source="video",
+                    doc="Forward head excursion beyond the excursion line.")]
+                simulation_contact_seat_H3: Manual[bool, manual(
+                    False, source="simulation",
+                    doc="Hybrid-III simulation shows head contact with the front seat.")]
+                simulation_hic_15_H3: Manual[float, manual(
+                    0.0, source="simulation", doc="HIC15 from the Hybrid-III simulation.")]
 
                 def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
@@ -819,7 +887,9 @@ class Overall(Criterion):
         class Criterion_Head(Criterion):
             report: EuroNCAP_Frontal_50kmh
             name = "Head"
-            hard_contact: bool = True
+            hard_contact: Manual[bool, manual(True, source="video", doc=(
+                "Was hard head contact observed? A head-acceleration peak above "
+                "80 g forces this to True regardless (Appendix A2: 'video OR curve')."))]
 
             def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                 super().__init__(report, isomme)
@@ -853,7 +923,8 @@ class Overall(Criterion):
 
             class Criterion_HazardousAirbagDeployment(Criterion):
                 name = "Modifier for Hazardous Airbag Deployment"
-                hazardous_airbag_deployment: bool = False
+                hazardous_airbag_deployment: Manual[bool, manual(False, source="video", doc=(
+                    "Hazardous airbag deployment observed. −1 point."))]
 
                 def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
@@ -865,7 +936,8 @@ class Overall(Criterion):
 
             class Criterion_IncorrectAirbagDeployment(Criterion):
                 name = "Modifier for Incorrect Airbag Deployment"
-                incorrect_airbag_deployment: bool = False
+                incorrect_airbag_deployment: Manual[bool, manual(False, source="video", doc=(
+                    "Incorrect airbag deployment observed. −1 point."))]
 
                 def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
@@ -877,9 +949,14 @@ class Overall(Criterion):
 
             class Criterion_ExceedingForwardExcursionLine(Criterion):
                 name = "Modifier for Exceeding forward excursion line"
-                forward_excursion: float = 0.0  # in mm
-                simulation_contact_seat_H3: bool = False
-                simulation_hic_15_H3: float = 0.0
+                forward_excursion: Manual[float, manual(
+                    0.0, unit="mm", source="video",
+                    doc="Forward head excursion beyond the excursion line.")]
+                simulation_contact_seat_H3: Manual[bool, manual(
+                    False, source="simulation",
+                    doc="Hybrid-III simulation shows head contact with the front seat.")]
+                simulation_hic_15_H3: Manual[float, manual(
+                    0.0, source="simulation", doc="HIC15 from the Hybrid-III simulation.")]
 
                 def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
@@ -1043,7 +1120,8 @@ class Overall(Criterion):
 
     class Criterion_DoorOpeningDuringImpact(Criterion):
         name: str = "Door Opening During Impact"
-        number_of_door_openings_during_impact: int = 0
+        number_of_door_openings_during_impact: Manual[int, manual(0, source="test report", doc=(
+            "How many doors opened during the impact. −1 point each."))]
 
         def calculation(self) -> None:
             self.value = self.number_of_door_openings_during_impact

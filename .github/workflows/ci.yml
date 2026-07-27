@@ -36,11 +36,12 @@ jobs:
       - name: Run mypy
         run: mypy
 
-      # The two report tests that need no fixture data from data/: one imports every
+      # The report tests that need no fixture data from data/: one imports every
       # module under pyisomme/report/ and checks the protocol subpackage re-exports,
-      # the other snapshots every report's criterion/limit/page definition.
+      # one snapshots every report's criterion/limit/page definition, and one covers
+      # the manual-input declarations, the setattr guard and the input round-trip.
       - name: Fixture-free report tests
-        run: python -m unittest tests.test_report_modules tests.test_report_structure
+        run: python -m unittest tests.test_report_modules tests.test_report_structure tests.test_manual_inputs
 
   test:
     name: Test (py${{ matrix.python-version }})

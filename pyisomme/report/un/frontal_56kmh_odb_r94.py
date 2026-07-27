@@ -5,6 +5,7 @@ from pyisomme.report.euro_ncap import EuroNCAP_Frontal_50kmh, EuroNCAP_Frontal_M
 from pyisomme.report.page import Page_Cover, Page_Criterion_Rating_Table, Page_Criterion_Values_Chart, Page_Criterion_Values_Table
 from pyisomme.report.report import Report
 from pyisomme.report.criterion import Criterion
+from pyisomme.report.manual import Manual, manual
 from pyisomme.report.un.limits import Limit_Fail, Limit_Pass
 from pyisomme.report.un.frontal_50kmh_r137 import Overall as Overall_Frontal_50kmh_R137
 
@@ -18,21 +19,41 @@ logger = logging.getLogger(__name__)
 
 class Overall(Criterion):
     name = "Overall"
-    p_driver: int = 1
-    p_passenger: int = 3
+    p_driver: Manual[int, manual(1, source="test report", doc=(
+        "Channel-code position of the driver. Defaults to the "
+        "'Driver position object 1' test-info field when the test carries it."))]
+    p_passenger: Manual[int, manual(3, source="test report", doc=(
+        "Channel-code position of the front passenger. Derived from p_driver "
+        "(1 for a right-hand-drive test) unless set explicitly."))]
 
     def __init__(self, report: Report, isomme: Isomme) -> None:
         super().__init__(report, isomme)
 
         p_driver = isomme.get_test_info("Driver position object 1")
         if p_driver is not None:
-            self.p_driver = int(p_driver)
-        self.p_passenger = 1 if self.p_driver != 1 else self.p_passenger
+            self.set_derived_input("p_driver", int(p_driver))
+        self.derive_positions()
 
         self.criterion_driver = self.Criterion_Driver(report, isomme, p=self.p_driver)
         self.criterion_passenger = self.Criterion_Passenger(report, isomme, p=self.p_passenger)
 
+    def derive_positions(self) -> None:
+        """Fill the passenger position from ``p_driver`` — see ``Criterion.set_derived_input``."""
+        self.set_derived_input("p_passenger", 1 if self.p_driver != 1 else 3)
+
+    def sync_positions(self) -> None:
+        """Honour a seating position set after construction (F15) — see ``Criterion.rebuild_child``."""
+        self.derive_positions()
+
+        for attr, p in (("criterion_driver", self.p_driver),
+                        ("criterion_passenger", self.p_passenger)):
+            if getattr(self, attr).p != p:
+                logger.info(f"{self}: rebuilding {attr} for position {p}")
+                self.rebuild_child(attr, p=p)
+
     def calculation(self) -> None:
+        self.sync_positions()
+
         self.criterion_driver.calculate()
         self.criterion_passenger.calculate()
 

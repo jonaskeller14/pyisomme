@@ -8,6 +8,7 @@ from pyisomme.calculate import calculate_olc
 from pyisomme.report.euro_ncap.frontal_50kmh import EuroNCAP_Frontal_50kmh
 from pyisomme.report.euro_ncap.frontal_50kmh import Overall as Overall_Frontal_50kmh
 from pyisomme.report.criterion import Criterion
+from pyisomme.report.manual import Manual, manual
 from pyisomme.report.euro_ncap.limits import Limit_G, Limit_P, Limit_C, Limit_M, Limit_A, Limit_W
 from pyisomme.unit import g0
 
@@ -22,16 +23,20 @@ logger = logging.getLogger(__name__)
 class Overall(Criterion):
     report: EuroNCAP_Frontal_MPDB
     name: str = "Overall"
-    p_driver: int = 1
-    p_passenger: int = 3
+    p_driver: Manual[int, manual(1, source="test report", doc=(
+        "Channel-code position of the driver. Defaults to the "
+        "'Driver position object 1' test-info field when the test carries it."))]
+    p_passenger: Manual[int, manual(3, source="test report", doc=(
+        "Channel-code position of the front passenger. Derived from p_driver "
+        "(1 for a right-hand-drive test) unless set explicitly."))]
 
     def __init__(self, report: Report, isomme: Isomme) -> None:
         super().__init__(report, isomme)
 
         p_driver = isomme.get_test_info("Driver position object 1")
         if p_driver is not None:
-            self.p_driver = int(p_driver)
-        self.p_passenger = 1 if self.p_driver != 1 else self.p_passenger
+            self.set_derived_input("p_driver", int(p_driver))
+        self.derive_positions()
 
         self.criterion_driver = self.Criterion_Driver(report, isomme, p=self.p_driver)
         self.criterion_passenger = self.Criterion_Passenger(report, isomme, p=self.p_passenger)
@@ -39,7 +44,23 @@ class Overall(Criterion):
         self.criterion_door_opening_during_impact = Overall_Frontal_50kmh.Criterion_DoorOpeningDuringImpact(report, isomme)
         self.criterion_compatibility_modifier = self.Criterion_Compatibility_Modifier(report, isomme)
 
+    def derive_positions(self) -> None:
+        """Fill the passenger position from ``p_driver`` — see ``Criterion.set_derived_input``."""
+        self.set_derived_input("p_passenger", 1 if self.p_driver != 1 else 3)
+
+    def sync_positions(self) -> None:
+        """Honour a seating position set after construction (F15) — see ``Criterion.rebuild_child``."""
+        self.derive_positions()
+
+        for attr, p in (("criterion_driver", self.p_driver),
+                        ("criterion_passenger", self.p_passenger)):
+            if getattr(self, attr).p != p:
+                logger.info(f"{self}: rebuilding {attr} for position {p}")
+                self.rebuild_child(attr, p=p)
+
     def calculation(self) -> None:
+        self.sync_positions()
+
         logger.info("Calculate Driver")
         self.criterion_driver.calculate()
         logger.info("Calculate Passenger")
@@ -105,7 +126,8 @@ class Overall(Criterion):
         class Criterion_Head_Neck(Criterion):
             name = "Head & Neck"
 
-            steering_wheel_airbag_exists: bool = True
+            steering_wheel_airbag_exists: Manual[bool, manual(True, source="test report", doc=(
+                "Is a steering-wheel airbag fitted? Without one the head & neck box scores 0."))]
 
             def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                 super().__init__(report, isomme)
@@ -129,7 +151,9 @@ class Overall(Criterion):
 
             class Criterion_Head(Criterion):
                 name = "Head"
-                hard_contact: bool = True
+                hard_contact: Manual[bool, manual(True, source="video", doc=(
+                    "Was hard head contact observed? A head-acceleration peak above "
+                    "80 g forces this to True regardless (Appendix A2: 'video OR curve')."))]
 
                 def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
@@ -585,7 +609,9 @@ class Overall(Criterion):
 
             class Criterion_Pedal_Rearward_Displacement(Criterion):
                 name = "Pedal Rearward Displacement"
-                pedal_rearward_displacement: float = 0
+                pedal_rearward_displacement: Manual[float, manual(
+                    0, unit="mm", source="measurement",
+                    doc="Rearward displacement of the pedal (4 points below 100 mm, 0 above 200 mm).")]
 
                 def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
