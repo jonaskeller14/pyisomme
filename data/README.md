@@ -13,6 +13,8 @@ https://www.nhtsa.gov/research-data/research-testing-databases#/vehicle/9204
   - [11391](nhtsa/11391) [[Source](https://www.nhtsa.gov/research-data/research-testing-databases#/vehicle/11391)]
   - [14065](nhtsa/14065) [[Source](https://www.nhtsa.gov/research-data/research-testing-databases#/vehicle/14065)]
   - [14084](nhtsa/14084) [[Source](https://www.nhtsa.gov/research-data/research-testing-databases#/vehicle/14084)]
+    - Fixed via [fix_channel_metadata.py](nhtsa/14084/fix_channel_metadata.py):
+      chest displacement unit corrected from m to μm; dummy field set to H3 (driver, code 11) and HF (passenger, code 13)
   - [v11391ISO.zip](nhtsa/v11391ISO.zip) [[Source](https://www.nhtsa.gov/research-data/research-testing-databases#/vehicle/11391)]
   - [v14065ISO.zip](nhtsa/v14065ISO.zip) [[Source](https://www.nhtsa.gov/research-data/research-testing-databases#/vehicle/14065)]
   - [v14084ISO.zip](nhtsa/v14084ISO.zip) [[Source](https://www.nhtsa.gov/research-data/research-testing-databases#/vehicle/14084)]

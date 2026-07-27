@@ -1,6 +1,13 @@
 references/**/*.pdf
+
 data/*
 !data/README.md
+!data/nhtsa/
+data/nhtsa/*
+!data/nhtsa/*/
+data/nhtsa/*/*
+!data/nhtsa/*/*.py
+
 tests/out
 tests/out_*
 out/
