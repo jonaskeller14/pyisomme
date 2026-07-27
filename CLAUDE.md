@@ -69,9 +69,12 @@ step 3, so keep them clean:
 - `mypy` is deliberately scoped to `pyisomme/report/` with `disallow_untyped_defs`. The core modules are
   still analysed (report/ needs their signatures) but their own errors are silenced through a
   `follow_imports = "silent"` override — widen `files` and drop that override when the core is annotated.
-- `Report` is generic in its overall criterion: a concrete report declares
-  `class X(Report["X.Criterion_Overall"])`, so `report.overall(isomme).criterion_driver…` — and any
-  manual-input assignment on it — is checked end to end. `Page`/`Criterion` subclasses that walk the tree
+- `Report` is generic in its overall criterion. **Each report module defines its criterion tree as a
+  module-level class named `Overall`**, and the report declares `class X(Report[Overall])` with
+  `Criterion_Overall = Overall`. So `report.overall(isomme).criterion_driver…` — and any manual-input
+  assignment on it — is checked end to end. Reuse across protocols imports the other module's tree
+  directly (`from …frontal_50kmh import Overall as Overall_Frontal_50kmh`), never
+  `OtherReport.Criterion_Overall.…`. `Page`/`Criterion` subclasses that walk the tree
   narrow `report:` to the concrete report class; classes reused **across** reports keep the base `Report`
   and stay unchecked (that duplication is what steps 9–10 remove).
 - `Criterion.require_channel(...)` replaces `self.isomme.get_channel(...)` at every site that
@@ -91,6 +94,12 @@ before changing either:
   where every value is `nan`) compared exactly, and a *results* layer (`value`/`rating`/`color`/`status`)
   compared with **no-regression** semantics: known numbers must stay identical, but a `nan` becoming a
   number — or an `ERROR` becoming `NA` — is reported as an improvement and tolerated. `nan == nan` (G9).
+- **`tests/test_report_structure.py`** — the same *definition* layer, but for **all 13** reports and with
+  **no fixture data at all**: each report is built from empty `Isomme` objects, so it runs in CI. Snapshot
+  in `tests/golden/report_structure.json` (tracked). It catches a reparented criterion, a lost `Limit` row
+  or a dropped page — the things a structural refactor breaks silently. Re-baseline deliberately with
+  `python -m tests.test_report_structure --regen`. A report module defining an `Overall` but missing from
+  its `REPORTS` list fails the coverage guard; deliberate omissions go in `EXCLUDED` with a reason.
 - **`tests/test_report_modules.py`** — imports every module under `pyisomme/report/` and checks that each
   protocol subpackage is reachable as an attribute of `pyisomme.report` *in a fresh interpreter*. Needs no
   fixture data, so it is the one report test that can run in CI. Known breakage sits in explicit
@@ -124,11 +133,11 @@ The domain model is a three-level hierarchy, all re-exported from the top-level 
 Reports live under [pyisomme/report/](pyisomme/report/), one subpackage per protocol family: `euro_ncap/`, `un/`, `us_ncap/`, `iihs/`, `fmvss/`, `correlation/`. Key building blocks:
 
 - **`Report`** ([pyisomme/report/report.py](pyisomme/report/report.py)) — takes an `isomme_list`, builds a tree of criteria and a list of `Page`s. `.calculate()` evaluates all criteria; `.export_pptx(path, template)` renders slides via `python-pptx`. `MetaReport` composes several sub-reports (e.g. the top-level `EuroNCAP` bundles frontal/side load cases).
-- **`Criterion`** ([pyisomme/report/criterion.py](pyisomme/report/criterion.py)) — a nested, self-registering assessment unit. Subclasses implement `calculation()` (sets `.value`, `.rating`, `.color`, attaches `.channel` and `Limit`s). Criteria are discovered reflectively: any attribute that is a `Criterion` instance is treated as a subcriterion (see `get_subcriterion`/`get_subcriteria` and `print_results`). A concrete report (e.g. [pyisomme/report/euro_ncap/frontal_50kmh.py](pyisomme/report/euro_ncap/frontal_50kmh.py)) defines its criterion tree as nested inner classes.
+- **`Criterion`** ([pyisomme/report/criterion.py](pyisomme/report/criterion.py)) — a nested, self-registering assessment unit. Subclasses implement `calculation()` (sets `.value`, `.rating`, `.color`, attaches `.channel` and `Limit`s). Criteria are discovered reflectively: any attribute that is a `Criterion` instance is treated as a subcriterion (see `get_subcriterion`/`get_subcriteria` and `print_results`). A concrete report (e.g. [pyisomme/report/euro_ncap/frontal_50kmh.py](pyisomme/report/euro_ncap/frontal_50kmh.py)) defines its criterion tree as a **module-level class named `Overall`** whose children are nested inner classes.
 - **`Page`** ([pyisomme/report/page.py](pyisomme/report/page.py)) — one slide; `construct(presentation)` draws it, often via the plotting helpers.
 - **`Limit`/`Limits`** ([pyisomme/limits.py](pyisomme/limits.py)) — threshold curves/values matched to channels by code patterns; used both for rating criteria and for drawing limit bars in plots. Per-protocol limit definitions live in each subpackage's `limits.py`.
 
-To add a new report/load case: create a module in the appropriate protocol subpackage, subclass `Report` (or `MetaReport`) with its `name`/`title`/`protocols`, define the criterion tree, register the class in that subpackage's `__init__.py`, and add it to the `REPORTS` list in [pyisomme/__main__.py](pyisomme/__main__.py) so it is reachable from the `report` CLI command.
+To add a new report/load case: create a module in the appropriate protocol subpackage; define its criterion tree as a module-level `class Overall(Criterion)`; declare `class X(Report[Overall])` with `Criterion_Overall = Overall` and its `name`/`title`/`protocols`; register the class in that subpackage's `__init__.py`; add it to the `REPORTS` list in [pyisomme/__main__.py](pyisomme/__main__.py) so it is reachable from the `report` CLI command; and add it to `REPORTS` in [tests/test_report_structure.py](tests/test_report_structure.py) (a coverage guard fails otherwise).
 
 ### Plotting
 

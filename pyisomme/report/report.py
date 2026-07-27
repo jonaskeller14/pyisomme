@@ -19,9 +19,17 @@ from typing import Generic, TypeVar, cast
 logger = logging.getLogger(__name__)
 
 #: The overall criterion a concrete report is built around. Parameterising ``Report``
-#: with it is what makes ``report.overall(isomme).criterion_driver...`` type-check —
-#: a concrete report declares e.g. ``class X(Report["X.Criterion_Overall"])``.
+#: with it is what makes ``report.overall(isomme).criterion_driver...`` type-check.
+#: Every report module defines its tree as a module-level class named ``Overall`` and
+#: declares ``class X(Report[Overall])`` with ``Criterion_Overall = Overall``.
 C = TypeVar("C", bound=Criterion)
+
+
+class Overall(Criterion):
+    """Empty default tree, so a bare ``Report`` is still constructible."""
+
+    def calculation(self) -> None:
+        pass
 
 
 class Report(Generic[C]):
@@ -33,6 +41,8 @@ class Report(Generic[C]):
     pages: list[Page]
     protocol: str | None = None
     protocols: dict[str, str] = {}
+    #: The report's criterion tree. Subclasses rebind it to their own ``Overall``.
+    Criterion_Overall: type[Criterion] = Overall
 
     def __init__(self, isomme_list: list[Isomme], title: str = "Unnamed Report", protocol: str | None = None) -> None:
         self.isomme_list = isomme_list
@@ -83,10 +93,6 @@ class Report(Generic[C]):
 
     def __repr__(self) -> str:
         return f"Report(title='{self.title}', name='{self.name}')"
-
-    class Criterion_Overall(Criterion):
-        def calculation(self) -> None:
-            pass
 
     def export_pptx(self, path: str | Path, template: str | Path | None = None) -> Report[C]:
         presentation: PptxPresentation = Presentation(template)

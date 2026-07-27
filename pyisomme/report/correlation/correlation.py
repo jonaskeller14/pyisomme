@@ -15,17 +15,71 @@ from typing import Any, cast
 logger = logging.getLogger(__name__)
 
 
-def _curve_sort_key(criterion: Correlation.Criterion_Overall.Criterion_Curve_Correlation) -> str:
+def _curve_sort_key(criterion: Overall.Criterion_Curve_Correlation) -> str:
     return str(criterion.channel_r.code) if criterion.channel_r is not None else ""
 
 
-class Correlation(Report["Correlation.Criterion_Overall"]):
+class Overall(Criterion):
+    name = "Overall"
+    is_reference: bool | None = None
+    is_comparison: bool | None = None
+    criteria: list[Overall.Criterion_Curve_Correlation]
+
+    def __init__(self, report: Report, isomme: Isomme) -> None:
+        super().__init__(report, isomme)
+
+        isomme_r = self.report.isomme_list[0]
+        isomme_c = self.isomme
+
+        self.is_reference = True if isomme_r == isomme_c else False
+        self.is_comparison = True if isomme_r != isomme_c else False
+
+        self.criteria = []
+        for channel_r in isomme_r.channels:
+            self.criteria.append(self.Criterion_Curve_Correlation(report=report,
+                                                                  isomme=isomme,
+                                                                  channel_r=isomme_r.get_channel(channel_r.code.set(filter_class="D")),
+                                                                  channel_c=isomme_c.get_channel(channel_r.code.set(filter_class="D"), calculate=False, integrate=False, differentiate=False)))
+
+    def calculation(self) -> None:
+        if not self.is_comparison:
+            return
+
+        for criterion in self.criteria:
+            criterion.calculate()
+
+        self.value = np.nanmin([criterion.value for criterion in self.criteria])
+
+    class Criterion_Curve_Correlation(Criterion):
+        name = "Correlation"
+        channel_r: Channel | None = None
+        channel_c: Channel | None = None
+
+        def __init__(self, report: Report, isomme: Isomme, channel_r: Channel | None, channel_c: Channel | None) -> None:
+            self.name = f"{channel_c.code if channel_c is not None else np.nan}"
+
+            super().__init__(report, isomme)
+
+            self.channel_r = channel_r
+            self.channel_c = channel_c
+
+        def calculation(self) -> None:
+            if self.channel_r is not None and self.channel_c is not None and self.channel_r is not self.channel_c:
+                self.value = Correlation_ISO18571(reference_channel=self.channel_r,
+                                                  comparison_channel=self.channel_c).overall_rating()
+                self.color = "green" if self.value > 0.75 else "orange" if self.value > 0.5 else "red"
+
+
+class Correlation(Report[Overall]):
     name = "Correlation"
     protocol = "ISO-18571:2024"
     protocols = {
         "ISO-18571:2024": "Objective Rating Metric for non ambigious signals according to ISO/TS 18571:2024 "
                           "[https://www.iso.org/standard/85791.html][https://openvt.eu/validation-metrics/ISO18571]",
     }
+
+    #: The report's criterion tree, defined at module level (see `Overall`).
+    Criterion_Overall = Overall
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
@@ -34,56 +88,6 @@ class Correlation(Report["Correlation.Criterion_Overall"]):
             Page_Cover(self),
             self.Page_Correlation_Overall_Rating_Table(self),
         ]
-
-    class Criterion_Overall(Criterion):
-        name = "Overall"
-        is_reference: bool | None = None
-        is_comparison: bool | None = None
-        criteria: list[Correlation.Criterion_Overall.Criterion_Curve_Correlation]
-
-        def __init__(self, report: Report, isomme: Isomme) -> None:
-            super().__init__(report, isomme)
-
-            isomme_r = self.report.isomme_list[0]
-            isomme_c = self.isomme
-
-            self.is_reference = True if isomme_r == isomme_c else False
-            self.is_comparison = True if isomme_r != isomme_c else False
-
-            self.criteria = []
-            for channel_r in isomme_r.channels:
-                self.criteria.append(self.Criterion_Curve_Correlation(report=report,
-                                                                      isomme=isomme,
-                                                                      channel_r=isomme_r.get_channel(channel_r.code.set(filter_class="D")),
-                                                                      channel_c=isomme_c.get_channel(channel_r.code.set(filter_class="D"), calculate=False, integrate=False, differentiate=False)))
-
-        def calculation(self) -> None:
-            if not self.is_comparison:
-                return
-
-            for criterion in self.criteria:
-                criterion.calculate()
-
-            self.value = np.nanmin([criterion.value for criterion in self.criteria])
-
-        class Criterion_Curve_Correlation(Criterion):
-            name = "Correlation"
-            channel_r: Channel | None = None
-            channel_c: Channel | None = None
-
-            def __init__(self, report: Report, isomme: Isomme, channel_r: Channel | None, channel_c: Channel | None) -> None:
-                self.name = f"{channel_c.code if channel_c is not None else np.nan}"
-
-                super().__init__(report, isomme)
-
-                self.channel_r = channel_r
-                self.channel_c = channel_c
-
-            def calculation(self) -> None:
-                if self.channel_r is not None and self.channel_c is not None and self.channel_r is not self.channel_c:
-                    self.value = Correlation_ISO18571(reference_channel=self.channel_r,
-                                                      comparison_channel=self.channel_c).overall_rating()
-                    self.color = "green" if self.value > 0.75 else "orange" if self.value > 0.5 else "red"
 
     class Page_Correlation_Overall_Rating_Table(Page_Criterion_Table):
         report: Correlation

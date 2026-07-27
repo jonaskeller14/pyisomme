@@ -16,6 +16,7 @@ what was done, what was decided, and what was deliberately left alone.
 | 1 | Safety net: golden tests + import smoke test | ⚠ done with deviations | `refactor/step-1-safety-net` |
 | 2 | Fix known defects (Appendix A1, A5, A6, A9) | ⚠ done with deviations | `refactor/step-2-known-defects` |
 | 3 | Typing and lint (P5) | ⚠ done with deviations | `refactor/step-3-typing-lint` |
+| 3b | Criterion trees lifted to module level (maintainer request) | ☑ done | `refactor/step-3-typing-lint` |
 | 4 | Manual inputs as a declared concept (P11) | ☐ todo | |
 | 5 | Limit scales: helpers + equivalence proof (P3a) | ☐ todo | |
 | 6 | `PeakCriterion` + migrate leaves (P4 + P3b) | ☐ todo | |
@@ -619,3 +620,106 @@ copy them, or run the comparison via `git stash` in the main tree.
 - `Criterion.p: int` is now declared on the base class. Step 4's interim F15 fix (re-reading the position
   in `calculation()`) and Step 7's `Ctx` both touch it; it is deliberately *not* `Optional`, because every
   criterion that has a position sets it in `__init__`.
+
+---
+
+### Step 3b — Criterion trees lifted to module level (follow-up to Step 3, maintainer request)
+
+**Date:** 2026-07-27 · **Branch:** `refactor/step-3-typing-lint` · **Commit(s):** see branch tip
+**Outcome:** done
+
+**Why**
+
+Step 3 parameterised each report with a forward-ref string,
+`class EuroNCAP_Frontal_50kmh(Report["EuroNCAP_Frontal_50kmh.Criterion_Overall"])`. The maintainer asked
+for the alternative the review already names (P5, "Con" column): define the overall criterion at module
+level and reference it directly. Verified first on a scratch file that it gives *identical* checking —
+same `attr-defined` errors, same `reveal_type` — before touching anything.
+
+**What was implemented**
+
+- Each report module's tree moved from a nested `Criterion_Overall` to a **module-level `class Overall`**
+  (~5 900 lines dedented across 14 modules). The report now reads:
+
+  ```python
+  class Overall(Criterion): ...
+
+  class EuroNCAP_Frontal_50kmh(Report[Overall]):
+      Criterion_Overall = Overall
+  ```
+
+- `Report` itself no longer carries a nested `Criterion_Overall`; it declares
+  `Criterion_Overall: type[Criterion] = Overall` against a module-level empty default in `report.py`, so a
+  bare `Report` is still constructible and subclass rebinding type-checks.
+- **Cross-protocol reuse now imports the tree directly** instead of reaching through a report class:
+  `from …frontal_50kmh import Overall as Overall_Frontal_50kmh`, then
+  `class Criterion_HIC_15(Overall_Frontal_50kmh.Criterion_Driver.Criterion_Head.Criterion_HIC_15)`.
+  This was forced by typing — once `Criterion_Overall` is an assignment rather than a class statement,
+  mypy cannot use `X.Criterion_Overall.Y` in a type position — and it is the shape Step 10 wants anyway.
+  23 references rewritten; 6 now-unused report-class imports dropped by ruff. Same-module
+  `self.report.Criterion_Overall.X` became `Overall.X` (23 more).
+- **New: `tests/test_report_structure.py` + `tests/golden/report_structure.json`** — see below.
+- `CLAUDE.md` and the CI lint job updated.
+
+**New safety net (deviation from the plan — deliberate)**
+
+`data/` is gone (see the Step 3 incident), so `tests/test_golden.py` cannot run and this move — a
+whole-tree dedent across 14 modules — would otherwise have been unverifiable. So the throwaway checking
+script was made permanent:
+
+`tests/test_report_structure.py` constructs **all 13** reports from **empty `Isomme` objects** and
+compares `golden_utils.serialise(...)["definition"]` against a committed snapshot: every criterion path,
+name and class, every `Limit` row (with `func` samples), and the page class list. It needs no fixture data
+whatsoever, so it runs in CI, and it covers 13 reports where the goldens cover 3.
+
+Two facts make it trustworthy:
+
+1. Its output for the three golden reports is **byte-identical** to the `definition` half of the committed
+   golden files (4205 / 3574 / 1166 serialised lines, 0 differing). Empty Isommes yield the same tree as
+   the real fixtures, because the positions fall back to their declared defaults.
+2. Proven to fail, then reverted: perturbing one HIC limit (`500.000 → 501.000`) fails it, and deleting
+   `self.criterion_femur = …` from the driver tree fails it. `git status` clean afterwards.
+
+Step 12's `describe()` supersedes it; fold it in there.
+
+**Behaviour changes**
+
+- **None.** Before/after structural snapshots over all 13 reports (~17 000 serialised lines) differ in
+  **exactly 13 lines** — one per report — and every one is the root criterion's `"class"` field,
+  `"Criterion_Overall" → "Overall"`. No criterion path, name, limit row or page moved.
+- The same one-line change was applied to each of the three committed golden files (each contained exactly
+  one `"class": "Criterion_Overall"`, the root). This is a **hand-patch, not a regeneration**, because
+  `golden_regen` needs `data/`; it is exactly the change the structural snapshot proves, and afterwards
+  the goldens' `definition` halves again match the snapshot byte for byte. **The goldens' `results` halves
+  were not re-verified** — re-run `python -m unittest tests.test_golden` once `data/` is restored.
+- `self.report.Criterion_Overall.X → Overall.X` drops a dynamic lookup in favour of a static one. No
+  report subclasses another today, so the class resolved is the same — confirmed by the snapshot, which
+  records the class name of every criterion.
+
+**Verification** (commands run and their result)
+- `.venv/Scripts/python.exe -m mypy` → **Success: no issues found in 33 source files**.
+- `.venv/Scripts/python.exe -m ruff check .` → **All checks passed!**
+- Structural snapshot before vs after → 13 differing lines, all the root `"class"` field (above).
+- `.venv/Scripts/python.exe -m unittest tests.test_report_structure` → **OK**, 2 tests.
+- **Construct + calculate + `export_pptx` on synthetic channels for all 13 reports → 13/13 OK.**
+  (A first run showed 12/13: the frontal reports rejected the made-up `WS` dummy code with
+  `AssertionError: Dummy WS not supported by wrapper` — a defect in the throwaway fixture, not the code;
+  with `H3` codes all 13 pass.)
+- `.venv/Scripts/python.exe -m unittest discover -s tests` → 92 tests, 15 errors, **all
+  `FileNotFoundError` from the missing `data/`**. The identical 15 fail on the Step-3 commit with the tree
+  stashed (90 tests / 15 errors there — the +2 are the new structural tests), so this change costs nothing.
+- Step 3's four mypy probes re-run and still behave: `criterion_drivr` → `"Overall" has no attribute …`,
+  `hard_contct` → suggestion, `hard_contact = "yes"` → type error, `…hic_15.rating` → `float`.
+
+**Deviations from the plan / left undone**
+- `tests/test_report_structure.py` is new test infrastructure the plan assigns to Step 12 (`describe()`).
+  Pulled forward because the golden net is unusable and this change needed *some* verification.
+- The goldens' `definition` was hand-patched rather than regenerated — see Behaviour changes.
+
+**Notes for the next session**
+- After restoring `data/`: run `python -m unittest tests.test_golden` **first**. It should pass with zero
+  improvement lines. If it does not, the hand-patch or this move is at fault, not your step.
+- The `report:` narrowings and the `Overall` classes now sit side by side; when Step 7's `sub()` descriptor
+  lands, `Overall` is the natural place to hang the declaration order.
+- Cross-protocol reuse is now explicit imports of `Overall` trees. Step 10 (shared criteria library) can
+  start from that list: `grep -rn "import Overall as" pyisomme/report/`.

@@ -36,10 +36,11 @@ jobs:
       - name: Run mypy
         run: mypy
 
-      # The one report test that needs no fixture data from data/: it imports every
-      # module under pyisomme/report/ and checks the protocol subpackage re-exports.
-      - name: Import smoke test
-        run: python -m unittest tests.test_report_modules
+      # The two report tests that need no fixture data from data/: one imports every
+      # module under pyisomme/report/ and checks the protocol subpackage re-exports,
+      # the other snapshots every report's criterion/limit/page definition.
+      - name: Fixture-free report tests
+        run: python -m unittest tests.test_report_modules tests.test_report_structure
 
   test:
     name: Test (py${{ matrix.python-version }})

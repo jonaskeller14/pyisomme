@@ -6,7 +6,7 @@ from pyisomme.report.page import Page_Cover, Page_Criterion_Rating_Table, Page_C
 from pyisomme.report.report import Report
 from pyisomme.report.criterion import Criterion
 from pyisomme.report.un.limits import Limit_Fail, Limit_Pass
-from pyisomme.report.un.frontal_50kmh_r137 import UN_Frontal_50kmh_R137
+from pyisomme.report.un.frontal_50kmh_r137 import Overall as Overall_Frontal_50kmh_R137
 
 import logging
 import numpy as np
@@ -16,12 +16,397 @@ from typing import Any
 logger = logging.getLogger(__name__)
 
 
-class UN_Frontal_56kmh_ODB_R94(Report["UN_Frontal_56kmh_ODB_R94.Criterion_Overall"]):
+class Overall(Criterion):
+    name = "Overall"
+    p_driver: int = 1
+    p_passenger: int = 3
+
+    def __init__(self, report: Report, isomme: Isomme) -> None:
+        super().__init__(report, isomme)
+
+        p_driver = isomme.get_test_info("Driver position object 1")
+        if p_driver is not None:
+            self.p_driver = int(p_driver)
+        self.p_passenger = 1 if self.p_driver != 1 else self.p_passenger
+
+        self.criterion_driver = self.Criterion_Driver(report, isomme, p=self.p_driver)
+        self.criterion_passenger = self.Criterion_Passenger(report, isomme, p=self.p_passenger)
+
+    def calculation(self) -> None:
+        self.criterion_driver.calculate()
+        self.criterion_passenger.calculate()
+
+        self.rating = np.min([
+            self.criterion_driver.rating,
+            self.criterion_passenger.rating
+        ])
+
+    class Criterion_Driver(Criterion):
+        name = "Driver"
+
+        def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
+            super().__init__(report, isomme)
+
+            self.p = p
+
+            self.criterion_hpc36 = self.Criterion_HPC36(report, isomme, p=self.p)
+            self.criterion_head_a3ms = self.Criterion_Head_a3ms(report, isomme, p=self.p)
+            self.criterion_neck_fz_tension = self.Criterion_Neck_Fz_tension(report, isomme, p=self.p)
+            self.criterion_neck_fx_shear = self.Criterion_Neck_Fx_shear(report, isomme, p=self.p)
+            self.criterion_neck_my_extension = self.Criterion_Neck_My_extension(report, isomme, p=self.p)
+            self.criterion_chest_deflection = self.Criterion_Chest_Deflection(report, isomme, p=self.p)
+            self.criterion_chest_vc = self.Criterion_Chest_VC(report, isomme, p=self.p)
+            self.criterion_femur_compression = self.Criterion_Femur_Compression(report, isomme, p=self.p)
+            self.criterion_tibia_compression = self.Criterion_Tibia_Compression(report, isomme, p=self.p)
+            self.criterion_tibia_index = self.Criterion_Tibia_Index(report, isomme, p=self.p)
+            self.criterion_knee_slider_compression = self.Criterion_Knee_Slider_Compression(report, isomme, p=self.p)
+
+        def calculation(self) -> None:
+            self.criterion_hpc36.calculate()
+            self.criterion_head_a3ms.calculate()
+            self.criterion_neck_fz_tension.calculate()
+            self.criterion_neck_fx_shear.calculate()
+            self.criterion_neck_my_extension.calculate()
+            self.criterion_chest_deflection.calculate()
+            self.criterion_chest_vc.calculate()
+            self.criterion_femur_compression.calculate()
+            self.criterion_tibia_compression.calculate()
+            self.criterion_tibia_index.calculate()
+            self.criterion_knee_slider_compression.calculate()
+
+            self.rating = np.min([
+                self.criterion_hpc36.rating,
+                self.criterion_head_a3ms.rating,
+                self.criterion_neck_fz_tension.rating,
+                self.criterion_neck_fx_shear.rating,
+                self.criterion_neck_my_extension.rating,
+                self.criterion_chest_deflection.rating,
+                self.criterion_chest_vc.rating,
+                self.criterion_femur_compression.rating,
+                self.criterion_tibia_compression.rating,
+                self.criterion_tibia_index.rating,
+                self.criterion_knee_slider_compression.rating
+            ])
+
+        class Criterion_HPC36(Overall_Frontal_50kmh_R137.Criterion_Driver.Criterion_HPC36):
+            pass
+
+        class Criterion_Head_a3ms(Overall_Frontal_50kmh_R137.Criterion_Driver.Criterion_Head_a3ms):
+            pass
+
+        class Criterion_Neck_Fz_tension(Criterion):
+            name = "Neck Fz tension"
+
+            def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
+                super().__init__(report, isomme)
+
+                self.p = p
+
+                self.extend_limit_list([
+                    Limit_Pass([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: np.interp(x, [0, 35, 60], [3.3, 2.9, 1.1]), x_unit="ms", y_unit="kN", upper=True),
+                    Limit_Fail([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: np.interp(x, [0, 35, 60], [3.3, 2.9, 1.1]), x_unit="ms", y_unit="kN", lower=True),
+                ])
+
+            def calculation(self) -> None:
+                self.channel = self.require_channel(f"?{self.p}NECKUP00??FOZA").convert_unit("kN")
+                self.value = np.max(self.channel.get_data())
+                self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
+                self.color = self.limits.get_limit_min_color(self.channel)
+
+        class Criterion_Neck_Fx_shear(Criterion):
+            name = "Neck Fx shear"
+
+            def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
+                super().__init__(report, isomme)
+
+                self.p = p
+
+                self.extend_limit_list([
+                    Limit_Fail([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -np.interp(x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1]), x_unit="ms", y_unit="kN", upper=True),
+                    Limit_Pass([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -np.interp(x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1]), x_unit="ms", y_unit="kN", lower=True),
+                    Limit_Pass([f"?{self.p}NECKUP00??FOX?"], func=lambda x: np.interp(x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1]), x_unit="ms", y_unit="kN", upper=True),
+                    Limit_Fail([f"?{self.p}NECKUP00??FOX?"], func=lambda x: np.interp(x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1]), x_unit="ms", y_unit="kN", lower=True),
+                ])
+
+            def calculation(self) -> None:
+                self.channel = self.require_channel(f"?{self.p}NECKUP00??FOXA").convert_unit("kN")
+                self.value = self.channel.get_data(unit="kN")[np.argmax(np.abs(self.channel.get_data()))]
+                self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
+                self.color = self.limits.get_limit_min_color(self.channel)
+
+        class Criterion_Neck_My_extension(Overall_Frontal_50kmh_R137.Criterion_Driver.Criterion_Neck_My_extension):
+            pass
+
+        class Criterion_Chest_Deflection(Overall_Frontal_50kmh_R137.Criterion_Driver.Criterion_Chest_Deflection):
+            pass
+
+        class Criterion_Chest_VC(Overall_Frontal_50kmh_R137.Criterion_Driver.Criterion_Chest_VC):
+            pass
+
+        class Criterion_Femur_Compression(Criterion):
+            name = "Femur Compression"
+
+            def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
+                super().__init__(report, isomme)
+
+                self.p = p
+
+                self.extend_limit_list([
+                    Limit_Fail([f"?{self.p}FEMR??00??FOZ?"], func=lambda x: np.interp(x, [0, 10], [-9.07, -7.58]), y_unit="kN", x_unit="ms", upper=True),
+                    Limit_Pass([f"?{self.p}FEMR??00??FOZ?"], func=lambda x: np.interp(x, [0, 10], [-9.07, -7.58]), y_unit="kN", x_unit="ms", lower=True),
+                ])
+
+            def calculation(self) -> None:
+                self.channel = self.require_channel(f"?{self.p}FEMR0000??FOZB").convert_unit("kN")
+                self.value = self.limits.get_limit_min_y(self.channel)
+                self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
+                self.color = self.limits.get_limit_min_color(self.channel)
+
+        class Criterion_Tibia_Compression(Criterion):
+            name = "Tibia Compression"
+
+            def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
+                super().__init__(report, isomme)
+
+                self.p = p
+
+                self.extend_limit_list([
+                    Limit_Fail([f"?{self.p}TIBI??????FOZ?"], func=lambda x: -8, y_unit="kN", upper=True),
+                    Limit_Pass([f"?{self.p}TIBI??????FOZ?"], func=lambda x: -8, y_unit="kN", lower=True),
+                ])
+
+            def calculation(self) -> None:
+                self.channel = self.require_channel(f"?{self.p}TIBI0000??FOZB").convert_unit("kN")
+                self.value = np.min(self.channel.get_data())
+                self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
+                self.color = self.limits.get_limit_min_color(self.channel)
+
+        class Criterion_Tibia_Index(Criterion):
+            name = "Tibia Index"
+
+            def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
+                super().__init__(report, isomme)
+
+                self.p = p
+
+                self.extend_limit_list([
+                    Limit_Pass([f"?{self.p}TIIN??????000?"], func=lambda x: 1.3, y_unit="1", upper=True),
+                    Limit_Fail([f"?{self.p}TIIN??????000?"], func=lambda x: 1.3, y_unit="1", lower=True),
+                ])
+
+            def calculation(self) -> None:
+                self.channel = self.require_channel(f"?{self.p}TIIN0000??000B")
+                self.value = np.max(self.channel.get_data())
+                self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
+                self.color = self.limits.get_limit_min_color(self.channel)
+
+        class Criterion_Knee_Slider_Compression(Criterion):
+            name = "Knee Slider Compression"
+
+            def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
+                super().__init__(report, isomme)
+
+                self.p = p
+
+                self.extend_limit_list([
+                    Limit_Fail([f"?{self.p}KNSL??00??DSX?"], func=lambda x: -15, y_unit="mm", upper=True),
+                    Limit_Pass([f"?{self.p}KNSL??00??DSX?"], func=lambda x: -15, y_unit="mm", lower=True),
+                ])
+
+            def calculation(self) -> None:
+                self.channel = self.require_channel(f"?{self.p}KNSL0000??DSXC").convert_unit("mm")
+                self.value = np.min(self.channel.get_data())
+                self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
+                self.color = self.limits.get_limit_min_color(self.channel)
+
+    class Criterion_Passenger(Criterion):
+        name = "Passenger"
+
+        def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
+            super().__init__(report, isomme)
+
+            self.p = p
+
+            self.criterion_hpc36 = self.Criterion_HPC36(report, isomme, p=self.p)
+            self.criterion_head_a3ms = self.Criterion_Head_a3ms(report, isomme, p=self.p)
+            self.criterion_neck_fz_tension = self.Criterion_Neck_Fz_tension(report, isomme, p=self.p)
+            self.criterion_neck_fx_shear = self.Criterion_Neck_Fx_shear(report, isomme, p=self.p)
+            self.criterion_neck_my_extension = self.Criterion_Neck_My_extension(report, isomme, p=self.p)
+            self.criterion_chest_deflection = self.Criterion_Chest_Deflection(report, isomme, p=self.p)
+            self.criterion_chest_vc = self.Criterion_Chest_VC(report, isomme, p=self.p)
+            self.criterion_femur_compression = self.Criterion_Femur_Compression(report, isomme, p=self.p)
+            self.criterion_tibia_compression = self.Criterion_Tibia_Compression(report, isomme, p=self.p)
+            self.criterion_tibia_index = self.Criterion_Tibia_Index(report, isomme, p=self.p)
+            self.criterion_knee_slider_compression = self.Criterion_Knee_Slider_Compression(report, isomme, p=self.p)
+
+        def calculation(self) -> None:
+            self.criterion_hpc36.calculate()
+            self.criterion_head_a3ms.calculate()
+            self.criterion_neck_fz_tension.calculate()
+            self.criterion_neck_fx_shear.calculate()
+            self.criterion_neck_my_extension.calculate()
+            self.criterion_chest_deflection.calculate()
+            self.criterion_chest_vc.calculate()
+            self.criterion_femur_compression.calculate()
+            self.criterion_tibia_compression.calculate()
+            self.criterion_tibia_index.calculate()
+            self.criterion_knee_slider_compression.calculate()
+
+            self.rating = np.min([
+                self.criterion_hpc36.rating,
+                self.criterion_head_a3ms.rating,
+                self.criterion_neck_fz_tension.rating,
+                self.criterion_neck_fx_shear.rating,
+                self.criterion_neck_my_extension.rating,
+                self.criterion_chest_deflection.rating,
+                self.criterion_chest_vc.rating,
+                self.criterion_femur_compression.rating,
+                self.criterion_tibia_compression.rating,
+                self.criterion_tibia_index.rating,
+                self.criterion_knee_slider_compression.rating
+            ])
+
+        class Criterion_HPC36(Overall_Frontal_50kmh_R137.Criterion_Driver.Criterion_HPC36):
+            pass
+
+        class Criterion_Head_a3ms(Overall_Frontal_50kmh_R137.Criterion_Driver.Criterion_Head_a3ms):
+            pass
+
+        class Criterion_Neck_Fz_tension(Criterion):
+            name = "Neck Fz tension"
+
+            def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
+                super().__init__(report, isomme)
+
+                self.p = p
+
+                self.extend_limit_list([
+                    Limit_Pass([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: np.interp(x, [0, 35, 60], [3.3, 2.9, 1.1]), x_unit="ms", y_unit="kN", upper=True),
+                    Limit_Fail([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: np.interp(x, [0, 35, 60], [3.3, 2.9, 1.1]), x_unit="ms", y_unit="kN", lower=True),
+                ])
+
+            def calculation(self) -> None:
+                self.channel = self.require_channel(f"?{self.p}NECKUP00??FOZA").convert_unit("kN")
+                self.value = np.max(self.channel.get_data())
+                self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
+                self.color = self.limits.get_limit_min_color(self.channel)
+
+        class Criterion_Neck_Fx_shear(Criterion):
+            name = "Neck Fx shear"
+
+            def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
+                super().__init__(report, isomme)
+
+                self.p = p
+
+                self.extend_limit_list([
+                    Limit_Fail([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -np.interp(x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1]), x_unit="ms", y_unit="kN", upper=True),
+                    Limit_Pass([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -np.interp(x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1]), x_unit="ms", y_unit="kN", lower=True),
+                    Limit_Pass([f"?{self.p}NECKUP00??FOX?"], func=lambda x: np.interp(x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1]), x_unit="ms", y_unit="kN", upper=True),
+                    Limit_Fail([f"?{self.p}NECKUP00??FOX?"], func=lambda x: np.interp(x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1]), x_unit="ms", y_unit="kN", lower=True),
+                ])
+
+            def calculation(self) -> None:
+                self.channel = self.require_channel(f"?{self.p}NECKUP00??FOXA").convert_unit("kN")
+                self.value = self.channel.get_data(unit="kN")[np.argmax(np.abs(self.channel.get_data()))]
+                self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
+                self.color = self.limits.get_limit_min_color(self.channel)
+
+        class Criterion_Neck_My_extension(Overall_Frontal_50kmh_R137.Criterion_Driver.Criterion_Neck_My_extension):
+            pass
+
+        class Criterion_Chest_Deflection(Overall_Frontal_50kmh_R137.Criterion_Driver.Criterion_Chest_Deflection):
+            pass
+
+        class Criterion_Chest_VC(Overall_Frontal_50kmh_R137.Criterion_Driver.Criterion_Chest_VC):
+            pass
+
+        class Criterion_Femur_Compression(Criterion):
+            name = "Femur Compression"
+
+            def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
+                super().__init__(report, isomme)
+
+                self.p = p
+
+                self.extend_limit_list([
+                    Limit_Fail([f"?{self.p}FEMR??00??FOZ?"], func=lambda x: np.interp(x, [0, 10], [-9.07, -7.58]), y_unit="kN", x_unit="ms", upper=True),
+                    Limit_Pass([f"?{self.p}FEMR??00??FOZ?"], func=lambda x: np.interp(x, [0, 10], [-9.07, -7.58]), y_unit="kN", x_unit="ms", lower=True),
+                ])
+
+            def calculation(self) -> None:
+                self.channel = self.require_channel(f"?{self.p}FEMR0000??FOZB").convert_unit("kN")
+                self.value = self.limits.get_limit_min_y(self.channel)
+                self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
+                self.color = self.limits.get_limit_min_color(self.channel)
+
+        class Criterion_Tibia_Compression(Criterion):
+            name = "Tibia Compression"
+
+            def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
+                super().__init__(report, isomme)
+
+                self.p = p
+
+                self.extend_limit_list([
+                    Limit_Fail([f"?{self.p}TIBI??????FOZ?"], func=lambda x: -8, y_unit="kN", upper=True),
+                    Limit_Pass([f"?{self.p}TIBI??????FOZ?"], func=lambda x: -8, y_unit="kN", lower=True),
+                ])
+
+            def calculation(self) -> None:
+                self.channel = self.require_channel(f"?{self.p}TIBI0000??FOZB").convert_unit("kN")
+                self.value = np.min(self.channel.get_data())
+                self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
+                self.color = self.limits.get_limit_min_color(self.channel)
+
+        class Criterion_Tibia_Index(Criterion):
+            name = "Tibia Index"
+
+            def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
+                super().__init__(report, isomme)
+
+                self.p = p
+
+                self.extend_limit_list([
+                    Limit_Pass([f"?{self.p}TIIN??????000?"], func=lambda x: 1.3, y_unit="1", upper=True),
+                    Limit_Fail([f"?{self.p}TIIN??????000?"], func=lambda x: 1.3, y_unit="1", lower=True),
+                ])
+
+            def calculation(self) -> None:
+                self.channel = self.require_channel(f"?{self.p}TIIN0000??000B")
+                self.value = np.max(self.channel.get_data())
+                self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
+                self.color = self.limits.get_limit_min_color(self.channel)
+
+        class Criterion_Knee_Slider_Compression(Criterion):
+            name = "Knee Slider Compression"
+
+            def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
+                super().__init__(report, isomme)
+
+                self.p = p
+
+                self.extend_limit_list([
+                    Limit_Fail([f"?{self.p}KNSL??00??DSX?"], func=lambda x: -15, y_unit="mm", upper=True),
+                    Limit_Pass([f"?{self.p}KNSL??00??DSX?"], func=lambda x: -15, y_unit="mm", lower=True),
+                ])
+
+            def calculation(self) -> None:
+                self.channel = self.require_channel(f"?{self.p}KNSL0000??DSXC").convert_unit("mm")
+                self.value = np.min(self.channel.get_data())
+                self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
+                self.color = self.limits.get_limit_min_color(self.channel)
+
+
+class UN_Frontal_56kmh_ODB_R94(Report[Overall]):
     name = "UN-R94 | Frontal-Impact against ODB with 40 % Overlap at 56 km/h"
     protocol = "29.12.2022"
     protocols = {
         "29.12.2022": "Revision 4 (29.12.2022) [references/UN-R94/B04.ckg738531jagx232x0m74928e357ft63809066928.pdf]",
     }
+
+    #: The report's criterion tree, defined at module level (see `Overall`).
+    Criterion_Overall = Overall
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
@@ -50,387 +435,6 @@ class UN_Frontal_56kmh_ODB_R94(Report["UN_Frontal_56kmh_ODB_R94.Criterion_Overal
             self.Page_Passenger_Tibia_Compression(self),
             self.Page_Passenger_Tibia_Index(self),
         ]
-
-    class Criterion_Overall(Criterion):
-        name = "Overall"
-        p_driver: int = 1
-        p_passenger: int = 3
-
-        def __init__(self, report: Report, isomme: Isomme) -> None:
-            super().__init__(report, isomme)
-
-            p_driver = isomme.get_test_info("Driver position object 1")
-            if p_driver is not None:
-                self.p_driver = int(p_driver)
-            self.p_passenger = 1 if self.p_driver != 1 else self.p_passenger
-
-            self.criterion_driver = self.Criterion_Driver(report, isomme, p=self.p_driver)
-            self.criterion_passenger = self.Criterion_Passenger(report, isomme, p=self.p_passenger)
-
-        def calculation(self) -> None:
-            self.criterion_driver.calculate()
-            self.criterion_passenger.calculate()
-
-            self.rating = np.min([
-                self.criterion_driver.rating,
-                self.criterion_passenger.rating
-            ])
-
-        class Criterion_Driver(Criterion):
-            name = "Driver"
-
-            def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
-                super().__init__(report, isomme)
-
-                self.p = p
-
-                self.criterion_hpc36 = self.Criterion_HPC36(report, isomme, p=self.p)
-                self.criterion_head_a3ms = self.Criterion_Head_a3ms(report, isomme, p=self.p)
-                self.criterion_neck_fz_tension = self.Criterion_Neck_Fz_tension(report, isomme, p=self.p)
-                self.criterion_neck_fx_shear = self.Criterion_Neck_Fx_shear(report, isomme, p=self.p)
-                self.criterion_neck_my_extension = self.Criterion_Neck_My_extension(report, isomme, p=self.p)
-                self.criterion_chest_deflection = self.Criterion_Chest_Deflection(report, isomme, p=self.p)
-                self.criterion_chest_vc = self.Criterion_Chest_VC(report, isomme, p=self.p)
-                self.criterion_femur_compression = self.Criterion_Femur_Compression(report, isomme, p=self.p)
-                self.criterion_tibia_compression = self.Criterion_Tibia_Compression(report, isomme, p=self.p)
-                self.criterion_tibia_index = self.Criterion_Tibia_Index(report, isomme, p=self.p)
-                self.criterion_knee_slider_compression = self.Criterion_Knee_Slider_Compression(report, isomme, p=self.p)
-
-            def calculation(self) -> None:
-                self.criterion_hpc36.calculate()
-                self.criterion_head_a3ms.calculate()
-                self.criterion_neck_fz_tension.calculate()
-                self.criterion_neck_fx_shear.calculate()
-                self.criterion_neck_my_extension.calculate()
-                self.criterion_chest_deflection.calculate()
-                self.criterion_chest_vc.calculate()
-                self.criterion_femur_compression.calculate()
-                self.criterion_tibia_compression.calculate()
-                self.criterion_tibia_index.calculate()
-                self.criterion_knee_slider_compression.calculate()
-
-                self.rating = np.min([
-                    self.criterion_hpc36.rating,
-                    self.criterion_head_a3ms.rating,
-                    self.criterion_neck_fz_tension.rating,
-                    self.criterion_neck_fx_shear.rating,
-                    self.criterion_neck_my_extension.rating,
-                    self.criterion_chest_deflection.rating,
-                    self.criterion_chest_vc.rating,
-                    self.criterion_femur_compression.rating,
-                    self.criterion_tibia_compression.rating,
-                    self.criterion_tibia_index.rating,
-                    self.criterion_knee_slider_compression.rating
-                ])
-
-            class Criterion_HPC36(UN_Frontal_50kmh_R137.Criterion_Overall.Criterion_Driver.Criterion_HPC36):
-                pass
-
-            class Criterion_Head_a3ms(UN_Frontal_50kmh_R137.Criterion_Overall.Criterion_Driver.Criterion_Head_a3ms):
-                pass
-
-            class Criterion_Neck_Fz_tension(Criterion):
-                name = "Neck Fz tension"
-
-                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
-                    super().__init__(report, isomme)
-
-                    self.p = p
-
-                    self.extend_limit_list([
-                        Limit_Pass([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: np.interp(x, [0, 35, 60], [3.3, 2.9, 1.1]), x_unit="ms", y_unit="kN", upper=True),
-                        Limit_Fail([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: np.interp(x, [0, 35, 60], [3.3, 2.9, 1.1]), x_unit="ms", y_unit="kN", lower=True),
-                    ])
-
-                def calculation(self) -> None:
-                    self.channel = self.require_channel(f"?{self.p}NECKUP00??FOZA").convert_unit("kN")
-                    self.value = np.max(self.channel.get_data())
-                    self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
-                    self.color = self.limits.get_limit_min_color(self.channel)
-
-            class Criterion_Neck_Fx_shear(Criterion):
-                name = "Neck Fx shear"
-
-                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
-                    super().__init__(report, isomme)
-
-                    self.p = p
-
-                    self.extend_limit_list([
-                        Limit_Fail([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -np.interp(x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1]), x_unit="ms", y_unit="kN", upper=True),
-                        Limit_Pass([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -np.interp(x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1]), x_unit="ms", y_unit="kN", lower=True),
-                        Limit_Pass([f"?{self.p}NECKUP00??FOX?"], func=lambda x: np.interp(x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1]), x_unit="ms", y_unit="kN", upper=True),
-                        Limit_Fail([f"?{self.p}NECKUP00??FOX?"], func=lambda x: np.interp(x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1]), x_unit="ms", y_unit="kN", lower=True),
-                    ])
-
-                def calculation(self) -> None:
-                    self.channel = self.require_channel(f"?{self.p}NECKUP00??FOXA").convert_unit("kN")
-                    self.value = self.channel.get_data(unit="kN")[np.argmax(np.abs(self.channel.get_data()))]
-                    self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
-                    self.color = self.limits.get_limit_min_color(self.channel)
-
-            class Criterion_Neck_My_extension(UN_Frontal_50kmh_R137.Criterion_Overall.Criterion_Driver.Criterion_Neck_My_extension):
-                pass
-
-            class Criterion_Chest_Deflection(UN_Frontal_50kmh_R137.Criterion_Overall.Criterion_Driver.Criterion_Chest_Deflection):
-                pass
-
-            class Criterion_Chest_VC(UN_Frontal_50kmh_R137.Criterion_Overall.Criterion_Driver.Criterion_Chest_VC):
-                pass
-
-            class Criterion_Femur_Compression(Criterion):
-                name = "Femur Compression"
-
-                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
-                    super().__init__(report, isomme)
-
-                    self.p = p
-
-                    self.extend_limit_list([
-                        Limit_Fail([f"?{self.p}FEMR??00??FOZ?"], func=lambda x: np.interp(x, [0, 10], [-9.07, -7.58]), y_unit="kN", x_unit="ms", upper=True),
-                        Limit_Pass([f"?{self.p}FEMR??00??FOZ?"], func=lambda x: np.interp(x, [0, 10], [-9.07, -7.58]), y_unit="kN", x_unit="ms", lower=True),
-                    ])
-
-                def calculation(self) -> None:
-                    self.channel = self.require_channel(f"?{self.p}FEMR0000??FOZB").convert_unit("kN")
-                    self.value = self.limits.get_limit_min_y(self.channel)
-                    self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
-                    self.color = self.limits.get_limit_min_color(self.channel)
-
-            class Criterion_Tibia_Compression(Criterion):
-                name = "Tibia Compression"
-
-                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
-                    super().__init__(report, isomme)
-
-                    self.p = p
-
-                    self.extend_limit_list([
-                        Limit_Fail([f"?{self.p}TIBI??????FOZ?"], func=lambda x: -8, y_unit="kN", upper=True),
-                        Limit_Pass([f"?{self.p}TIBI??????FOZ?"], func=lambda x: -8, y_unit="kN", lower=True),
-                    ])
-
-                def calculation(self) -> None:
-                    self.channel = self.require_channel(f"?{self.p}TIBI0000??FOZB").convert_unit("kN")
-                    self.value = np.min(self.channel.get_data())
-                    self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
-                    self.color = self.limits.get_limit_min_color(self.channel)
-
-            class Criterion_Tibia_Index(Criterion):
-                name = "Tibia Index"
-
-                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
-                    super().__init__(report, isomme)
-
-                    self.p = p
-
-                    self.extend_limit_list([
-                        Limit_Pass([f"?{self.p}TIIN??????000?"], func=lambda x: 1.3, y_unit="1", upper=True),
-                        Limit_Fail([f"?{self.p}TIIN??????000?"], func=lambda x: 1.3, y_unit="1", lower=True),
-                    ])
-
-                def calculation(self) -> None:
-                    self.channel = self.require_channel(f"?{self.p}TIIN0000??000B")
-                    self.value = np.max(self.channel.get_data())
-                    self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
-                    self.color = self.limits.get_limit_min_color(self.channel)
-
-            class Criterion_Knee_Slider_Compression(Criterion):
-                name = "Knee Slider Compression"
-
-                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
-                    super().__init__(report, isomme)
-
-                    self.p = p
-
-                    self.extend_limit_list([
-                        Limit_Fail([f"?{self.p}KNSL??00??DSX?"], func=lambda x: -15, y_unit="mm", upper=True),
-                        Limit_Pass([f"?{self.p}KNSL??00??DSX?"], func=lambda x: -15, y_unit="mm", lower=True),
-                    ])
-
-                def calculation(self) -> None:
-                    self.channel = self.require_channel(f"?{self.p}KNSL0000??DSXC").convert_unit("mm")
-                    self.value = np.min(self.channel.get_data())
-                    self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
-                    self.color = self.limits.get_limit_min_color(self.channel)
-
-        class Criterion_Passenger(Criterion):
-            name = "Passenger"
-
-            def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
-                super().__init__(report, isomme)
-
-                self.p = p
-
-                self.criterion_hpc36 = self.Criterion_HPC36(report, isomme, p=self.p)
-                self.criterion_head_a3ms = self.Criterion_Head_a3ms(report, isomme, p=self.p)
-                self.criterion_neck_fz_tension = self.Criterion_Neck_Fz_tension(report, isomme, p=self.p)
-                self.criterion_neck_fx_shear = self.Criterion_Neck_Fx_shear(report, isomme, p=self.p)
-                self.criterion_neck_my_extension = self.Criterion_Neck_My_extension(report, isomme, p=self.p)
-                self.criterion_chest_deflection = self.Criterion_Chest_Deflection(report, isomme, p=self.p)
-                self.criterion_chest_vc = self.Criterion_Chest_VC(report, isomme, p=self.p)
-                self.criterion_femur_compression = self.Criterion_Femur_Compression(report, isomme, p=self.p)
-                self.criterion_tibia_compression = self.Criterion_Tibia_Compression(report, isomme, p=self.p)
-                self.criterion_tibia_index = self.Criterion_Tibia_Index(report, isomme, p=self.p)
-                self.criterion_knee_slider_compression = self.Criterion_Knee_Slider_Compression(report, isomme, p=self.p)
-
-            def calculation(self) -> None:
-                self.criterion_hpc36.calculate()
-                self.criterion_head_a3ms.calculate()
-                self.criterion_neck_fz_tension.calculate()
-                self.criterion_neck_fx_shear.calculate()
-                self.criterion_neck_my_extension.calculate()
-                self.criterion_chest_deflection.calculate()
-                self.criterion_chest_vc.calculate()
-                self.criterion_femur_compression.calculate()
-                self.criterion_tibia_compression.calculate()
-                self.criterion_tibia_index.calculate()
-                self.criterion_knee_slider_compression.calculate()
-
-                self.rating = np.min([
-                    self.criterion_hpc36.rating,
-                    self.criterion_head_a3ms.rating,
-                    self.criterion_neck_fz_tension.rating,
-                    self.criterion_neck_fx_shear.rating,
-                    self.criterion_neck_my_extension.rating,
-                    self.criterion_chest_deflection.rating,
-                    self.criterion_chest_vc.rating,
-                    self.criterion_femur_compression.rating,
-                    self.criterion_tibia_compression.rating,
-                    self.criterion_tibia_index.rating,
-                    self.criterion_knee_slider_compression.rating
-                ])
-
-            class Criterion_HPC36(UN_Frontal_50kmh_R137.Criterion_Overall.Criterion_Driver.Criterion_HPC36):
-                pass
-
-            class Criterion_Head_a3ms(UN_Frontal_50kmh_R137.Criterion_Overall.Criterion_Driver.Criterion_Head_a3ms):
-                pass
-
-            class Criterion_Neck_Fz_tension(Criterion):
-                name = "Neck Fz tension"
-
-                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
-                    super().__init__(report, isomme)
-
-                    self.p = p
-
-                    self.extend_limit_list([
-                        Limit_Pass([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: np.interp(x, [0, 35, 60], [3.3, 2.9, 1.1]), x_unit="ms", y_unit="kN", upper=True),
-                        Limit_Fail([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: np.interp(x, [0, 35, 60], [3.3, 2.9, 1.1]), x_unit="ms", y_unit="kN", lower=True),
-                    ])
-
-                def calculation(self) -> None:
-                    self.channel = self.require_channel(f"?{self.p}NECKUP00??FOZA").convert_unit("kN")
-                    self.value = np.max(self.channel.get_data())
-                    self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
-                    self.color = self.limits.get_limit_min_color(self.channel)
-
-            class Criterion_Neck_Fx_shear(Criterion):
-                name = "Neck Fx shear"
-
-                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
-                    super().__init__(report, isomme)
-
-                    self.p = p
-
-                    self.extend_limit_list([
-                        Limit_Fail([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -np.interp(x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1]), x_unit="ms", y_unit="kN", upper=True),
-                        Limit_Pass([f"?{self.p}NECKUP00??FOX?"], func=lambda x: -np.interp(x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1]), x_unit="ms", y_unit="kN", lower=True),
-                        Limit_Pass([f"?{self.p}NECKUP00??FOX?"], func=lambda x: np.interp(x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1]), x_unit="ms", y_unit="kN", upper=True),
-                        Limit_Fail([f"?{self.p}NECKUP00??FOX?"], func=lambda x: np.interp(x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1]), x_unit="ms", y_unit="kN", lower=True),
-                    ])
-
-                def calculation(self) -> None:
-                    self.channel = self.require_channel(f"?{self.p}NECKUP00??FOXA").convert_unit("kN")
-                    self.value = self.channel.get_data(unit="kN")[np.argmax(np.abs(self.channel.get_data()))]
-                    self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
-                    self.color = self.limits.get_limit_min_color(self.channel)
-
-            class Criterion_Neck_My_extension(UN_Frontal_50kmh_R137.Criterion_Overall.Criterion_Driver.Criterion_Neck_My_extension):
-                pass
-
-            class Criterion_Chest_Deflection(UN_Frontal_50kmh_R137.Criterion_Overall.Criterion_Driver.Criterion_Chest_Deflection):
-                pass
-
-            class Criterion_Chest_VC(UN_Frontal_50kmh_R137.Criterion_Overall.Criterion_Driver.Criterion_Chest_VC):
-                pass
-
-            class Criterion_Femur_Compression(Criterion):
-                name = "Femur Compression"
-
-                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
-                    super().__init__(report, isomme)
-
-                    self.p = p
-
-                    self.extend_limit_list([
-                        Limit_Fail([f"?{self.p}FEMR??00??FOZ?"], func=lambda x: np.interp(x, [0, 10], [-9.07, -7.58]), y_unit="kN", x_unit="ms", upper=True),
-                        Limit_Pass([f"?{self.p}FEMR??00??FOZ?"], func=lambda x: np.interp(x, [0, 10], [-9.07, -7.58]), y_unit="kN", x_unit="ms", lower=True),
-                    ])
-
-                def calculation(self) -> None:
-                    self.channel = self.require_channel(f"?{self.p}FEMR0000??FOZB").convert_unit("kN")
-                    self.value = self.limits.get_limit_min_y(self.channel)
-                    self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
-                    self.color = self.limits.get_limit_min_color(self.channel)
-
-            class Criterion_Tibia_Compression(Criterion):
-                name = "Tibia Compression"
-
-                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
-                    super().__init__(report, isomme)
-
-                    self.p = p
-
-                    self.extend_limit_list([
-                        Limit_Fail([f"?{self.p}TIBI??????FOZ?"], func=lambda x: -8, y_unit="kN", upper=True),
-                        Limit_Pass([f"?{self.p}TIBI??????FOZ?"], func=lambda x: -8, y_unit="kN", lower=True),
-                    ])
-
-                def calculation(self) -> None:
-                    self.channel = self.require_channel(f"?{self.p}TIBI0000??FOZB").convert_unit("kN")
-                    self.value = np.min(self.channel.get_data())
-                    self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
-                    self.color = self.limits.get_limit_min_color(self.channel)
-
-            class Criterion_Tibia_Index(Criterion):
-                name = "Tibia Index"
-
-                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
-                    super().__init__(report, isomme)
-
-                    self.p = p
-
-                    self.extend_limit_list([
-                        Limit_Pass([f"?{self.p}TIIN??????000?"], func=lambda x: 1.3, y_unit="1", upper=True),
-                        Limit_Fail([f"?{self.p}TIIN??????000?"], func=lambda x: 1.3, y_unit="1", lower=True),
-                    ])
-
-                def calculation(self) -> None:
-                    self.channel = self.require_channel(f"?{self.p}TIIN0000??000B")
-                    self.value = np.max(self.channel.get_data())
-                    self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
-                    self.color = self.limits.get_limit_min_color(self.channel)
-
-            class Criterion_Knee_Slider_Compression(Criterion):
-                name = "Knee Slider Compression"
-
-                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
-                    super().__init__(report, isomme)
-
-                    self.p = p
-
-                    self.extend_limit_list([
-                        Limit_Fail([f"?{self.p}KNSL??00??DSX?"], func=lambda x: -15, y_unit="mm", upper=True),
-                        Limit_Pass([f"?{self.p}KNSL??00??DSX?"], func=lambda x: -15, y_unit="mm", lower=True),
-                    ])
-
-                def calculation(self) -> None:
-                    self.channel = self.require_channel(f"?{self.p}KNSL0000??DSXC").convert_unit("mm")
-                    self.value = np.min(self.channel.get_data())
-                    self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
-                    self.color = self.limits.get_limit_min_color(self.channel)
 
     class Page_Rating_Table(Page_Criterion_Rating_Table):
         report: UN_Frontal_56kmh_ODB_R94
