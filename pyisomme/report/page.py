@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pyisomme import Channel, Isomme
-from pyisomme.limits import limit_list_sort
+from pyisomme.limits import Limits, limit_list_sort
 from pyisomme.plotting import Plot_Line, Plot, Plot_Table, Plot_Line_Table
 from pyisomme.report.criterion import Criterion
 from pyisomme.unit import Unit, g0
@@ -267,11 +267,13 @@ class Page_Plot_nxn(Page_Content):
     sharey: bool = False
     xlim: tuple[float | int, float | int] | None = None
     ylim: tuple[float | int, float | int] | None = None
+    limits: Limits | dict[Isomme, Limits] | None = None
 
-    def __init__(self, report: Report[Any]) -> None:
+    def __init__(self, report: Report[Any], limits: Limits | dict[Isomme, Limits] | None = None) -> None:
         super().__init__(report)
         if self.title is None:
             self.title = self.name
+        self.limits = limits if limits is not None else report.limits
 
     def construct(self, presentation: Presentation) -> None:
         super().construct(presentation)
@@ -295,7 +297,7 @@ class Page_Plot_nxn(Page_Content):
                         sharey=self.sharey,
                         xlim=self.xlim,
                         ylim=self.ylim,
-                        limits=self.report.limits,
+                        limits=self.limits,
                         figsize=(figsize_x, figsize_y)).fig
 
         image_steam = io.BytesIO()

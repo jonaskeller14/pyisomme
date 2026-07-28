@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from pyisomme.limits import Limit, Limits, limit_list_unique, limit_list_sort
+from pyisomme.limit import Limit
+from pyisomme.limits import Limits, limit_list_unique, limit_list_sort
 from pyisomme.channel import Channel
 from pyisomme.code import Code, combine_codes
 from pyisomme.isomme import Isomme

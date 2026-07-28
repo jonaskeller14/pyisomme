@@ -3,7 +3,7 @@ from __future__ import annotations
 from pyisomme.isomme import Isomme
 from pyisomme.report.page import Page_Cover, Page_OLC, Page_Plot_nxn, Page_Criterion_Values_Table, Page_Criterion_Rating_Table, Page_Criterion_Values_Chart
 from pyisomme.report.report import Report
-from pyisomme.limits import Limit
+from pyisomme.limit import Limit
 from pyisomme.calculate import calculate_olc
 from pyisomme.report.euro_ncap.frontal_50kmh import EuroNCAP_Frontal_50kmh
 from pyisomme.report.euro_ncap.frontal_50kmh import Overall as Overall_Frontal_50kmh

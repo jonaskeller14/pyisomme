@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from pyisomme.isomme import Isomme
 from pyisomme.channel import Channel
-from pyisomme.limits import Limit, Limits
+from pyisomme.limit import Limit
+from pyisomme.limits import Limits
 from pyisomme.errors import MissingData, Status
 from pyisomme.report.manual import InputSpec, declared_inputs, settable_names, suggest
 

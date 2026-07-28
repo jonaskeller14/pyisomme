@@ -7,7 +7,7 @@ from pyisomme.report.criterion import Criterion
 from pyisomme.correlation import Correlation_ISO18571
 from pyisomme.channel import Channel
 from pyisomme.unit import g0
-from pyisomme.limits import Limit
+from pyisomme.limit import Limit
 from pyisomme.report.euro_ncap.side_pole import EuroNCAP_Side_Pole
 
 import logging

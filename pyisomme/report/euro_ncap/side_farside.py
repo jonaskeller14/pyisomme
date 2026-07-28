@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from pyisomme.limits import Limit
+from pyisomme.limit import Limit
 from pyisomme.isomme import Isomme
 from pyisomme.report.page import Page_Cover, Page_Plot_nxn, Page_Criterion_Values_Chart, Page_Criterion_Rating_Table, \
     Page_Criterion_Values_Table
