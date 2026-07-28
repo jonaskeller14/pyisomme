@@ -9,6 +9,8 @@ import pandas as pd
 from pyisomme.channel import Channel, time_intersect
 from pyisomme.code import Code
 from pyisomme.calculate import (
+    calculate_adjusted_lower_tibia_moment_My,
+    calculate_adjusted_upper_tibia_moment_My,
     calculate_resultant,
     calculate_bric,
     calculate_hic,
@@ -22,6 +24,7 @@ from pyisomme.calculate import (
     calculate_vc,
     calculate_femur_impulse,
     calculate_tibia_index,
+    calculate_tibia_index_using_total_moment,
     calculate_chest_pc_score,
     calculate_olc,
 )
@@ -449,13 +452,58 @@ def _build_kthc_femur_impulse(isomme: Isomme, code: Code) -> Channel | None:
 
 
 def _build_tibia_index(isomme: Isomme, code: Code) -> Channel | None:
-    channel_MOX = isomme.get_channel(code.set(main_location="TIBI", physical_dimension="MO", direction="X"))
-    channel_MOY = isomme.get_channel(code.set(main_location="TIBI", physical_dimension="MO", direction="Y"))
-    channel_FOZ = isomme.get_channel(code.set(main_location="TIBI", physical_dimension="FO", direction="Z"))
-    channels = [channel_MOX, channel_MOY, channel_FOZ]
-    if channel_MOX is not None and channel_MOY is not None and channel_FOZ is not None and all(channel.code.fine_location_3 in ("H3", "HF", "TH", "T3") for channel in channels):
-        return calculate_tibia_index(channel_MOX, channel_MOY, channel_FOZ)
-    return None
+    if (code.fine_location_1) not in ("RU", "RL", "LU", "LL"): return None
+
+    fine_location_1 = "RI" if code.fine_location_1[0] == "R" else "LE"
+    fine_location_2 = "UP" if code.fine_location_1[1] == "U" else "LO"
+
+    channel_MOX = isomme.get_channel(code.set(main_location="TIBI", fine_location_1=fine_location_1, fine_location_2=fine_location_2, physical_dimension="MO", direction="X"))
+    channel_MOY = isomme.get_channel(code.set(main_location="TIBI", fine_location_1=fine_location_1, fine_location_2=fine_location_2, physical_dimension="MO", direction="Y"))
+    channel_FOZ = isomme.get_channel(code.set(main_location="TIBI", fine_location_1=fine_location_1, fine_location_2=fine_location_2, physical_dimension="FO", direction="Z"))
+
+    if channel_MOX is None or channel_MOY is None or channel_FOZ is None:
+        return None
+
+    channels = (channel_MOX, channel_MOY, channel_FOZ)
+    if not all(channel.code.fine_location_3 in ("H3", "HF", "TH", "T3") for channel in channels):
+        return None
+    
+    return calculate_tibia_index(channel_MOX, channel_MOY, channel_FOZ)
+
+
+def _build_tibia_index_using_total_moment(isomme: Isomme, code: Code) -> Channel | None:
+    if (code.fine_location_1) not in ("RU", "RL", "LU", "LL"): return None
+
+    fine_location_1 = "RI" if code.fine_location_1[0] == "R" else "LE"
+    fine_location_2 = "UP" if code.fine_location_1[1] == "U" else "LO"
+
+    channel_MOX = isomme.get_channel(code.set(main_location="TIBI", fine_location_1=fine_location_1, fine_location_2=fine_location_2, physical_dimension="MO", direction="X"))
+    channel_MOY = isomme.get_channel(code.set(main_location="TIBI", fine_location_1=fine_location_1, fine_location_2=fine_location_2, physical_dimension="MO", direction="Y"))
+    channel_FOZ = isomme.get_channel(code.set(main_location="TIBI", fine_location_1=fine_location_1, fine_location_2=fine_location_2, physical_dimension="FO", direction="Z"))
+    
+    if channel_MOX is None or channel_MOY is None or channel_FOZ is None:
+        return None
+
+    channels = (channel_MOX, channel_MOY, channel_FOZ)
+    if not all(c.code.fine_location_3 in ("H3", "T3") for c in channels):
+        return None
+
+    fine_location_2s = {channel.code.fine_location_2 for channel in channels}
+    if len(fine_location_2s) != 1:
+        return None
+    fine_location_2 = fine_location_2s.pop()
+
+    if (fine_location_2 == "UP"):
+        channel_MOY_total = calculate_adjusted_upper_tibia_moment_My(channel_MOY=channel_MOY, channel_FOZ=channel_FOZ)
+    elif (fine_location_2 == "LO"):
+        channel_MOY_total = calculate_adjusted_lower_tibia_moment_My(channel_MOY=channel_MOY, channel_FOZ=channel_FOZ)
+    else:
+        return None
+    
+    if channel_MOY_total is None:
+        return None
+
+    return calculate_tibia_index_using_total_moment(channel_MOX, channel_MOY_total, channel_FOZ)
 
 
 def _build_chest_pc_score(isomme: Isomme, code: Code) -> Channel | None:
@@ -678,14 +726,7 @@ PROVIDERS: list[ChannelProvider] = [
     AggregatePairProvider(
         lambda c: c.main_location == "KNSL" and c.fine_location_1 == "00" and c.fine_location_2 == "00" and c.physical_dimension in ("FO", "DS") and c.direction == "X",
         vary="fine_location_1", members=("LE", "RI"), agg="min"),
-    # Tibia Index (Maximum of left and right)
-    AggregatePairProvider(
-        lambda c: c.main_location == "TIIN" and c.fine_location_1 == "00" and c.physical_dimension == "00" and c.direction == "0",
-        vary="fine_location_1", members=("LE", "RI"), agg="max"),
-    # Tibia Index (Maximum of upper and lower)
-    AggregatePairProvider(
-        lambda c: c.main_location == "TIIN" and c.fine_location_2 == "00" and c.physical_dimension == "00" and c.direction == "0",
-        vary="fine_location_2", members=("UP", "LO"), agg="max"),
+    
     # Tibia Compression (Minimum of left and right)
     AggregatePairProvider(
         lambda c: c.main_location == "TIBI" and c.fine_location_1 == "00" and c.physical_dimension == "FO" and c.direction == "Z",
@@ -693,11 +734,32 @@ PROVIDERS: list[ChannelProvider] = [
     # Tibia Compression (Minimum of upper and lower)
     AggregatePairProvider(
         lambda c: c.main_location == "TIBI" and c.fine_location_2 == "00" and c.physical_dimension == "FO" and c.direction == "Z",
-        vary="fine_location_2", members=("UP", "LO"), agg="min"),
+        vary="fine_location_2", members=("UP", "LO"), agg="min"), 
+    
     # Tibia Index
     _FnProvider(
-        lambda c: c.main_location == "TIIN" and c.physical_dimension == "00" and c.direction == "0",
+        lambda c: c.main_location == "TIIN" and c.fine_location_2 == "00" and c.physical_dimension == "00" and c.direction == "0",
         _build_tibia_index),
+    _FnProvider(
+        lambda c: c.main_location == "TIIN" and c.fine_location_2 == "TO" and c.physical_dimension == "00" and c.direction == "0",
+        _build_tibia_index_using_total_moment),
+    # Tibia Index (Maximum of left/right and upper/lower)
+    AggregatePairProvider(
+        lambda c: c.main_location == "TIIN" and c.fine_location_1 == "00" and c.physical_dimension == "00" and c.direction == "0",
+        vary="fine_location_1", members=("LU", "LL", "RU", "RL"), agg="max"),
+    AggregatePairProvider(
+        lambda c: c.main_location == "TIIN" and c.fine_location_1 == "L0" and c.physical_dimension == "00" and c.direction == "0",
+        vary="fine_location_1", members=("LU", "LL"), agg="max"),
+    AggregatePairProvider(
+        lambda c: c.main_location == "TIIN" and c.fine_location_1 == "R0" and c.physical_dimension == "00" and c.direction == "0",
+        vary="fine_location_1", members=("RU", "RL"), agg="max"),
+    AggregatePairProvider(
+        lambda c: c.main_location == "TIIN" and c.fine_location_1 == "0U" and c.physical_dimension == "00" and c.direction == "0",
+        vary="fine_location_1", members=("LU", "RU"), agg="max"),
+    AggregatePairProvider(
+        lambda c: c.main_location == "TIIN" and c.fine_location_1 == "0L" and c.physical_dimension == "00" and c.direction == "0",
+        vary="fine_location_1", members=("LL", "RL"), agg="max"),
+    
     # THOR Dummy Chest PCA Score
     _FnProvider(
         lambda c: c.main_location == "CHST" and c.fine_location_1 == "00" and c.fine_location_2 == "PC" and c.physical_dimension == "DS" and c.filter_class != "X",
@@ -732,7 +794,7 @@ PROVIDERS: list[ChannelProvider] = [
         vary="fine_location_2", members=("UP", "MI", "LO"), agg="min", keep_info=True),
     # Foot Resultant Acceleration (Max. of left and right)
     AggregatePairProvider(
-        lambda c: c.main_location == "FOOT" and c.physical_dimension == "AC" and c.direction == "R",
+        lambda c: c.main_location == "FOOT" and c.fine_location_1 == "00" and c.physical_dimension == "AC" and c.direction == "R",
         vary="fine_location_1", members=("LE", "RI"), agg="max", keep_info=True),
     # OLC
     _FnProvider(

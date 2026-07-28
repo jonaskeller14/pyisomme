@@ -490,7 +490,7 @@ class Channel:
                                data=pd.DataFrame(self.get_data(t=t) + other.get_data(t=t), index=t),
                                unit=self.unit,
                                info=self.info + [("Calculation History", f"{self.code} + {other.code}")])
-        else:
+        elif isinstance(other, (int, float)):
             return Channel(code=self.code,
                            data=self.data + other,
                            unit=self.unit,
@@ -513,7 +513,7 @@ class Channel:
                                data=pd.DataFrame(self.get_data(t=t) - other.get_data(t=t), index=t),
                                unit=self.unit,
                                info=self.info + [("Calculation History", f"{self.code} - {other.code}")])
-        else:
+        elif isinstance(other, (int, float)):
             return Channel(code=self.code,
                            data=self.data - other,
                            unit=self.unit,
@@ -529,10 +529,15 @@ class Channel:
                            data=pd.DataFrame(self.get_data(t=t) * other.get_data(t=t), index=t),
                            unit=self.unit * other.unit,
                            info=self.info + [("Calculation History", f"{self.code} * {other.code}")])
-        else:
+        elif isinstance(other, (int, float)):
             return Channel(code=self.code,
                            data=self.data * other,
                            unit=self.unit,
+                           info=self.info + [("Calculation History", f"{self.code} * {other}")])
+        elif isinstance(other, Unit):
+            return Channel(code=self.code,
+                           data=self.data,
+                           unit=self.unit * other,
                            info=self.info + [("Calculation History", f"{self.code} * {other}")])
 
     def __rmul__(self, other):
@@ -545,10 +550,15 @@ class Channel:
                            data=pd.DataFrame(self.get_data(t=t) / other.get_data(t=t), index=t),
                            unit=self.unit / other.unit,
                            info=self.info + [("Calculation History", f"{self.code} / {other.code}")])
-        else:
+        elif isinstance(other, (int, float)):
             return Channel(code=self.code,
                            data=self.data / other,
                            unit=self.unit,
+                           info=self.info + [("Calculation History", f"{self.code} / {other}")])
+        elif isinstance(other, Unit):
+            return Channel(code=self.code,
+                           data=self.data,
+                           unit=self.unit / other,
                            info=self.info + [("Calculation History", f"{self.code} / {other}")])
 
     def __pow__(self, power, modulo=None):

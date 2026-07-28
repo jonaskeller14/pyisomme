@@ -452,11 +452,17 @@ class Overall(Criterion):
                     self.p = p
 
                     self.extend_limit_list([
-                        # TODO
+                        Limit_G([f"?{self.p}TIIN??TO??000?"], func=lambda x: 0.8, y_unit="1", upper=True, rating=0),
+                        Limit_A([f"?{self.p}TIIN??TO??000?"], func=lambda x: 0.8, y_unit="1", lower=True, rating=-1),
+                        Limit_M([f"?{self.p}TIIN??TO??000?"], func=lambda x: 1.0, y_unit="1", lower=True, rating=-2),
+                        Limit_P([f"?{self.p}TIIN??TO??000?"], func=lambda x: 1.2, y_unit="1", lower=True, rating=-4),
                     ])
 
                 def calculation(self) -> None:
-                    pass
+                    self.channel = self.require_channel(f"?{self.p}TIIN00TO??000B")
+                    self.value = np.max(self.channel.get_data())
+                    self.rating = self.limits.get_limit_min_rating(self.channel)
+                    self.color = self.limits.get_limit_min_color(self.channel)
 
             class Criterion_Tibia_Axial_Force(Criterion):
                 name = "Tibia Axial Force"
@@ -468,9 +474,9 @@ class Overall(Criterion):
 
                     self.extend_limit_list([
                         Limit_G([f"?{self.p}TIBI??LO??FOZ?"], func=lambda x: -4, y_unit="kN", lower=True, rating=0),
-                        Limit_A([f"?{self.p}TIBI??LO??FOZ?"], func=lambda x: -4, y_unit="kN", upper=True, rating=-2),
-                        Limit_M([f"?{self.p}TIBI??LO??FOZ?"], func=lambda x: -6, y_unit="kN", upper=True, rating=-10),
-                        Limit_P([f"?{self.p}TIBI??LO??FOZ?"], func=lambda x: -8, y_unit="kN", upper=True, rating=-20),
+                        Limit_A([f"?{self.p}TIBI??LO??FOZ?"], func=lambda x: -4, y_unit="kN", upper=True, rating=-1),
+                        Limit_M([f"?{self.p}TIBI??LO??FOZ?"], func=lambda x: -6, y_unit="kN", upper=True, rating=-2),
+                        Limit_P([f"?{self.p}TIBI??LO??FOZ?"], func=lambda x: -8, y_unit="kN", upper=True, rating=-4),
                     ])
 
                 def calculation(self) -> None:
@@ -536,6 +542,7 @@ class IIHS_Frontal_Small_Overlap(Report[Overall]):
             self.Page_Driver_Neck_Load_Corridor(self),
             self.Page_Driver_Femur_Axial_Force(self),
             self.Page_Driver_Tibia_Compression(self),
+            self.Page_Driver_Tibia_Index_Total(self),
             self.Page_Driver_Foot_Acceleration(self),
         ]
 
@@ -658,6 +665,20 @@ class IIHS_Frontal_Small_Overlap(Report[Overall]):
     class Page_Driver_Femur_Axial_Force(EuroNCAP_Frontal_MPDB.Page_Driver_Femur_Axial_Force):
         pass
 
+    class Page_Driver_Tibia_Index_Total(Page_Plot_nxn):
+        name = "Driver Tibia Index (Total Moment)"
+        title = "Driver Tibia Index (Total Moment)"
+        nrows = 2
+        ncols = 2
+        sharey = True
+
+        def __init__(self, report: Report) -> None:
+            super().__init__(report)
+            self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p_driver}TIINLUTO??000B"],
+                                      [f"?{self.report.criterion_overall[isomme].p_driver}TIINRUTO??000B"],
+                                      [f"?{self.report.criterion_overall[isomme].p_driver}TIINLLTO??000B"],
+                                      [f"?{self.report.criterion_overall[isomme].p_driver}TIINRLTO??000B"]] for isomme in self.report.isomme_list}
+    
     class Page_Driver_Tibia_Compression(EuroNCAP_Frontal_MPDB.Page_Driver_Tibia_Compression):
         pass
 

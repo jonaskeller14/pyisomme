@@ -211,8 +211,8 @@ class Overall(Criterion):
                 self.p = p
 
                 self.extend_limit_list([
-                    Limit_Pass([f"?{self.p}TIIN??????000?"], func=lambda x: 1.3, y_unit="1", upper=True),
-                    Limit_Fail([f"?{self.p}TIIN??????000?"], func=lambda x: 1.3, y_unit="1", lower=True),
+                    Limit_Pass([f"?{self.p}TIIN??00??000?"], func=lambda x: 1.3, y_unit="1", upper=True),
+                    Limit_Fail([f"?{self.p}TIIN??00??000?"], func=lambda x: 1.3, y_unit="1", lower=True),
                 ])
 
             def calculation(self) -> None:
@@ -389,8 +389,8 @@ class Overall(Criterion):
                 self.p = p
 
                 self.extend_limit_list([
-                    Limit_Pass([f"?{self.p}TIIN??????000?"], func=lambda x: 1.3, y_unit="1", upper=True),
-                    Limit_Fail([f"?{self.p}TIIN??????000?"], func=lambda x: 1.3, y_unit="1", lower=True),
+                    Limit_Pass([f"?{self.p}TIIN??00??000?"], func=lambda x: 1.3, y_unit="1", upper=True),
+                    Limit_Fail([f"?{self.p}TIIN??00??000?"], func=lambda x: 1.3, y_unit="1", lower=True),
                 ])
 
             def calculation(self) -> None:

@@ -57,8 +57,23 @@ class TestCalculate(unittest.TestCase):
             if channel.code.main_location == "TIBI" and channel.code.fine_location_3 == "00":
                 channel.set_code(fine_location_3="H3")
 
-        assert self.v1.get_channel("?1TIINLEUP??000B") is not None
-        assert self.v1.get_channel("?3TIINRILO??000B") is not None
+        assert self.v1.get_channel("?1TIINLU00??000B") is not None
+        assert self.v1.get_channel("?3TIINRL00??000B") is not None
+
+        assert self.v1.get_channel("?1TIINL000??000B") is not None
+        assert self.v1.get_channel("?1TIINR000??000B") is not None
+        assert self.v1.get_channel("?1TIIN0U00??000B") is not None
+        assert self.v1.get_channel("?1TIIN0L00??000B") is not None
+        assert self.v1.get_channel("?1TIIN0000??000B") is not None
+
+        assert self.v1.get_channel("?1TIINLUTO??000B") is not None
+        assert self.v1.get_channel("?3TIINRLTO??000B") is not None
+
+        assert self.v1.get_channel("?1TIINL0TO??000B") is not None
+        assert self.v1.get_channel("?1TIINR0TO??000B") is not None
+        assert self.v1.get_channel("?1TIIN0UTO??000B") is not None
+        assert self.v1.get_channel("?1TIIN0LTO??000B") is not None
+        assert self.v1.get_channel("?1TIIN00TO??000B") is not None
 
     def test_calculate_femur_impulse(self):
         assert pyisomme.calculate_femur_impulse(self.v1.get_channel("??FEMR??????FOZ?")) is not None

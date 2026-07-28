@@ -572,11 +572,11 @@ class Overall(Criterion):
                     self.p = p
 
                     self.extend_limit_list([
-                        Limit_G([f"?{self.p}TIIN??????000?"], func=lambda x: 0.4, y_unit="1", upper=True),
-                        Limit_A([f"?{self.p}TIIN??????000?"], func=lambda x: 0.4, y_unit="1", lower=True),
-                        Limit_M([f"?{self.p}TIIN??????000?"], func=lambda x: 0.7, y_unit="1", lower=True),
-                        Limit_W([f"?{self.p}TIIN??????000?"], func=lambda x: 1.0, y_unit="1", lower=True),
-                        Limit_P([f"?{self.p}TIIN??????000?"], func=lambda x: 1.3, y_unit="1", lower=True),
+                        Limit_G([f"?{self.p}TIIN??00??000?"], func=lambda x: 0.4, y_unit="1", upper=True),
+                        Limit_A([f"?{self.p}TIIN??00??000?"], func=lambda x: 0.4, y_unit="1", lower=True),
+                        Limit_M([f"?{self.p}TIIN??00??000?"], func=lambda x: 0.7, y_unit="1", lower=True),
+                        Limit_W([f"?{self.p}TIIN??00??000?"], func=lambda x: 1.0, y_unit="1", lower=True),
+                        Limit_P([f"?{self.p}TIIN??00??000?"], func=lambda x: 1.3, y_unit="1", lower=True),
                     ])
 
                 def calculation(self) -> None:
@@ -1132,10 +1132,10 @@ class EuroNCAP_Frontal_MPDB(Report[Overall]):
 
         def __init__(self, report: Report) -> None:
             super().__init__(report)
-            self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p_driver}TIINLEUP??000B"],
-                                      [f"?{self.report.criterion_overall[isomme].p_driver}TIINRIUP??000B"],
-                                      [f"?{self.report.criterion_overall[isomme].p_driver}TIINLELO??000B"],
-                                      [f"?{self.report.criterion_overall[isomme].p_driver}TIINRILO??000B"]] for isomme in self.report.isomme_list}
+            self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p_driver}TIINLU00??000B"],
+                                      [f"?{self.report.criterion_overall[isomme].p_driver}TIINRU00??000B"],
+                                      [f"?{self.report.criterion_overall[isomme].p_driver}TIINLL00??000B"],
+                                      [f"?{self.report.criterion_overall[isomme].p_driver}TIINRL00??000B"]] for isomme in self.report.isomme_list}
 
     class Page_Driver_Knee_Slider_Compression(Page_Plot_nxn):
         name = "Driver Knee Slider Compression"
@@ -1311,10 +1311,10 @@ class EuroNCAP_Frontal_MPDB(Report[Overall]):
 
         def __init__(self, report: Report) -> None:
             super().__init__(report)
-            self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p_passenger}TIINLEUP??000B"],
-                                      [f"?{self.report.criterion_overall[isomme].p_passenger}TIINRIUP??000B"],
-                                      [f"?{self.report.criterion_overall[isomme].p_passenger}TIINLELO??000B"],
-                                      [f"?{self.report.criterion_overall[isomme].p_passenger}TIINRILO??000B"]] for isomme in self.report.isomme_list}
+            self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p_passenger}TIINLU00??000B"],
+                                      [f"?{self.report.criterion_overall[isomme].p_passenger}TIINRU00??000B"],
+                                      [f"?{self.report.criterion_overall[isomme].p_passenger}TIINLL00??000B"],
+                                      [f"?{self.report.criterion_overall[isomme].p_passenger}TIINRL00??000B"]] for isomme in self.report.isomme_list}
 
     class Page_OLC_Trolley(Page_Plot_nxn):
         name: str = "OLC Trolley"
