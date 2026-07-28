@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from pyisomme.report.report import MetaReport
+from pyisomme.report.meta_report import MetaReport
 from pyisomme.report.page import Page_Cover
 from pyisomme.report.euro_ncap.frontal_50kmh import EuroNCAP_Frontal_50kmh
 from pyisomme.report.euro_ncap.frontal_mpdb import EuroNCAP_Frontal_MPDB
