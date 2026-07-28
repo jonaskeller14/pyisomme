@@ -25,7 +25,6 @@ class Limit:
     color: str = "black"
     code_patterns: list[str] | None = None
     func: Callable
-    # ``int`` is accepted because dimensionless limits are written ``y_unit=1``.
     x_unit: str | Unit | int | None = "s"
     y_unit: str | Unit | int | None = "1"
     linestyle: str = "-"
@@ -109,6 +108,11 @@ class Limits:
     # base ``Report`` leaves it unset. The container name is not rendered anywhere.
     name: str | None
     limit_list: list
+
+    def __add__(self, other: Limits) -> Limits:
+        if not isinstance(other, Limits):
+            raise TypeError(f"Cannot add Limits and {type(other)}.")
+        return Limits(name=f"{self.name} + {other.name}", limit_list=self.limit_list + other.limit_list)
 
     def __init__(self, name: str | None = "Unnamed Limits", limit_list: list | None = None):
         self.name = name

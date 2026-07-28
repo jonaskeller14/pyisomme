@@ -1320,7 +1320,7 @@
      },
      {
       "code_patterns": [
-       "?1NECKUP00??FOZA"
+       "?1NECKUP00??FOZ?"
       ],
       "color": "gray",
       "func_samples": [
@@ -13243,7 +13243,7 @@
       "y_unit": "kN"
      }
     ],
-    "name": "Neck Fx Compression Corridor"
+    "name": "Neck Fz Compression Corridor"
    },
    "criterion_driver/criterion_head_neck/criterion_fz_tension": {
     "class": "Criterion_Fz_Tension",
@@ -13805,6 +13805,9 @@
    "Page_Driver_Rating_Table",
    "Page_Driver_Values_Table",
    "Page_Driver_Head_Acceleration",
+   "Page_Driver_Neck_NIJ",
+   "Page_Driver_Neck_Load",
+   "Page_Driver_Neck_Load_Corridor",
    "Page_Driver_Femur_Axial_Force"
   ]
  },

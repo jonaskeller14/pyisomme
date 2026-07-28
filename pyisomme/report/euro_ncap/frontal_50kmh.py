@@ -371,7 +371,7 @@ class Overall(Criterion):
                         Limit_M([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: 2.007, y_unit="kN", lower=True),
                         Limit_W([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: 2.313, y_unit="kN", lower=True),
                         Limit_P([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: 2.620, y_unit="kN", lower=True),
-                        Limit_C([f"?{self.p}NECKUP00??FOZA"], func=lambda x: 2.900, y_unit="kN", lower=True),
+                        Limit_C([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: 2.900, y_unit="kN", lower=True),
                     ])
 
                 def calculation(self) -> None:
@@ -1135,7 +1135,6 @@ class EuroNCAP_Frontal_50kmh(Report[Overall]):
         "9.3": "Version 9.3 (05.12.2023) [references/Euro-NCAP/euro-ncap-assessment-protocol-aop-v93.pdf]"
     }
 
-    #: The report's criterion tree, defined at module level (see `Overall`).
     Criterion_Overall = Overall
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
