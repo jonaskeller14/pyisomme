@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING, Callable, Literal
 from collections.abc import Sequence
 import fnmatch
 import numpy as np
@@ -79,7 +79,7 @@ class AggregatePairProvider(ChannelProvider):
                  match: Callable[[Code], bool],
                  vary: str,
                  members: Sequence[str],
-                 agg: str,
+                 agg: Literal["min", "max", "max_abs"],
                  keep_info: bool = False):
         self._match = match
         self.vary = vary
