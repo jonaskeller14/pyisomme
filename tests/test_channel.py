@@ -1,11 +1,14 @@
-import pyisomme
-
 import unittest
 import logging
 import warnings
 import copy
 import pandas as pd
 import numpy as np
+import astropy.units as u
+
+from pyisomme.channel import Channel, create_sample
+from pyisomme.isomme import Isomme
+from pyisomme.unit import Unit, g0
 
 
 logger = logging.getLogger(__name__)
@@ -15,50 +18,50 @@ logging.basicConfig(format='%(module)-12s %(levelname)-8s %(message)s',
 
 class TestChannel(unittest.TestCase):
     def test_init(self):
-        pyisomme.Channel(code="11HEAD0000H3ACXP", data=pd.DataFrame([]))
+        Channel(code="11HEAD0000H3ACXP", data=pd.DataFrame([]))
         # < 16 chars
-        pyisomme.Channel(code="11HEAD0000H3", data=pd.DataFrame([]))
+        Channel(code="11HEAD0000H3", data=pd.DataFrame([]))
         # > 16 chars
-        pyisomme.Channel(code="11HEAD0000H3ACXP123", data=pd.DataFrame([]))
+        Channel(code="11HEAD0000H3ACXP123", data=pd.DataFrame([]))
         # invalid chars
-        pyisomme.Channel(code="TOTAL_ENERGY", data=pd.DataFrame([]))
+        Channel(code="TOTAL_ENERGY", data=pd.DataFrame([]))
 
     def test_get_info(self):
-        channel = pyisomme.Channel(code="11HEAD0000H3ACXP",
+        channel = Channel(code="11HEAD0000H3ACXP",
                                    data=pd.DataFrame([]),
                                    info=[("Time of first sample", -0.030399999)])
         assert channel.get_info("Time of first sample") == channel.get_info("[XT]ime * f?rst sample")
         assert channel.get_info("Time of first sample") == channel.get_info("[XT]ime .* f.rst sample")
 
     def test_eq(self):
-        c_1 = pyisomme.Channel(code="????????????????", data=pd.DataFrame([1]), unit="m")
-        c_2 = pyisomme.Channel(code="????????????????", data=pd.DataFrame([1000]), unit="mm")
+        c_1 = Channel(code="????????????????", data=pd.DataFrame([1]), unit="m")
+        c_2 = Channel(code="????????????????", data=pd.DataFrame([1000]), unit="mm")
 
         self.assertTrue(c_1 == c_2)
 
     def test_ne(self):
-        c_1 = pyisomme.Channel(code="????????????????", data=pd.DataFrame([1]), unit="m")
-        c_2 = pyisomme.Channel(code="????????????????", data=pd.DataFrame([1]), unit="mm")
+        c_1 = Channel(code="????????????????", data=pd.DataFrame([1]), unit="m")
+        c_2 = Channel(code="????????????????", data=pd.DataFrame([1]), unit="mm")
 
         self.assertTrue(c_1 != c_2)
 
     def test_add(self):
-        c_1 = pyisomme.Channel(code="????????????????", data=pd.DataFrame([1]), unit="m")
-        c_2 = pyisomme.Channel(code="????????????????", data=pd.DataFrame([1000]), unit="mm")
+        c_1 = Channel(code="????????????????", data=pd.DataFrame([1]), unit="m")
+        c_2 = Channel(code="????????????????", data=pd.DataFrame([1000]), unit="mm")
 
         self.assertEqual((c_1 + c_2).get_data(unit="m"), 2)
         self.assertEqual((c_1 + 1).get_data(unit="m"), 2)
 
     def test_sub(self):
-        c_1 = pyisomme.Channel(code="????????????????", data=pd.DataFrame([1]), unit="m")
-        c_2 = pyisomme.Channel(code="????????????????", data=pd.DataFrame([1000]), unit="mm")
+        c_1 = Channel(code="????????????????", data=pd.DataFrame([1]), unit="m")
+        c_2 = Channel(code="????????????????", data=pd.DataFrame([1000]), unit="mm")
 
         self.assertEqual((c_1 - c_2).get_data(unit="m"), 0)
         self.assertEqual((c_1 - 1).get_data(unit="m"), 0)
 
     def test_calculation_history_add_mul(self):
-        c_1 = pyisomme.Channel(code="11HEAD0000H3ACXA", data=pd.DataFrame([1]), unit="m")
-        c_2 = pyisomme.Channel(code="11HEAD0000H3ACYA", data=pd.DataFrame([1]), unit="m")
+        c_1 = Channel(code="11HEAD0000H3ACXA", data=pd.DataFrame([1]), unit="m")
+        c_2 = Channel(code="11HEAD0000H3ACYA", data=pd.DataFrame([1]), unit="m")
 
         # __add__ must record "+", not "-"
         self.assertEqual((c_1 + c_2).info[-1], ("Calculation History", "11HEAD0000H3ACXA + 11HEAD0000H3ACYA"))
@@ -72,7 +75,7 @@ class TestChannel(unittest.TestCase):
         self.assertEqual((c_1 / c_2).info[-1], ("Calculation History", "11HEAD0000H3ACXA / 11HEAD0000H3ACYA"))
 
     def test_differentiate_does_not_mutate_source_info(self):
-        source = pyisomme.create_sample(code="11HEAD0000H3VEXA", mode="linear")
+        source = create_sample(code="11HEAD0000H3VEXA", mode="linear")
         before = list(source.info)
 
         derived = source.differentiate()
@@ -83,7 +86,7 @@ class TestChannel(unittest.TestCase):
         self.assertEqual(derived.info.get("Dimension"), derived.code.physical_dimension)
 
     def test_integrate_does_not_mutate_source_info(self):
-        source = pyisomme.create_sample(code="11HEAD0000H3ACXA", mode="linear")
+        source = create_sample(code="11HEAD0000H3ACXA", mode="linear")
         before = list(source.info)
 
         derived = source.integrate()
@@ -94,7 +97,7 @@ class TestChannel(unittest.TestCase):
     def test_cfc_and_cfc_hz_equivalence(self):
         # Filter class "B" and its cutoff frequency 600 Hz must produce identical results,
         # and both must record filter class "B" in the code.
-        source = pyisomme.create_sample(code="11HEAD0000H3ACXP", mode="sin")
+        source = create_sample(code="11HEAD0000H3ACXP", mode="sin")
         by_class = copy.deepcopy(source).cfc("B")
         by_freq = copy.deepcopy(source).cfc_hz(600)
 
@@ -103,52 +106,128 @@ class TestChannel(unittest.TestCase):
         self.assertEqual(by_freq.code.filter_class, "B")
 
     def test_cfc_hz_non_standard_frequency_records_S(self):
-        source = pyisomme.create_sample(code="11HEAD0000H3ACXP", mode="sin")
+        source = create_sample(code="11HEAD0000H3ACXP", mode="sin")
         self.assertEqual(copy.deepcopy(source).cfc_hz(123.0).code.filter_class, "S")
 
     def test_cfc_unknown_filter_class_raises(self):
-        source = pyisomme.create_sample(code="11HEAD0000H3ACXP", mode="sin")
+        source = create_sample(code="11HEAD0000H3ACXP", mode="sin")
         with self.assertRaises(ValueError):
             source.cfc("Z")
 
     def test_cfc_numeric_is_deprecated_and_delegates(self):
         # Backward-compat shim: cfc(<number>) warns and behaves like cfc_hz(<number>).
-        source = pyisomme.create_sample(code="11HEAD0000H3ACXP", mode="sin")
+        source = create_sample(code="11HEAD0000H3ACXP", mode="sin")
         expected = copy.deepcopy(source).cfc_hz(600)
         with warnings.catch_warnings(record=True) as caught:
             warnings.simplefilter("always")
-            result = copy.deepcopy(source).cfc(600)
+            result = copy.deepcopy(source).cfc(600) # type: ignore
         self.assertTrue(any(issubclass(w.category, DeprecationWarning) for w in caught))
         self.assertTrue(np.allclose(result.get_data(), expected.get_data()))
 
     def test_cfc_does_not_mutate_source_info(self):
         # Both filter methods must leave the source channel's info untouched.
         for method in ("ISO-6487", "SAE-J211-1"):
-            source = pyisomme.create_sample(code="11HEAD0000H3ACXP", mode="sin")
+            source = create_sample(code="11HEAD0000H3ACXP", mode="sin")
             before = list(source.info)
             copy.deepcopy(source).cfc("B", method=method)
             self.assertEqual(list(source.info), before, msg=method)
 
     def test_get_value_is_float_get_data_is_ndarray(self):
-        source = pyisomme.create_sample(code="11HEAD0000H3ACXP", mode="sin")
+        source = create_sample(code="11HEAD0000H3ACXP", mode="sin")
         self.assertIsInstance(source.get_value(t=0.0), float)
         self.assertIsInstance(source.get_data(t=0.0), np.ndarray)
         self.assertIsInstance(source.get_data(), np.ndarray)
 
     def test_getitem_index_types(self):
-        c0 = pyisomme.create_sample(code="11HEAD0000H3ACXP", mode="sin")
-        c1 = pyisomme.create_sample(code="11HEAD0000H3ACYP", mode="sin")
-        iso = pyisomme.Isomme(test_number="TEST", channels=[c0, c1])
+        c0 = create_sample(code="11HEAD0000H3ACXP", mode="sin")
+        c1 = create_sample(code="11HEAD0000H3ACYP", mode="sin")
+        iso = Isomme(test_number="TEST", channels=[c0, c1])
 
         # int -> single Channel, slice -> list
         self.assertIs(iso[0], c0)
         self.assertEqual(iso[0:2], [c0, c1])
+
         # str -> code-pattern shorthand for get_channels (a list)
         self.assertEqual(iso["11HEAD0000H3ACXP"], [c0])
         self.assertEqual(iso["11HEAD0000H3AC?P"], [c0, c1])
+
         # unsupported key type -> explicit TypeError (was a silent None)
         with self.assertRaises(TypeError):
-            iso[1.5]
+            iso[1.5] # type: ignore
+
+class TestChannelConvertUnit(unittest.TestCase):
+    """Test suite enforcing edge cases for Channel.convert_unit and Unit.to integration."""
+
+    def setUp(self):
+        # Sample channel: 1 meter at t=0, t=1, t=2
+        self.data = pd.DataFrame([1.0, 2.0, 3.0], index=[0, 1, 2])
+        self.channel = Channel(
+            code="11HEAD0000H3ACXA",
+            data=self.data.copy(),
+            unit="m"
+        )
+
+    def test_convert_unit_with_string_input(self):
+        """Conversion using a plain string target unit (e.g., 'mm')."""
+        result = self.channel.convert_unit("mm")
+
+        # 1 m, 2 m, 3 m -> 1000 mm, 2000 mm, 3000 mm
+        expected = np.array([[1000.0], [2000.0], [3000.0]])
+        np.testing.assert_allclose(self.channel.data.to_numpy(), expected)
+        self.assertEqual(self.channel.unit, Unit("mm"))
+        self.assertIs(result, self.channel, msg="convert_unit should return self for chaining")
+
+    def test_convert_unit_with_custom_unit_instance(self):
+        """Conversion using a custom Unit instance."""
+        target_unit = Unit("km")
+        self.channel.convert_unit(target_unit)
+
+        expected = np.array([[0.001], [0.002], [0.003]])
+        np.testing.assert_allclose(self.channel.data.to_numpy(), expected)
+        self.assertEqual(self.channel.unit, Unit("km"))
+
+    def test_convert_unit_with_native_astropy_unit(self):
+        """Conversion using a native Astropy unit object (u.cm)."""
+        self.channel.convert_unit(u.cm)
+
+        expected = np.array([[100.0], [200.0], [300.0]])
+        np.testing.assert_allclose(self.channel.data.to_numpy(), expected)
+        self.assertEqual(self.channel.unit, Unit("cm"))
+
+    def test_convert_unit_with_scaled_custom_unit(self):
+        """Conversion involving scaled units like Earth gravity (g0 -> m/s^2)."""
+        g_channel = Channel(
+            code="11HEAD0000H3ACXA",
+            data=pd.DataFrame([1.0]),
+            unit=Unit(g0)
+        )
+        g_channel.convert_unit("m/s^2")
+
+        # 1 g0 = ~9.80665 m/s^2
+        self.assertAlmostEqual(g_channel.data.iloc[0, 0], 9.80665, places=4) # type: ignore
+        self.assertEqual(g_channel.unit, Unit("m/s^2"))
+
+    def test_convert_unit_raises_attribute_error_when_unit_is_none(self):
+        """Edge Case: Channel.unit is None should raise AttributeError."""
+        self.channel.unit = None # type: ignore
+        with self.assertRaises(AttributeError) as ctx:
+            self.channel.convert_unit("mm")
+
+        self.assertIn("Not possible to convert units when current unit is None", str(ctx.exception))
+
+    def test_convert_unit_raises_error_for_incompatible_dimensions(self):
+        """Edge Case: Converting meters ('m') to seconds ('s') must fail."""
+        with self.assertRaises(u.UnitConversionError):
+            self.channel.convert_unit("s")
+
+    def test_convert_unit_in_place_dataframe_mutation(self):
+        """Verifies that the underlying DataFrame is mutated in-place and retains index/shape."""
+        original_df_id = id(self.channel.data)
+        self.channel.convert_unit("mm")
+
+        self.assertEqual(id(self.channel.data), original_df_id, "DataFrame instance should not be replaced")
+        self.assertEqual(self.channel.data.shape, (3, 1))
+        np.testing.assert_array_equal(self.channel.data.index.to_numpy(), np.array([0, 1, 2]))
 
 
 if __name__ == '__main__':

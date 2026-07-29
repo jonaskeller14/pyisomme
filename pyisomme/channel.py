@@ -19,6 +19,12 @@ from astropy.units import CompositeUnit
 
 logger = logging.getLogger(__name__)
 
+__all__ = [
+    "Channel",
+    "create_sample",
+    "time_intersect",
+]
+
 
 class Channel:
     code: Code
@@ -89,7 +95,8 @@ class Channel:
         """
         if self.unit is None:
             raise AttributeError(f"{self}. Not possible to convert units when current unit is None.")
-        self.data.iloc[:, :] = (self.data.to_numpy() * self.unit).to(new_unit).to_value()
+
+        self.data.iloc[:, :] = self.unit.to(other=new_unit, value=self.data.to_numpy()) # type: ignore
         self.unit = Unit(new_unit)
         return self
 
@@ -313,19 +320,11 @@ class Channel:
         time_array = self.data.index.to_numpy()
         value_array = copy.deepcopy(self.data.iloc[:, 0].to_numpy())
 
-        # Unit conversion
         if unit is not None:
-            old_unit = self.unit
-            if isinstance(old_unit, CompositeUnit) or True:
-                if not isinstance(unit, Unit):
-                    unit = Unit(unit)
-                value_array = (value_array * old_unit).to(unit).to_value()
-            else:
-                print(type(old_unit))
-                logger.error("Could not determine old unit. No conversion will be performed.")
+            value_array = self.unit.to(unit, value_array)  # type: ignore
 
         if t is None:
-            return value_array
+            return value_array  # type: ignore
 
         # Interpolation (kinds like "linear" need at least 2 points (otherwise zero division and nan return value)
         if len(time_array) < 2:
@@ -388,13 +387,21 @@ class Channel:
             index=self.data.index
         )
         new_code = self.code.integrate()
-        new_unit = Unit(self.unit) * "s"
-        new_info = copy.deepcopy(self.info)
-        new_info.update({"Dimension": new_code.physical_dimension})
+        
+        # 1. Multiply by Unit("s") instead of raw string "s"
+        new_unit = Unit(self.unit) * Unit("s")
+        
+        # 2. Deepcopy metadata to ensure source channel remains untouched
+        new_info = copy.deepcopy(self.info) if self.info is not None else {}
+        new_info["Dimension"] = new_code.physical_dimension
 
         new_channel = Channel(new_code, new_data, unit=new_unit, info=new_info)
-        new_channel -= new_channel.get_data(t=0)
+        
+        # 3. Cast 0-d ndarray from get_data(t=0) to a standard float
+        initial_val = float(new_channel.get_data(t=0))
+        new_channel -= initial_val
         new_channel += x_0
+        
         return new_channel
 
     def adjust_to_range(self, target_range: tuple = (-45, 45), unit="deg") -> Channel:
@@ -461,13 +468,31 @@ class Channel:
         return self
 
     # Operator methods
-    def __eq__(self, other):
-        if isinstance(other, Channel):
-            if self.unit.physical_type == other.unit.physical_type:
-                return self.data.equals(other.convert_unit(self.unit).data)
-        return False
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, Channel):
+            return False
 
-    def __ne__(self, other):
+        # # Check code identity (optional, if code is part of channel equality)
+        # if getattr(self, "code", None) != getattr(other, "code", None):
+        #     return False
+
+        # Unit compatibility check
+        if self.unit.physical_type != other.unit.physical_type:
+            return False
+
+        # Index / timestamp alignment check
+        if not self.data.index.equals(other.data.index):
+            return False
+
+        # Compare values with floating-point tolerance using unit conversion
+        try:
+            val_self = self.get_data()
+            val_other = other.get_data(unit=self.unit)
+            return bool(np.allclose(val_self, val_other, rtol=1e-5, atol=1e-8, equal_nan=True))
+        except Exception:
+            return False
+
+    def __ne__(self, other) -> bool:
         return not self.__eq__(other)
 
     def __neg__(self):
@@ -476,7 +501,7 @@ class Channel:
                        self.unit,
                        info=self.info + [("Calculation History", f"-1 * {self.code}")])
 
-    def __add__(self, other):
+    def __add__(self, other) -> Channel:
         if isinstance(other, Channel):
             t = time_intersect(self, other)
             if self.unit.physical_type == other.unit.physical_type:
@@ -495,11 +520,12 @@ class Channel:
                            data=self.data + other,
                            unit=self.unit,
                            info=self.info + [("Calculation History", f"{self.code} + {other}")])
+        return NotImplemented
 
-    def __radd__(self, other):
+    def __radd__(self, other) -> Channel:
         return self.__add__(other)
 
-    def __sub__(self, other):
+    def __sub__(self, other) -> Channel:
         if isinstance(other, Channel):
             t = time_intersect(self, other)
             if self.unit.physical_type == other.unit.physical_type:
@@ -518,6 +544,7 @@ class Channel:
                            data=self.data - other,
                            unit=self.unit,
                            info=self.info + [("Calculation History", f"{self.code} - {other}")])
+        return NotImplemented
 
     def __mul__(self, other):
         # NOTE: unlike __add__/__sub__, mul/div intentionally skip the physical_type
@@ -539,11 +566,12 @@ class Channel:
                            data=self.data,
                            unit=self.unit * other,
                            info=self.info + [("Calculation History", f"{self.code} * {other}")])
+        return NotImplemented
 
     def __rmul__(self, other):
         return self.__mul__(other)
 
-    def __truediv__(self, other):
+    def __truediv__(self, other) -> Channel:
         if isinstance(other, Channel):
             t = time_intersect(self, other)
             return Channel(code=self.code,
@@ -560,14 +588,32 @@ class Channel:
                            data=self.data,
                            unit=self.unit / other,
                            info=self.info + [("Calculation History", f"{self.code} / {other}")])
+        return NotImplemented
 
-    def __pow__(self, power, modulo=None):
-        return Channel(code=self.code,
-                       data=self.data**power,
-                       unit=self.unit,
-                       info=self.info + [("Calculation History", f"{self.code}^{power}")])
+    def __pow__(self, power, modulo=None) -> Channel:
+        if not isinstance(power, (int, float)):
+            return NotImplemented
 
-    def __abs__(self):
+        if modulo is not None:
+            if not isinstance(modulo, (int, float)):
+                return NotImplemented
+            if modulo == 0:
+                raise ZeroDivisionError("modulo by zero")
+
+            calculated_data = (self.data**power) % modulo
+            history_str = f"pow({self.code}, {power}, {modulo})"
+        else:
+            calculated_data = self.data**power
+            history_str = f"{self.code}^{power}"
+
+        return Channel(
+            code=self.code,
+            data=calculated_data,
+            unit=self.unit,
+            info=self.info + [("Calculation History", history_str)],
+        )
+
+    def __abs__(self) -> Channel:
         return Channel(code=self.code,
                        data=abs(self.data),
                        unit=self.unit,
