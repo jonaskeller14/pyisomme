@@ -9,6 +9,7 @@ from datetime import datetime
 import numpy as np
 import pandas as pd
 import re
+from typing import Any
 
 
 logger = logging.getLogger(__name__)
@@ -170,7 +171,7 @@ def parse_xxx(text: str, isomme) -> Channel:
     return Channel(code, pd.DataFrame(array, index=index), unit=unit, info=info)
 
 
-def get_value(text: str):
+def get_value(text: str) -> Any:
     """
     Converts a string into suitable datatype.
     - None

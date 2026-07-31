@@ -79,7 +79,7 @@ class Channel:
             new_unit = self.code.get_default_unit()
         elif isinstance(new_unit, str):
             if new_unit == "g" and self.code.physical_dimension == "AC":
-                new_unit = g0
+                new_unit = Unit(g0)
         if new_unit is None:
             logger.warning("None is not a valid unit. Set unit to 1.")
             new_unit = "1"
@@ -303,7 +303,7 @@ class Channel:
         else:
             raise NotImplementedError
 
-    def get_data(self, t=None, unit=None, method: str = "linear", fill_value: tuple = (0, 0)) -> np.ndarray:
+    def get_data(self, t=None, unit=None, method: str = "linear", fill_value: float | tuple[float, float] = (0.0, 0.0)) -> np.ndarray:
         """
         Returns the samples as an array. If t is given, interpolate at those time(s);
         out-of-range times return the fill value. If t is scalar the result is a 0-d
@@ -432,9 +432,9 @@ class Channel:
             if len(self.get_data()) > 1:
                 self.info.update({
                     "First global maximum value": np.max(self.get_data()),
-                    "Time of maximum value": self.data.index[np.argmax(self.get_data())],
+                    "Time of maximum value": self.data.index[int(np.argmax(self.get_data()))],
                     "First global minimum value": np.min(self.get_data()),
-                    "Time of minimum value": self.data.index[np.argmin(self.get_data())],
+                    "Time of minimum value": self.data.index[int(np.argmin(self.get_data()))],
                 })
 
             self.info.write(xxx_file)

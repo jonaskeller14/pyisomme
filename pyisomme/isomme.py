@@ -69,7 +69,7 @@ class Isomme:
         :return: first match or None
         """
         for label in labels:
-            for key in self.channel_info:
+            for key in self.channel_info.keys():
                 if fnmatch.fnmatch(key, label):
                     return self.channel_info[key]
                 try:
@@ -418,17 +418,21 @@ class Isomme:
 
             # 4. Differentiate
             if differentiate:
-                try:
-                    return self.get_channel(code_pattern.integrate(), filter=filter, calculate=calculate, integrate=False).differentiate()
-                except (AttributeError, NotImplementedError) as error:
-                    logger.debug(error)
+                channel_int = self.get_channel(code_pattern.integrate(), filter=filter, calculate=calculate, integrate=False)
+                if channel_int is not None:
+                    try:
+                        return channel_int.differentiate()
+                    except (AttributeError, NotImplementedError) as error:
+                        logger.debug(error)
 
             # 5. Integrate
             if integrate:
-                try:
-                    return self.get_channel(code_pattern.differentiate(), filter=filter, calculate=calculate, differentiate=False).integrate()
-                except (AttributeError, NotImplementedError) as error:
-                    logger.debug(error)
+                channel_dif = self.get_channel(code_pattern.differentiate(), filter=filter, calculate=calculate, differentiate=False)
+                if channel_dif is not None:
+                    try:
+                        return channel_dif.integrate()
+                    except (AttributeError, NotImplementedError) as error:
+                        logger.debug(error)
 
             logger.info(f"No channel found for pattern: '{code_pattern}'")
         return None

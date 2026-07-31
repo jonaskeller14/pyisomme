@@ -76,7 +76,9 @@ class TestCalculate(unittest.TestCase):
         assert self.v1.get_channel("?1TIIN00TO??000B") is not None
 
     def test_calculate_femur_impulse(self):
-        assert pyisomme.calculate_femur_impulse(self.v1.get_channel("??FEMR??????FOZ?")) is not None
+        channel = self.v1.get_channel("??FEMR??????FOZ?")
+        if channel is None: raise Exception("Channel missing")
+        assert pyisomme.calculate_femur_impulse(channel) is not None
         assert self.v1.get_channel("??KTHCLE????IMZX") is not None
         assert self.v1.get_channel("??KTHCRI????IMZX") is not None
         assert self.v1.get_channel("??KTHC00????IMZX") is not None
