@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-from pyisomme.channel import Channel, time_intersect
-from pyisomme.unit import Unit, g0
+from pyisomme.channel import Channel
 from pyisomme.utils import debug_logging
 
 import logging

@@ -8,7 +8,26 @@ import pandas as pd
 
 from pyisomme.channel import Channel, time_intersect
 from pyisomme.code import Code
-from pyisomme.calculate import *
+from pyisomme.calculate import (
+    calculate_adjusted_lower_tibia_moment_My,
+    calculate_adjusted_upper_tibia_moment_My,
+    calculate_bric,
+    calculate_chest_pc_score,
+    calculate_damage,
+    calculate_femur_impulse,
+    calculate_hic,
+    calculate_neck_MOCx,
+    calculate_neck_MOCy,
+    calculate_neck_Mx_base,
+    calculate_neck_My_base,
+    calculate_neck_nij,
+    calculate_olc,
+    calculate_resultant,
+    calculate_tibia_index,
+    calculate_tibia_index_using_total_moment,
+    calculate_vc,
+    calculate_xms,
+)
 
 if TYPE_CHECKING:
     from pyisomme.isomme import Isomme

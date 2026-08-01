@@ -329,7 +329,7 @@ class Channel:
         # Interpolation (kinds like "linear" need at least 2 points (otherwise zero division and nan return value)
         if len(time_array) < 2:
             method = "nearest"
-        return scipy_interpolate.interp1d(time_array, value_array, kind=method, fill_value=fill_value, bounds_error=False)(t)
+        return scipy_interpolate.interp1d(time_array, value_array, kind=method, fill_value=fill_value, bounds_error=False)(t) # pyright: ignore[reportArgumentType]
 
     def get_value(self, t: float, unit=None, method: str = "linear", fill_value: tuple = (0, 0)) -> float:
         """
@@ -659,7 +659,7 @@ def time_intersect(*channels: Channel, interpolate: bool = False) -> np.ndarray:
     """
     if len(channels) == 0:
         return np.array([])
-    time_array = channels[0].data.index
+    time_array = channels[0].data.index.to_numpy()
     for channel in channels[1:]:
         if interpolate:
             t_min = np.max([np.min(time_array), np.min(channel.data.index)])

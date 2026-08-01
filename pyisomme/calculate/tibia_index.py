@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from pyisomme.calculate import calculate_resultant
+from pyisomme.calculate.resultant import calculate_resultant
 from pyisomme.channel import Channel, time_intersect
 from pyisomme.utils import debug_logging
 
