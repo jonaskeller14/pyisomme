@@ -156,6 +156,23 @@ class Report(Generic[C]):
             print_subcriteria_results(self.criterion_overall[isomme])
         return self
 
+    def validate(self) -> bool:
+        def print_subcriteria_results(criterion: Criterion) -> bool:
+            subcriteria = [getattr(criterion, a) for a in dir(criterion) if isinstance(getattr(criterion, a), Criterion)]
+            for subcriterion in subcriteria:
+                if subcriterion.name == None:
+                    return False
+                result = print_subcriteria_results(subcriterion)
+                if result == False:
+                    return False
+            return True
+        
+        for isomme in self.isomme_list:
+            result = print_subcriteria_results(self.criterion_overall[isomme])
+            if result == False:
+                return False
+        return True
+
     def __repr__(self) -> str:
         return f"Report(title='{self.title}', name='{self.name}')"
 

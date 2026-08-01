@@ -25,6 +25,17 @@ logger = logging.getLogger(__name__)
 #: downstream.
 NORMALIZATION_COMMENT_PREFIX = "Normalization: "
 
+#: One ``name:value`` header line of a .mme/.chn/.001 file.
+#:
+#: The keyword must not contain a colon, so the split lands on the **first** colon and the
+#: whole remainder is the value. Spelling the trailing character as ``[^:\s]`` rather than
+#: ``\S`` matters: ``\S`` matches a colon too, which let the engine backtrack past the real
+#: separator and split a value like ``Comments  :Dummy: Hybrid III`` at its *second* colon —
+#: yielding the keyword ``"Comments  :Dummy"`` (column padding and all) and silently losing
+#: the front of the value. Values legitimately contain colons (``Time zero: first contact``,
+#: ``2026-05-14T10:30:00``, ``10:32:45``), so that is not a rare shape.
+HEADER_LINE_PATTERN = re.compile(r"([^:]*[^:\s])\s*:(.*)")
+
 
 def get_normalization_notes(channel) -> list[str]:
     """Return the ingest-normalization assumptions recorded on ``channel`` (may be empty)."""
@@ -40,7 +51,7 @@ def parse_mme(text: str) -> Info:
 
         if line == "":
             continue
-        match = re.fullmatch(r"([^:]*\S+)\s*:(.*)", line)
+        match = HEADER_LINE_PATTERN.fullmatch(line)
         if match is None:
             logger.error(f"Could not parse malformed line: '{line}'")
             continue
@@ -70,7 +81,7 @@ def parse_header_and_data(text: str) -> tuple[Info, np.ndarray]:
 
         if line == "":
             continue
-        match = re.fullmatch(r"([^:]*\S+)\s*:(.*)", line)
+        match = HEADER_LINE_PATTERN.fullmatch(line)
         if match is None:
             start_data_idx = idx
             break

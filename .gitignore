@@ -2,6 +2,7 @@ references/**/*.pdf
 
 data/*
 !data/README.md
+!data/tests/
 !data/nhtsa/
 data/nhtsa/*
 !data/nhtsa/*/

@@ -1,5 +1,35 @@
 # data - References
 
+Everything here is downloaded reference data and is **untracked** (see `.gitignore`) — with
+one exception, `tests/`, described below.
+
+## [tests](tests) — encoding fixtures (tracked)
+
+Four tiny hand-built ISO-MME containers, one per text encoding, each as a folder and as a
+`.zip`. They are the only fixtures `tests/` can count on after a fresh clone, so they are
+committed. Rebuild them byte-for-byte with:
+
+```bash
+.venv/Scripts/python.exe data/tests/generate_fixtures.py
+```
+
+All four encode the *same* container — 3 channels (`11TIRS000000TIRP`, `11HEADCG0000ACXP`,
+`11CHST0000H3DSXP`), 20 samples at 10 kHz — so `tests/test_parsing.py` asserts one
+expectation across every encoding and only the header text differs:
+
+| fixture | exercises |
+| --- | --- |
+| [ascii](tests/ascii) | 7-bit + CRLF. Structural traps only: a colon inside a value, an empty value, `NOVALUE`, tab padding, trailing whitespace |
+| [iso-8859-1](tests/iso-8859-1) | Latin-1 (`ä ö ü ß é ç ± ° µ`). Invalid UTF-8, so it must reach the single-byte fallback |
+| [windows-1252](tests/windows-1252) | Latin-1 **plus** 0x80–0x9F (`€ – — „ “ … ™`), which ISO-8859-1 leaves as C1 controls. Pins cp1252 ahead of ISO-8859-1 in `read_text_with_fallback` |
+| [utf-8](tests/utf-8) | A BOM on the `.mme` plus characters outside Latin-1 (`Δ Ω → 日本語`) |
+
+The channel headers also cover all three time-axis conventions: no timing at all (TIRS,
+sample index), `explicit` via a reference channel, and `implicit` from first sample +
+interval, with one `NOVALUE` dropout becoming `NaN`.
+
+## Downloaded reference data (untracked)
+
 Directory tree:
 - [iso-mme-org](iso-mme-org) 
   - [MME 1.6 Testdata short](iso-mme-org/MME%201.6%20Testdata%20short) [[Download](https://www.iso-mme.org/forum/download/file.php?id=582)]

@@ -1,0 +1,18 @@
+﻿Data format                 :ISO-MME
+Version                     :1.6
+Test number                 :test
+Test date                   :2026-05-14
+Time of test                :10:32:45
+Test type                   :Frontalaufprall ODB, 40 % Überdeckung
+Laboratory name             :Crash-Prüfzentrum Köln GmbH
+Customer name               :トヨタ自動車株式会社 (Toyota Motor Corp.)
+Test object                 :Vehicle
+Number of test objects      :1
+Impact velocity             :56.3
+Regulation                  :
+Client test ref number      :NOVALUE
+Movie reference		:NOVALUE
+
+Test performed by           :Crash Team 3   
+Comments                    :Δv = 56,3 km/h → Pulsdauer 78 ms; Prüftemperatur 22 °C
+Comments                    :Brückenimpedanz 50 Ω; Meßunsicherheit ±0,5 % …

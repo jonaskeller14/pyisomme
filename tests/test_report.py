@@ -4,6 +4,23 @@ import unittest
 import os
 import logging
 
+from pyisomme.report.correlation import Correlation
+from pyisomme.report.euro_ncap import (
+    EuroNCAP,
+    EuroNCAP_Frontal_50kmh,
+    EuroNCAP_Frontal_MPDB,
+    EuroNCAP_Side_Barrier,
+    EuroNCAP_Side_FarSide,
+    EuroNCAP_Side_Pole,
+)
+from pyisomme.report.iihs import IIHS_Frontal_Small_Overlap
+from pyisomme.report.un import (
+    UN_Frontal_50kmh_R137,
+    UN_Frontal_56kmh_ODB_R94,
+    UN_Side_Barrier_R95,
+    UN_Side_Pole_R135,
+)
+
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(module)-12s %(levelname)-8s %(message)s',
@@ -36,15 +53,16 @@ class TestReport(unittest.TestCase):
     v2 = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "14084"), "[!B][013]*")
     v3 = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "09203"), "[!B][013]*")
     v4 = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "v15036ISO.zip"), "?1*")
-    v5 = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "vtc-loadcase-example", "test"))
-    v6 = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "vtc-loadcase-example", "sim"))
+    # v5 = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "vtc-loadcase-example", "test"))
+    # v6 = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "vtc-loadcase-example", "sim"))
 
     def test_EuroNCAP_Frontal_50kmh(self):
         for channel in self.v1.channels + self.v2.channels:
             if channel.code.main_location == "NECK" and channel.code.fine_location_3 in ("00", "??"):
                 channel.set_code(fine_location_3="H3")
 
-        report = pyisomme.report.euro_ncap.frontal_50kmh.EuroNCAP_Frontal_50kmh([self.v1, self.v2])
+        report = EuroNCAP_Frontal_50kmh([self.v1, self.v2])
+        self.assertTrue(report.validate())
         report.calculate()
         report.export_pptx("out/EuroNCAP_Frontal_50kmh.pptx")
         report.print_results()
@@ -54,7 +72,8 @@ class TestReport(unittest.TestCase):
             if channel.code.main_location == "TIBI" and channel.code.fine_location_3 in ("00", "??"):
                 channel.set_code(fine_location_3="TH")
 
-        report = pyisomme.report.euro_ncap.frontal_mpdb.EuroNCAP_Frontal_MPDB([self.v3, self.v2, self.v1])
+        report = EuroNCAP_Frontal_MPDB([self.v3, self.v2, self.v1])
+        self.assertTrue(report.validate())
         report.calculate()
         report.export_pptx("out/EuroNCAP_Frontal_MPDB.pptx")
         report.print_results()
@@ -71,7 +90,8 @@ class TestReport(unittest.TestCase):
             pyisomme.create_sample("11PUBC0000WSFOYB", y_range=(-3., 0), unit="kN"),
         ])
 
-        report = pyisomme.report.euro_ncap.side_barrier.EuroNCAP_Side_Barrier([self.v1])
+        report = EuroNCAP_Side_Barrier([self.v1])
+        self.assertTrue(report.validate())
         report.calculate()
         report.export_pptx("out/EuroNCAP_Side_Barrier.pptx")
         report.print_results()
@@ -88,7 +108,8 @@ class TestReport(unittest.TestCase):
             pyisomme.create_sample("11PUBC0000WSFOYB", y_range=(2.0, 0), unit="kN"),
         ])
 
-        report = pyisomme.report.euro_ncap.side_pole.EuroNCAP_Side_Pole([self.v1])
+        report = EuroNCAP_Side_Pole([self.v1])
+        self.assertTrue(report.validate())
         report.calculate()
         report.export_pptx("out/EuroNCAP_Side_Pole.pptx")
         report.print_results()
@@ -98,28 +119,31 @@ class TestReport(unittest.TestCase):
             if channel.code.main_location == "NECK" and channel.code.fine_location_3 in ("00", "??"):
                 channel.set_code(fine_location_3="WS")
 
-        report = pyisomme.report.euro_ncap.EuroNCAP_Side_FarSide([self.v1])
+        report = EuroNCAP_Side_FarSide([self.v1])
+        self.assertTrue(report.validate())
         report.calculate()
         report.export_pptx("out/EuroNCAP_Side_FarSide.pptx")
         report.print_results()
 
-    @slow
-    def test_EuroNCAP_Side_Farside_VTC(self):
-        for channel in self.v5.channels:
-            if channel.get_info("Unit") == "dimensionless":
-                channel.set_unit("rad")
-        for channel in self.v6.channels:
-            if channel.get_info("Unit") == "dimensionless":
-                channel.set_unit("rad")
+    # FIXME: Dataset is lost --> we need to recreate the dataset from scratch
+    #  @slow
+    # def test_EuroNCAP_Side_Farside_VTC(self):
+    #     for channel in self.v5.channels:
+    #         if channel.get_info("Unit") == "dimensionless":
+    #             channel.set_unit("rad")
+    #     for channel in self.v6.channels:
+    #         if channel.get_info("Unit") == "dimensionless":
+    #             channel.set_unit("rad")
 
-        report = pyisomme.report.euro_ncap.EuroNCAP_Side_Farside_VTC([self.v5, self.v6])
-        report.calculate()
-        report.export_pptx("out/EuroNCAP_Side_FarSide_VTC.pptx")
-        report.print_results()
+    #     report = EuroNCAP_Side_Farside_VTC([self.v5, self.v6])
+    #     report.calculate()
+    #     report.export_pptx("out/EuroNCAP_Side_FarSide_VTC.pptx")
+    #     report.print_results()
 
     @slow
     def test_IIHS_Frontal_Small_Overlap(self):
-        report = pyisomme.report.iihs.frontal_small_overlap.IIHS_Frontal_Small_Overlap([self.v1, self.v2, self.v3])
+        report = IIHS_Frontal_Small_Overlap([self.v1, self.v2, self.v3])
+        self.assertTrue(report.validate())
         report.calculate()
         report.export_pptx("out/IIHS_Frontal_Small_Overlap.pptx")
         report.print_results()
@@ -128,19 +152,21 @@ class TestReport(unittest.TestCase):
         for channel in self.v3.channels:
             channel.set_code(test_object="1")
 
-        report = pyisomme.report.correlation.correlation.Correlation([self.v1, self.v2, self.v3])
+        report = Correlation([self.v1, self.v2, self.v3])
+        self.assertTrue(report.validate())
         report.calculate()
         report.export_pptx("out/Correlation.pptx")
         report.print_results()
 
     def test_EuroNCAP(self):
-        report = pyisomme.report.euro_ncap.euro_ncap.EuroNCAP(
+        report = EuroNCAP(
             frontal_50kmh=[[self.v1]],
             frontal_mpdb=[[self.v2]],
             side_pole=[[self.v3]],
             side_barrier=[[self.v1]],
             side_farside=[[self.v1]],
         )
+        self.assertTrue(report.validate())
         report.calculate()
         report.export_pptx("out/EuroNCAP.pptx")
         report.print_results()
@@ -153,7 +179,8 @@ class TestReport(unittest.TestCase):
             if channel.code.position == "3":
                 channel.set_code(fine_location_3="HF")
 
-        report = pyisomme.report.un.frontal_50kmh_r137.UN_Frontal_50kmh_R137([self.v1, self.v2])
+        report = UN_Frontal_50kmh_R137([self.v1, self.v2])
+        self.assertTrue(report.validate())
         report.calculate()
         report.export_pptx("out/UN_Frontal_50kmh_R137.pptx")
         report.print_results()
@@ -167,7 +194,8 @@ class TestReport(unittest.TestCase):
                 channel.set_code(fine_location_3="H3")
         self.v1.offset_x(-0.5)
 
-        report = pyisomme.report.un.frontal_56kmh_odb_r94.UN_Frontal_56kmh_ODB_R94([self.v1, self.v2])
+        report = UN_Frontal_56kmh_ODB_R94([self.v1, self.v2])
+        self.assertTrue(report.validate())
         report.calculate()
         report.export_pptx("out/UN_Frontal_56kmh_ODB_R94.pptx")
         report.print_results()
@@ -185,7 +213,8 @@ class TestReport(unittest.TestCase):
             pyisomme.create_sample("11THSP1200WSACR0", y_range=(100, 200), unit="m/s^2"),
         ])
 
-        report = pyisomme.report.un.side_pole_r135.UN_Side_Pole_R135([self.v1])
+        report = UN_Side_Pole_R135([self.v1])
+        self.assertTrue(report.validate())
         report.calculate()
         report.export_pptx("out/UN_Side_Pole_R135.pptx")
         report.print_results()
@@ -198,7 +227,8 @@ class TestReport(unittest.TestCase):
         for channel in self.v4.get_channels("?1RIBS??????DSY?*"):
             channel.scale_y(6e-5)
 
-        report = pyisomme.report.un.side_barrier_r95.UN_Side_Barrier_R95([self.v4])
+        report = UN_Side_Barrier_R95([self.v4])
+        self.assertTrue(report.validate())
         report.calculate()
         report.export_pptx("out/UN_Side_Barrier_R95.pptx")
         report.print_results()

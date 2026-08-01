@@ -7,17 +7,51 @@ from typing import Literal
 import zipfile
 
 
+#: Single-byte codecs tried, in order, once UTF-8 has been ruled out.
+#:
+#: cp1252 comes first because the Windows tooling that writes most ISO-MME containers uses
+#: it, and because it only *adds* printable characters to ISO-8859-1: the two agree on
+#: 0xA0-0xFF and differ only on 0x80-0x9F, which ISO-8859-1 leaves as unused C1 control
+#: codes. Decoding those as controls is never the intended reading, and one of them is
+#: actively destructive — 0x85 becomes U+0085 NEL, which ``str.splitlines()`` treats as a
+#: line terminator, so a single ``…`` in a header value would split that line in two and
+#: silently truncate it (in a channel file, that ends the header and corrupts the data
+#: section). ISO-8859-1 stays as the final fallback for the five bytes cp1252 leaves
+#: undefined (0x81, 0x8D, 0x8F, 0x90, 0x9D); it decodes any byte sequence, so decoding
+#: can never fail.
+SINGLE_BYTE_CODECS = ("cp1252", "iso-8859-1")
+
+
 def read_text_with_fallback(data: bytes) -> str:
     """
-    Decode raw ISO-MME text bytes, trying UTF-8 first and falling back to ISO-8859-1.
+    Decode raw ISO-MME text bytes, guessing the encoding the writer used.
 
-    ISO-MME files in the wild use both encodings; ISO-8859-1 decodes any byte sequence,
-    so it is the safe fallback. Centralized here so a decoding fix lands everywhere at once.
+    ISO-MME files in the wild carry no encoding declaration, so the encoding has to be
+    recovered from the bytes. The order below is from most to least self-evident: a byte
+    order mark states the encoding outright, UTF-8 is self-validating (non-UTF-8 text
+    almost never decodes as valid UTF-8), and only then do the single-byte guesses in
+    :data:`SINGLE_BYTE_CODECS` apply. Centralized here so a decoding fix lands everywhere
+    at once.
     """
+    # 1. An explicit BOM. utf-8-sig also strips a UTF-8 BOM, which would otherwise survive
+    #    as a U+FEFF glued to the first header key ("﻿Channel code"), making that key
+    #    unfindable. UTF-16 must be detected here because its ASCII text is a run of
+    #    NUL-interleaved bytes that decodes as *valid* UTF-8 — it would otherwise pass
+    #    silently and yield garbage rather than raising.
+    if data.startswith((b"\xff\xfe", b"\xfe\xff")):
+        return data.decode("utf-16")
     try:
-        return data.decode("utf-8")
+        return data.decode("utf-8-sig")
     except UnicodeDecodeError:
-        return data.decode("iso-8859-1")
+        pass
+
+    for codec in SINGLE_BYTE_CODECS:
+        try:
+            return data.decode(codec)
+        except UnicodeDecodeError:
+            continue
+    # Unreachable while iso-8859-1 is the last entry, but keep the contract explicit.
+    return data.decode("iso-8859-1", errors="replace")
 
 
 class ArchiveSource(ABC):

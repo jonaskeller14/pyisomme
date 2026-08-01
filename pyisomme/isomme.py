@@ -418,21 +418,31 @@ class Isomme:
 
             # 4. Differentiate
             if differentiate:
-                channel_int = self.get_channel(code_pattern.integrate(), filter=filter, calculate=calculate, integrate=False)
-                if channel_int is not None:
-                    try:
-                        return channel_int.differentiate()
-                    except (AttributeError, NotImplementedError) as error:
-                        logger.debug(error)
+                try:
+                    code_integrated = code_pattern.integrate()
+                except NotImplementedError as error:
+                    logger.debug(error)
+                else:
+                    channel_int = self.get_channel(code_integrated, filter=filter, calculate=calculate, integrate=False)
+                    if channel_int is not None:
+                        try:
+                            return channel_int.differentiate()
+                        except (AttributeError, NotImplementedError) as error:
+                            logger.debug(error)
 
             # 5. Integrate
             if integrate:
-                channel_dif = self.get_channel(code_pattern.differentiate(), filter=filter, calculate=calculate, differentiate=False)
-                if channel_dif is not None:
-                    try:
-                        return channel_dif.integrate()
-                    except (AttributeError, NotImplementedError) as error:
-                        logger.debug(error)
+                try:
+                    code_differentiated = code_pattern.differentiate()
+                except NotImplementedError as error:
+                    logger.debug(error)
+                else:
+                    channel_dif = self.get_channel(code_differentiated, filter=filter, calculate=calculate, differentiate=False)
+                    if channel_dif is not None:
+                        try:
+                            return channel_dif.integrate()
+                        except (AttributeError, NotImplementedError) as error:
+                            logger.debug(error)
 
             logger.info(f"No channel found for pattern: '{code_pattern}'")
         return None
