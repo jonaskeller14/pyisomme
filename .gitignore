@@ -21,6 +21,9 @@ docs/isomme_write/
 # Claude Code local settings
 .claude/settings.local.json
 
+# Written by setuptools-scm at build time; the git tag is the source of truth.
+pyisomme/_version.py
+
 # Python
 __pycache__/
 *.py[cod]

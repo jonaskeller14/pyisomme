@@ -1,10 +1,13 @@
 [build-system]
-requires      = ["setuptools>=61.0.0", "wheel"]
+requires      = ["setuptools>=64.0.0", "setuptools-scm>=8"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyisomme"
-version = "0.0.4"
+# Derived from the git tag by setuptools-scm - see [tool.setuptools_scm] below.
+# Do not add a static `version` here: the release workflow asserts that the built
+# version equals the release tag, and a static value can only ever disagree.
+dynamic = ["version"]
 description = "Tools for ISO-MME file format (merge, report, calculate, CFC-filter, ...)"
 readme = "README.md"
 authors = [{ name = "Jonas Keller", email = "jonaskeller14@googlemail.com" }]
@@ -23,11 +26,24 @@ dependencies = [
     "numpy~=1.26.3",
     "scipy~=1.12.0",
     "python-pptx~=0.6.23",
-    "setuptools~=58.1.0",
     "dtwalign~=0.1.1",
 ]
 requires-python = ">=3.9"
 
+# The released version is `git describe` on the checked-out commit: tag `v0.0.5`
+# becomes version `0.0.5` (the leading `v` is stripped by the default tag_regex).
+# A build with no git metadata - a source zip, not a clone - falls back to 0.0.0
+# rather than erroring; the release workflow's tag check turns that into a hard
+# failure where it matters.
+[tool.setuptools_scm]
+version_file = "pyisomme/_version.py"
+fallback_version = "0.0.0"
+
+# NOTE: inert since MANIFEST.in started pruning docs/ and references/ from the
+# sdist (the wheel is built from the sdist, so these globs now match nothing).
+# That is deliberate: it dropped the release from 4.7 MB to 139 kB, and
+# data-files installed the notebooks and a 4.5 MB PDF into <sys.prefix>/docs of
+# every user's environment. Delete the MANIFEST.in prune lines to restore it.
 [tool.setuptools.data-files]
 "docs" = [
     "docs/*",

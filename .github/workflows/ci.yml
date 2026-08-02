@@ -5,6 +5,9 @@ on:
     branches: [master]
   pull_request:
     branches: [master]
+  # Lets python-publish.yml gate a release on these same checks instead of
+  # duplicating them. Keep this trigger - removing it breaks the release.
+  workflow_call:
 
 permissions:
   contents: read
@@ -15,6 +18,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # setuptools-scm derives the version from `git describe`, so the
+          # default shallow, tagless clone would make `pip install -e .` fail.
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -52,6 +59,10 @@ jobs:
         python-version: ["3.9", "3.12"]
     steps:
       - uses: actions/checkout@v4
+        with:
+          # setuptools-scm derives the version from `git describe`, so the
+          # default shallow, tagless clone would make `pip install -e .` fail.
+          fetch-depth: 0
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
