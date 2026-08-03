@@ -1,4 +1,6 @@
+import copy
 import logging
+import pickle
 import unittest
 import astropy.units as u
 from astropy.constants import g0 as ASTROPY_G0_CONSTANT # type: ignore
@@ -125,6 +127,66 @@ class TestArithmeticAndDelegation(unittest.TestCase):
         # .physical_type is delegated via __getattr__ to the underlying astropy unit
         self.assertEqual(unit_obj.physical_type, "speed")
         self.assertTrue(unit_obj.is_equivalent("km/h"))
+
+
+class TestCopyingAndHashing(unittest.TestCase):
+    """A copied Unit must stay a Unit -- see __getattr__ in pyisomme/unit.py."""
+
+    def test_deepcopy_keeps_wrapper(self):
+        unit_obj = Unit("m/s")
+        copied = copy.deepcopy(unit_obj)
+        self.assertIsInstance(copied, Unit)
+        self.assertEqual(copied, unit_obj)
+
+    def test_copy_keeps_wrapper(self):
+        unit_obj = Unit("m/s")
+        copied = copy.copy(unit_obj)
+        self.assertIsInstance(copied, Unit)
+        self.assertEqual(copied, unit_obj)
+
+    def test_pickle_round_trip(self):
+        unit_obj = Unit("m/s")
+        restored = pickle.loads(pickle.dumps(unit_obj))
+        self.assertIsInstance(restored, Unit)
+        self.assertEqual(restored, unit_obj)
+
+    def test_private_attributes_are_not_delegated(self):
+        # Delegating dunder/private lookups is what handed out the bare astropy unit.
+        private_name = "_not_an_attribute"
+        with self.assertRaises(AttributeError):
+            getattr(Unit("m"), private_name)
+
+    def test_hashable(self):
+        self.assertEqual(len({Unit("m/s"), Unit("m/s"), Unit("m")}), 2)
+        self.assertEqual({Unit("m/s"): 1}[Unit("m/s")], 1)
+
+    def test_deepcopied_channel_can_still_convert(self):
+        # Regression: calculate_olc() deep-copies its velocity channel, and the copy's
+        # unit used to come back as a raw astropy unit -- convert_unit() then failed
+        # with "'m / s' and 'm / s' are not convertible" while exporting the PPTX.
+        channel = Channel(code="10VEHC000000VEXA",
+                          data=pd.DataFrame({0: [1.0, 2.0]}, index=[0.0, 0.01]),
+                          unit="m/s")
+        copied = copy.deepcopy(channel)
+        self.assertIsInstance(copied.unit, Unit)
+        copied.convert_unit(Unit("m/s"))
+        self.assertEqual(copied.unit, Unit("m/s"))
+        copied.convert_unit("km/h")
+        self.assertAlmostEqual(float(copied.get_data()[0]), 3.6)
+
+
+class TestReflectedArithmetic(unittest.TestCase):
+    """`2 * Unit(...)` must not fall out of the wrapper either."""
+
+    def test_reflected_multiplication(self):
+        res = 2 * Unit("m")
+        self.assertIsInstance(res, Unit)
+        self.assertEqual(res, Unit("2 m"))
+
+    def test_reflected_division(self):
+        res = 1 / Unit("s")
+        self.assertIsInstance(res, Unit)
+        self.assertEqual(res, Unit("1/s"))
 
 
 class TestNumericAndInvalidInputs(unittest.TestCase):

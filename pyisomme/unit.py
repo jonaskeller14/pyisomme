@@ -66,9 +66,17 @@ class Unit:
         return self._astropy_unit.to(target, value=value, equivalencies=equivalencies) # type: ignore
             
 
-    # Automatically delegate all standard Astropy Unit attributes & methods
+    # Automatically delegate all standard Astropy Unit attributes & methods.
     def __getattr__(self, name):
+        if name.startswith("_"):
+            raise AttributeError(f"{type(self).__name__!r} object has no attribute {name!r}")
         return getattr(self._astropy_unit, name)
+
+    def __copy__(self):
+        return Unit(self._astropy_unit)
+
+    def __deepcopy__(self, memo):
+        return Unit(self._astropy_unit)
 
     # Operator overload delegation for unit arithmetic (e.g., unit_a * unit_b)
     def __mul__(self, other):
@@ -84,10 +92,10 @@ class Unit:
         return Unit(self._astropy_unit / other_raw)
 
     def __rmul__(self, other):
-        return other * self._astropy_unit
+        return Unit(Unit(other)._astropy_unit * self._astropy_unit)
 
     def __rtruediv__(self, other):
-        return other / self._astropy_unit
+        return Unit(Unit(other)._astropy_unit / self._astropy_unit)
 
     def __eq__(self, other):
         if isinstance(other, Unit):
@@ -96,6 +104,9 @@ class Unit:
             return self._astropy_unit == u.Unit(other)
         except Exception:
             return False
+
+    def __hash__(self):
+        return hash(self._astropy_unit)
 
     def __repr__(self):
         return f"Unit('{self._astropy_unit}')"

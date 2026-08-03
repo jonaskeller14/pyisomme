@@ -1587,3 +1587,180 @@ What remains:
 `test_unit.py`), almost all `W291`/`W293` whitespace plus 3 `F401` and 3 `E701`. All of it is committed
 code from the `calculate`/`providers` work, outside this step; `ruff check --fix` clears 27 of the 35 when
 someone wants to take it on.
+
+## 2026-08-03 — Out-of-band: `page.py` split into a package (one module per template)
+
+Continues the same working tree on `refactor/step-4-manual-inputs`. Nothing committed — manual review gate.
+Requested directly by the maintainer, **not** a plan step: `pyisomme/report/page.py` (379 lines, 10 classes)
+became `pyisomme/report/page/` with one module per page template. Step 11 still owns the real page work
+(`role`, `Page.select(overall)`, dropping the `page.__init__` re-run, A13); this is the file layout only.
+
+**The package** ([pyisomme/report/page/](../../pyisomme/report/page/))
+
+| file | holds |
+|---|---|
+| `base.py` | `Page` — the bare interface (`name`, `report`, `construct`) |
+| `content.py` | `Page_Content` — titled slide + footer; `_current_user()` |
+| `figure.py` | `Page_Figure` — **new**, the shared "measure/remove the content placeholder, render a figure into it" template; `FIGSIZE_Y` |
+| `cover.py` | `Page_Cover` |
+| `criterion_table.py` | `Page_Criterion_Table` (+ `TRANSPARENT`) |
+| `criterion_values_table.py` / `criterion_rating_table.py` | the two concrete criterion tables |
+| `criterion_values_chart.py` | `Page_Criterion_Values_Chart` (+ `limit_x`) |
+| `plot_nxn.py` / `line_table.py` / `olc.py` | `Page_Plot_nxn`, `Page_Line_Table`, `Page_OLC` |
+| `__init__.py` | the public surface, re-exported with `__all__` |
+
+Every existing import site keeps working unchanged — they all read
+`from pyisomme.report.page import Page_Cover, Page_OLC, ...`, which is now the package. As with
+`validate/`, **import from the package, not from a module inside it**.
+
+**What changed beyond moving code**
+
+- **`Page_Figure` (the point of the split).** Five `construct()` bodies repeated the same 18 lines:
+  read `slide.placeholders[1]`'s geometry, unlink the placeholder, derive `figsize` from its aspect ratio,
+  `savefig` to a `BytesIO`, `add_picture`. That is now inherited, and each figure page implements
+  `figure(figsize) -> Figure` instead — `Page_Plot_nxn` and `Page_Line_Table` are down to one call each.
+- **`plt.close(fig)` after `savefig`** (behaviour change, deliberate). Nothing closed these figures, so a
+  13-page report left 13 figures in pyplot's registry and matplotlib warns past 20. The image is already
+  written when it is closed, so the PPTX is unaffected.
+- **`Page_Content.footer` is no longer evaluated at import time.** It was a class attribute
+  `f"{datetime.now()…} | {os.getlogin()}"`, i.e. the *import* date, and `os.getlogin()` raises `OSError`
+  without a controlling terminal — importing `pyisomme.report` at all would have died on such a host.
+  It is now `footer: str | None = None` plus `get_footer()`, resolved while the slide is drawn, with a
+  `getpass.getuser()` → `"unknown"` fallback. Setting `footer = "…"` on a page still overrides it.
+- **`Page_Line_Table` now forwards `cell_colors`, `col_labels_colors` and `col_labels_fontweight`** to
+  `Plot_Line_Table`. It declared all three and passed none. A no-op today (nothing sets them, and `None`
+  leaves `Plot_Table`'s own defaults in place), but the declarations were dead.
+- `row_label`/`cell_text` became real `@staticmethod`s on the two concrete tables. The base still declares
+  them as `Callable` attributes, so the `staticmethod(lambda …)` overrides in `correlation.py`,
+  `side_farside_vtc.py`, `frontal_50kmh_r137.py` and `frontal_56kmh_odb_r94.py` are untouched.
+- `limit_x(criterion)` in `criterion_values_chart.py` replaces the same four-line
+  `if criterion.channel is None: 0.0 else get_limit_min_x(...)` written out four times; one of the four sat
+  inside a loop that recomputed it per limit. The bar/line maths is otherwise character-identical.
+- `np.full((rows, cols), np.nan).tolist()` as a scratch buffer for the table text is gone — every cell was
+  overwritten anyway; it is now built directly by comprehension.
+- Imports: `from pyisomme import Channel, Isomme` (top-level package, which only resolved because
+  `pyisomme/__init__.py` imports `report` *last*) → `from pyisomme.channel import Channel` /
+  `pyisomme.isomme`. `Report` is a `TYPE_CHECKING` import everywhere, since `report.py` imports this package.
+- `plt.Figure` → `from matplotlib.figure import Figure` (Pylance does not resolve the pyplot re-export;
+  same class, so mypy is indifferent). The three pptx-driving modules carry a file-level
+  `# pyright: reportAttributeAccessIssue=false, reportIndexIssue=false` (+ `reportOptionalOperand=false` in
+  `content.py`): python-pptx hangs `slides`/`shapes`/`placeholders` off an unannotated `lazyproperty`
+  descriptor, so nothing in those files is checkable. A `# type: ignore` would have been the wrong tool —
+  mypy sees pptx as `Any` and `warn_unused_ignores` would flag every one of them.
+- `pyisomme/report/page/` is a new subpackage under `pyisomme/report/`, so `tests/test_report_modules.py`
+  walks it (all four guards pass, `BROKEN_MODULES`/`MISSING_REEXPORTS` stay empty) and
+  `[tool.setuptools.packages.find] include = ["pyisomme*"]` already ships it. `CLAUDE.md`'s `Page` bullet
+  now points at the package and names the `Page_Figure` contract.
+
+**Verified**
+
+- **Definition layer is byte-identical.** `tests.test_report_structure.produce()` dumped for all 13 reports
+  before and after the split (old `page.py` restored from HEAD into the same working tree, so the
+  maintainer's in-flight `unit.py`/report edits are held constant): `diff` empty, including every
+  `pages: [...]` list. The 9 `test_report_structure` failures in this tree are the pre-existing `y_unit`
+  repr diffs recorded in the previous entry, unchanged in count and content.
+- `... -m unittest -v tests.test_report.TestReport.test_Correlation …test_UN_Side_Pole_R135
+  …test_EuroNCAP_Side_Barrier` → **OK, 3 tests**, 34 s. These render 9 + 11 + n slides through
+  `export_pptx`, covering `Page_Cover`, `Page_Content`, `Page_Criterion_Table` (both concrete tables),
+  `Page_Criterion_Values_Chart` and `Page_Plot_nxn`.
+- `Page_OLC`/`Page_Line_Table` **could not be exercised end to end**: `EuroNCAP_Frontal_50kmh` still dies in
+  `Channel.convert_unit` with `UnitConversionError: 'm / s' … not convertible` — the in-flight `unit.py`
+  problem from the previous entry. Confirmed identical before and after by running the same `Page_OLC`
+  construct against HEAD's `page.py` in this tree: same exception, same message. Its `__init__` path
+  (channel lookup, `cell_texts`, labels) does run.
+- `... -m ruff check pyisomme/report/` → **All checks passed!**; `... -m mypy` → **Success: no issues found
+  in 60 source files** (49 before — the 11 new modules).
+- Repo-wide `ruff check .` is still the same **35 pre-existing findings** in `calculate/`, `channel.py`,
+  `info.py`, `limit.py`, `providers.py`, `unit.py` and four test modules — verified unchanged by running it
+  on the stashed tree. Left alone, as the previous entry scoped them out.
+
+**Open**
+
+- Nothing here fixes A8/A13 or `Page.select` — Step 11 still has its full scope, minus the boilerplate it
+  would have had to touch five times.
+- `Page.name` is still an annotation with no default: a page class that forgets it raises `AttributeError`
+  in `__repr__`/`export_pptx` rather than failing at definition time. Left as found.
+
+## 2026-08-03 — Out-of-band: `Unit` lost its wrapper on copy (the PPTX export blocker)
+
+Continues the same working tree on `refactor/step-4-manual-inputs`. Nothing committed — manual review gate.
+Not a plan step: a bug fix in `pyisomme/unit.py`, requested after the previous two entries recorded that
+**`EuroNCAP_Frontal_50kmh`, `EuroNCAP_Frontal_MPDB` and the `EuroNCAP` MetaReport could not render a
+PPTX**, dying in `Channel.convert_unit` with
+`UnitConversionError: 'm / s' (speed/velocity) and 'm / s' (speed/velocity) are not convertible`.
+
+**Root cause** — `Unit.__getattr__` delegated *every* attribute to the wrapped astropy unit, dunders
+included. `copy` and `pickle` look their protocol methods up on the *instance*, so
+`copy.deepcopy(Unit("m/s"))` reached astropy's `UnitBase.__deepcopy__` and returned the **bare astropy
+unit**: the wrapper was silently gone. `calculate_olc` deep-copies its velocity channel
+([calculate/olc.py:29](../../pyisomme/calculate/olc.py#L29)), so the OLC channel `10SEAT0OLC00VEXA` carried
+a raw `CompositeUnit`. `Channel.convert_unit` then called *astropy's* `to()` with a `pyisomme` `Unit` as
+the target — an object astropy cannot interpret, hence "m / s and m / s are not convertible". Three lines
+reproduce it:
+
+```python
+c = Channel("10VEHC000000VEXA", df, unit="m/s")
+type(copy.deepcopy(c).unit)                     # astropy.units.core.CompositeUnit  ← wrapper lost
+copy.deepcopy(c).convert_unit(Unit("m/s"))      # UnitConversionError
+```
+
+The same delegation made `copy.copy(Unit("m/s"))` raise `RecursionError`: `copy` probes
+`__setstate__`, `__getattr__` forwards it, and the lookup of `_astropy_unit` on a not-yet-initialised
+instance recurses into itself.
+
+**Fix** ([pyisomme/unit.py](../../pyisomme/unit.py), 14 lines added, 3 changed)
+
+- `__getattr__` raises `AttributeError` for any `_`-prefixed name instead of delegating. Public astropy
+  attributes (`physical_type`, `is_equivalent`, `decompose`, …) still delegate exactly as before; nothing
+  in `pyisomme/` or `tests/` reads a private astropy attribute through the wrapper (checked by grep).
+  This alone fixes both the deepcopy leak and the recursion.
+- Explicit `__copy__`/`__deepcopy__` returning `Unit(self._astropy_unit)` — cheap, and they say what the
+  intent is rather than leaving it to the default `__reduce_ex__` path.
+- `__rmul__`/`__rtruediv__` returned **raw astropy units** (`2 * Unit("m")` was not a `Unit`); they now
+  wrap, like `__mul__`/`__truediv__` already did. No call site in the repo hits them today — this closes
+  the second way a raw unit could reach `Channel.unit`.
+- `__hash__` added. Defining `__eq__` had dropped the inherited one, so a `Unit` could not be a dict key
+  or set member; it hashes the wrapped unit, so hash and equality agree for `Unit`-vs-`Unit` and
+  `Unit`-vs-astropy-unit alike.
+
+**Tests** ([tests/test_unit.py](../../tests/test_unit.py), +62 lines) — `TestCopyingAndHashing`
+(deepcopy/copy/pickle keep the wrapper, private names are not delegated, hashable, and the
+**end-to-end regression**: a deep-copied `Channel` still converts `m/s → m/s` and `m/s → km/h`) and
+`TestReflectedArithmetic`. All fixture-free, so they run in CI.
+
+**Verified** (commands and results)
+
+- `... -m unittest tests.test_unit tests.test_channel tests.test_calculate` → **OK, 59 tests**, 2.4 s.
+- The three reports that could not export, each run alone with `PYISOMME_SLOW=1`:
+  `test_EuroNCAP_Frontal_50kmh` → **OK** (41 s; it took 168 s to *fail* before),
+  `test_EuroNCAP_Frontal_MPDB` → **OK** (125 s), `test_EuroNCAP` → **OK** (122 s).
+- `... -m ruff check pyisomme/unit.py tests/test_unit.py` → 8 findings, **all pre-existing whitespace**
+  (`W291`/`W293`) in code this change did not touch; repo-wide `ruff check .` is unchanged at **35**.
+  The new code adds none (a first draft did: `B018` on a bare attribute access, rewritten as `getattr`).
+- `... -m mypy` (configured scope) → **Success: no issues found in 60 source files**.
+- Full suite, `... -m unittest discover -s tests`: **251 tests, 12 failures / 2 errors** in 898 s,
+  against **243 tests, 12 failures / 5 errors** in 1208 s before (+8 new tests). The three vanished
+  errors are exactly the three reports that could not export. Every remaining failure is one of the
+  pre-existing three groups below — the fix changed **no computed value**: `test_golden` still fails on
+  its *definition* layer only, with the same `y_unit`/tibia rows as before.
+
+**D8/D9 (the 13-report stack overflow): hypothesis raised, then disproved.** An unbounded `__getattr__`
+recursion is exactly the shape that produces a Windows `0xC00000FD`, so the D9 repro was re-run: construct
+**and** calculate all 13 reports from empty `Isomme`s in one interpreter. It passes **with** the fix — but
+it also passes **without** it (HEAD's `unit.py` restored into the same tree, `ALL 13 OK`, exit 0). So the
+cheap repro no longer reproduces on the current tip at all, and this fix cannot be credited with it. D8/D9
+stay open and now need a fresh repro before anyone can diagnose them.
+
+**Not done here, deliberately**
+
+- **The stale goldens are untouched.** The 9 `test_report_structure` + 3 `test_golden` failures are all
+  definition-layer and predate this fix: 73 `y_unit` repr changes (`"9.80665 m / s2"`, and one 5-line
+  CODATA dump, → `"g0"`) from the committed `unit.py` rework, plus the tibia-index pattern change
+  `?1TIIN??????000?` → `?1TIIN??00??000?` and IIHS Small Overlap's new limits and 3 new pages from
+  `a6f204f`. No `value`/`rating`/`color` regression anywhere. Re-baselining is a separate, deliberate
+  decision — it wants its own diff.
+- `tests/test_isomme.py::test_read` still errors on the missing fixture `data/nhtsa/11391.tar` (a `data/`
+  gap like D11, not code), and `tests/test_plotting.py`'s `KeyError` is in the maintainer's own
+  uncommitted test.
+- `CLAUDE.md`'s unit convention now states the rule the bug broke: delegate public names only, and never
+  let a raw astropy unit reach `Channel.unit`.

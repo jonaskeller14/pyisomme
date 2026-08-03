@@ -13,171 +13,145 @@ An incremental refactor of the report architecture is in progress. Before touchi
 
 - **[docs/log/20260726_Report-Architecture-Review_plan.md](docs/log/20260726_Report-Architecture-Review_plan.md)** — the step-by-step plan, ground rules and per-step acceptance criteria. Work **one step at a time**; do not stray outside the step's scope.
 - **[docs/log/20260726_Report-Architecture-Review_progress.md](docs/log/20260726_Report-Architecture-Review_progress.md)** — running log of what is done, decisions taken and open questions. **Every session must append an entry here before finishing.**
-- [docs/log/20260726_Report-Architecture-Review.md](docs/log/20260726_Report-Architecture-Review.md) — the rationale (findings F1–F15, proposals P1–P11). Consult only the IDs your step names; do not read it end to end.
+- [docs/log/20260726_Report-Architecture-Review.md](docs/log/20260726_Report-Architecture-Review.md) — the rationale (findings F1–F15, proposals P1–P11). Consult only the IDs your step names.
 
 Invariants that must survive the refactor: NaN propagation is intentional (never swap in `np.nan*` to hide missing data); the criterion tree is eagerly constructed and user-mutable (manual inputs are set between construction and `calculate()`); criterion nesting stays.
 
-**Every step ends with a manual review — do not commit it yourself.** Finish the work, append the progress
-entry, leave everything in the working tree, and hand over a summary: what changed file by file, what was
-verified (commands and their output), what deviates from the plan, what is still open. The maintainer
-reads the diff and decides; commit only when explicitly asked to. This applies to the refactor steps and
-to any other change in this repo.
+**Every change ends with a manual review — do not commit it yourself.** Finish the work, append the
+progress entry, leave everything in the working tree, and hand over a summary: what changed file by file,
+what was verified (commands and their output), what deviates from the plan, what is still open. Commit
+only when explicitly asked to. This applies to the refactor steps and to any other change in this repo.
 
 ## Commands
 
-**Use the repo venv** — the `python` on `PATH` is a broken Anaconda 3.12 (numpy 2.3.5 against a scipy
-built for <1.29) that cannot even `import pyisomme`. `.venv` is Python **3.9.13** with correct pins
-(numpy 1.26.4, scipy 1.12.0) and the `dev` extra installed. 3.9 is the development target — it matches
-`requires-python = ">=3.9"` and the lower leg of the CI matrix; the Anaconda install is deliberately
-left unrepaired, so never invoke a bare `python`.
+**Use the repo venv.** The `python` on `PATH` is a broken Anaconda 3.12 that cannot even `import
+pyisomme` and is deliberately left unrepaired; `.venv` is Python **3.9.13** (the development target,
+matching `requires-python` and the lower CI leg) with the `dev` extra installed.
 
 ```bash
-# Windows: prefix commands with the venv interpreter
 .venv/Scripts/python.exe -m unittest discover -s tests
+.venv/Scripts/python.exe -m pip install -e ".[dev]"      # editable install with dev extras
 
-# Install for development (editable, with dev extras)
-.venv/Scripts/python.exe -m pip install -e ".[dev]"
-
-# Run the CLI
 .venv/Scripts/python.exe -m pyisomme --help
-.venv/Scripts/python.exe -m pyisomme <command> --help   # list | merge | report | plot
+.venv/Scripts/python.exe -m pyisomme <command> --help    # list | merge | report | plot
 
 # Run a single test module / case / method
 .venv/Scripts/python.exe -m unittest tests.test_report
-.venv/Scripts/python.exe -m unittest tests.test_report.TestReport
 .venv/Scripts/python.exe -m unittest tests.test_report.TestReport.test_EuroNCAP_Frontal_50kmh
 ```
 
-Note: tests (`tests/test.py`, `tests/test_report.py`, etc.) read real fixture data from `data/` (e.g. `data/nhtsa/…`, `data/iso-mme-org/…`) and report tests write `.pptx` output into an `out/` directory. Fixture folders are largely untracked and must exist locally for those tests to pass.
+Tests read real fixture data from `data/` (e.g. `data/nhtsa/…`) and report tests write `.pptx` into
+`out/`. Fixture folders are largely untracked and must exist locally for those tests to pass.
 
-**Runtime:** the full suite is ~6 min (112 tests). Everything outside `tests/test_report.py` and
-`tests/test_golden.py` runs in ~6 s. Four report tests are opt-in because they take 79–112 s each:
+The full suite is ~6 min; everything outside `tests/test_report.py` and `tests/test_golden.py` runs in
+~6 s. Four report tests are opt-in because they take 79–112 s each:
 
 ```bash
 PYISOMME_SLOW=1 .venv/Scripts/python.exe -m unittest tests.test_report   # include the slow four
 ```
 
-Known limitation: running **all 13** report tests in one process (i.e. `tests.test_report` with
-`PYISOMME_SLOW=1`) dies with a Windows stack overflow (exit `0xC00000FD`) partway through, somewhere
-after `test_EuroNCAP_Side_Pole`. This is pre-existing (reproduced on the Step-2 tip) and unrelated to
-correctness — every one of those tests passes when run on its own. Run the slow four individually.
+Known limitation: running all 13 report tests in one process dies with a Windows stack overflow (exit
+`0xC00000FD`). Pre-existing and unrelated to correctness — each passes on its own, so run the slow four
+individually.
 
 ### Static checking
 
-Both are configured in [pyproject.toml](pyproject.toml) and both are **blocking in CI** since refactor
-step 3, so keep them clean:
+Both are configured in [pyproject.toml](pyproject.toml) and **blocking in CI**, so keep them clean:
 
 ```bash
 .venv/Scripts/python.exe -m ruff check .        # whole repo (docs/ notebooks excluded)
 .venv/Scripts/python.exe -m mypy                # scoped to pyisomme/report/ by [tool.mypy] files=
 ```
 
-- `mypy` is deliberately scoped to `pyisomme/report/` with `disallow_untyped_defs`. The core modules are
-  still analysed (report/ needs their signatures) but their own errors are silenced through a
-  `follow_imports = "silent"` override — widen `files` and drop that override when the core is annotated.
+- `mypy` is deliberately scoped to `pyisomme/report/` with `disallow_untyped_defs`. Core modules are
+  analysed for their signatures but their own errors are silenced via a `follow_imports = "silent"`
+  override — widen `files` and drop that override when the core is annotated.
 - `Report` is generic in its overall criterion. **Each report module defines its criterion tree as a
   module-level class named `Overall`**, and the report declares `class X(Report[Overall])` with
-  `Criterion_Overall = Overall`. So `report.overall(isomme).criterion_driver…` — and any manual-input
-  assignment on it — is checked end to end. Reuse across protocols imports the other module's tree
-  directly (`from …frontal_50kmh import Overall as Overall_Frontal_50kmh`), never
-  `OtherReport.Criterion_Overall.…`. `Page`/`Criterion` subclasses that walk the tree
-  narrow `report:` to the concrete report class; classes reused **across** reports keep the base `Report`
-  and stay unchecked (that duplication is what steps 9–10 remove).
+  `Criterion_Overall = Overall`, so `report.overall(isomme).criterion_driver…` is checked end to end.
+  Reuse across protocols imports the other module's tree directly
+  (`from …frontal_50kmh import Overall as Overall_Frontal_50kmh`), never `OtherReport.Criterion_Overall`.
+  `Page`/`Criterion` subclasses that walk the tree narrow `report:` to the concrete report class; classes
+  reused **across** reports keep the base `Report` and stay unchecked (steps 9–10 remove that).
 - `Criterion.require_channel(...)` replaces `self.isomme.get_channel(...)` at every site that
-  dereferences the result. A missing channel is a clean `Status.NA` naming the pattern, not an
+  dereferences the result: a missing channel becomes a clean `Status.NA` naming the pattern instead of an
   `AttributeError` swallowed into `Status.ERROR`. Do not reintroduce the raw call in a criterion.
 - `pyisomme/py.typed` ships the annotations to downstream users.
 
 ### The refactor safety net
 
-Two test modules exist purely to make the report refactor verifiable — read `tests/golden_utils.py`
-before changing either:
+Three test modules exist to make the report refactor verifiable — read `tests/golden_utils.py` before
+changing any of them.
 
-- **`tests/test_golden.py`** — constructs `EuroNCAP_Frontal_50kmh`, `EuroNCAP_Frontal_MPDB` and
-  `EuroNCAP_Side_Barrier`, then
-  compares them against committed snapshots in `tests/golden/` (**tracked**, unlike `data/`). Two layers:
-  a *definition* layer (criterion paths, names, all `Limit` rows — data-independent, so it works even
-  where every value is `nan`) compared exactly, and a *results* layer (`value`/`rating`/`color`/`status`)
-  compared with **no-regression** semantics: known numbers must stay identical, but a `nan` becoming a
-  number — or an `ERROR` becoming `NA` — is reported as an improvement and tolerated. `nan == nan` (G9).
-- **`tests/test_report_structure.py`** — the same *definition* layer, but for **all 13** reports and with
-  **no fixture data at all**: each report is built from empty `Isomme` objects, so it runs in CI. Snapshot
-  in `tests/golden/report_structure.json` (tracked). It catches a reparented criterion, a lost `Limit` row
-  or a dropped page — the things a structural refactor breaks silently. Re-baseline deliberately with
-  `python -m tests.test_report_structure --regen`. A report module defining an `Overall` but missing from
-  its `REPORTS` list fails the coverage guard; deliberate omissions go in `EXCLUDED` with a reason.
-- **`tests/test_report_modules.py`** — imports every module under `pyisomme/report/` and checks that each
-  protocol subpackage is reachable as an attribute of `pyisomme.report` *in a fresh interpreter*. Needs no
-  fixture data, so it is the one report test that can run in CI. Known breakage sits in explicit
-  `BROKEN_MODULES` / `MISSING_REEXPORTS` sets with `TODO(step-…)` comments, guarded by staleness tests
-  that fail if an entry becomes stale. Both sets are **empty** since Step 2 — everything imports and every
-  subpackage is re-exported; re-populate them only with a `TODO(step-…)` naming the owning step.
+- **`tests/test_golden.py`** — builds `EuroNCAP_Frontal_50kmh`, `EuroNCAP_Frontal_MPDB` and
+  `EuroNCAP_Side_Barrier` and compares them against snapshots in `tests/golden/` (**tracked**, unlike
+  `data/`). A *definition* layer (criterion paths, names, all `Limit` rows — data-independent) compared
+  exactly, and a *results* layer (`value`/`rating`/`color`/`status`) compared with **no-regression**
+  semantics: known numbers must stay identical, but `nan` becoming a number — or `ERROR` becoming `NA` —
+  is tolerated as an improvement. `nan == nan`.
+- **`tests/test_report_structure.py`** — the same definition layer for **all 13** reports built from
+  empty `Isomme` objects, so it needs no fixtures and runs in CI. It catches a reparented criterion, a
+  lost `Limit` row, a dropped page. A report module defining an `Overall` but missing from `REPORTS`
+  fails the coverage guard; deliberate omissions go in `EXCLUDED` with a reason.
+- **`tests/test_report_modules.py`** — imports every module under `pyisomme/report/` and checks each
+  protocol subpackage is reachable as an attribute of `pyisomme.report` in a fresh interpreter. Known
+  breakage sits in `BROKEN_MODULES` / `MISSING_REEXPORTS` with a `TODO(step-…)` naming the owning step,
+  guarded by staleness tests. Both sets are **empty** — keep them that way.
 
-When a step legitimately changes a number, re-baseline **deliberately** and explain the diff in the
+When a change legitimately changes a snapshot, re-baseline **deliberately** and explain the diff in the
 progress log — the tests never rewrite the files themselves:
 
 ```bash
-.venv/Scripts/python.exe -m tests.golden_regen                       # all
-.venv/Scripts/python.exe -m tests.golden_regen euro_ncap_side_barrier
+.venv/Scripts/python.exe -m tests.golden_regen                       # all (or one, by name)
+.venv/Scripts/python.exe -m tests.test_report_structure --regen
 git diff tests/golden/
 ```
 
 ### `validate()` and `describe()`
 
-Since Step 12 a report can check and explain its own *definition*. Both are fixture-free — they read the
-criterion tree and its `Limit` rows, never measurement data — so they work on empty `Isomme` objects and
-run in CI. [tests/test_validate.py](tests/test_validate.py) and
-[tests/test_describe.py](tests/test_describe.py) cover them (the latter reuses the former's
-`build`/`leaf`/`attach` helpers).
+A report can check and explain its own *definition*. Both are fixture-free — they read the criterion tree
+and its `Limit` rows, never measurement data — so they run in CI.
+[tests/test_validate.py](tests/test_validate.py) and [tests/test_describe.py](tests/test_describe.py)
+cover them (the latter reuses the former's `build`/`leaf`/`attach` helpers).
 
-- **`Report.validate()`** ([pyisomme/report/validate/](pyisomme/report/validate/)) → `list[Issue]`,
-  empty when clean; `report.print_validation()` prints it. **Errors** are wrong whatever the protocol says
-  (unnamed criterion, a code pattern that cannot match a 16-character code, a limit orphaned in the
-  report's limit list by a rebuilt subtree). **Warnings** are deviations from a *convention* — a protocol
-  is allowed to be irregular, so they never fail on their own.
-- The warning checks are **what is left of the withdrawn Step 5**: `limit_flags`, `limit_capping`
-  (the `capped_at_poor` rule), `limit_interpolation` (Marginal/Weak at 1/3 and 2/3 between Good and Poor),
-  `limit_symmetry`, `limit_unit`. They assert *properties* of a hand-written `extend_limit_list` block
-  without owning its numbers — the thresholds stay literal and PDF-checkable.
+- **`Report.validate()`** ([pyisomme/report/validate/](pyisomme/report/validate/)) → `list[Issue]`, empty
+  when clean; `report.print_validation()` prints it. **Errors** are wrong whatever the protocol says
+  (unnamed criterion, a code pattern that cannot match a 16-character code, an orphaned limit).
+  **Warnings** are deviations from a *convention* (`limit_flags`, `limit_capping`, `limit_interpolation`,
+  `limit_symmetry`, `limit_unit`) — a protocol is allowed to be irregular, so they never fail on their
+  own. They assert *properties* of a hand-written `extend_limit_list` block without owning its numbers;
+  thresholds stay literal and PDF-checkable.
 - **Silence an intentional deviation on the criterion**, never by loosening a check:
   `validate_ignore = {"limit_symmetry": "shared 0 pt. row spans both signs"}`. The reason is mandatory.
-- **One check, one module.** `pyisomme/report/validate/` holds a `check_<name>.py` per check, all listed
-  in `CHECKS` in [validate/validate.py](pyisomme/report/validate/validate.py) — which also owns the three
-  entry points (`validate_criterion`/`validate_tree`/`validate_report`) and nothing else. What the checks
-  share — reading a flat limit list back into the *blocks* it was written as (`blocks`, `sample`, `sides`,
-  `Direction`, `per_side`) — lives in [validate/util.py](pyisomme/report/validate/util.py); `Issue` lives
-  in [validate/issue.py](pyisomme/report/validate/issue.py). Import from the package
-  (`from pyisomme.report.validate import ...`), not from a module inside it. To add a check, write
-  `check_<name>(path, criterion) -> Iterator[Issue]` and append it to `CHECKS`; `<name>` is then both the
-  string its findings carry and the `validate_ignore` key that silences it.
+- **One check, one module.** `validate/` holds a `check_<name>.py` per check, all listed in `CHECKS` in
+  [validate/validate.py](pyisomme/report/validate/validate.py), which also owns the entry points
+  (`validate_criterion`/`validate_tree`/`validate_report`). Shared helpers for reading a flat limit list
+  back into blocks live in [validate/util.py](pyisomme/report/validate/util.py); `Issue` in
+  [validate/issue.py](pyisomme/report/validate/issue.py). Import from the package, not from a module
+  inside it. To add a check, write `check_<name>(path, criterion) -> Iterator[Issue]` and append it to
+  `CHECKS`; `<name>` is both the string its findings carry and the `validate_ignore` key.
 - **`Report.describe()`** ([pyisomme/report/describe.py](pyisomme/report/describe.py)) → Markdown: every
   criterion with class, `source`, max rating, aggregation, every `Limit` row and every manual input.
   Committed per reference report under `tests/golden/describe/`, so a moved threshold shows up as a line
   in a pull request instead of a character in a 1500-line module.
-- Each baseline regenerates from its own module, deliberately:
 
 ```bash
 .venv/Scripts/python.exe -m tests.test_validate --regen    # tests/golden/validate.json
 .venv/Scripts/python.exe -m tests.test_describe --regen    # tests/golden/describe/*.md
-git diff tests/golden/
 ```
 
-**Definition metadata on `Criterion` — declare the minimum.** `source`, `max_rating` and `aggregation` are
-read only by `validate()`/`describe()`; nothing in `calculation()` consumes them.
+**Definition metadata on `Criterion` — declare the minimum.** `source`, `max_rating` and `aggregation`
+are read only by `validate()`/`describe()`; nothing in `calculation()` consumes them.
 
-- `max_rating` on a **leaf is derived** from its limit block (`max` of the rated rows) — never declare it,
-  a second copy can only disagree with the first.
+- `max_rating` on a **leaf is derived** from its limit block — never declare it.
 - `max_rating` on an **aggregate** is the protocol's point budget (a Euro-NCAP body region is 4, an
   occupant 16, the frontal load case 8) and nothing else records it — declare it there.
-- `aggregation` (`"min"`/`"sum"`/`"mean"`/`"max"`/`"first"`) turns that into a real check: the parent's
-  budget must equal the aggregation of its children's. Only declare it where one rule really covers all
-  children; a box that is `min` over results **plus** `sum` over modifiers cannot be expressed until
-  Step 11's `role` lands, so leave it unset there rather than writing something untrue.
-- `source` is the protocol **section** — the one field no code can recover. The *document* is report-level
-  and `describe()` prints it once in the header, so `source` holds only `"§5.2.1"`, never the whole
-  reference. It is **inherited down the tree**: a criterion that declares none shows its nearest
-  ancestor's, marked `(inherited)`. Declaring it on `Overall` alone is therefore complete and honest;
-  refine it where the PDF has a narrower section (typically per body region), and leaves never repeat it.
+- `aggregation` (`"min"`/`"sum"`/`"mean"`/`"max"`/`"first"`) makes that checkable: the parent's budget
+  must equal the aggregation of its children's. Only declare it where one rule really covers all
+  children; leave it unset rather than writing something untrue.
+- `source` is the protocol **section** (`"§5.2.1"`, not the whole document reference) — the one field no
+  code can recover. It is **inherited down the tree**, so declaring it on `Overall` alone is complete;
+  refine it where the PDF has a narrower section, and leaves never repeat it.
 
 ## Core Architecture
 
@@ -189,14 +163,14 @@ The domain model is a three-level hierarchy, all re-exported from the top-level 
 
 ### Channel lookup and lazy computation (the most important concept)
 
-`Isomme.get_channel(*code_patterns, filter=, calculate=, differentiate=, integrate=)` and `get_channels(...)` are the primary access API. Code patterns are **fnmatch/regex-style with `?` wildcards**. If a requested channel does not exist as raw data, `get_channel` will *synthesize* it on demand by, in order: returning an existing match → CFC-filtering an unfiltered channel (pattern ending in `[ABCD]`) → **calculating** it (resultants from X/Y/Z or 1/2/3, plus criteria like BrIC, HIC, xms, ...) → differentiating/integrating. When adding a new derived quantity, extend this dispatch in `get_channel` and implement the math in [pyisomme/calculate.py](pyisomme/calculate.py) (functions decorated with `@debug_logging`).
+`Isomme.get_channel(*code_patterns, filter=, calculate=, differentiate=, integrate=)` and `get_channels(...)` are the primary access API. Code patterns are **fnmatch/regex-style with `?` wildcards**. If a requested channel does not exist as raw data, `get_channel` will *synthesize* it on demand by, in order: returning an existing match → CFC-filtering an unfiltered channel (pattern ending in `[ABCD]`) → **calculating** it (resultants from X/Y/Z or 1/2/3, plus criteria like BrIC, HIC, xms, ...) → differentiating/integrating. When adding a new derived quantity, extend this dispatch in `get_channel` and implement the math in [pyisomme/calculate/](pyisomme/calculate/) (functions decorated with `@debug_logging`).
 
 ### Reports (PowerPoint generation)
 
 Reports live under [pyisomme/report/](pyisomme/report/), one subpackage per protocol family: `euro_ncap/`, `un/`, `us_ncap/`, `iihs/`, `fmvss/`, `correlation/`. Key building blocks:
 
 - **`Report`** ([pyisomme/report/report.py](pyisomme/report/report.py)) — takes an `isomme_list`, builds a tree of criteria and a list of `Page`s. `.calculate()` evaluates all criteria; `.export_pptx(path, template)` renders slides via `python-pptx`. `MetaReport` composes several sub-reports (e.g. the top-level `EuroNCAP` bundles frontal/side load cases).
-- **`Criterion`** ([pyisomme/report/criterion.py](pyisomme/report/criterion.py)) — a nested, self-registering assessment unit. Subclasses implement `calculation()` (sets `.value`, `.rating`, `.color`, attaches `.channel` and `Limit`s). Criteria are discovered reflectively: any attribute that is a `Criterion` instance is treated as a subcriterion (see `get_subcriterion`/`get_subcriteria` and `print_results`). A concrete report (e.g. [pyisomme/report/euro_ncap/frontal_50kmh.py](pyisomme/report/euro_ncap/frontal_50kmh.py)) defines its criterion tree as a **module-level class named `Overall`** whose children are nested inner classes.
+- **`Criterion`** ([pyisomme/report/criterion.py](pyisomme/report/criterion.py)) — a nested, self-registering assessment unit. Subclasses implement `calculation()` (sets `.value`, `.rating`, `.color`, attaches `.channel` and `Limit`s). Criteria are discovered reflectively: any attribute that is a `Criterion` instance is treated as a subcriterion (see `get_subcriterion`/`get_subcriteria` and `print_results`).
 - **`Page`** ([pyisomme/report/page/](pyisomme/report/page/)) — one slide; `construct(presentation)` draws it, often via the plotting helpers. One module per template, all re-exported from the package: import `from pyisomme.report.page import Page_Plot_nxn`, never from a module inside it. `Page_Content` is a titled slide with a footer; `Page_Figure` adds the "measure the content placeholder, remove it, render a figure into the freed area" boilerplate, so a figure page only implements `figure(figsize) -> Figure`.
 - **`Limit`/`Limits`** ([pyisomme/limits.py](pyisomme/limits.py)) — threshold curves/values matched to channels by code patterns; used both for rating criteria and for drawing limit bars in plots. Per-protocol limit definitions live in each subpackage's `limits.py`.
 
@@ -206,8 +180,7 @@ To add a new report/load case: create a module in the appropriate protocol subpa
 
 A value the report cannot measure — an engineer's judgement, a hand measurement, a seating
 assumption — is a **manual input**: the user overwrites it between constructing the report and
-calling `calculate()`. Since refactor step 4 they are *declared*, in
-[pyisomme/report/manual.py](pyisomme/report/manual.py):
+calling `calculate()`. They are *declared*, in [pyisomme/report/manual.py](pyisomme/report/manual.py):
 
 ```python
 class Criterion_Submarining(Criterion):
@@ -217,26 +190,25 @@ class Criterion_Submarining(Criterion):
 
 - **No `= False`.** The `manual(...)` default is installed as the class attribute the first time a
   criterion of that class is constructed, so `self.submarining` reads work unchanged.
-- `Manual` is `typing.Annotated`, so mypy still sees a plain `bool` — everything step 3 made
-  checkable stays checkable. Declare it with `Manual[T, manual(...)]`, never as a bare attribute:
-  an undeclared class attribute is *not* a manual input and will not be enumerated.
+- `Manual` is `typing.Annotated`, so mypy still sees a plain `bool`. Declare it with
+  `Manual[T, manual(...)]`, never as a bare attribute: an undeclared class attribute is *not* a manual
+  input and will not be enumerated.
 - **`Criterion.__setattr__` rejects any name the class does not declare**, with a "did you mean …?"
   suggestion, and rejects a wrongly typed value (`bool` is deliberately not accepted for a `float`).
   Its `value` parameter is typed `Undeclared` — an uninhabited class — **on purpose**: a type checker
-  consults `__setattr__` only for names the class does not declare, so this keeps step 3's static catch of
-  `criterion.hard_contct = False` while a `value: Any` would widen *every* assignment to `Any` and
-  delete it. Do not relax that annotation.
-  Assigning a `Criterion` (a subcriterion) or a `_`-prefixed name is exempt at runtime.
+  consults `__setattr__` only for undeclared names, so this keeps the static catch of
+  `criterion.hard_contct = False`, while `value: Any` would widen *every* assignment to `Any`. Do not
+  relax that annotation. Assigning a `Criterion` (a subcriterion) or a `_`-prefixed name is exempt at
+  runtime.
 - `report.print_inputs()` lists every input with path, value, default, unit, doc and source;
-  `get_inputs()` / `set_inputs()` round-trip through JSON, so the manual assumptions behind a run can
-  be stored beside the ISO-MME container and replayed. `MetaReport` nests one level deeper, keyed by
+  `get_inputs()` / `set_inputs()` round-trip through JSON, so the manual assumptions behind a run can be
+  stored beside the ISO-MME container and replayed. `MetaReport` nests one level deeper, keyed by
   sub-report.
 - **Inputs are read in `calculation()`, never in `__init__`** (F15). The exception is the seating
   position: children are *constructed* with `p=`, which is baked into their limits' code patterns, so
   each `Overall` calls `sync_positions()` at the top of `calculation()` and uses
-  `Criterion.rebuild_child()` to rebuild an occupant subtree when its position changed — preserving
-  the subtree's manual inputs and dropping its stale report-level limits. Step 7's lazy `Ctx`
-  replaces this.
+  `Criterion.rebuild_child()` to rebuild an occupant subtree when its position changed. Step 7's lazy
+  `Ctx` replaces this.
 
 [tests/test_manual_inputs.py](tests/test_manual_inputs.py) covers all of it and needs no fixture data.
 
@@ -248,7 +220,7 @@ class Criterion_Submarining(Criterion):
 
 - Every module uses `logging.getLogger(__name__)`; the CLI and tests configure logging levels. Prefer logger calls over prints in library code (reports intentionally `print` results).
 - Modules rely on `from __future__ import annotations` and string/forward-ref typing.
-- Units are handled through `astropy.units` wrapped by [pyisomme/unit.py](pyisomme/unit.py); acceleration in "g" maps to `g0`. Convert with `Channel.convert_unit()`, not by mutating `.data` directly.
+- Units are handled through `astropy.units` wrapped by [pyisomme/unit.py](pyisomme/unit.py); acceleration in "g" maps to `g0`. Convert with `Channel.convert_unit()`, not by mutating `.data` directly. A raw astropy unit must never reach `Channel.unit`.
 - Writing methods do **not** warn before overwriting files — be careful with `merge` and `write`.
 - Only `.mme`, `.chn`, and channel-data files (`.001`, `.002`, ...) are read/written; videos, photos, and other files are ignored.
 
