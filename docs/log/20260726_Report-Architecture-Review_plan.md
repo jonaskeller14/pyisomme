@@ -171,32 +171,76 @@ Also: remove the corresponding entries from Step 1's skip list.
 
 ---
 
-## Step 5 — Limit scales: build the helpers and prove equivalence (proposal P3, part 1)
+## Step 5 — Limit scales (proposal P3, part 1) — **WITHDRAWN 2026-08-02**
 
-**Goal:** express threshold sets the way the PDF states them, with the derived numbers computed.
+**Status: rejected by the maintainer after review. The helpers were built, reviewed and stashed; no
+report module was ever migrated. P3 is dropped as a *generator*; the part of F5 worth keeping moves to
+Steps 10 and 12 (see below).**
 
-**Findings addressed:** F5.
+**Maintainer's decision:** the hand-written `extend_limit_list` block stays the authoring form for
+protocol thresholds. A raw list is a literal transcription of the protocol table, checkable line by line
+by an engineer with the PDF open and no knowledge of the framework's conventions. `sliding_scale(...)`
+replaces a *visible* error (a wrong number, easy to spot in review) with an *invisible* one (right
+numbers, wrong convention applied), and moves the blast radius of any single mistake from one criterion
+to every criterion using the helper.
 
-**Scope:**
-- `sliding_scale(higher=…, lower=…, points=4, capping=None, unit=…, direction=…)` in `euro_ncap/limits.py`, generating the Good/Adequate/Marginal/Weak/Poor/Capping rows including the interpolated intermediates (e.g. HIC: 500 → 566.667 → 633.333 → 700).
-- `pass_fail(threshold=…, unit=…)` for UN; `star_scale({...})` for US-NCAP.
-- Handle the negative-is-worse direction (chest deflection, femur, neck My) centrally instead of per-block `upper`/`lower` flags.
-- **Equivalence proof** (the critical deliverable): a test that, for every existing `extend_limit_list` block that a helper is meant to replace, asserts the generated `Limit` objects equal today's literals — same `func(x)` values, `upper`/`lower`, `color`, `rating`, `y_unit`. Build it as a table of (report, criterion, hand-written list, helper call).
+**Reasons recorded, so this is not relitigated:**
 
-**Out of scope:** migrating the report modules to use the helpers (Step 6). This step only *adds* the helpers and proves they are faithful.
+1. **The helper hides five implicit conventions** behind a three-number call: the 1/3–2/3 blend, the
+   3-decimal rounding (`DECIMALS`), the "Poor row drops its `upper`/`lower` flag when a capping row sits
+   at the same value" rule, direction derivation from the sign, and `symmetric=` mirroring. Each is
+   correct today and none is visible at the call site.
+2. **The domain is too irregular for the helper to cover.** By the equivalence proof's own tables:
+   `EuroNCAP_Side_Pole` 3 of 8 blocks, `EuroNCAP_Frontal_MPDB` 22 of 27. Modifier tables (0/−1/−2 pt),
+   Good/Poor pairs (D15), capping-only pairs and R95's three-row block (D13) have no helper. A migrated
+   module would be a *mixture* of generated and raw blocks — harder to read than uniformly raw, because
+   a reader must first work out which style a given block is in.
+3. **The API erodes to reproduce irregularities.** `capping_code_patterns=` was added for exactly one
+   call site — and that call site turned out to be a **typo**, fixed independently in `155f533`
+   (2026-07-28). The helper had grown a parameter whose only purpose was faithfully reproducing a bug,
+   and the parameter (and D12) went stale within a day.
+4. **The proof is heavy and coupled.** It broke on its own within a week: `tests/test_limit_scales.py`
+   calls `golden_utils.serialise_limit(limit, SAMPLE_X)`, but the matching `sample_x` parameter never
+   reached `tests/golden_utils.py` and the module now raises `TypeError` on import-time use; the driver
+   neck Fz case is stale against `155f533`. Neither failure was caught, because nothing else depends on
+   the file.
+5. **The benefit is smaller than it looks.** The saving is 126 interpolated intermediates repo-wide —
+   numbers that are *printed in the protocol PDFs*, not invented by the module author — and a typo in
+   one that changes a rating is already caught by `tests/test_golden.py` and
+   `tests/test_report_structure.py`.
 
-**Acceptance criteria:**
-- [ ] Equivalence test covers the Euro-NCAP frontal reports' scales and passes.
-- [ ] Asymmetric cases (±Fx shear with a single capping pair) are either covered or explicitly documented as "keep raw `Limit`".
-- [ ] No report module changed yet; golden tests untouched and passing.
+**What the maintainer's concern does *not* dispose of.** Two real problems in F5 survive and are
+reassigned:
+
+- **Duplication** — the same HIC/a3ms/neck scale is typed out in five places, so a protocol threshold
+  change means editing N blocks. **The answer is reuse, not generation:** one named `HIC15` criterion
+  class shared across reports states the numbers once and keeps them literal. → **Step 10**, which
+  already owns this.
+- **Flag conventions are genuinely error-prone** — the `capped_at_poor` rule in particular is encoded by
+  accident in the raw lists and is exactly the kind of typo the maintainer worries about. **The answer
+  is a checker, not a generator.** → **Step 12** (see its scope note): `validate()` asserts properties of
+  a hand-written block without owning its numbers. This keeps F5's benefit (the two PDF numbers are
+  stated once and machine-checked) with none of P3's single-point-of-failure risk.
+
+**Disposition of the built code** (branch `refactor/step-4-manual-inputs`, uncommitted): staged and
+stashed on 2026-08-02 — `pyisomme/report/scales.py`, the `sliding_scale`/`pass_fail`/`star_scale`
+helpers in the three `limits.py` files, `tests/test_limit_scales.py`, and `CLAUDE.md`'s "Limit scales"
+section. Recover it from the stash if Step 12 wants `Curve`/`Direction` as validator building blocks —
+they are the reusable part. **Not** stashed, because it is an unrelated fix: the one-line
+`from pyisomme.limits import Limit` → `pyisomme.limit` repair in `euro_ncap/limits.py`, without which
+that module does not import at all.
+
+**Left in place from Step 5's analysis:** D12 (resolved by `155f533`), D13, D14 (moot — no migration),
+D15 in the progress file.
 
 ---
 
-## Step 6 — `PeakCriterion` + migrate leaf criteria (proposals P4 + P3 part 2)
+## Step 6 — `PeakCriterion` + migrate leaf criteria (proposal P4)
 
 **Goal:** the ~80 % standard leaf becomes a 5-line declaration with a single source of truth for code patterns.
 
-**Findings addressed:** F3 (structurally), F4, F5.
+**Findings addressed:** F3 (structurally), F4. *(P3 part 2 — migrating limit blocks to generated scales
+— is removed: Step 5 was withdrawn. Limit blocks stay hand-written `extend_limit_list` lists.)*
 
 **Scope:**
 - `PeakCriterion` base: `codes` + `reduce` (`MAX`/`MIN`/`MAX_ABS`/`FIRST`) + `unit` + `limits` + `interpolate`, with a framework-provided `calculation()` that does `require_channel` → reduce → rating → colour.
@@ -204,9 +248,14 @@ Also: remove the corresponding entries from Step 1's skip list.
 - Migrate leaves in the two reference reports first (`frontal_50kmh`, `frontal_mpdb`), then the rest.
 - `Reduce.MAX_ABS` replaces the hand-written `data[np.argmax(np.abs(data))]` idiom (8 sites).
 
+**Explicitly out of scope:** rewriting any `Limit(...)` row. `PeakCriterion` may *supply* the
+`code_patterns` a hand-written row uses, but the thresholds, colours and `upper`/`lower` flags stay
+literal. See the withdrawn Step 5.
+
 **Acceptance criteria:**
 - [ ] Golden tests pass unchanged for both reference reports.
-- [ ] `frontal_50kmh.py` line count materially reduced (expect ≲ 900 from 1472) — record the actual number.
+- [ ] `frontal_50kmh.py` line count materially reduced — record the actual number. The ≲ 900 (from 1472)
+      estimate assumed Step 5's limit generation; without it, expect a smaller reduction.
 - [ ] Every migrated leaf's channel pattern is declared exactly once.
 
 ---
@@ -288,6 +337,22 @@ Also: remove the corresponding entries from Step 1's skip list.
 
 **Scope:**
 - `Report.validate()`: every criterion named; no orphans; every declared code pattern is a valid 16-char `Code` template; `max_rating` declared and achievable; every manual input actually read by some `calculation()`; synthetic-`Isomme` construct→calculate→export smoke run for every registered report.
+- **Limit-block checks — this is where the withdrawn Step 5's value lands.** `validate()` asserts
+  *properties* of a hand-written `extend_limit_list` block without owning its numbers, catching exactly
+  the transcription typos raw lists are exposed to:
+  - the `upper`/`lower` flags are consistent with the ordering of the rows' values (a
+    higher-is-worse scale has `upper` on the best row and `lower` on every worse one, and vice versa);
+  - the Poor row is unflagged **iff** a Capping row sits at the same value (the `capped_at_poor`
+    convention, today encoded only by accident — the single most likely silent typo);
+  - on a Euro-NCAP 4-point scale, Marginal and Weak lie at 1/3 and 2/3 between Good and Poor to within
+    the 3 decimals the modules type out;
+  - a symmetric block's two sides are exact mirrors;
+  - `y_unit` is consistent across the rows of one block.
+  Each is a **warning naming the block**, not a hard failure — a protocol is allowed to be irregular
+  (D13's R95 three-row block is genuinely asymmetric); an intentional exception is silenced with a
+  documented opt-out on the criterion.
+  `pyisomme/report/scales.py`'s `Curve` and `Direction` are the natural building blocks for these
+  checks — recover them from the Step-5 stash rather than rewriting them.
 - `Report.describe()`: Markdown/table dump of the *definition* — path, name, channel patterns, limits, aggregation rule, manual inputs, `source` PDF reference. Commit a golden dump per report so threshold changes show up in PR diffs.
 - Add `source: str` (PDF section) to criteria as they are touched.
 
@@ -295,6 +360,8 @@ Also: remove the corresponding entries from Step 1's skip list.
 - [ ] `validate()` runs in CI without fixtures and passes for every registered report.
 - [ ] Golden `describe()` dumps committed for the two reference reports.
 - [ ] Max-rating propagation check catches a deliberately broken aggregation (verify, then revert).
+- [ ] Perturbing one intermediate in a hand-written sliding-scale block (e.g. `566.667` → `556.667`) is
+      reported by `validate()` (verify, then revert) — this is the check that replaces Step 5.
 
 ---
 
@@ -317,5 +384,6 @@ Also: remove the corresponding entries from Step 1's skip list.
 
 - **F11 (protocol versions as data):** only one report currently branches on `protocol`. Keep the inline ternary; revisit when a second version actually lands.
 - **`EuroNCAP` MetaReport requiring all five load cases** (A10): make sub-reports optional when someone needs a partial assessment.
-- **YAML/JSON report definitions:** rejected (review Appendix B1) — Python is required for the edge-case logic and for lint/type warnings.
+- **P3 — generated limit scales (`sliding_scale`/`pass_fail`/`star_scale`):** **rejected 2026-08-02** after the helpers were built and reviewed. Hand-written `Limit` lists stay the authoring form; the numbers stay literal and PDF-checkable. Duplication → Step 10 (reuse), typo-catching → Step 12 (`validate()`). Full reasoning in the withdrawn Step 5 above.
+- **YAML/JSON report definitions:** rejected (review Appendix B1) — Python is required for the edge-case logic and for lint/type warnings. The P3 rejection is the same principle applied one level down: the threshold table is data best read as data, not as a call that reconstructs it.
 - **Auto-repairing missing data with `nan*` aggregations:** rejected (review Appendix B5) — violates G9.

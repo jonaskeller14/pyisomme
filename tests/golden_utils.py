@@ -25,6 +25,7 @@ from typing import Any, Callable
 import numpy as np
 
 import pyisomme
+from pyisomme.limit import Limit
 from pyisomme.report.criterion import Criterion
 from pyisomme.report.report import Report
 
@@ -101,26 +102,17 @@ def equal(a: Any, b: Any) -> bool:
 
 def walk(criterion: Criterion, path: str = "") -> list[tuple[str, Criterion]]:
     """
-    Yield ``(path, criterion)`` for the whole tree, ``dir()``-ordered.
+    ``(path, criterion)`` for the whole tree, with the root named ``"Overall"``.
 
-    Step 7 replaces ``dir()`` discovery with declaration order. That changes the
-    *order* of this list but not its content, and the golden files are keyed by
-    path, so ordering is deliberately irrelevant here.
+    Thin wrapper over :meth:`Criterion.walk`, which is ``dir()``-ordered. Step 7
+    replaces ``dir()`` discovery with declaration order; that changes the *order*
+    of this list but not its content, and the golden files are keyed by path, so
+    ordering is deliberately irrelevant here.
     """
-    nodes = [(path or "Overall", criterion)]
-    for attr in sorted(dir(criterion)):
-        if attr.startswith("__"):
-            continue
-        try:
-            child = getattr(criterion, attr)
-        except Exception:  # pragma: no cover - defensive: properties may raise
-            continue
-        if isinstance(child, Criterion):
-            nodes += walk(child, f"{path}/{attr}" if path else attr)
-    return nodes
+    return [(node_path or "Overall", node) for node_path, node in criterion.walk(path)]
 
 
-def serialise_limit(limit) -> dict:
+def serialise_limit(limit: Limit) -> dict:
     samples = []
     for x in LIMIT_SAMPLE_X:
         try:
@@ -267,7 +259,7 @@ def compare(golden: dict, current: dict) -> tuple[list[str], list[str]]:
 # fixtures and report builders
 # --------------------------------------------------------------------------- #
 
-def _read(*parts: str, pattern: str | None = None):
+def _read(*parts: str, pattern: str | None = None) -> pyisomme.Isomme:
     path = os.path.join(DATA_DIR, *parts)
     return pyisomme.Isomme().read(path, pattern) if pattern else pyisomme.Isomme().read(path)
 

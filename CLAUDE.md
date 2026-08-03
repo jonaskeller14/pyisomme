@@ -122,6 +122,63 @@ progress log — the tests never rewrite the files themselves:
 git diff tests/golden/
 ```
 
+### `validate()` and `describe()`
+
+Since Step 12 a report can check and explain its own *definition*. Both are fixture-free — they read the
+criterion tree and its `Limit` rows, never measurement data — so they work on empty `Isomme` objects and
+run in CI. [tests/test_validate.py](tests/test_validate.py) and
+[tests/test_describe.py](tests/test_describe.py) cover them (the latter reuses the former's
+`build`/`leaf`/`attach` helpers).
+
+- **`Report.validate()`** ([pyisomme/report/validate/](pyisomme/report/validate/)) → `list[Issue]`,
+  empty when clean; `report.print_validation()` prints it. **Errors** are wrong whatever the protocol says
+  (unnamed criterion, a code pattern that cannot match a 16-character code, a limit orphaned in the
+  report's limit list by a rebuilt subtree). **Warnings** are deviations from a *convention* — a protocol
+  is allowed to be irregular, so they never fail on their own.
+- The warning checks are **what is left of the withdrawn Step 5**: `limit_flags`, `limit_capping`
+  (the `capped_at_poor` rule), `limit_interpolation` (Marginal/Weak at 1/3 and 2/3 between Good and Poor),
+  `limit_symmetry`, `limit_unit`. They assert *properties* of a hand-written `extend_limit_list` block
+  without owning its numbers — the thresholds stay literal and PDF-checkable.
+- **Silence an intentional deviation on the criterion**, never by loosening a check:
+  `validate_ignore = {"limit_symmetry": "shared 0 pt. row spans both signs"}`. The reason is mandatory.
+- **One check, one module.** `pyisomme/report/validate/` holds a `check_<name>.py` per check, all listed
+  in `CHECKS` in [validate/validate.py](pyisomme/report/validate/validate.py) — which also owns the three
+  entry points (`validate_criterion`/`validate_tree`/`validate_report`) and nothing else. What the checks
+  share — reading a flat limit list back into the *blocks* it was written as (`blocks`, `sample`, `sides`,
+  `Direction`, `per_side`) — lives in [validate/util.py](pyisomme/report/validate/util.py); `Issue` lives
+  in [validate/issue.py](pyisomme/report/validate/issue.py). Import from the package
+  (`from pyisomme.report.validate import ...`), not from a module inside it. To add a check, write
+  `check_<name>(path, criterion) -> Iterator[Issue]` and append it to `CHECKS`; `<name>` is then both the
+  string its findings carry and the `validate_ignore` key that silences it.
+- **`Report.describe()`** ([pyisomme/report/describe.py](pyisomme/report/describe.py)) → Markdown: every
+  criterion with class, `source`, max rating, aggregation, every `Limit` row and every manual input.
+  Committed per reference report under `tests/golden/describe/`, so a moved threshold shows up as a line
+  in a pull request instead of a character in a 1500-line module.
+- Each baseline regenerates from its own module, deliberately:
+
+```bash
+.venv/Scripts/python.exe -m tests.test_validate --regen    # tests/golden/validate.json
+.venv/Scripts/python.exe -m tests.test_describe --regen    # tests/golden/describe/*.md
+git diff tests/golden/
+```
+
+**Definition metadata on `Criterion` — declare the minimum.** `source`, `max_rating` and `aggregation` are
+read only by `validate()`/`describe()`; nothing in `calculation()` consumes them.
+
+- `max_rating` on a **leaf is derived** from its limit block (`max` of the rated rows) — never declare it,
+  a second copy can only disagree with the first.
+- `max_rating` on an **aggregate** is the protocol's point budget (a Euro-NCAP body region is 4, an
+  occupant 16, the frontal load case 8) and nothing else records it — declare it there.
+- `aggregation` (`"min"`/`"sum"`/`"mean"`/`"max"`/`"first"`) turns that into a real check: the parent's
+  budget must equal the aggregation of its children's. Only declare it where one rule really covers all
+  children; a box that is `min` over results **plus** `sum` over modifiers cannot be expressed until
+  Step 11's `role` lands, so leave it unset there rather than writing something untrue.
+- `source` is the protocol **section** — the one field no code can recover. The *document* is report-level
+  and `describe()` prints it once in the header, so `source` holds only `"§5.2.1"`, never the whole
+  reference. It is **inherited down the tree**: a criterion that declares none shows its nearest
+  ancestor's, marked `(inherited)`. Declaring it on `Overall` alone is therefore complete and honest;
+  refine it where the PDF has a narrower section (typically per body region), and leaves never repeat it.
+
 ## Core Architecture
 
 The domain model is a three-level hierarchy, all re-exported from the top-level `pyisomme` package ([pyisomme/__init__.py](pyisomme/__init__.py)):

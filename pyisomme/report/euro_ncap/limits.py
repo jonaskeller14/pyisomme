@@ -1,6 +1,6 @@
 import numpy as np
 
-from pyisomme.limits import Limit
+from pyisomme.limit import Limit
 
 
 class Limit_G(Limit):

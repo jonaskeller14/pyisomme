@@ -50,6 +50,12 @@ class Criterion:
     isomme: Isomme
     p: int
 
+    # Validation:
+    source: str | None = None
+    max_rating: float | None = None
+    aggregation: str | None = None
+    validate_ignore: dict[str, str] = {}
+
     def __init__(self, report: Report, isomme: Isomme) -> None:
         self.report = report
         self.isomme = isomme
@@ -135,10 +141,9 @@ class Criterion:
         ``path`` is the attribute chain from here, e.g.
         ``criterion_driver/criterion_head/hard_contact``.
         """
-        for name, spec in sorted(self.get_input_specs().items()):
-            yield (f"{path}/{name}" if path else name), self, spec
-        for attr, child in self.get_children():
-            yield from child.iter_inputs(f"{path}/{attr}" if path else attr)
+        for node_path, criterion in self.walk(path):
+            for name, spec in sorted(criterion.get_input_specs().items()):
+                yield (f"{node_path}/{name}" if node_path else name), criterion, spec
 
     def get_children(self) -> list[tuple[str, Criterion]]:
         """``(attribute name, subcriterion)`` pairs, ``dir()``-ordered (step 7 changes this)."""
@@ -154,11 +159,18 @@ class Criterion:
                 children.append((attr, child))
         return children
 
-    def walk(self) -> Iterator[Criterion]:
-        """This criterion and every criterion below it."""
-        yield self
-        for _, child in self.get_children():
-            yield from child.walk()
+    def walk(self, path: str = "") -> Iterator[tuple[str, Criterion]]:
+        """
+        ``(path, criterion)`` for this criterion and every criterion below it,
+        depth-first, parent before children.
+
+        ``path`` is the attribute chain from here — the same spelling
+        :meth:`iter_inputs` uses, so an input path is always its criterion's path
+        plus the input name. The root yields ``path`` itself, ``""`` by default.
+        """
+        yield path, self
+        for attr, child in self.get_children():
+            yield from child.walk(f"{path}/{attr}" if path else attr)
 
     def rebuild_child(self, attr: str, *args: Any, **kwargs: Any) -> None:
         """
@@ -185,7 +197,7 @@ class Criterion:
             if criterion.input_is_set(spec.name) or getattr(criterion, spec.name) != spec.default
         ]
 
-        stale = {id(limit) for criterion in old.walk() for limit in criterion.limits.limit_list}
+        stale = {id(limit) for _, criterion in old.walk() for limit in criterion.limits.limit_list}
         report_limits = self.report.limits[self.isomme].limit_list
         report_limits[:] = [limit for limit in report_limits if id(limit) not in stale]
 

@@ -1,0 +1,74 @@
+from __future__ import annotations
+
+import re
+from typing import TYPE_CHECKING
+from collections.abc import Iterator
+
+from pyisomme.report.validate.issue import Issue, IssueSeverity
+
+if TYPE_CHECKING:
+    from pyisomme.report.criterion import Criterion
+
+_INVALID_PATTERN_CHARS = re.compile(r"[^A-Za-z0-9?*]")
+_CODE_LENGTH = 16
+
+
+def _without_classes(pattern: str) -> str:
+    """``pattern`` with every fnmatch character class removed."""
+    return re.sub(r"\[!?\]?[^]]*\]", "", pattern)
+
+
+def _pattern_length(pattern: str) -> int | None:
+    """
+    How many characters a code must have to match ``pattern``.
+
+    ``None`` when ``*`` makes it unbounded — such a pattern is not wrong, it just
+    cannot be checked by length.
+    """
+    length = 0
+    index = 0
+    while index < len(pattern):
+        if pattern[index] == "*":
+            return None
+        if pattern[index] == "[":
+            close = pattern.find("]", index + 2)  # `[]...]` starts with a literal ]
+            if close == -1:  # an unmatched '[' is a literal one to fnmatch
+                index += 1
+                length += 1
+                continue
+            index = close + 1
+        else:
+            index += 1
+        length += 1
+    return length
+
+
+def check_code_pattern(path: str, criterion: Criterion) -> Iterator[Issue]:
+    """
+    Every declared code pattern matches channel codes of the right length.
+
+    ``Limits.find_limits`` runs the patterns through ``fnmatch``, so a character
+    class (``?1CHST000[03]??DSX?``) is one code character, not four. A pattern of
+    the wrong length silently matches nothing at all — the criterion then rates
+    against an empty limit set and blames the channel.
+    """
+    for limit in criterion.limits.limit_list:
+        label = limit.name or type(limit).__name__
+        if not limit.code_patterns:
+            yield Issue("code_pattern", IssueSeverity.WARNING, path,
+                        f"{label} declares no code_patterns, so `Limits.find_limits` can never "
+                        f"reach it — it only works if the criterion reads it out of "
+                        f"`self.limits.limit_list` directly.")
+            continue
+        for pattern in limit.code_patterns:
+            invalid = _INVALID_PATTERN_CHARS.findall(_without_classes(pattern))
+            if invalid:
+                yield Issue("code_pattern", IssueSeverity.ERROR, path,
+                            f"{label}: {pattern!r} contains {sorted(set(invalid))}, which no "
+                            f"channel code can hold (letters, digits and '?' only).")
+                continue
+            length = _pattern_length(pattern)
+            if length is not None and length != _CODE_LENGTH:
+                yield Issue("code_pattern", IssueSeverity.ERROR, path,
+                            f"{label}: {pattern!r} matches codes of {length} characters, "
+                            f"but a channel code is {_CODE_LENGTH}.")

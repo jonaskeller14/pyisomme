@@ -4,13 +4,14 @@ from pyisomme.isomme import Isomme
 from pyisomme.report.page import Page, Page_Cover
 from pyisomme.limits import Limits
 from pyisomme.report.criterion import Criterion
+from pyisomme.report.describe import describe_report
 from pyisomme.report.manual import suggest
+from pyisomme.report.validate import Issue, format_issues, validate_report
 
 from pptx import Presentation
 from pptx.presentation import Presentation as PptxPresentation
 from tqdm.auto import tqdm
 from tqdm.contrib.logging import logging_redirect_tqdm
-import numpy as np
 import time
 import logging
 from pathlib import Path
@@ -142,36 +143,44 @@ class Report(Generic[C]):
         return self
 
     def print_results(self) -> Report[C]:
-        def print_subcriteria_results(criterion: Criterion, intend: str = "\t") -> None:
-            print(f"{intend}{criterion.name if criterion.name is not None else criterion.__class__.__name__}: "
-                  f"Value={criterion.value:.5g} [{criterion.channel.unit if criterion.channel is not None else ''}] "
-                  f"Rating={criterion.rating:.5g}")
-
-            subcriteria = [getattr(criterion, a) for a in dir(criterion) if isinstance(getattr(criterion, a), Criterion)]
-            for subcriterion in subcriteria:
-                print_subcriteria_results(subcriterion, intend=f"{intend}\t")
-
         for isomme in self.isomme_list:
             print(isomme)
-            print_subcriteria_results(self.criterion_overall[isomme])
+            for path, criterion in self.criterion_overall[isomme].walk():
+                intend = "\t" * (path.count("/") + 2 if path else 1)
+                print(f"{intend}{criterion.name if criterion.name is not None else criterion.__class__.__name__}: "
+                      f"Value={criterion.value:.5g} [{criterion.channel.unit if criterion.channel is not None else ''}] "
+                      f"Rating={criterion.rating:.5g}")
         return self
 
-    def validate(self) -> bool:
-        def print_subcriteria_results(criterion: Criterion) -> bool:
-            subcriteria = [getattr(criterion, a) for a in dir(criterion) if isinstance(getattr(criterion, a), Criterion)]
-            for subcriterion in subcriteria:
-                if subcriterion.name == None:
-                    return False
-                result = print_subcriteria_results(subcriterion)
-                if result == False:
-                    return False
-            return True
-        
-        for isomme in self.isomme_list:
-            result = print_subcriteria_results(self.criterion_overall[isomme])
-            if result == False:
-                return False
-        return True
+    def validate(self, errors_only: bool = False) -> list[Issue]:
+        """
+        Check the report's *definition* — see :mod:`pyisomme.report.validate`.
+
+        Needs no measurement data, so it runs on empty ``Isomme`` objects and in
+        CI. Returns the issues found (empty, i.e. falsy, when the report is
+        clean), so ``if report.validate(errors_only=True): ...`` reads as
+        "something is definitely wrong".
+
+        ``errors_only`` drops the convention warnings — the ones a protocol is
+        allowed to violate.
+        """
+        issues = validate_report(self)
+        return [issue for issue in issues if issue.is_error] if errors_only else issues
+
+    def print_validation(self) -> Report[C]:
+        """Print what :meth:`validate` found, errors first."""
+        issues = self.validate()
+        print(format_issues(issues) if issues else f"{self}: no issues found.")
+        return self
+
+    def describe(self) -> str:
+        """
+        The report's definition as Markdown — see :mod:`pyisomme.report.describe`.
+
+        Commit the output next to the report and a moved threshold shows up as a
+        line in a pull request instead of a character in a 1500-line module.
+        """
+        return describe_report(self)
 
     def __repr__(self) -> str:
         return f"Report(title='{self.title}', name='{self.name}')"

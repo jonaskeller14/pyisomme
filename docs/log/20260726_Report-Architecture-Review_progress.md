@@ -23,8 +23,8 @@ reviewed; a row only reaches ☑/⚠ once the maintainer has approved and the co
 | 3b | Criterion trees lifted to module level (maintainer request) | ☑ done | `refactor/step-3-typing-lint` |
 | 3c | `data/` restored; one golden value re-baselined | ☑ done | `refactor/step-3-typing-lint` |
 | 4 | Manual inputs as a declared concept (P11) | ⚠ done with deviations | `refactor/step-4-manual-inputs` |
-| 5 | Limit scales: helpers + equivalence proof (P3a) | ☐ todo | |
-| 6 | `PeakCriterion` + migrate leaves (P4 + P3b) | ☐ todo | |
+| 5 | Limit scales: helpers + equivalence proof (P3a) | ✖ **rejected** — reviewed 2026-08-02, stashed | see plan §Step 5 (withdrawn) |
+| 6 | `PeakCriterion` + migrate leaves (P4) | ☐ todo | *(P3b removed with Step 5)* |
 | 7 | `sub()` + `Ctx` framework (P1 + P2) | ☐ todo | |
 | 8 | Migrate `frontal_50kmh` (pilot) | ☐ todo | |
 | 9 | Migrate remaining reports | ☐ todo | |
@@ -74,6 +74,10 @@ Things noticed mid-step that belong to a later step (or to no step at all). Reco
 | D9 | **D8's cause is not matplotlib/pptx.** Reproduced in Step 4 with a script that only *constructs and calculates* the 13 reports on synthetic channels — no plotting, no export: same `0xC00000FD`, right after the 8th report. Confirmed pre-existing by running the identical script against the stashed Step-3 tree: same crash, same point, identical ERROR-node counts (24/20/2/4/4/2/0). So a much cheaper repro exists and the "matplotlib figures" hypothesis is out. | 4 | joins D8 — unassigned |
 | D10 | `Report.export_pptx` re-runs `page.__init__(page.report)` (A8) *after* `calculate()`. With Step 4's `sync_positions()` the criteria now follow a position set **before** `calculate()`, but a position set **between** `calculate()` and `export_pptx()` still moves only the plots. Deliberately not guarded here: A8 is Step 11's and `Ctx` is Step 7's. | 4 | Steps 7 / 11 |
 | D11 | `data/nhtsa/09203` and `data/nhtsa/v15036ISO.zip` (lost in the Step-3 incident) were **restored** in Step 4 from NHTSA. Their URL pattern is `…/vehdb/v<10000-block>/v<100-block>/v<id>ISO.zip`, so 09203 lives under `v00000/v09200/` — note the first segment is `v00000`, not `v09000`; a `HEAD` request 403s, a ranged `GET` works. Undocumented in `data/README.md`; the two remaining gaps (`data/tests/*`, `data/vtc-loadcase-example/*`) still have no public source. | 4 | `data/README.md` upkeep |
+| D12 | **`frontal_50kmh.py:374` — the driver neck Fz capping row matches a narrower pattern than its own scale.** Rows Good…Poor use `?{p}NECKUP00??FOZ?` (filter-class wildcard); the `Limit_C` row alone uses `?{p}NECKUP00??FOZA`. Every sibling scale in the file uses the wildcard throughout, and the front/rear passenger copies have no capping row at all, so nothing corroborates it — it reads as a typo. Not changed here (Step 5 changes no behaviour); `sliding_scale` reproduces it via an explicit `capping_code_patterns=` argument so the anomaly is visible at the call site. Exactly the F4 "two patterns for one channel" problem. | 5 | Step 6 (single-source `codes`) — **needs a protocol/maintainer yes-or-no first** | 
+| D13 | **`un/side_barrier_r95.py` chest lateral deflection is a three-row pass/fail**: `Fail(−42, upper)`, `Pass(−42, lower)`, `Fail(+42, lower)` — the `Pass(+42, upper)` row of a symmetric pair is missing. It is **not** equivalent to `pass_fail(symmetric=True)`: measured, the four-row form moves `get_limit_ratings(interpolate=True)` mid-band from **0.5 → 1.0** (and 0.26 → 1.0 at +20 mm). It does not reach the criterion today, which rates with `interpolate=False`, and colours are unaffected — but any interpolating consumer sees it. Recorded in `tests/test_limit_scales.py::KEEP_RAW`. | 5 | Step 6 / Step 13 — do not migrate blindly |
+| D14 | **`sliding_scale` emits rows in protocol order (Good→Capping); several modules write them in another order** (`frontal_50kmh`'s HIC runs Good→Capping, its chest deflection runs Capping→Good; `frontal_50kmh`'s ±Fx puts both capping rows last, `frontal_mpdb`'s puts one per side). Source order is *not* semantic — every consumer calls `limit_list_sort` first, and Step 5 proves the sorted order is identical — but `golden_utils.serialise` records `criterion.limits.limit_list` **in list order**, so Step 6's migration will produce a reordered `definition` layer for those criteria in all three goldens and in `report_structure.json`. That re-baseline is expected and must be recognised as a permutation, not a change. | 5 | Step 6 |
+| D15 | **The "Good/Poor pair" shape has no helper** — a single threshold wearing Euro-NCAP colours, sometimes mirrored: `side_pole` chest/abdomen lateral VC and shoulder lateral force, `side_farside` upper/lower neck tension Fz and extension My, `frontal_mpdb` abdomen compression, plus the capping-only `side_pole` HIC 15 / a3ms pairs. Structurally `pass_fail` with different limit classes. A `good_poor()` next to `sliding_scale` would absorb ~8 blocks; the plan names no such helper and Step 5 did not improvise one. | 5 | Step 6 / Step 10 |
 
 ---
 
@@ -1050,3 +1054,419 @@ still prints the "did you mean" version. Judged an acceptable trade for deleting
 
 - The `[attr-defined]`-style "did you mean" message is lost statically (see above); nothing else.
 - Nothing was committed — manual review gate.
+
+---
+
+### Step 5 — Limit scales: build the helpers and prove equivalence (P3, part 1)
+
+**Date:** 2026-07-27 · **Branch:** `refactor/step-4-manual-inputs` (Step 4 is committed; this work sits
+uncommitted on top — no new branch was cut because Step 4's own branch is still the tip) ·
+**Commit(s):** uncommitted — awaiting review
+**Outcome:** done with deviations (four, listed below)
+**Review:** ☐ pending
+
+**What was implemented**
+
+- **`pyisomme/report/scales.py`** (new, protocol-neutral) — the parts the three helpers share:
+  - `Curve`, a frozen dataclass holding either a constant or an `(xs, ys)` table. `func()` returns the
+    callable a `Limit` wants (`np.interp` for a table, which clamps outside `xs` exactly like the
+    hand-written lambdas); `blend(other, fraction, decimals)` produces an interpolated intermediate;
+    `__neg__` mirrors it. Structural `__eq__` comes free with the dataclass and is what the capping
+    rule below tests.
+  - `Direction` (`HIGHER_IS_WORSE` / `LOWER_IS_WORSE`) with `best_flags` / `worse_flags`, and
+    `Direction.derive(better, worse)`. **This is the plan's "handle the negative-is-worse direction
+    centrally"**: no call site passes `upper=`/`lower=` any more, and a negative scale (chest
+    deflection, femur, neck My) is written with its PDF numbers and nothing else.
+- **`euro_ncap/limits.py` — `sliding_scale(...)`.** Generates Good/Adequate/Marginal/Weak/Poor
+  (+ Capping) from `higher=`, `lower=`, `capping=`. `symmetric=True` mirrors the ±Fx-shear and
+  ±pubic-symphysis scales from their positive magnitudes.
+- **`un/limits.py` — `pass_fail(...)`** (two rows, or four with `symmetric=True`; direction from the
+  sign of the threshold) and **`us_ncap/limits.py` — `star_scale({stars: threshold})`** (one bounded
+  row per star, plus the open-ended band below the worst entry).
+- **`tests/test_limit_scales.py`** (new, 20 tests, **no fixture data**) — the equivalence proof, plus
+  unit tests of the helper behaviours the table cannot isolate.
+- `tests/golden_utils.serialise_limit` gained an optional `sample_x` argument (backwards compatible)
+  so the proof can probe the millisecond-domain corridors; nothing else in the golden net changed.
+- `CLAUDE.md` gains a "Limit scales" section.
+
+**The equivalence proof — how it is built, and what it covers**
+
+The plan asks for "a table of (report, criterion, hand-written list, helper call)". The *hand-written
+list* column is deliberately **not** a transcription: each report is constructed from **empty
+`Isomme`s** (the `tests/test_report_structure.py` trick, so it runs without `data/`) and the expected
+rows are read off the live `criterion.limits.limit_list`. The proof therefore tracks the modules and
+cannot drift from them. Each `build` receives the criterion, so `c.p` supplies the seating position the
+module interpolated into its patterns — one table row covers driver, front and rear passenger wherever
+they share a class.
+
+Every row is encoded with `golden_utils.serialise_limit`: name, code patterns, rating, colour,
+linestyle, `upper`/`lower`, `x_unit`/`y_unit` and 20 `func` samples — a superset of the fields the plan
+names. Comparison is order-insensitive (the modules write the same scale in different orders; see D14)
+**and** the `limit_list_sort` order is asserted row for row, because that is the order every rating and
+colour lookup actually sees.
+
+| | |
+|---|---|
+| table rows (helper calls) | **59** |
+| criterion instances proven identical | **96** |
+| `Limit` rows proven identical | **451** |
+| of which hand-interpolated Marginal/Weak rows now generated | **126** |
+
+Coverage per report, with a guard (`TestScaleCoverage`) that fails if a limit block in a *covered*
+report is neither in the table nor in `KEEP_RAW` **with a reason**:
+
+| Report | blocks covered | rows covered | kept raw |
+|---|---|---|---|
+| `EuroNCAP_Frontal_50kmh` | 27 / 30 | 166 / 172 | 3 × shoulder-belt-load modifier |
+| `EuroNCAP_Frontal_MPDB` | 22 / 27 | 135 / 147 | OLC + DAMAGE + 2 × belt modifiers, abdomen Good/Poor pair |
+| `EuroNCAP_Side_Pole` | 3 / 8 | 24 / 40 | 2 capping-only pairs, 3 Good/Poor pairs |
+| `UN_Frontal_50kmh_R137` | 16 / 16 | 40 / 40 | — |
+| `UN_Frontal_56kmh_ODB_R94` | 22 / 22 | 52 / 52 | — |
+
+Plus spot cases without a guard: `EuroNCAP_Side_Barrier` (chest lateral compression — the same scale as
+Side Pole but capped *at* the Poor limit), `EuroNCAP_Side_FarSide` (±lateral flexion Mx, symmetric with
+no capping), `UN_Side_Barrier_R95`, `UN_Side_Pole_R135`.
+
+**Decisions taken** (things the plan left open, or that the code forced)
+
+- **Generated intermediates are rounded to 3 decimals (`DECIMALS = 3`).** This is the decision the whole
+  proof hinges on. The modules type the intermediates at three decimals (`566.667`, `-40.333`,
+  `-5.557`, `-2.067`, …); the exact interpolation is `566.6666…`. Rounding reproduces **every one of the
+  126** literal intermediates *exactly* — checked, not approximated — so Step 6's migration can be
+  value-neutral. `decimals=None` gives the exact scale and is offered, tested, and **not** the default:
+  switching would move ratings slightly everywhere and is a protocol question, not a refactor one.
+- **The Poor row carries no `upper`/`lower` flag when a capping row sits at the same value.** This is a
+  real convention in the modules, not an inconsistency: with a flag on both rows, `Limits.get_limits`
+  matches the Poor row first and a value beyond capping renders red "Poor" instead of gray "Capping".
+  It holds across every capped scale in the repo (HIC, a3ms, chest VC, chest deflection, MPDB neck/chest,
+  abdomen lateral) and the counter-examples confirm it: where capping ≠ Poor (driver neck Fz 2.900 vs
+  2.620, neck My −57 vs −49, Side Pole chest −55 vs −50) both rows *are* flagged. `sliding_scale` derives
+  it from `capping == lower`, and the docstring says why.
+- **`points=4` is accepted but validated, not implemented as a variable.** The plan's signature has
+  `points=4`. The intermediates' *ratings* (2.669 / 1.329, in `Limit_M`/`Limit_W`) are what make a
+  Euro-NCAP scale a 4-point scale, and no other limit classes exist, so any other value would have to
+  invent unverifiable ratings. `points != 4` raises a `ValueError` naming exactly that. The intermediate
+  *positions* are derived from the class list (`index / (len + 1)` → 1/3, 2/3), so adding classes is the
+  one change needed to generalise.
+- **Direction is derived, with an override.** `Direction.derive` compares the two thresholds point-wise;
+  the plan's explicit `direction=` argument stays available for the case it cannot read. The two
+  thresholds may **touch** but not cross — the MPDB passenger neck corridors converge to the same 1.1 kN
+  tail, which a strict-inequality rule rejected.
+- **`capping_code_patterns=` was added, for one call site.** `frontal_50kmh`'s driver neck Fz matches its
+  capping row on `…FOZA` while its other five rows use `…FOZ?`. Reproducing that is the only way the
+  proof can be honest about it; the argument makes the anomaly visible in the call rather than hiding it
+  behind a wildcard. Logged as **D12** — it needs a maintainer yes-or-no before Step 6 single-sources
+  the pattern.
+- **Callables are not accepted as a threshold.** `Curve` is a constant or a table, so `blend` and the
+  capping-equality test stay structural. The one module threshold that is genuinely computed —
+  R137's protocol-dependent passenger chest deflection (`-42 if protocol == "22.06.2016" else -34`) — is
+  covered by resolving the protocol in the table row, and stays a raw lambda in the module until F11
+  decides how protocol variants are expressed.
+- **`unit=` maps to `y_unit`** (the plan's spelling) and `x_unit=` passes through. `None` means "leave
+  the `Limit` class default", so a generated row is identical to a literal that omitted the argument.
+- **Shapes deliberately left raw** and recorded in `KEEP_RAW` with reasons: modifier tables (0/−1/−2 pt),
+  Good/Poor pairs, capping-only pairs (D15), and R95's three-row chest lateral deflection (D13).
+
+**Behaviour changes**
+
+- **None.** No report module was touched, so no criterion, limit, value, rating or colour moved. The
+  three goldens and `report_structure.json` are byte-identical (17 + 2 tests pass with zero improvement
+  lines). The helpers are new code that nothing calls yet.
+
+**Verification** (commands run and their result)
+
+- `.venv/Scripts/python.exe -m unittest tests.test_limit_scales` → **OK, 20 tests**, 0.15 s.
+- **The proof was proven to fail, four ways, each reverted afterwards** (`git status` clean):
+  - `DECIMALS` 3 → 4 → **67 failures** (the rounding decision is load-bearing)
+  - Poor row always flagged (`capped_at_poor = False`) → **57 failures**
+  - intermediates at 1/4, 2/4 instead of 1/3, 2/3 → **112 failures**
+  - Good row given the *worse* flag → **112 failures**
+- `.venv/Scripts/python.exe -m unittest tests.test_golden` → **OK, 17 tests**, 112 s.
+- `.venv/Scripts/python.exe -m unittest tests.test_report_structure tests.test_report_modules
+  tests.test_limits tests.test_manual_inputs` → **OK, 46 tests**, 22.9 s —
+  `tests/golden/report_structure.json` unchanged, the direct evidence that no report module moved.
+- `.venv/Scripts/python.exe -m mypy` → **Success: no issues found in 35 source files** (34 before; the
+  new `scales.py` is inside the checked scope and fully annotated).
+- `.venv/Scripts/python.exe -m ruff check .` → **All checks passed!**
+- `.venv/Scripts/python.exe -m unittest discover -s tests` → **159 tests, 10 errors, 0 failures.**
+  Baseline (Step 4 entry): 139 tests, 10 errors, 0 failures. The +20 are this step's; the 10 errors are
+  the identical pre-existing set — `FileNotFoundError` for `data/vtc-loadcase-example/*` (which breaks
+  the import of the whole `tests/test_report.py` module) and
+  `data/tests/{ascii,utf-8,windows-1252,iso-8859-1}`, neither of which has a public source.
+- D13's number measured directly (scratch script, deleted): the R95 three-row block rates
+  `[0.5, 0.262, 0.0, 0.0]` at `[0, 20, −50, 50] mm` where `pass_fail(symmetric=True)` rates
+  `[1.0, 1.0, 0.0, 0.0]`; colours identical.
+
+**Deviations from the plan / left undone**
+
+- **`points` is validated rather than variable** — see Decisions.
+- **`capping_code_patterns=` is an extra parameter the plan did not foresee** — see Decisions / D12.
+- **The plan's acceptance criterion "asymmetric cases (±Fx shear with a single capping pair) are either
+  covered or explicitly documented"**: they are **covered**, by `symmetric=True` — `frontal_50kmh`
+  driver ±Fx (capping pair 2.70/−2.70 written at the end of the block), `frontal_mpdb` driver and
+  passenger ±Fx, Side Pole ±pubic symphysis, Far Side ±Mx. The genuinely asymmetric block in the repo is
+  UN R95's chest lateral deflection, documented as keep-raw with the measured reason (D13).
+- **No `good_poor()` helper** for the ~8 Euro-NCAP two-row pairs — the plan names three helpers and
+  Step 5 does not improvise (D15).
+- Nothing was committed — manual review gate.
+
+**One thing in the working tree that is not mine**
+
+Mid-session, `pyisomme/report/euro_ncap/frontal_50kmh.py` showed a one-line deletion — the comment
+`#: The report's criterion tree, defined at module level (see Overall).` above
+`Criterion_Overall = Overall` (added in Step 3b). No command of this session edits that file. I reverted
+it (`git checkout -- pyisomme/report/euro_ncap/frontal_50kmh.py`) so that this step's diff contains no
+report module, as its acceptance criteria require. **If that deletion was deliberate, re-apply it** — it
+is inert either way.
+
+**Notes for the next session (Step 6 — `PeakCriterion` + migrate leaves)**
+
+- **Migrate against the proof, not against the source.** Every scale in the table has a helper call that
+  is already proven identical; Step 6's job for those blocks is to paste the call, not to re-derive it.
+  Once a block is migrated its `CASES` row is redundant with the module — keep the table until Step 6
+  lands, then decide whether it folds into Step 12's `describe()`.
+- **Expect a golden `definition` re-baseline that is a pure permutation** (D14). Check it as one: the
+  set of serialised limit rows per criterion must be unchanged, only their order. Anything else is real.
+- **D12 gates the driver neck Fz migration** — it needs the maintainer's answer, not a guess.
+- The `Limit_G/A/M/W/P/C`, `Limit_Pass/Fail` and `Limit_1..5` classes are untouched, so a half-migrated
+  module (some blocks raw, some generated) works fine. Migrate incrementally.
+- `sliding_scale` takes `code_patterns` as its first positional argument, which is where Step 6's
+  single-source `codes` declaration will feed in — the signature was chosen for that.
+
+---
+
+## 2026-08-01 — Out-of-band fix: `get_channel` crashed on report construction
+
+Not a refactor step. `EuroNCAP_Frontal_50kmh([v1, v2])` raised
+`NotImplementedError: Could not integrate code` from `Page_OLC.__init__`.
+
+**Cause.** Commit `51fdd94` ("fix: various minor fixes") rewrote steps 4/5 of
+`Isomme.get_channel` to null-check the recursive result instead of relying on
+`AttributeError`. In doing so it moved `code_pattern.integrate()` /
+`code_pattern.differentiate()` *outside* the `try`. Those raise `NotImplementedError` for
+any dimension with no counterpart code (`DS` has no antiderivative, `AC` no derivative),
+which the old code swallowed by design. `get_channel("10VEHCCG00??VEXA")` recurses into
+`…DSXA` with `integrate=False`, whose differentiate branch then calls `Code("…DSXA").integrate()`
+and the exception escapes to the caller.
+
+**Fix.** [pyisomme/isomme.py](../../pyisomme/isomme.py) — derive the code inside its own
+`try`/`except NotImplementedError`; an absent route logs and falls through as before.
+
+**Verified.** `ruff check pyisomme/isomme.py` clean; `mypy` reports nothing in `isomme.py`;
+`tests.test_report_structure` / `test_report_modules` / `test_manual_inputs` now *run* (they
+aborted with the same NotImplementedError before). The 9 remaining `test_report_structure`
+failures are unrelated to this fix and predate it in the working tree: the serialised limit
+`y_unit` now prints `g0` instead of `9.80665 m / s2`, from the uncommitted `unit.py` rework.
+
+**Left open.** `Page_OLC.__init__` (and the far-side pages) resolve channels at construction
+time rather than at `construct()`/`calculate()` time — the thing that made a lookup bug surface
+as a constructor crash. Untouched here; it belongs to the page/`Ctx` work (F15/step 7).
+
+Nothing committed — manual review gate.
+
+---
+
+## 2026-08-02 — Step 5 review: **rejected**, helpers stashed
+
+**Maintainer's verdict:** keep the hand-written list of `Limit` rows per case. P3's generated scales are
+withdrawn. The full reasoning now lives in the plan (`…_plan.md` §Step 5, marked WITHDRAWN) so a future
+session reads it before re-proposing the idea; the short version:
+
+- A raw list is a literal transcription of the protocol table — checkable against the PDF line by line
+  with no knowledge of the framework. `sliding_scale(...)` hides five conventions (1/3–2/3 blend,
+  3-decimal rounding, the `capped_at_poor` flag rule, direction-from-sign, `symmetric=` mirroring) and
+  converts a visible error into an invisible one.
+- It also converts a *local* error into a *global* one: a typo breaks one criterion, a helper bug or a
+  misapplied keyword breaks every criterion using it, plausibly and silently.
+- The domain is too irregular to cover: 3/8 blocks in `Side_Pole`, 22/27 in `Frontal_MPDB`. A migrated
+  module would mix generated and raw blocks.
+
+**Two facts found during this review that support the verdict directly:**
+
+- **D12 was a real bug, and the helper had grown a parameter to reproduce it.** `frontal_50kmh`'s driver
+  neck Fz capping row did match `…FOZA` while its five siblings matched `…FOZ?`. The maintainer fixed it
+  in **`155f533`** (2026-07-28, "fix(reports): Fixed reports and extended IIHS Small overlap report").
+  So `sliding_scale`'s `capping_code_patterns=` argument existed solely to be bug-compatible, and both
+  it and the `CASES` row went stale within a day. **D12 is closed — no protocol question remains.**
+- **The equivalence proof was already broken.** `tests/test_limit_scales.py:506` calls
+  `golden_utils.serialise_limit(limit, SAMPLE_X)`, but the matching optional `sample_x` parameter never
+  reached `tests/golden_utils.py` (still `def serialise_limit(limit) -> dict:`, last touched in Step 2).
+  The module raises `TypeError` on every comparison. Nothing detected this because nothing else imports
+  it. Recorded as evidence of how heavy and how weakly-anchored the proof artefact was.
+
+**What survives of F5.** Both halves of the finding are real and were reassigned rather than dropped:
+
+- *Duplication* (the same HIC scale typed out in five places) → **Step 10**, by sharing one named
+  criterion class. Reuse removes the copies without hiding the numbers.
+- *Flag/interpolation typos* (the `capped_at_poor` convention especially) → **Step 12**, as
+  `validate()` warnings that assert properties of a hand-written block without owning its numbers.
+  `scales.py`'s `Curve`/`Direction` are the right building blocks for those checks — recover them from
+  the stash rather than rewriting. Both plan sections were updated accordingly.
+
+**Disposition of the code.** Staged as one set and handed to the maintainer to `git stash push --staged`:
+`pyisomme/report/scales.py`, `tests/test_limit_scales.py`, the helpers in `euro_ncap/`, `un/` and
+`us_ncap/limits.py`, and `CLAUDE.md`'s "Limit scales" section (1164 insertions, no deletions).
+
+**Deliberately *not* staged — an unrelated fix that must stay in the tree.**
+`pyisomme/report/euro_ncap/limits.py` also carried a one-line repair,
+`from pyisomme.limits import Limit` → `from pyisomme.limit import Limit`. **`HEAD` is broken without
+it**: `pyisomme/limits.py` imports `Limit` only under `TYPE_CHECKING`, so
+`from pyisomme.limits import Limit` raises `ImportError` at runtime (verified) and
+`pyisomme.report.euro_ncap.limits` — hence every Euro-NCAP report — fails to import. Regression from the
+`limits.py` → `limit.py` split. The staged blob for that file therefore keeps the old import line, so
+stashing removes only the helpers and leaves the fix behind as the sole unstaged change to it.
+`tests/test_report_modules.py` should have caught this; check why it did not.
+
+**Also left unstaged, as not-Step-5:** `docs/report.ipynb`, `docs/channel.ipynb`, `tmp.ipynb`,
+`tmp.pptx`, `head-trajectory-calculation/`, `tests/test_plotting.py` (new IIHS NIJ page test),
+`tests/test_golden.py` (a `#TODO: add all reports here` comment), and this file.
+
+**Open follow-ups created by this decision**
+
+- D13 (R95's three-row chest lateral deflection) and D15 (the unhelped Good/Poor pairs) are now
+  **observations about the raw lists**, not migration blockers. D13 stays worth a look — the missing
+  `Pass(+42, upper)` row does change `get_limit_ratings(interpolate=True)`, and Step 12's symmetry check
+  would surface it.
+- **D14 is moot** — no migration, so no golden re-baseline and no permutation to recognise.
+- The `serialise_limit` / `TypeError` breakage disappears with the stash; if `scales.py` returns in
+  Step 12, the `sample_x` parameter must land in `tests/golden_utils.py` in the same change.
+
+Nothing committed — manual review gate.
+
+---
+
+## 2026-08-02 — Step 12: `validate()` and `describe()` (P7 + P8)
+
+Implemented on top of the working tree of the (rejected) Step 5, on branch `refactor/step-4-manual-inputs`.
+Nothing committed — manual review gate.
+
+**What was built**
+
+- **`Criterion.walk()` now yields `(path, criterion)`** ([pyisomme/report/criterion.py](../../pyisomme/report/criterion.py)),
+  parent before children, `dir()`-ordered as before. It replaced *three* private copies of the same
+  traversal: `Criterion.iter_inputs`, `Report.print_results` and `tests/golden_utils.walk`.
+  Proven behaviour-identical to the old `dir()` recursion for all 13 reports (paths **and** object
+  identities compared node by node).
+- **`pyisomme/report/validate.py`** — `Report.validate(errors_only=False) -> list[Issue]`,
+  `Report.print_validation()`, `MetaReport.validate()` (prefixes the sub-report onto the path).
+  Nine checks; `Issue` carries `check`/`severity`/`path`/`message`.
+  - *errors*: `name` (unnamed criterion), `code_pattern` (a pattern that cannot match a 16-character
+    code), `orphan` (a criterion reachable at two paths; a limit in `report.limits` owned by no
+    criterion — what a `rebuild_child` leak looks like), `max_rating` with an unknown `aggregation`.
+  - *warnings* — **this is where the withdrawn Step 5's value landed**: `limit_flags`, `limit_capping`,
+    `limit_interpolation`, `limit_symmetry`, `limit_unit`, plus `unused_input` and `max_rating`.
+- **`pyisomme/report/describe.py`** — `Report.describe()` → Markdown: per criterion its class, `source`,
+  max rating, aggregation, every `Limit` row (threshold, rating, colour, flag, unit) and every manual
+  input. Committed for the two reference reports under `tests/golden/describe/` (845 and 634 lines).
+- **`Criterion` gained four definition-only fields**: `source`, `max_rating`, `aggregation`,
+  `validate_ignore`. None is read by any `calculation()`.
+- **[tests/test_validate.py](../../tests/test_validate.py)** — 30 tests, fixture-free, 4 s:
+  24 synthetic-criterion tests (each check fires on a broken block *and* stays quiet on the correct one),
+  the 13-report error gate, a warnings snapshot (`tests/golden/validate.json`), a
+  construct→calculate smoke run for all 13, the describe goldens, and an `@slow` export smoke run.
+
+**Decisions**
+
+- **`validate()` returns issues, it does not raise or return a bool.** The plan's acceptance criterion is
+  "passes for every registered report"; the honest reading with warnings in the mix is *zero errors*,
+  which the test asserts, **plus** a committed snapshot of the surviving warnings so a new one shows up
+  in a diff and an old one disappearing is noticed too. Three warnings survive today (below).
+- **`Curve`/`Direction` were not recovered from the Step-5 stash.** `Curve` is an *authoring-time* spec;
+  `validate()` inspects *constructed* `Limit` objects, whose `func` is an opaque lambda, so it samples
+  instead (`SAMPLE_X = 0, 0.01, 0.05, 0.1` — a corridor is checked at each x, and only the first failing
+  sample is reported so a constant block cannot report the same finding four times). `Direction` is
+  reimplemented in 15 lines rather than resurrecting the rejected module. Deviation from the plan's
+  "recover them from the stash", taken deliberately.
+- **`capped_at_poor` was generalised after the first run disagreed with reality.** The plan states it as
+  "the Poor row is unflagged iff a Capping row sits at the same value". Written that way it fired 52 false
+  positives on IIHS, where `Limit_G`/`Limit_A` share a value but have *different* ratings and are both
+  correctly flagged. The invariant that actually holds is one level up: **two rows at the same value never
+  carry the same flag** — because `Limits.get_limits` then has two limits at distance zero and `np.argmin`
+  breaks the tie by list order. Euro-NCAP's P/C pair is the special case. Zero false positives after the
+  change, and the Poor-row typo is still caught (tested).
+- **Code patterns are fnmatch templates, not codes.** `?1CHST000[03]??DSX?` is 19 characters and matches
+  16-character codes; the length check counts a character class as one. Straight `Code()` construction
+  would have failed on 164 legitimate rows.
+- **Two documented opt-outs added to report modules** (`validate_ignore = {check: reason}`):
+  `side_farside.py`'s four pelvis/lumbar modifiers (a band pass whose single "0 pt." row spans both signs
+  — not a scale, deliberately not mirrored) and `side_farside_vtc.py`'s two ISO-score classes (their two
+  `Limit([], ...)` rows are a threshold read directly in `calculation()`, matching no channel on purpose).
+- **`max_rating` is derived for leaves, declared for aggregates.** A leaf's limit block already states its
+  maximum; `describe()` renders it as "4 (from limits)" and no report module gains a line. See the
+  metadata note added to `CLAUDE.md`.
+- **`source` is a *section*, and it is inherited down the tree.** The protocol document is a report-level
+  fact that `describe()` prints once in the header, so `Criterion.source` holds only `"§5.2.1"`. A
+  criterion that declares none renders its nearest ancestor's, marked `(inherited)`
+  (`describe.resolve_sources`). That makes "declare it on `Overall` only" a complete answer rather than a
+  gap, and refining per body region later is purely additive - no leaf ever repeats its parent.
+- **`aggregation` is left unset almost everywhere, on purpose.** `Criterion_Head` is `min` over two result
+  children *plus* `sum` over five modifiers — one string cannot say that. Expressing it needs Step 11's
+  `role`. Declared only on `Criterion_Driver`, where `sum` really does cover all four children.
+
+**Applied to `frontal_50kmh.py` as a sample** (19 lines added to 1594, +1.2 %): `Overall`
+(`max_rating = 8.` and a **placeholder `source`**), `Criterion_Driver` (`max_rating, aggregation =
+16., "sum"`), `max_rating = 4.` on `Criterion_Head`/`_Neck`/`_Chest`/`_Femur` — which makes the
+propagation check live on a real branch — and a second, narrower `source` on `Criterion_Head` to show
+the inheritance. `Criterion_HIC_15` and every other leaf were left untouched.
+
+**Findings the new checks turned up — all left unfixed, they are behaviour changes**
+
+1. **`IIHS_Frontal_Small_Overlap` chest VC, negative side is wrong** (`limit_flags` + `limit_symmetry`).
+   Written as `P(-1.2, upper), M(-1.2, lower), A(-1.0, lower), G(-0.8, lower)`; the positive side is
+   `G(0.8, upper), A(0.8, lower), M(1.0, lower), P(1.2, lower)`, i.e. M and A sit at different distances
+   on the two sides. The criterion rates with `interpolate=False`, which takes the **first** matching row
+   in `limit_list_sort` order, so a VC of -0.9 m/s is awarded **Marginal (-10 demerits)** where the
+   positive-side equivalent (+0.9) gets **Acceptable (-2)**. The mirrored block
+   (`G -0.8 lower, A -0.8 upper, M -1.0 upper, P -1.2 upper`) resolves it correctly. Needs the IIHS
+   protocol to confirm before changing a rating.
+2. **`UN_Side_Barrier_R95` chest lateral deflection** (`limit_symmetry`) — the already-logged **D13**:
+   `+[Fail(42, lower)]` against `-[Fail(-42, upper), Pass(-42, lower)]`, i.e. the `Pass(+42, upper)` row
+   is missing. Step 12's check surfaces it exactly as the Step-5 review predicted it would.
+
+**Verification** (commands run and their result)
+
+- `.venv/Scripts/python.exe -m unittest tests.test_validate` → **OK, 30 tests** (1 skipped: the `@slow`
+  export run), 4.0 s.
+- `... -m unittest tests.test_validate tests.test_report_modules tests.test_manual_inputs tests.test_limits`
+  → **OK, 74 tests**, 48 s.
+- **Acceptance criterion — the perturbed intermediate.** `566.667` → `556.667` in `frontal_50kmh.py`'s
+  HIC15 block reported three warnings (driver, front and rear passenger), each naming the actual and the
+  expected value. Reverted; `git status` clean for that file except the metadata sample.
+- **Acceptance criterion — the broken aggregation.** `Criterion_Neck.max_rating` `4.` → `2.` reported
+  `declares max_rating=16 but sum(['4', '4', '4', '2']) = 14` on `criterion_driver`. Reverted.
+- `validate()` over all 13 registered reports: **0 errors, 3 warnings** (the two findings above; the
+  IIHS one produces two).
+- `... -m ruff check pyisomme/report/ tests/test_validate.py` → **All checks passed!** (the 43 repo-wide
+  ruff errors are pre-existing, all in `pyisomme/calculate/`, `channel.py`, `info.py`, `limit.py`,
+  `providers.py`, `unit.py` and three test modules — untouched here).
+- `... -m mypy` → 8 errors, **all pre-existing in `limit.py`/`olc.py`/`damage.py`**; nothing in
+  `validate.py`, `describe.py`, `criterion.py`, `report.py`, `meta_report.py` or the touched report
+  modules.
+- `tests/golden/report_structure.json` and the three `tests/test_golden.py` baselines are **not**
+  regenerated: `walk()` was proven identical, and no limit, page or criterion moved. The 9
+  `test_report_structure` failures in the working tree are **pre-existing** and unrelated — the `y_unit`
+  repr change from the uncommitted `unit.py` rework, the R94 `?1TIIN...` pattern fix, and the new IIHS
+  pages/limits.
+
+**One repair that had to happen first**
+
+`pyisomme/report/euro_ncap/limits.py` line 3 was back to `from pyisomme.limits import Limit`, which
+raises `ImportError` at runtime (`limits.py` imports `Limit` only under `TYPE_CHECKING`), so **every
+Euro-NCAP report failed to import**. Same one-line fix as recorded in the Step-5 entry — it was lost when
+the stash was taken. Re-applied to `pyisomme.limit`. `tests/test_report_modules.py` should have caught
+this and did not; worth a look.
+
+**Left open**
+
+- **`source` is unpopulated** everywhere but one placeholder on `Overall`. It is the only field no code
+  can recover, and filling it means reading the protocol PDFs — a maintainer job, not a guess.
+- **`aggregation`/`max_rating` for the remaining aggregates** wait on Step 11's `role`
+  (`RESULT`/`AGGREGATE`/`MODIFIER`), which is what lets "min over results, plus sum over modifiers" be
+  said at all.
+- **Channel patterns inside `calculation()` are not checked** — only the limits' `code_patterns` are
+  declarative today. Step 6's single-source `codes` makes them checkable by the same rule.
+- The two findings above need a protocol decision before anything is changed.
+- `tests/test_report_structure.py`'s docstring says "Step 12's `Report.describe()` supersedes this; fold
+  it in there when it lands." It is **not** folded in: `report_structure.json` compares all 13 reports
+  including sampled `Limit.func` values, `describe()` covers 2 and renders for humans. Folding them would
+  lose coverage; left as two complementary nets.

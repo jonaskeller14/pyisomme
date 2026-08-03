@@ -7,7 +7,7 @@ from pyisomme.report.page import Page_Cover, Page_Criterion_Values_Chart, Page_C
     Page_Criterion_Rating_Table, Page_Plot_nxn
 from pyisomme.report.report import Report
 from pyisomme.report.euro_ncap.frontal_mpdb import EuroNCAP_Frontal_MPDB
-from pyisomme.unit import g0
+from pyisomme.unit import Unit, g0
 from pyisomme.report.iihs.limits import Limit_G, Limit_A, Limit_M, Limit_P
 
 import logging
@@ -281,14 +281,14 @@ class Overall(Criterion):
                     self.p = p
 
                     self.extend_limit_list([
-                        Limit_G([f"?{self.p}CHST003C??ACR?"], func=lambda x: 60, y_unit=g0, upper=True, rating=0),
-                        Limit_A([f"?{self.p}CHST003C??ACR?"], func=lambda x: 60, y_unit=g0, lower=True, rating=-2),
-                        Limit_M([f"?{self.p}CHST003C??ACR?"], func=lambda x: 75, y_unit=g0, lower=True, rating=-10),
-                        Limit_P([f"?{self.p}CHST003C??ACR?"], func=lambda x: 90, y_unit=g0, lower=True, rating=-20),
+                        Limit_G([f"?{self.p}CHST003C??ACR?"], func=lambda x: 60, y_unit=Unit(g0), upper=True, rating=0),
+                        Limit_A([f"?{self.p}CHST003C??ACR?"], func=lambda x: 60, y_unit=Unit(g0), lower=True, rating=-2),
+                        Limit_M([f"?{self.p}CHST003C??ACR?"], func=lambda x: 75, y_unit=Unit(g0), lower=True, rating=-10),
+                        Limit_P([f"?{self.p}CHST003C??ACR?"], func=lambda x: 90, y_unit=Unit(g0), lower=True, rating=-20),
                     ])
 
                 def calculation(self) -> None:
-                    self.channel = self.require_channel(f"?{self.p}CHST003C??ACRX").convert_unit(g0)
+                    self.channel = self.require_channel(f"?{self.p}CHST003C??ACRX").convert_unit(Unit(g0))
                     self.value = self.channel.get_data()[0]
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                     self.color = self.limits.get_limit_min_color(self.channel)
@@ -494,14 +494,14 @@ class Overall(Criterion):
                     self.p = p
 
                     self.extend_limit_list([
-                        Limit_G([f"?{self.p}FOOT0000??AC??", f"?{self.p}FOOTLE00??AC??", f"?{self.p}FOOTRI00??AC??"], func=lambda x: 150, y_unit=g0, upper=True, rating=0),
-                        Limit_A([f"?{self.p}FOOT0000??AC??", f"?{self.p}FOOTLE00??AC??", f"?{self.p}FOOTRI00??AC??"], func=lambda x: 150, y_unit=g0, lower=True, rating=-1),
-                        Limit_M([f"?{self.p}FOOT0000??AC??", f"?{self.p}FOOTLE00??AC??", f"?{self.p}FOOTRI00??AC??"], func=lambda x: 200, y_unit=g0, lower=True, rating=-2),
-                        Limit_P([f"?{self.p}FOOT0000??AC??", f"?{self.p}FOOTLE00??AC??", f"?{self.p}FOOTRI00??AC??"], func=lambda x: 260, y_unit=g0, lower=True, rating=-4),
+                        Limit_G([f"?{self.p}FOOT0000??AC??", f"?{self.p}FOOTLE00??AC??", f"?{self.p}FOOTRI00??AC??"], func=lambda x: 150, y_unit=Unit(g0), upper=True, rating=0),
+                        Limit_A([f"?{self.p}FOOT0000??AC??", f"?{self.p}FOOTLE00??AC??", f"?{self.p}FOOTRI00??AC??"], func=lambda x: 150, y_unit=Unit(g0), lower=True, rating=-1),
+                        Limit_M([f"?{self.p}FOOT0000??AC??", f"?{self.p}FOOTLE00??AC??", f"?{self.p}FOOTRI00??AC??"], func=lambda x: 200, y_unit=Unit(g0), lower=True, rating=-2),
+                        Limit_P([f"?{self.p}FOOT0000??AC??", f"?{self.p}FOOTLE00??AC??", f"?{self.p}FOOTRI00??AC??"], func=lambda x: 260, y_unit=Unit(g0), lower=True, rating=-4),
                     ])
 
                 def calculation(self) -> None:
-                    self.channel = self.require_channel(f"?{self.p}FOOT0000??ACRA").convert_unit(g0)
+                    self.channel = self.require_channel(f"?{self.p}FOOT0000??ACRA").convert_unit(Unit(g0))
                     self.value = np.max(self.channel.get_data())
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                     self.color = self.limits.get_limit_min_color(self.channel)
@@ -642,8 +642,8 @@ class IIHS_Frontal_Small_Overlap(Report[Overall]):
         sharey: bool = False
 
         def __init__(self, report: Report) -> None:
-            super().__init__(report, 
-                             limits=report.criterion_overall[report.isomme_list[0]].criterion_driver.criterion_head_neck.criterion_fz_tension.limits + 
+            super().__init__(report,
+                             limits=report.criterion_overall[report.isomme_list[0]].criterion_driver.criterion_head_neck.criterion_fz_tension.limits +
                                     report.criterion_overall[report.isomme_list[0]].criterion_driver.criterion_head_neck.criterion_fz_compression.limits)
             self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p_driver}NECKUP00??FOZA"]] for isomme in self.report.isomme_list}
 
@@ -656,7 +656,7 @@ class IIHS_Frontal_Small_Overlap(Report[Overall]):
         sharey: bool = False
 
         def __init__(self, report: Report) -> None:
-            super().__init__(report, limits=report.criterion_overall[report.isomme_list[0]].criterion_driver.criterion_head_neck.criterion_fz_tension_corridor.limits + 
+            super().__init__(report, limits=report.criterion_overall[report.isomme_list[0]].criterion_driver.criterion_head_neck.criterion_fz_tension_corridor.limits +
                                             report.criterion_overall[report.isomme_list[0]].criterion_driver.criterion_head_neck.criterion_fz_compression_corridor.limits +
                                             report.criterion_overall[report.isomme_list[0]].criterion_driver.criterion_head_neck.criterion_fx_shear_corridor.limits)
             self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p_driver}NECKUP00??FOZA"],
@@ -678,7 +678,7 @@ class IIHS_Frontal_Small_Overlap(Report[Overall]):
                                       [f"?{self.report.criterion_overall[isomme].p_driver}TIINRUTO??000B"],
                                       [f"?{self.report.criterion_overall[isomme].p_driver}TIINLLTO??000B"],
                                       [f"?{self.report.criterion_overall[isomme].p_driver}TIINRLTO??000B"]] for isomme in self.report.isomme_list}
-    
+
     class Page_Driver_Tibia_Compression(EuroNCAP_Frontal_MPDB.Page_Driver_Tibia_Compression):
         pass
 

@@ -62,7 +62,7 @@ class TestReport(unittest.TestCase):
                 channel.set_code(fine_location_3="H3")
 
         report = EuroNCAP_Frontal_50kmh([self.v1, self.v2])
-        self.assertTrue(report.validate())
+        self.assertEqual(report.validate(errors_only=True), [])
         report.calculate()
         report.export_pptx("out/EuroNCAP_Frontal_50kmh.pptx")
         report.print_results()
@@ -73,7 +73,7 @@ class TestReport(unittest.TestCase):
                 channel.set_code(fine_location_3="TH")
 
         report = EuroNCAP_Frontal_MPDB([self.v3, self.v2, self.v1])
-        self.assertTrue(report.validate())
+        self.assertEqual(report.validate(errors_only=True), [])
         report.calculate()
         report.export_pptx("out/EuroNCAP_Frontal_MPDB.pptx")
         report.print_results()
@@ -91,7 +91,7 @@ class TestReport(unittest.TestCase):
         ])
 
         report = EuroNCAP_Side_Barrier([self.v1])
-        self.assertTrue(report.validate())
+        self.assertEqual(report.validate(errors_only=True), [])
         report.calculate()
         report.export_pptx("out/EuroNCAP_Side_Barrier.pptx")
         report.print_results()
@@ -109,7 +109,7 @@ class TestReport(unittest.TestCase):
         ])
 
         report = EuroNCAP_Side_Pole([self.v1])
-        self.assertTrue(report.validate())
+        self.assertEqual(report.validate(errors_only=True), [])
         report.calculate()
         report.export_pptx("out/EuroNCAP_Side_Pole.pptx")
         report.print_results()
@@ -120,7 +120,7 @@ class TestReport(unittest.TestCase):
                 channel.set_code(fine_location_3="WS")
 
         report = EuroNCAP_Side_FarSide([self.v1])
-        self.assertTrue(report.validate())
+        self.assertEqual(report.validate(errors_only=True), [])
         report.calculate()
         report.export_pptx("out/EuroNCAP_Side_FarSide.pptx")
         report.print_results()
@@ -143,7 +143,7 @@ class TestReport(unittest.TestCase):
     @slow
     def test_IIHS_Frontal_Small_Overlap(self):
         report = IIHS_Frontal_Small_Overlap([self.v1, self.v2, self.v3])
-        self.assertTrue(report.validate())
+        self.assertEqual(report.validate(errors_only=True), [])
         report.calculate()
         report.export_pptx("out/IIHS_Frontal_Small_Overlap.pptx")
         report.print_results()
@@ -153,7 +153,7 @@ class TestReport(unittest.TestCase):
             channel.set_code(test_object="1")
 
         report = Correlation([self.v1, self.v2, self.v3])
-        self.assertTrue(report.validate())
+        self.assertEqual(report.validate(errors_only=True), [])
         report.calculate()
         report.export_pptx("out/Correlation.pptx")
         report.print_results()
@@ -166,7 +166,7 @@ class TestReport(unittest.TestCase):
             side_barrier=[[self.v1]],
             side_farside=[[self.v1]],
         )
-        self.assertTrue(report.validate())
+        self.assertEqual(report.validate(errors_only=True), [])
         report.calculate()
         report.export_pptx("out/EuroNCAP.pptx")
         report.print_results()
@@ -180,7 +180,7 @@ class TestReport(unittest.TestCase):
                 channel.set_code(fine_location_3="HF")
 
         report = UN_Frontal_50kmh_R137([self.v1, self.v2])
-        self.assertTrue(report.validate())
+        self.assertEqual(report.validate(errors_only=True), [])
         report.calculate()
         report.export_pptx("out/UN_Frontal_50kmh_R137.pptx")
         report.print_results()
@@ -195,7 +195,7 @@ class TestReport(unittest.TestCase):
         self.v1.offset_x(-0.5)
 
         report = UN_Frontal_56kmh_ODB_R94([self.v1, self.v2])
-        self.assertTrue(report.validate())
+        self.assertEqual(report.validate(errors_only=True), [])
         report.calculate()
         report.export_pptx("out/UN_Frontal_56kmh_ODB_R94.pptx")
         report.print_results()
@@ -214,7 +214,7 @@ class TestReport(unittest.TestCase):
         ])
 
         report = UN_Side_Pole_R135([self.v1])
-        self.assertTrue(report.validate())
+        self.assertEqual(report.validate(errors_only=True), [])
         report.calculate()
         report.export_pptx("out/UN_Side_Pole_R135.pptx")
         report.print_results()
@@ -228,7 +228,7 @@ class TestReport(unittest.TestCase):
             channel.scale_y(6e-5)
 
         report = UN_Side_Barrier_R95([self.v4])
-        self.assertTrue(report.validate())
+        self.assertEqual(report.validate(errors_only=True), [])
         report.calculate()
         report.export_pptx("out/UN_Side_Barrier_R95.pptx")
         report.print_results()
