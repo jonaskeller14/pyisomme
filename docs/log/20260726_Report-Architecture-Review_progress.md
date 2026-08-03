@@ -1470,3 +1470,120 @@ this and did not; worth a look.
   it in there when it lands." It is **not** folded in: `report_structure.json` compares all 13 reports
   including sampled `Limit.func` values, `describe()` covers 2 and renders for humans. Folding them would
   lose coverage; left as two complementary nets.
+
+---
+
+## 2026-08-03 — Step 12 follow-up: `validate.py` split into a package, `describe` tests split out
+
+Continues the same working tree on `refactor/step-4-manual-inputs`. Nothing committed — manual review gate.
+The maintainer had started moving `pyisomme/report/validate.py` into a `validate/` package (one file per
+check) and left it mid-flight: the check modules imported each other by bare module name
+(`from issue import Issue`), every shared helper was still only in `validate.py`, so **no check module
+imported at all** on its own. This session finished that move. No behaviour change was intended and none
+was measured — `tests/golden/validate.json` and both `tests/golden/describe/*.md` regenerate byte-identical.
+
+**The package** ([pyisomme/report/validate/](../../pyisomme/report/validate/))
+
+| file | holds |
+|---|---|
+| `issue.py` | `Issue`, `IssueSeverity`, `format_issues` |
+| `util.py` | **new** — everything the checks share: `SAMPLE_X`, `Direction` (now carrying `sign`), `Row`, `blocks`, `sample`, `sides`, `direction_of`, `flag`, `close`, `by_value`, `superseded`, `block_label`, `rows_text`, `per_side` |
+| `check_<name>.py` × 9 | one check each; `check_max_rating.py` also owns `AGGREGATIONS` and `derived_max_rating`, `check_limit_interpolation.py` owns `DECIMALS`/`GOOD`/`MARGINAL`/`WEAK`/`POOR`, `check_code_pattern.py` owns the pattern regex and `_CODE_LENGTH` |
+| `validate.py` | the `CHECKS` registry and the three entry points (`validate_criterion`, `validate_tree`, `validate_report`) — nothing else |
+| `__init__.py` | the public surface, re-exported with `__all__` |
+
+- The private `_`-prefixed helpers lost their underscore when they moved to `util.py` — they are now the
+  package's internal vocabulary, spoken across nine modules, not one file's locals. `_sign(direction)`
+  became the `Direction.sign` property, next to `best_flag`/`worse_flag` which it belongs with.
+- Every module imports absolutely (`from pyisomme.report.validate.util import ...`), matching the rest of
+  the repo. Every module gained `from __future__ import annotations` — `check_max_rating.py`'s
+  `-> float | None` would otherwise be a runtime `TypeError` on the 3.9 target.
+- **Consumers now import the package, not a module inside it**: `report.py`, `meta_report.py`,
+  `describe.py` and `tests/test_validate.py` went from `pyisomme.report.validate.validate import …` to
+  `pyisomme.report.validate import …`.
+- `IssueSeverity` regained its `str` mixin (lost in the split) and an explicit `__str__` returning the
+  value. Without the mixin `TestMaxRating.test_unknown_aggregation`'s `severity == "error"` is false;
+  without the explicit `__str__` the rendered `[warning]` in `tests/golden/validate.json` becomes
+  `[IssueSeverity.WARNING]` on 3.11+, where mixin-enum formatting changed. Both are now version-independent.
+- `pyisomme/report/validate/` is a new subpackage under `pyisomme/report/`, so `tests/test_report_modules.py`
+  walks it: all four of its guards pass, and `[tool.setuptools.packages.find] include = ["pyisomme*"]`
+  already ships it.
+
+**`describe()` tests moved out** — [tests/test_describe.py](../../tests/test_describe.py)
+
+`TestDescribe`, `DESCRIBED`, `DESCRIBE_DIR` and `describe_path` left `tests/test_validate.py`; each module
+now regenerates its own baseline (`-m tests.test_validate --regen` → `validate.json`,
+`-m tests.test_describe --regen` → `describe/*.md`). `test_describe.py` imports `build`/`leaf`/`attach`
+from `test_validate.py` rather than growing a third copy of them. CLAUDE.md updated for both the package
+layout and the two regen commands.
+
+**A real defect this surfaced: `tests/test_report.py` still used the old `validate()` contract**
+
+Step 12 changed `Report.validate()` from `-> bool` (HEAD's version, which only checked that every criterion
+is named) to `-> list[Issue]`, empty when clean. The 12 call sites in `tests/test_report.py` were left as
+`self.assertTrue(report.validate())`, which now asserts the issue list is **non-empty** — so every clean
+report *failed*: `AssertionError: [] is not true`. That is 8 of the 20 failures the working tree had.
+Rewritten to `self.assertEqual(report.validate(errors_only=True), [])`, which is the new contract's
+"nothing is definitely wrong" and tolerates the 3 known convention warnings.
+
+**Verification** (commands run and their result)
+
+- `.venv/Scripts/python.exe -m unittest tests.test_validate tests.test_describe` → **OK, 32 tests**
+  (1 skipped: the `@slow` export run), 8.3 s.
+- `... -m unittest tests.test_validate tests.test_describe tests.test_report_modules tests.test_manual_inputs`
+  → **OK, 74 tests**, 26 s.
+- `... -m unittest tests.test_report.TestReport.test_Correlation tests.test_report.TestReport.test_UN_Side_Pole_R135`
+  → **OK, 2 tests** (both failed on the stale `assertTrue` before).
+- `... -m tests.test_validate --regen` → 3 warnings over 13 reports; `... -m tests.test_describe --regen`
+  → 845 and 634 lines. **`git diff tests/golden/` empty** — the split changed no finding and no dump.
+- `... -m ruff check pyisomme/report tests/test_validate.py tests/test_describe.py tests/test_report.py tests/golden_utils.py`
+  → **All checks passed!**
+- `... -m mypy` (configured scope) → **Success: no issues found in 49 source files**.
+- `... -m mypy tests/test_validate.py tests/test_describe.py` (outside the configured scope, checked on
+  request) → **Success: no issues found in 2 source files**.
+
+**Two config/annotation repairs needed to get there**
+
+- `[tool.mypy]`'s `follow_imports = "silent"` override list had gone stale: `pyisomme.limit` (split out of
+  `limits.py`) and the `pyisomme.calculate` **package**'s submodules were not covered, so 8 pre-existing
+  core-module errors were failing the type check. Added `"pyisomme.limit"` and `"pyisomme.calculate.*"`.
+  This changes no code — it restores the documented intent that only `pyisomme/report/` is enforced.
+- To make the two test modules type-clean: `leaf()`'s dynamic class is annotated `type[Criterion]`,
+  `sliding_scale()` builds its flag kwargs as `dict[str, Any]`, and dynamic subcriterion assignment goes
+  through a new `attach(parent, name, child)` helper. `attach` uses `setattr`, which a type checker does
+  not route through `Criterion.__setattr__` — whose value is typed `Undeclared` **on purpose** (step 4) to
+  reject a mistyped input name. A subcriterion is the one thing that annotation cannot express, so the
+  helper documents it once instead of scattering `# type: ignore` over the tests.
+- `tests/golden_utils.py` gained two annotations (`serialise_limit(limit: Limit)`, `_read(...) -> Isomme`);
+  it is imported by both test modules, so its untyped defs surfaced there.
+
+**Still failing in the working tree — all pre-existing, none touched here**
+
+Full suite before this session: `Ran 243 tests`, **20 failures / 2 errors**.
+After: `Ran 243 tests in 1208 s`, **12 failures / 5 errors**. The eight `test_report` failures are gone
+(the stale `assertTrue` above); the run got ~10× longer for the same reason — those tests now reach the
+`calculate()` + `export_pptx()` they had been aborting before.
+
+What remains:
+
+- `test_report_structure` (9 reports) and `test_golden` (3) — the `y_unit` repr change from the
+  uncommitted `unit.py` rework, exactly as the previous entry recorded. Diffed one to be sure:
+  `EuroNCAP_Side_Pole` differs **only** in `y_unit`, golden
+  `"  Name = Standard acceleration of gravity\n  Value = 9…"` against current `"g0"`. Not a
+  validate/describe concern and deliberately not re-baselined here.
+- `test_isomme.test_read`, `test_plotting…nij_page_uses_criterion_limits` — unchanged, both were already
+  failing.
+- **Three `test_report` errors are newly *visible*, not newly broken**: `test_EuroNCAP`,
+  `test_EuroNCAP_Frontal_50kmh`, `test_EuroNCAP_Frontal_MPDB` all die in `export_pptx` →
+  `plotting.plot_channel` → `Channel.convert_unit` with
+  `UnitConversionError: 'm / s' (speed/velocity) and 'm / s' (speed/velocity) are not convertible` —
+  the same wrapped-`Unit` identity problem as the `y_unit` diffs, i.e. the in-flight `unit.py` rework.
+  The stale `assertTrue` had been aborting these tests two lines earlier, so fixing it uncovered them.
+  **This one is worth the maintainer's attention**: it means the two reference reports currently cannot
+  render a PPTX.
+
+`ruff check .` is likewise still red repo-wide (35 findings: `pyisomme/calculate/`, `channel.py`, `info.py`,
+`limit.py`, `providers.py`, `unit.py`, `tests/test_calculate.py`, `test_code.py`, `test_info.py`,
+`test_unit.py`), almost all `W291`/`W293` whitespace plus 3 `F401` and 3 `E701`. All of it is committed
+code from the `calculate`/`providers` work, outside this step; `ruff check --fix` clears 27 of the 35 when
+someone wants to take it on.
