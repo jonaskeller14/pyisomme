@@ -611,7 +611,7 @@
             "rating": 4,
             "upper": true,
             "x_unit": "s",
-            "y_unit": "9.80665 m / s2"
+            "y_unit": "g0"
           },
           {
             "code_patterns": [
@@ -634,7 +634,7 @@
             "rating": 4,
             "upper": null,
             "x_unit": "s",
-            "y_unit": "9.80665 m / s2"
+            "y_unit": "g0"
           },
           {
             "code_patterns": [
@@ -657,7 +657,7 @@
             "rating": 2.669,
             "upper": null,
             "x_unit": "s",
-            "y_unit": "9.80665 m / s2"
+            "y_unit": "g0"
           },
           {
             "code_patterns": [
@@ -680,7 +680,7 @@
             "rating": 1.329,
             "upper": null,
             "x_unit": "s",
-            "y_unit": "9.80665 m / s2"
+            "y_unit": "g0"
           },
           {
             "code_patterns": [
@@ -703,7 +703,7 @@
             "rating": 0,
             "upper": null,
             "x_unit": "s",
-            "y_unit": "9.80665 m / s2"
+            "y_unit": "g0"
           },
           {
             "code_patterns": [
@@ -726,7 +726,7 @@
             "rating": "-inf",
             "upper": null,
             "x_unit": "s",
-            "y_unit": "9.80665 m / s2"
+            "y_unit": "g0"
           }
         ],
         "name": "Head a3ms"

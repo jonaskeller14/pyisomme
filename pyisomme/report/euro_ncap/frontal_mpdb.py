@@ -10,7 +10,7 @@ from pyisomme.report.euro_ncap.frontal_50kmh import Overall as Overall_Frontal_5
 from pyisomme.report.criterion import Criterion
 from pyisomme.report.manual import Manual, manual
 from pyisomme.report.euro_ncap.limits import Limit_G, Limit_P, Limit_C, Limit_M, Limit_A, Limit_W
-from pyisomme.unit import g0
+from pyisomme.unit import Unit, g0
 
 import logging
 import numpy as np
@@ -908,9 +908,9 @@ class Overall(Criterion):
                 super().__init__(report, isomme)
 
                 self.extend_limit_list([
-                    Limit(["M?MBAR0OLC??VEX?"], func=lambda x: 25, y_unit=g0, name="0 pt. Modifier", rating=0, upper=True),
-                    Limit(["M?MBAR0OLC??VEX?"], func=lambda x: 25, y_unit=g0, name="-2..0 pt. Modifier", rating=0, lower=True),
-                    Limit(["M?MBAR0OLC??VEX?"], func=lambda x: 40, y_unit=g0, name="-2 pt. Modifier", rating=-2, lower=True),
+                    Limit(["M?MBAR0OLC??VEX?"], func=lambda x: 25, y_unit=Unit(g0), name="0 pt. Modifier", rating=0, upper=True),
+                    Limit(["M?MBAR0OLC??VEX?"], func=lambda x: 25, y_unit=Unit(g0), name="-2..0 pt. Modifier", rating=0, lower=True),
+                    Limit(["M?MBAR0OLC??VEX?"], func=lambda x: 40, y_unit=Unit(g0), name="-2 pt. Modifier", rating=-2, lower=True),
                 ])
 
             def calculation(self) -> None:

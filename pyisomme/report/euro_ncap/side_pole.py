@@ -3,7 +3,7 @@ from __future__ import annotations
 from pyisomme.isomme import Isomme
 from pyisomme.report.page import Page_Cover, Page_Plot_nxn, Page_Criterion_Rating_Table, Page_Criterion_Values_Chart, \
     Page_Criterion_Values_Table
-from pyisomme.unit import g0
+from pyisomme.unit import Unit, g0
 from pyisomme.report.report import Report
 from pyisomme.report.criterion import Criterion
 from pyisomme.report.manual import Manual, manual
@@ -94,8 +94,8 @@ class Overall(Criterion):
                 self.p = p
 
                 self.extend_limit_list([
-                    Limit_G([f"?{self.p}HEAD003C??ACR?", f"?{self.p}HEADCG3C??ACR?"], func=lambda x: 80.000, y_unit=g0, upper=True),
-                    Limit_C([f"?{self.p}HEAD003C??ACR?", f"?{self.p}HEADCG3C??ACR?"], func=lambda x: 80.000, y_unit=g0, lower=True),
+                    Limit_G([f"?{self.p}HEAD003C??ACR?", f"?{self.p}HEADCG3C??ACR?"], func=lambda x: 80.000, y_unit=Unit(g0), upper=True),
+                    Limit_C([f"?{self.p}HEAD003C??ACR?", f"?{self.p}HEADCG3C??ACR?"], func=lambda x: 80.000, y_unit=Unit(g0), lower=True),
                 ])
 
             def calculation(self) -> None:

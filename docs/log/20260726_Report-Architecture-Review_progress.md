@@ -1764,3 +1764,41 @@ stay open and now need a fresh repro before anyone can diagnose them.
   uncommitted test.
 - `CLAUDE.md`'s unit convention now states the rule the bug broke: delegate public names only, and never
   let a raw astropy unit reach `Channel.unit`.
+
+## 2026-08-03 — Out-of-band: re-baselined the four stale snapshots
+
+Continues the same working tree on `refactor/step-4-manual-inputs`. Nothing committed — manual review gate.
+The 9 `test_report_structure` + 3 `test_golden` failures the previous three entries kept recording were
+**all stale baselines**, not regressions: every one is in the *definition* layer, and `compare()` reports
+**0 regressions in the results layer and 0 improvements** for all three golden reports — no `value`,
+`rating`, `color` or `status` moved. Re-baselined deliberately:
+
+```
+.venv/Scripts/python.exe -m tests.golden_regen
+.venv/Scripts/python.exe -m tests.test_report_structure --regen
+```
+
+**What moved, and which commit moved it** (4 files, +313 / −132 lines)
+
+| # rows | change | cause |
+|---|---|---|
+| ~108 | `y_unit` `"9.80665 m / s2"` — and one 5-line CODATA block for the `g0` quantity — → `"g0"` | `342e533` *refactor(Channel, Unit)*: the new `Unit` registers `g0` as a named astropy unit, so it now reprs as itself instead of its expansion |
+| 1 | `frontal_50kmh` driver neck Fz capping row `?1NECKUP00??FOZA` → `?1NECKUP00??FOZ?` | `155f533` — this is **D12**, and it is settled: the narrow filter class was the typo the Step-5 entry suspected, already fixed in the module |
+| 10 | tibia index `?1TIIN??????000?` → `?1TIIN??00??000?` (MPDB driver + passenger, R94 driver + passenger) | `a6f204f` *feat(tibia-index)* |
+| 8 + 3 | `IIHS_Frontal_Small_Overlap`: tibia axial force and tibia index gained a 4-row limit block each (previously `[]`), and 3 pages appeared (`Page_Driver_Tibia_Compression`, `…_Tibia_Index_Total`, `…_Foot_Acceleration`) | `a6f204f` |
+
+Nothing else changed: a key-by-key diff of the regenerated files against the old ones contains only
+`y_unit`, the two `code_patterns` corrections, and the added IIHS rows/pages.
+
+**Verified**
+
+- `... -m unittest tests.test_golden tests.test_report_structure tests.test_validate tests.test_describe`
+  → **OK, 51 tests** (1 skipped), 57 s. `validate.json` and the `describe/*.md` dumps needed **no**
+  regeneration — they were already current.
+- Full suite → recorded in the handover; the only remaining failures are the two known non-code ones
+  (`test_isomme.test_read` wants the missing fixture `data/nhtsa/11391.tar`; `test_plotting`'s `KeyError`
+  is in the maintainer's own uncommitted test).
+
+**Note for review:** `tests/golden/euro_ncap_frontal_50kmh.json` (like `pyisomme/unit.py` and
+`tests/test_unit.py`) shows up **staged** rather than unstaged in `git status`. Nothing in this session ran
+`git add`; use `git diff HEAD` to see the whole change.

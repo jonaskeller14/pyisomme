@@ -34,7 +34,7 @@
             "rating": 0,
             "upper": true,
             "x_unit": "s",
-            "y_unit": "  Name   = Standard acceleration of gravity\n  Value  = 9.80665\n  Uncertainty  = 0.0\n  Unit  = m / s2\n  Reference = CODATA 2018"
+            "y_unit": "g0"
           },
           {
             "code_patterns": [
@@ -56,7 +56,7 @@
             "rating": 0,
             "upper": null,
             "x_unit": "s",
-            "y_unit": "  Name   = Standard acceleration of gravity\n  Value  = 9.80665\n  Uncertainty  = 0.0\n  Unit  = m / s2\n  Reference = CODATA 2018"
+            "y_unit": "g0"
           },
           {
             "code_patterns": [
@@ -78,7 +78,7 @@
             "rating": -2,
             "upper": null,
             "x_unit": "s",
-            "y_unit": "  Name   = Standard acceleration of gravity\n  Value  = 9.80665\n  Uncertainty  = 0.0\n  Unit  = m / s2\n  Reference = CODATA 2018"
+            "y_unit": "g0"
           }
         ],
         "name": "Occupant Load Criterion (OLC) Modifier"
@@ -452,7 +452,7 @@
             "rating": 4,
             "upper": true,
             "x_unit": "s",
-            "y_unit": "9.80665 m / s2"
+            "y_unit": "g0"
           },
           {
             "code_patterns": [
@@ -475,7 +475,7 @@
             "rating": 4,
             "upper": null,
             "x_unit": "s",
-            "y_unit": "9.80665 m / s2"
+            "y_unit": "g0"
           },
           {
             "code_patterns": [
@@ -498,7 +498,7 @@
             "rating": 2.669,
             "upper": null,
             "x_unit": "s",
-            "y_unit": "9.80665 m / s2"
+            "y_unit": "g0"
           },
           {
             "code_patterns": [
@@ -521,7 +521,7 @@
             "rating": 1.329,
             "upper": null,
             "x_unit": "s",
-            "y_unit": "9.80665 m / s2"
+            "y_unit": "g0"
           },
           {
             "code_patterns": [
@@ -544,7 +544,7 @@
             "rating": 0,
             "upper": null,
             "x_unit": "s",
-            "y_unit": "9.80665 m / s2"
+            "y_unit": "g0"
           },
           {
             "code_patterns": [
@@ -567,7 +567,7 @@
             "rating": "-inf",
             "upper": null,
             "x_unit": "s",
-            "y_unit": "9.80665 m / s2"
+            "y_unit": "g0"
           }
         ],
         "name": "Head a3ms"
@@ -1771,7 +1771,7 @@
         "limits": [
           {
             "code_patterns": [
-              "?1TIIN??????000?"
+              "?1TIIN??00??000?"
             ],
             "color": "green",
             "func_samples": [
@@ -1793,7 +1793,7 @@
           },
           {
             "code_patterns": [
-              "?1TIIN??????000?"
+              "?1TIIN??00??000?"
             ],
             "color": "yellow",
             "func_samples": [
@@ -1815,7 +1815,7 @@
           },
           {
             "code_patterns": [
-              "?1TIIN??????000?"
+              "?1TIIN??00??000?"
             ],
             "color": "orange",
             "func_samples": [
@@ -1837,7 +1837,7 @@
           },
           {
             "code_patterns": [
-              "?1TIIN??????000?"
+              "?1TIIN??00??000?"
             ],
             "color": "brown",
             "func_samples": [
@@ -1859,7 +1859,7 @@
           },
           {
             "code_patterns": [
-              "?1TIIN??????000?"
+              "?1TIIN??00??000?"
             ],
             "color": "red",
             "func_samples": [
@@ -2252,7 +2252,7 @@
             "rating": 4,
             "upper": true,
             "x_unit": "s",
-            "y_unit": "9.80665 m / s2"
+            "y_unit": "g0"
           },
           {
             "code_patterns": [
@@ -2275,7 +2275,7 @@
             "rating": 4,
             "upper": null,
             "x_unit": "s",
-            "y_unit": "9.80665 m / s2"
+            "y_unit": "g0"
           },
           {
             "code_patterns": [
@@ -2298,7 +2298,7 @@
             "rating": 2.669,
             "upper": null,
             "x_unit": "s",
-            "y_unit": "9.80665 m / s2"
+            "y_unit": "g0"
           },
           {
             "code_patterns": [
@@ -2321,7 +2321,7 @@
             "rating": 1.329,
             "upper": null,
             "x_unit": "s",
-            "y_unit": "9.80665 m / s2"
+            "y_unit": "g0"
           },
           {
             "code_patterns": [
@@ -2344,7 +2344,7 @@
             "rating": 0,
             "upper": null,
             "x_unit": "s",
-            "y_unit": "9.80665 m / s2"
+            "y_unit": "g0"
           },
           {
             "code_patterns": [
@@ -2367,7 +2367,7 @@
             "rating": "-inf",
             "upper": null,
             "x_unit": "s",
-            "y_unit": "9.80665 m / s2"
+            "y_unit": "g0"
           }
         ],
         "name": "Head a3ms"
@@ -3430,7 +3430,7 @@
         "limits": [
           {
             "code_patterns": [
-              "?3TIIN??????000?"
+              "?3TIIN??00??000?"
             ],
             "color": "green",
             "func_samples": [
@@ -3452,7 +3452,7 @@
           },
           {
             "code_patterns": [
-              "?3TIIN??????000?"
+              "?3TIIN??00??000?"
             ],
             "color": "yellow",
             "func_samples": [
@@ -3474,7 +3474,7 @@
           },
           {
             "code_patterns": [
-              "?3TIIN??????000?"
+              "?3TIIN??00??000?"
             ],
             "color": "orange",
             "func_samples": [
@@ -3496,7 +3496,7 @@
           },
           {
             "code_patterns": [
-              "?3TIIN??????000?"
+              "?3TIIN??00??000?"
             ],
             "color": "brown",
             "func_samples": [
@@ -3518,7 +3518,7 @@
           },
           {
             "code_patterns": [
-              "?3TIIN??????000?"
+              "?3TIIN??00??000?"
             ],
             "color": "red",
             "func_samples": [

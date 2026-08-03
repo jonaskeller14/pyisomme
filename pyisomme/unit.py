@@ -11,7 +11,7 @@ g0_unit = u.def_unit("g0", represents=ASTROPY_G0.value * u.m / (u.s**2), doc="St
 u.add_enabled_units([g0_unit])
 
 # Export g0 to keep compatibility with existing imports
-g0 = g0_unit  
+g0 = g0_unit
 
 
 class Unit:
