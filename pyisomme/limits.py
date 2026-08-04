@@ -8,7 +8,9 @@ from typing import cast, TYPE_CHECKING
 import numpy as np
 
 if TYPE_CHECKING:
-    from pyisomme.limit import Channel, Code, Limit
+    from pyisomme.channel import Channel
+    from pyisomme.code import Code
+    from pyisomme.limit import Limit
 
 
 logger = logging.getLogger(__name__)

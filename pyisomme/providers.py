@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Callable, Literal
+from typing import TYPE_CHECKING, Callable, Literal, cast
 from collections.abc import Sequence
 import fnmatch
 import numpy as np
@@ -31,6 +31,15 @@ from pyisomme.calculate import (
 
 if TYPE_CHECKING:
     from pyisomme.isomme import Isomme
+
+
+def _all_not_none(channels: Sequence[Channel | None]) -> list[Channel] | None:
+    present: list[Channel] = []
+    for channel in channels:
+        if channel is None:
+            return None
+        present.append(channel)
+    return present
 
 
 class ChannelProvider:
@@ -91,8 +100,8 @@ class AggregatePairProvider(ChannelProvider):
         return self._match(code)
 
     def build(self, isomme: Isomme, code: Code) -> Channel | None:
-        channels = [isomme.get_channel(code.set(**{self.vary: member})) for member in self.members]
-        if any(channel is None for channel in channels):
+        channels = _all_not_none([isomme.get_channel(code.set(**{self.vary: member})) for member in self.members])
+        if channels is None:
             return None
         first = channels[0]
         t = time_intersect(*channels)
@@ -119,19 +128,20 @@ class AggregatePairProvider(ChannelProvider):
 # --------------------------------------------------------------------------------------- #
 
 def _build_resultant(isomme: Isomme, code: Code) -> Channel | None:
-    channel_xyz = [isomme.get_channel(code.set(direction=direction)) for direction in "XYZ"]
-    if all(channel is not None for channel in channel_xyz):
+    channel_xyz = _all_not_none([isomme.get_channel(code.set(direction=direction)) for direction in "XYZ"])
+    if channel_xyz is not None:
         return calculate_resultant(*channel_xyz)
-    channel_123 = [isomme.get_channel(code.set(direction=direction)) for direction in "123"]
-    if all(channel is not None for channel in channel_123):
+    channel_123 = _all_not_none([isomme.get_channel(code.set(direction=direction)) for direction in "123"])
+    if channel_123 is not None:
         return calculate_resultant(*channel_123)
     return None
 
 
 def _build_bric(isomme: Isomme, code: Code) -> Channel | None:
-    channel_head_av_xyz = [isomme.get_channel(code.set(main_location="HEAD", physical_dimension="AV", direction=direction, filter_class="D")) for direction in "XYZ"]
-    if all(channel is not None for channel in channel_head_av_xyz):
-        return calculate_bric(*channel_head_av_xyz)
+    channel_head_av_xyz = _all_not_none([isomme.get_channel(code.set(main_location="HEAD", physical_dimension="AV", direction=direction, filter_class="D")) for direction in "XYZ"])
+    if channel_head_av_xyz is not None:
+        channel_av_x, channel_av_y, channel_av_z = channel_head_av_xyz
+        return calculate_bric(channel_av_x, channel_av_y, channel_av_z)
     return None
 
 
@@ -150,35 +160,39 @@ def _build_xms(isomme: Isomme, code: Code) -> Channel | None:
     channel = isomme.get_channel(code.set(fine_location_2="00",
                                           filter_class="A" if not code.main_location == "THSP" else "C"))
     if channel is not None:
-        return calculate_xms(channel, min_delta_t=int(code.fine_location_2[0]), method=code.fine_location_2[1])
+        # The registry only routes codes matching "[0-9][CS]" here.
+        method = cast('Literal["S", "C"]', code.fine_location_2[1])
+        return calculate_xms(channel, min_delta_t=int(code.fine_location_2[0]), method=method)
     return None
 
 
 def _build_damage(isomme: Isomme, code: Code) -> Channel | None:
     if code.filter_class == "X":
-        channel_xyz = [isomme.get_channel(code.set(fine_location_1="00", fine_location_2="00", direction=direction, filter_class="A"),
-                                          code.set(fine_location_1="CG", fine_location_2="00", direction=direction, filter_class="A")) for direction in "XYZ"]
-        if all(channel is not None for channel in channel_xyz):
+        channel_xyz = _all_not_none([isomme.get_channel(code.set(fine_location_1="00", fine_location_2="00", direction=direction, filter_class="A"),
+                                                        code.set(fine_location_1="CG", fine_location_2="00", direction=direction, filter_class="A")) for direction in "XYZ"])
+        if channel_xyz is not None:
+            channel_aa_x, channel_aa_y, channel_aa_z = channel_xyz
             if code.direction == "X":
-                return calculate_damage(*channel_xyz)[4]
+                return calculate_damage(channel_aa_x, channel_aa_y, channel_aa_z)[4]
             if code.direction == "Y":
-                return calculate_damage(*channel_xyz)[5]
+                return calculate_damage(channel_aa_x, channel_aa_y, channel_aa_z)[5]
             if code.direction == "Z":
-                return calculate_damage(*channel_xyz)[6]
+                return calculate_damage(channel_aa_x, channel_aa_y, channel_aa_z)[6]
             if code.direction == "R":
-                return calculate_damage(*channel_xyz)[7]
+                return calculate_damage(channel_aa_x, channel_aa_y, channel_aa_z)[7]
     else:
-        channel_xyz = [isomme.get_channel(code.set(fine_location_1="00", fine_location_2="00", direction=direction),
-                                          code.set(fine_location_1="CG", fine_location_2="00", direction=direction)) for direction in "XYZ"]
-        if all(channel is not None for channel in channel_xyz):
+        channel_xyz = _all_not_none([isomme.get_channel(code.set(fine_location_1="00", fine_location_2="00", direction=direction),
+                                                        code.set(fine_location_1="CG", fine_location_2="00", direction=direction)) for direction in "XYZ"])
+        if channel_xyz is not None:
+            channel_aa_x, channel_aa_y, channel_aa_z = channel_xyz
             if code.direction == "X":
-                return calculate_damage(*channel_xyz)[0]
+                return calculate_damage(channel_aa_x, channel_aa_y, channel_aa_z)[0]
             if code.direction == "Y":
-                return calculate_damage(*channel_xyz)[1]
+                return calculate_damage(channel_aa_x, channel_aa_y, channel_aa_z)[1]
             if code.direction == "Z":
-                return calculate_damage(*channel_xyz)[2]
+                return calculate_damage(channel_aa_x, channel_aa_y, channel_aa_z)[2]
             if code.direction == "R":
-                return calculate_damage(*channel_xyz)[3]
+                return calculate_damage(channel_aa_x, channel_aa_y, channel_aa_z)[3]
     return None
 
 
@@ -522,8 +536,8 @@ def _build_chest_pc_score(isomme: Isomme, code: Code) -> Channel | None:
 
 
 def _build_chst_irtracc_min(isomme: Isomme, code: Code) -> Channel | None:
-    channels = [isomme.get_channel(code.set(fine_location_1=fine_location_1, fine_location_2=fine_location_2)) for fine_location_1, fine_location_2 in (("LE", "UP"), ("RI", "UP"), ("LE", "LO"), ("RI", "LO"))]
-    if all(channel is not None for channel in channels) and all(channel.code.fine_location_3 in ("TH", "T3", "00", "??") for channel in channels):
+    channels = _all_not_none([isomme.get_channel(code.set(fine_location_1=fine_location_1, fine_location_2=fine_location_2)) for fine_location_1, fine_location_2 in (("LE", "UP"), ("RI", "UP"), ("LE", "LO"), ("RI", "LO"))])
+    if channels is not None and all(channel.code.fine_location_3 in ("TH", "T3", "00", "??") for channel in channels):
         time = time_intersect(*channels)
         values = np.min([channel.get_data(t=time, unit=channels[0].unit) for channel in channels], axis=0)
         return Channel(code=channels[0].code.set(fine_location_1="00", fine_location_2="00"),
@@ -533,8 +547,8 @@ def _build_chst_irtracc_min(isomme: Isomme, code: Code) -> Channel | None:
 
 
 def _build_abdo_irtracc_min(isomme: Isomme, code: Code) -> Channel | None:
-    channels = [isomme.get_channel(code.set(fine_location_1=fine_location_1, fine_location_2=fine_location_2)) for fine_location_1, fine_location_2 in (("LE", "00"), ("RI", "00"))]
-    if all(channel is not None for channel in channels) and all(channel.code.fine_location_3 in ("TH", "T3", "00", "??") for channel in channels):
+    channels = _all_not_none([isomme.get_channel(code.set(fine_location_1=fine_location_1, fine_location_2=fine_location_2)) for fine_location_1, fine_location_2 in (("LE", "00"), ("RI", "00"))])
+    if channels is not None and all(channel.code.fine_location_3 in ("TH", "T3", "00", "??") for channel in channels):
         time = time_intersect(*channels)
         values = np.min([channel.get_data(t=time, unit=channels[0].unit) for channel in channels], axis=0)
         return Channel(code=channels[0].code.set(fine_location_1="00", fine_location_2="00"),

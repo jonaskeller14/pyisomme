@@ -6,9 +6,8 @@ from pyisomme.isomme import Isomme
 from pyisomme.report.page import Page_Cover, Page_OLC, Page_Criterion_Rating_Table, Page_Plot_nxn, Page_Criterion_Values_Chart, Page_Criterion_Values_Table
 from pyisomme.report.report import Report
 from pyisomme.report.criterion import Criterion, Role, sub
-from pyisomme.report.ctx import where
+from pyisomme.report.ctx import from_input
 from pyisomme.report.manual import Manual, manual
-from pyisomme.report.occupant import Seat, seat
 from pyisomme.report.euro_ncap.limits import Limit_G, Limit_P, Limit_C, Limit_M, Limit_A, Limit_W
 
 import logging
@@ -19,25 +18,15 @@ from typing import Any
 logger = logging.getLogger(__name__)
 
 
-class PositionedCriterion(Criterion):
-    """
-    A criterion an **unmigrated** report still constructs with ``p=``.
-
-    The other Euro-NCAP/UN reports build this file's shared leaves directly
-    (``Criterion_HIC_15(report, isomme, p=3)``) or subclass them, and they have not been
-    migrated to ``sub()`` + ``Ctx`` yet. Accepting the position and turning it into a
-    context source keeps a single implementation working from both sides: a migrated
-    parent supplies the position through ``at=seat(...)``, an unmigrated one through
-    ``p=``, and the criterion itself only ever reads ``self.ctx``.
-
-    TODO(step-9): delete, together with the ``p=`` call sites, once the remaining
-    reports are migrated.
-    """
-
-    def __init__(self, report: Report, isomme: Isomme, p: int | None = None) -> None:
-        super().__init__(report, isomme)
-        if p is not None:
-            self._ctx_source = where(p=p)
+P_DRIVER = manual("1", source="test report", doc=(
+    "Channel-code position of the driver. Defaults to the "
+    "'Driver position object 1' test-info field when the test carries it."))
+P_FRONT_PASSENGER = manual("3", source="test report", doc=(
+    "Channel-code position of the front passenger. Derived from p_driver "
+    "('1' for a right-hand-drive test) unless set explicitly."))
+P_REAR_PASSENGER = manual("6", source="test report", doc=(
+    "Channel-code position of the rear passenger. Derived from p_driver "
+    "('4' for a right-hand-drive test) unless set explicitly."))
 
 
 # --------------------------------------------------------------------------- #
@@ -46,11 +35,11 @@ class PositionedCriterion(Criterion):
 # At module level because a ``sub()`` in a class body can only name what is already
 # bound: the front and rear occupants reuse the driver's leaves, and no nested class can
 # reach a sibling's. The old nested names are kept as aliases further down, so the
-# unmigrated reports' ``Overall.Criterion_Driver.Criterion_Head.Criterion_HIC_15`` paths
+# other reports' ``Overall.Criterion_Driver.Criterion_Head.Criterion_HIC_15`` paths
 # still resolve. TODO(step-10): the shared criteria library replaces both.
 # --------------------------------------------------------------------------- #
 
-class Criterion_HIC_15(PositionedCriterion):
+class Criterion_HIC_15(Criterion):
     name = "HIC 15"
 
     def define_limits(self) -> list[Limit]:
@@ -71,7 +60,7 @@ class Criterion_HIC_15(PositionedCriterion):
         self.color = self.limits.get_limit_min_color(self.channel)
 
 
-class Criterion_Head_a3ms(PositionedCriterion):
+class Criterion_Head_a3ms(Criterion):
     name = "Head a3ms"
 
     def define_limits(self) -> list[Limit]:
@@ -92,7 +81,7 @@ class Criterion_Head_a3ms(PositionedCriterion):
         self.color = self.limits.get_limit_min_color(self.channel)
 
 
-class Criterion_UnstableAirbagContact(PositionedCriterion):
+class Criterion_UnstableAirbagContact(Criterion):
     #: §4.2.1 scopes this to "Driver and Rear Passenger", so the class is
     #: shared by both — hence no steering wheel in the name. Detachment of
     #: the steering wheel is only one (driver-specific) example of the
@@ -111,7 +100,7 @@ class Criterion_UnstableAirbagContact(PositionedCriterion):
         self.rating = -1 if self.unstable_airbag_contact else 0
 
 
-class Criterion_Chest_Deflection(PositionedCriterion):
+class Criterion_Chest_Deflection(Criterion):
     name = "Chest Deflection"
 
     def define_limits(self) -> list[Limit]:
@@ -132,7 +121,7 @@ class Criterion_Chest_Deflection(PositionedCriterion):
         self.color = self.limits.get_limit_min_color(self.channel)
 
 
-class Criterion_Chest_VC(PositionedCriterion):
+class Criterion_Chest_VC(Criterion):
     name = "Chest VC"
 
     def define_limits(self) -> list[Limit]:
@@ -153,7 +142,7 @@ class Criterion_Chest_VC(PositionedCriterion):
         self.color = self.limits.get_limit_min_color(self.channel)
 
 
-class Criterion_ShoulderBeltLoad(PositionedCriterion):
+class Criterion_ShoulderBeltLoad(Criterion):
     name = "Modifier Shoulder Belt Load"
     role = Role.MODIFIER
 
@@ -171,7 +160,7 @@ class Criterion_ShoulderBeltLoad(PositionedCriterion):
         self.color = self.limits.get_limit_min_color(self.channel)
 
 
-class Criterion_Femur_Axial_Force(PositionedCriterion):
+class Criterion_Femur_Axial_Force(Criterion):
     name = "Femur Axial Force"
     role = Role.AGGREGATE
 
@@ -222,7 +211,7 @@ class Criterion_Femur_Axial_Force(PositionedCriterion):
         self.rating = self.min_of_children()
 
 
-class Criterion_Submarining(PositionedCriterion):
+class Criterion_Submarining(Criterion):
     name = "Submarining"
     role = Role.MODIFIER
     submarining: Manual[bool, manual(False, source="video", doc=(
@@ -243,15 +232,9 @@ class Overall(Criterion):
         "Does the manufacturer-provided front-passenger dummy score reach 90 % of "
         "the driver's total (§4.3)? When it does not, every front-row body region "
         "is assessed on the worse of driver and front passenger."))]
-    p_driver: Manual[int, manual(1, source="test report", doc=(
-        "Channel-code position of the driver. Defaults to the "
-        "'Driver position object 1' test-info field when the test carries it."))]
-    p_front_passenger: Manual[int, manual(3, source="test report", doc=(
-        "Channel-code position of the front passenger. Derived from p_driver "
-        "(1 for a right-hand-drive test) unless set explicitly."))]
-    p_rear_passenger: Manual[int, manual(6, source="test report", doc=(
-        "Channel-code position of the rear passenger. Derived from p_driver "
-        "(4 for a right-hand-drive test) unless set explicitly."))]
+    p_driver: Manual[str, P_DRIVER]
+    p_front_passenger: Manual[str, P_FRONT_PASSENGER]
+    p_rear_passenger: Manual[str, P_REAR_PASSENGER]
 
     def __init__(self, report: Report, isomme: Isomme) -> None:
         super().__init__(report, isomme)
@@ -263,14 +246,14 @@ class Overall(Criterion):
         """
         Fill the seating positions from the test info and from ``p_driver``.
 
-        Runs before the occupants are calculated, which is when their ``seat()``
+        Runs before the occupants are calculated, which is when their ``from_input()``
         context reads these inputs — so a position set after construction is honoured
         with nothing to rebuild (F15). Idempotent: :meth:`set_derived_input` never
         overrules a value the user assigned.
         """
         p_driver = self.isomme.get_test_info("Driver position object 1")
         if p_driver is not None:
-            self.set_derived_input("p_driver", int(p_driver))
+            self.set_derived_input("p_driver", str(p_driver).strip())
         self.derive_positions()
 
     def derive_positions(self) -> None:
@@ -282,9 +265,9 @@ class Overall(Criterion):
         right-hand drive. A passenger position the user set explicitly is left
         alone (see :meth:`Criterion.set_derived_input`).
         """
-        right_hand_drive = self.p_driver != 1
-        self.set_derived_input("p_front_passenger", 1 if right_hand_drive else 3)
-        self.set_derived_input("p_rear_passenger", 4 if right_hand_drive else 6)
+        right_hand_drive = self.p_driver != "1"
+        self.set_derived_input("p_front_passenger", "1" if right_hand_drive else "3")
+        self.set_derived_input("p_rear_passenger", "4" if right_hand_drive else "6")
 
     def calculation(self) -> None:
         # §4.3: the front row scores the driver. The front passenger enters only
@@ -350,7 +333,7 @@ class Overall(Criterion):
 
                 self.rating += self.modifiers_sum()
 
-            class Criterion_HazardousAirbagDeployment(PositionedCriterion):
+            class Criterion_HazardousAirbagDeployment(Criterion):
                 name = "Modifier for Hazardous Airbag Deployment"
                 source = "§4.2.1"
                 role = Role.MODIFIER
@@ -361,7 +344,7 @@ class Overall(Criterion):
                     self.value = self.hazardous_airbag_deployment
                     self.rating = -1 if self.hazardous_airbag_deployment else 0
 
-            class Criterion_IncorrectAirbagDeployment(PositionedCriterion):
+            class Criterion_IncorrectAirbagDeployment(Criterion):
                 name = "Modifier for Incorrect Airbag Deployment"
                 source = "§4.2.1"
                 role = Role.MODIFIER
@@ -372,7 +355,7 @@ class Overall(Criterion):
                     self.value = self.incorrect_airbag_deployment
                     self.rating = -1 if self.incorrect_airbag_deployment else 0
 
-            class Criterion_DisplacementSteeringColumn(PositionedCriterion):
+            class Criterion_DisplacementSteeringColumn(Criterion):
                 report: EuroNCAP_Frontal_50kmh
                 name = "Modifier for Displacement of Steering Column"
                 source = "§4.2.1"
@@ -510,7 +493,7 @@ class Overall(Criterion):
                 self.rating = self.min_of_children()
                 self.rating += self.modifiers_sum()
 
-            class Criterion_SteeringWheelContact(PositionedCriterion):
+            class Criterion_SteeringWheelContact(Criterion):
                 report: EuroNCAP_Frontal_50kmh
                 name = "Modifier Chest Steering Wheel Contact"
                 source = "§4.2.2"
@@ -937,9 +920,9 @@ class Overall(Criterion):
             self.value = self.number_of_door_openings_during_impact
             self.rating = -1 * self.number_of_door_openings_during_impact
 
-    criterion_driver = sub(Criterion_Driver, at=seat(Seat.DRIVER))
-    criterion_front_passenger = sub(Criterion_Front_Passenger, at=seat(Seat.FRONT_PASSENGER))
-    criterion_rear_passenger = sub(Criterion_Rear_Passenger, at=seat(Seat.REAR_PASSENGER))
+    criterion_driver = sub(Criterion_Driver, at=from_input(P_DRIVER))
+    criterion_front_passenger = sub(Criterion_Front_Passenger, at=from_input(P_FRONT_PASSENGER))
+    criterion_rear_passenger = sub(Criterion_Rear_Passenger, at=from_input(P_REAR_PASSENGER))
     #: No `at=`: a vehicle-level criterion inherits the root context and needs no occupant.
     criterion_door_opening_during_impact = sub(Criterion_DoorOpeningDuringImpact)
 

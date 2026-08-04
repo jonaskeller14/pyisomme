@@ -235,7 +235,45 @@ D15 in the progress file.
 
 ---
 
-## Step 6 — `PeakCriterion` + migrate leaf criteria (proposal P4)
+## Step 6 — `PeakCriterion` + migrate leaf criteria (proposal P4) — **WITHDRAWN**
+
+**Status: withdrawn by the maintainer on 2026-08-04, before any code was written.** No
+`PeakCriterion` base exists and none should be added. The leaf `calculation()` bodies stay literal.
+
+**Maintainer's decision:** the four-line leaf body — `require_channel` → reduce → rate → colour — is
+readable and checkable with basic Python and no knowledge of the framework's conventions, which is
+worth more than removing its repetition. This is the same disposition that withdrew Step 5.
+
+**Reasons recorded, so this is not relitigated:**
+
+1. **F4 is not redundancy.** The step's central premise was that a leaf declares its channel pattern
+   twice and that one declaration should feed both. It should not: the two patterns mean different
+   things. `calculation()` requests a **concrete filter class** (`?{p}NECKUP00??MOYB`) because it needs
+   one specific filtered signal to rate; `define_limits()` uses a **filter-class wildcard**
+   (`?{p}NECKUP00??MOY?`) so the limit bars apply to *every* filter class the plots may draw. Collapsing
+   them to one declaration would either narrow the limits to one filter class or widen the lookup to
+   any — both wrong. The plan's own "model this explicitly with a `filter_class` field" was reinventing
+   the two spellings the code already has.
+2. **The drift the step guarded against already fails loudly.** If the two patterns stop agreeing,
+   `Limits.get_limit_ratings` raises `No limits found for channel '<code>'` → `Status.ERROR` → and
+   `tests/test_golden.py` scores `OK → ERROR` as a status moving *down* `STATUS_RANK`, i.e. a
+   regression that fails the build. The residual gap is leaves that are `nan` in every fixture, which
+   are separately flagged with `TODO(test)`.
+3. **Nothing downstream depends on it.** Steps 9–13 are independent; Step 8 migrated the pilot without
+   it and landed the criterion section at 946 lines (the plan's ≲ 900 estimate assumed Step 5's limit
+   generation as well). In Step 10 a leaf variant becomes a subclass overriding `define_limits()`
+   rather than a declared field — by this step's own criterion, the clearer of the two.
+
+**Not withdrawn — the one salvageable piece.** `Reduce.MAX_ABS` was to replace
+`data[np.argmax(np.abs(data))]`, hand-copied at **18 sites across 8 report modules**. That idiom
+computes the argmax on the *unconverted* array and indexes the converted one; it is correct (same
+length) but subtle. If it is ever extracted, extract it as a plain module-level helper function — not
+as a base class, and not carrying any of the rest of P4 with it.
+
+---
+
+<details>
+<summary>Original Step 6 scope, kept for the record</summary>
 
 **Goal:** the ~80 % standard leaf becomes a 5-line declaration with a single source of truth for code patterns.
 
@@ -257,6 +295,8 @@ literal. See the withdrawn Step 5.
 - [ ] `frontal_50kmh.py` line count materially reduced — record the actual number. The ≲ 900 (from 1472)
       estimate assumed Step 5's limit generation; without it, expect a smaller reduction.
 - [ ] Every migrated leaf's channel pattern is declared exactly once.
+
+</details>
 
 ---
 

@@ -4,7 +4,7 @@ from pyisomme import Channel
 from pyisomme.isomme import Isomme
 from pyisomme.report.page import Page_Cover, Page_Criterion_Table
 from pyisomme.report.report import Report
-from pyisomme.report.criterion import Criterion
+from pyisomme.report.criterion import Criterion, Role
 from pyisomme.correlation import Correlation_ISO18571
 
 import logging
@@ -21,9 +21,9 @@ def _curve_sort_key(criterion: Overall.Criterion_Curve_Correlation) -> str:
 
 class Overall(Criterion):
     name = "Overall"
+    role = Role.AGGREGATE
     is_reference: bool | None = None
     is_comparison: bool | None = None
-    criteria: list[Overall.Criterion_Curve_Correlation]
 
     def __init__(self, report: Report, isomme: Isomme) -> None:
         super().__init__(report, isomme)
@@ -34,19 +34,34 @@ class Overall(Criterion):
         self.is_reference = True if isomme_r == isomme_c else False
         self.is_comparison = True if isomme_r != isomme_c else False
 
-        self.criteria = []
+        # This tree's *shape* is the data's: one criterion per channel of the reference
+        # test, so it cannot be declared with `sub()`. `add_child` is the escape hatch
+        # for exactly that (F6/A12) -- the children are then walked, printed and
+        # calculated like any declared one.
+        taken: set[str] = set()
         for channel_r in isomme_r.channels:
-            self.criteria.append(self.Criterion_Curve_Correlation(report=report,
-                                                                  isomme=isomme,
-                                                                  channel_r=isomme_r.get_channel(channel_r.code.set(filter_class="D")),
-                                                                  channel_c=isomme_c.get_channel(channel_r.code.set(filter_class="D"), calculate=False, integrate=False, differentiate=False)))
+            code = channel_r.code.set(filter_class="D")
+            # `channels` is a list, not a mapping, and `.set(filter_class=…)` collapses
+            # the filter classes onto one code, so two entries can want the same name.
+            name = str(channel_r.code)
+            while name in taken:
+                name += "'"
+            taken.add(name)
+            self.add_child(name, self.Criterion_Curve_Correlation(
+                report=report,
+                isomme=isomme,
+                channel_r=isomme_r.get_channel(code),
+                channel_c=isomme_c.get_channel(code, calculate=False, integrate=False, differentiate=False)))
+
+    @property
+    def criteria(self) -> list[Overall.Criterion_Curve_Correlation]:
+        """The per-channel criteria, in the order the reference test lists its channels."""
+        return [child for _, child in self.get_children()
+                if isinstance(child, Overall.Criterion_Curve_Correlation)]
 
     def calculation(self) -> None:
         if not self.is_comparison:
             return
-
-        for criterion in self.criteria:
-            criterion.calculate()
 
         self.value = np.nanmin([criterion.value for criterion in self.criteria])
 
@@ -64,6 +79,11 @@ class Overall(Criterion):
             self.channel_c = channel_c
 
         def calculation(self) -> None:
+            if self.isomme == self.report.isomme_list[0]:
+                # The reference test is not correlated against itself. The guard used to
+                # sit in `Overall.calculation()`, which skipped the whole loop; now that
+                # the framework owns the children it has to live where the work is.
+                return
             if self.channel_r is not None and self.channel_c is not None and self.channel_r is not self.channel_c:
                 self.value = Correlation_ISO18571(reference_channel=self.channel_r,
                                                   comparison_channel=self.channel_c).overall_rating()

@@ -24,10 +24,10 @@ reviewed; a row only reaches ☑/⚠ once the maintainer has approved and the co
 | 3c | `data/` restored; one golden value re-baselined | ☑ done | `refactor/step-3-typing-lint` |
 | 4 | Manual inputs as a declared concept (P11) | ⚠ done with deviations | `refactor/step-4-manual-inputs` |
 | 5 | Limit scales: helpers + equivalence proof (P3a) | ✖ **rejected** — reviewed 2026-08-02, stashed | see plan §Step 5 (withdrawn) |
-| 6 | `PeakCriterion` + migrate leaves (P4) | ☐ todo | *(P3b removed with Step 5)* |
+| 6 | `PeakCriterion` + migrate leaves (P4) | ✖ **withdrawn** — 2026-08-04, no code written | see plan §Step 6 (withdrawn) |
 | 7 | `sub()` + `Ctx` framework (P1 + P2) | ⏳ awaiting review | uncommitted, `refactor/step-4-manual-inputs` |
 | 8 | Migrate `frontal_50kmh` (pilot) | ⏳ awaiting review | uncommitted, `refactor/step-4-manual-inputs` |
-| 9 | Migrate remaining reports | ☐ todo | |
+| 9 | Migrate remaining reports | ◐ in progress — `euro_ncap/` done, 6 modules left | uncommitted, `refactor/step-4-manual-inputs` |
 | 10 | Shared criteria library (P9) | ☐ todo | |
 | 11 | Pages select from the tree (P6) | ☐ todo | |
 | 12 | `validate()` + `describe()` (P7 + P8) | ☐ todo | |
@@ -2276,3 +2276,316 @@ level (Step 10 was going to do that anyway) and the unmigrated reports need the 
   are **unchanged** on purpose: rewriting them to `self.parent…` is Step 9/10 and needs Q5 answered.
 - `docs/log/20260803_Step-7-example.py` is now spent — its section 3 was the blueprint for this step.
   Left in place (untracked, so deleting is unrecoverable); maintainer's call.
+
+---
+
+## 2026-08-04 — Step 6 withdrawn; Step 9 part 1: the whole `euro_ncap` family migrated
+
+### Step 6 (`PeakCriterion`) — withdrawn before any code was written
+
+Written up in the plan's §Step 6, which now opens with the decision and keeps the original scope in a
+collapsed block. The maintainer's reason, and the correction that settles it:
+
+**F4 is not redundancy.** The step's premise was that a leaf declares its channel pattern twice and
+that one declaration should feed both. It should not — the two mean different things. `calculation()`
+requests a **concrete filter class** (`?{p}NECKUP00??MOYB`) because it rates one specific filtered
+signal; `define_limits()` uses a **filter-class wildcard** (`?{p}NECKUP00??MOY?`) so the limit bars
+apply to every filter class the plots may draw. Collapsing them would either narrow the limits to one
+filter class or widen the lookup to any.
+
+Two supporting facts, recorded so this is not relitigated: the drift the step guarded against already
+fails **loudly** (`Limits.get_limit_ratings` raises `No limits found for channel …` → `Status.ERROR` →
+`tests/test_golden.py` scores `OK → ERROR` as a regression), and nothing downstream depends on it —
+Step 8 landed the pilot at 946 lines without it. `Reduce.MAX_ABS` (18 hand-copied sites across 8
+modules) is flagged as the one salvageable piece, to be extracted as a plain helper function if ever
+wanted, carrying none of the rest of P4.
+
+### Step 9 part 1 — `euro_ncap/` is done
+
+| module | lines | `__init__(…, p)` | `child.calculate()` | `self.p` |
+|---|---|---|---|---|
+| `frontal_mpdb` | 1619 → 1416 | 42 → 0 | 69 → 2 (MetaReport, not criteria) | 196 → 0 |
+| `side_pole` | 582 → 523 | 12 → 0 | 16 → 0 | 89 → 0 |
+| `side_barrier` | 275 → 242 | 5 → 0 | 14 → 0 | 27 → 0 |
+| `side_farside` | 592 → 542 | 16 → 0 | 20 → 0 | 86 → 0 |
+
+**The order was forced:** pole → barrier → farside, because each subclasses the previous one's
+criteria; migrating one alone leaves the next constructing a `p=` that no longer exists.
+
+- **Nine classes lifted to module level in `frontal_mpdb`** (`Criterion_UnstableAirbagContact`,
+  the two airbag-deployment modifiers, `Criterion_Femur_Compression`,
+  `Criterion_Knee_Slider_Compression`, `Criterion_VariableContact`, `Criterion_ConcentratedLoading`,
+  `Criterion_Tibia_Index`, `Criterion_Tibia_Compression`). The passenger tree reached them through
+  `Overall.Criterion_Driver.…`, and inside `Overall`'s own body the name `Overall` does not exist yet.
+  No aliases needed — nothing outside the module used those paths. `TODO(step-10)`.
+- **Reused base classes are imported under `…_F50` aliases** in `side_barrier`, `side_farside` and
+  `frontal_mpdb`. The previous `class X(X)` self-shadowing worked at runtime but mypy rejects it
+  (`Cannot resolve name … (possible cyclic definition)`).
+- **`from_input(name, *, field="p")` added to `ctx.py`.** The general form of a user-chosen context;
+  `occupant.seat()` is it with the seat's input name filled in. The side reports' occupant is "the
+  struck-side occupant" with an input literally named `p` — labelling that `Seat.DRIVER` would have
+  been untrue.
+- **The far-side `TODO(input)` is resolved.** `EuroNCAP_Side_FarSide`'s occupant was pinned with
+  `p: int = 1`; it is now `Manual[int, manual(1, …)]`, taken from the `Driver position object 1` test
+  info in `prepare()`, with `_ctx_source = from_input("p")` on the root so the whole tree inherits it.
+  Since Step 8 that *was* the whole change — nothing bakes the position in any more. Behaviour-neutral
+  on the fixtures (`14084` reports position 1); ratings verified identical before and after.
+- **Roles declared** across all four modules: `AGGREGATE` on the occupants and body regions,
+  `MODIFIER` on every criterion the protocol names "Modifier …", `RESULT` (the default) on the leaves.
+  The aggregations themselves were **left as explicit `np.min`/`np.sum` lists**: MPDB's driver is `nan`
+  in every fixture, so the golden test could not catch a mis-classification there, and a wrong role in
+  a helper call changes a score silently. Converting them is a separate, reviewable change.
+
+### `validate()` earned its keep
+
+It flagged `side_barrier`'s `p` as *declared but never read* — correct: after the migration the input
+is read by the **framework**, through the context source in a `sub(...)` declaration, not by any line
+of the report. `check_unused_input` now also counts a name appearing in `from_input("…")` or
+`input_name="…"` (`_CTX_SOURCE_INPUT`). The check firing on a real gap the migration introduced is
+exactly what it is for.
+
+### How the migration was done
+
+`docs/log/20260804_Step-9-handover.md` carries the recipe. In short: a line-based transform script
+handles the uniform parts (delete the `__init__`, emit `sub()` at the end of the class body, turn
+`extend_limit_list([...])` into `define_limits()` with the shared pattern list hoisted to `codes = …`,
+drop the explicit `child.calculate()` calls, rewrite `f"?{self.p}…"` to `self.ctx.code("?{p}…")`), and
+prints every statement it did not understand. Everything else — `Overall.__init__`/`prepare()`, the
+`at=` sources, roles, module-level lifting — is done by hand.
+
+**The one hazard worth repeating:** `self.p` means the *threaded position* on a child but the
+*manual input* on `Overall` in the side reports. Every `Overall` was hand-written for that reason.
+
+### Verified
+
+| Command | Result |
+|---|---|
+| `-m unittest tests.test_golden` | 17 OK — `frontal_50kmh`, `frontal_mpdb` and `side_barrier` results **unchanged**, no re-baseline |
+| `-m unittest tests.test_report_structure` | OK — the definition layer of all 13 reports is byte-identical after every module |
+| `-m unittest tests.test_describe tests.test_validate` | OK — **no snapshot moved** |
+| `-m unittest tests.test_manual_inputs` | 37 OK (`test_mpdb_syncs_too` now reads the context, like the rest) |
+| `-m ruff check .` | 10 findings, all pre-existing in `tests/` |
+| `-m mypy` | clean, 62 files |
+
+### Still to do in Step 9
+
+`side_farside_vtc` (5 `__init__(…, p)`, and criteria constructed from `Channel` arguments — the
+non-standard one), the four `un/` reports (39 blocks between them), `iihs/frontal_small_overlap` (21),
+the `us_ncap` stub (2) and `correlation` (already free of `p`, but its dynamic list wants
+`add_child`). Then `PositionedCriterion`, `sync_positions` and `rebuild_child` can go.
+
+**None of those six has golden *results* coverage** — the net is the definition layer plus
+construct-and-calculate smoke runs, which is what the plan anticipated. Worth knowing before changing
+any aggregation in them.
+
+---
+
+## 2026-08-04 — Step 9 part 2: the last eight reports migrated; the transition machinery deleted
+
+Step 9 is **complete**. All 13 reports are on `sub()` + `Ctx`; nothing threads a position through a
+constructor any more.
+
+| module | lines | `__init__(…, p)` | `child.calculate()` | `self.p` |
+|---|---|---|---|---|
+| `us_ncap/frontal_56kmh` | 126 → 118 | 2 → 0 | 6 → 0 | 8 → 0 |
+| `correlation/correlation` | 104 → 124 | 0 → 0 | 1 → 0 | 0 → 0 |
+| `un/side_pole_r135` | 304 → 278 | 7 → 0 | 7 → 0 | 48 → 0 |
+| `un/frontal_50kmh_r137` | 531 → 467 | 14 → 0 | 18 → 0 | 79 → 0 |
+| `un/frontal_56kmh_odb_r94` | 603 → 530 | 14 → 0 | 24 → 0 | 76 → 0 |
+| `un/side_barrier_r95` | 249 → 235 | 4 → 0 | 6 → 0 | 31 → 0 |
+| `euro_ncap/side_farside_vtc` | 491 → 459 | 5 → 0 | 25 → 0 | 69 → 0 |
+| `iihs/frontal_small_overlap` | 695 → 596 | 21 → 0 | 21 → 0 | 118 → 0 |
+
+Repo-wide: **`def __init__(self, report, isomme, p)` is 0** (was 180 at the start of the refactor),
+`self.p` in `pyisomme/report/` is 0 (one mention left, in a comment in `check_unused_input.py`), and
+the only `self.<child>.calculate()` lines left are two that were already commented out in
+`frontal_mpdb`.
+
+### The order was forced again
+
+`un/side_pole_r135` → `un/frontal_50kmh_r137` → `un/frontal_56kmh_odb_r94` → `un/side_barrier_r95`:
+R95 subclasses criteria from both R137 and R135, and R94 subclasses five of R137's. Migrating a base
+before its subclass leaves the subclass constructing a `p=` that no longer exists.
+
+### Four classes lifted to module level in `un/frontal_50kmh_r137`
+
+`Criterion_HPC36`, `Criterion_Head_a3ms`, `Criterion_Neck_My_extension`, `Criterion_Chest_VC` — the
+ones `Criterion_Passenger` reuses from the driver, which a `sub()` inside `Overall`'s body cannot
+name. **No aliases**: their only outside users (R94 twice each, R95 once) use them as *base classes*,
+and mypy rejects a class-attribute alias in type position, so those modules import them directly
+under `…_R137` aliases. `Criterion_Chest_Deflection` stays nested — R94 reaches it through the real
+path `Overall.Criterion_Driver.Criterion_Chest_Deflection`, which mypy resolves. `TODO(step-10)`.
+
+### The three `TODO(input)` positions are resolved
+
+`un/side_pole_r135`, `un/side_barrier_r95` and `euro_ncap/side_farside_vtc` each pinned their occupant
+with a plain `p: int = 1` overwritten from the `Driver position object 1` test info in `__init__`.
+Each is now `p: Manual[int, manual(1, …)]` filled by `prepare()` with `set_derived_input`, and the
+occupant is wired `at=from_input("p")` — the same shape Step 9 part 1 gave the Euro-NCAP far-side
+report. Behaviour-neutral on the fixtures (verified below); the position is now settable after
+construction, which it was not before.
+
+### `correlation` is the one that is not mechanical (A12)
+
+Its tree is one criterion per channel of the reference test, so its *shape* is the data's and it
+cannot be declared. It now uses `Criterion.add_child()` — which is what that escape hatch exists for
+— instead of a private `self.criteria` list the framework could not see. Four consequences:
+
+- **The per-channel criteria are real children now**: they appear in `walk()`, `print_results()` and
+  `describe()`, and the framework calculates them. Before, they were invisible to all of it.
+- `Overall.criteria` is now a **property** over the children of that type, so
+  `Page_Correlation_Overall_Rating_Table` is unchanged and still gets the same 77 criteria per test.
+- **The "is this the reference test?" guard moved into the leaf.** It used to sit in
+  `Overall.calculation()`, which skipped the whole child loop; with the framework owning the
+  children it has to live where the work is, or the reference test would correlate against itself
+  (77 ISO-18571 runs producing ~1.0). Same values, same colours; the only delta is that the
+  reference test's leaves now end `Status.OK` with `value = nan` instead of staying `PENDING`.
+- Child names are the reference channel's code, disambiguated with a trailing apostrophe on
+  collision: `Isomme.channels` is a list, not a mapping, and `.set(filter_class="D")` collapses the
+  filter classes, so two entries can want the same name and the old list kept both.
+
+### `euro_ncap/side_farside_vtc`: siblings as constructor arguments
+
+Its five resultant criteria were built as `Criterion_Head_COG_Angular_Velocity(report, isomme,
+self.head_avx, self.head_avy, self.head_avz)` — a child handed references to its siblings, which
+`sub()` cannot express. Replaced with a declared `components: tuple[str, ...]` of **attribute names**
+resolved against `self.parent` in a property. Declaration order is calculation order, so each
+resultant is declared after its three axes and reads them already calculated.
+
+### `us_ncap/frontal_56kmh` (the stub)
+
+Migrated as far as it can be: the driver and its four body regions are `sub()`s. `Criterion_Passenger`
+is still referenced but never defined — one of the two reasons the report raises `NotImplementedError`
+— so the reference moved from a dead `__init__` line into `Overall.calculation()`, with the `sub()`
+spelling it wants written beside it in a comment.
+
+### Transition machinery deleted
+
+- **`PositionedCriterion`** (`frontal_50kmh`) — 12 classes rebased on `Criterion`; there is no `p=`
+  call site left in the repo.
+- **`Criterion.rebuild_child`** and **`Overall.sync_positions`/`sync_position`** — gone everywhere.
+- **`Criterion.p: int`** — the class-level annotation for the threaded position. Not on the
+  handover's list, but it is the same mechanism: leaving it declared kept `criterion.p = 3` settable
+  on *every* criterion, which is exactly the F13 hole `__setattr__` closes. The reports that still
+  have a `p` declare it themselves as a manual input. **Flagged as a deviation** — revert this one
+  line if the maintainer wants the guard left as it was.
+- `CLAUDE.md`'s "not-yet-migrated"/"unmigrated" wording and its description of the rebuild mechanism.
+- `tests/test_manual_inputs.py::TestPositionSyncF15`'s class docstring. The method names still say
+  "rebuild"; kept deliberately — they are the step-4 regression tests and the names are what a
+  failure gets looked up by. The docstring now says to read them as "a position change that used to
+  need a rebuild".
+
+### Roles declared, aggregations left alone
+
+`AGGREGATE` on every `Overall`, occupant and body region; `RESULT` (the default) on the leaves. The
+`np.min`/`np.max`/`np.sum` lists were **not** converted to the helpers, for the reason recorded in
+part 1: none of these eight reports has golden *results* coverage, so a mis-classified role would
+change a score with nothing to catch it. Converting them is a separate, reviewable change.
+
+### Verified
+
+Every module was checked the same way, after each one: a **smoke harness** builds the report from the
+same fixtures `tests/test_report.py` uses, runs `validate(errors_only=True)`, `calculate()`, and dumps
+`golden_utils.serialise(report)` (definition + per-test `value`/`rating`/`color`/`status`) to JSON.
+Baselines were captured from `HEAD` before any edit and diffed after.
+
+| report | smoke diff |
+|---|---|
+| `un_side_pole_r135`, `un_side_barrier_r95` | **byte-identical** |
+| `un_frontal_50kmh_r137`, `un_frontal_56kmh_odb_r94` | **byte-identical** |
+| `euro_ncap_side_farside_vtc` (empty Isommes — the fixture is lost) | **byte-identical** |
+| `iihs_frontal_small_overlap` | **byte-identical** |
+| `correlation` | `Overall` value/rating/status identical for all three tests; the tree grew from 1 criterion to 78 (the per-channel children are now visible), and `criteria` is still 77 per test |
+
+| Command | Result |
+|---|---|
+| `-m unittest discover -s tests` | **294 tests**, 2 errors — the same two pre-existing ones (`test_isomme.test_read` wants the untracked `data/nhtsa/11391.tar`; `test_plotting`'s `KeyError` is the maintainer's uncommitted duck-typed test, unrelated to the tree) |
+| `-m unittest tests.test_golden` | 17 OK — **no re-baseline**, the three covered Euro-NCAP reports are unchanged |
+| `-m unittest tests.test_report_structure` | OK — the definition layer of all 13 reports is byte-identical after every module |
+| `-m unittest tests.test_describe tests.test_validate` | OK — **no snapshot moved** |
+| `-m unittest tests.test_manual_inputs tests.test_criterion_tree tests.test_report_modules` | OK |
+| `PYISOMME_SLOW=1 … test_IIHS_Frontal_Small_Overlap`, `… test_UN_Frontal_50kmh_R137`, `… test_UN_Frontal_56kmh_ODB_R94`, `… test_EuroNCAP_Frontal_MPDB` | OK individually, PPTX exported |
+| `-m ruff check .` | 10 findings, all pre-existing in `tests/` |
+| `-m mypy` | clean, 62 files |
+
+**No snapshot was regenerated in this session.**
+
+### Still open
+
+- The eight class-attribute aliases in `frontal_50kmh` (`Criterion_HIC_15 = Criterion_HIC_15`, …)
+  carry a `TODO(step-10)` and are untouched. Three of them (`Criterion_HIC_15`,
+  `Criterion_Head_a3ms`, `Criterion_UnstableAirbagContact`) now appear to have no user at all —
+  worth deleting with the shared criteria library rather than piecemeal.
+- `role` is still declared but not read by `describe()`/`validate()` — carried over from Steps 7/8.
+  All 13 reports now carry real roles, so the `max_rating`-vs-non-modifier check has full input.
+- The aggregation helpers (`min_of_children`, `sum_of_children`, …) are used only in
+  `frontal_50kmh`; the other twelve keep explicit lists. See "Roles declared" above.
+- The back-references (`self.report.criterion_overall[…].criterion_driver.…`) are unchanged; still
+  Step 10/11 and still needs Q5 answered.
+- `docs/log/20260804_Step-9-handover.md` and `docs/log/step-9/migrate.py` are spent. The handover says
+  to delete the former when Step 9 lands; both are untracked, so deleting is unrecoverable —
+  maintainer's call.
+
+---
+
+## 2026-08-04 — `pyisomme/plotting.py` → `pyisomme/plotting/` package
+
+Not a numbered refactor step: a maintainer-requested split of the plotting module, logged here because
+it is the running record for this repo. **Pure move — no plotting logic changed.**
+
+### What changed
+
+| file | change |
+|---|---|
+| `pyisomme/plotting.py` | **deleted** (unstaged deletion, left in the working tree) |
+| `pyisomme/plotting/__init__.py` | new — re-exports `Plot`, `Plot_Line`, `Plot_Table`, `Plot_Line_Table` with an explicit `__all__`, mirroring `report/page/__init__.py` |
+| `pyisomme/plotting/plot.py` | new — base `Plot` (colors, linestyles, `figsize`/`nrows`/`ncols`, `show()`) |
+| `pyisomme/plotting/plot_line.py` | new — `Plot_Line` and its limit line/fill/text helpers |
+| `pyisomme/plotting/plot_table.py` | new — `Plot_Table` |
+| `pyisomme/plotting/plot_line_table.py` | new — `Plot_Line_Table` (inherits `Plot_Line`, `Plot_Table`; MRO verified unchanged) |
+| `pyproject.toml` | added `"pyisomme.plotting.*"` next to `"pyisomme.plotting"` in the mypy `follow_imports = "silent"` override — the old entry no longer covers the submodules |
+| `CLAUDE.md` | Plotting section now points at the package and records the matplotlib typing workarounds |
+
+**No import site needed fixing.** All four consumers (`report/page/criterion_table.py`,
+`report/page/line_table.py`, `report/page/plot_nxn.py`, `__main__.py` via the top-level star-export)
+import from `pyisomme.plotting`, which still resolves through the package `__init__`.
+`setuptools.packages.find` already globs `pyisomme*`, so packaging needed no change.
+
+### Type-checker fixes (maintainer request)
+
+Pylance runs in **basic** mode (`.vscode/settings.json`) and matplotlib 3.7.5 ships no stubs, so
+`plt.subplots()` infers as `FigureBase | Unknown`. Pyright reported 4 errors in the new package — all
+pre-existing, all present in `HEAD:pyisomme/plotting.py` (verified by checking the extracted original).
+
+- 3× `reportReturnType` on `return fig` → fixed at the source with `fig = cast(Figure, fig)` in each
+  `plot()`, matching the `cast("list[Axes]", axs)` idiom two lines below. No runtime cost.
+- 1× `reportAttributeAccessIssue` on `fig.patch` in `Plot_Line_Table.plot` → the `getattr(fig, "patch",
+  None)` guard the maintainer already used in `Plot_Table` was mirrored. The cast alone does **not**
+  fix this: Pylance cannot resolve `patch` on `Figure` either, so the guard has to stay in both.
+
+Pyright over `pyisomme/plotting/`: **0 errors** (was 4). `mypy` run directly on the package still shows
+3 pre-existing `redundant-cast` findings on the inherited `cast("list[Axes]", axs)` lines — outside the
+repo mypy scope (`files = ["pyisomme/report"]`) and left alone, since dropping the cast would
+re-break Pylance.
+
+### Verified
+
+| Command | Result |
+|---|---|
+| `-m pyright pyisomme/plotting/` | **0 errors**, 5 files (4 before the fix) |
+| `-m mypy` (repo config) | clean, 62 files |
+| `-m ruff check pyisomme/plotting/` | All checks passed |
+| `-m ruff check .` | 10 findings, all pre-existing in `tests/`, none in touched files |
+| 18 fast test modules (all but `test_report`/`test_golden`) | **265 tests, 2 errors** — the same two pre-existing ones (`test_isomme.test_read` wants the untracked `data/nhtsa/11391.tar`; `test_plotting`'s `KeyError` is the maintainer's uncommitted duck-typed test) |
+| render smoke test | `Plot_Line`, `Plot_Table`, `Plot_Line_Table` each return a real `Figure`; `patch.get_visible()` is `False` on both table figures, so the `getattr` guard still fires at runtime |
+
+`pyright` was pip-installed into `.venv` to get ground truth instead of guessing at Pylance's
+diagnostics, then **uninstalled** — the venv is as it was found.
+
+### Still open
+
+- `tests/test_report.py` and `tests/test_golden.py` were **not** run (~6 min; the maintainer declined
+  the full-suite run). The plotting classes are exercised by the report pages, so a report test is the
+  remaining coverage gap for this change.
+- The 3 `redundant-cast` mypy findings above, if the plotting package is ever pulled into the mypy
+  `files` scope.

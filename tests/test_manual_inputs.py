@@ -36,15 +36,16 @@ def build(report_class=EuroNCAP_Frontal_50kmh, n: int = 1):
     return report_class(isomme_list), isomme_list
 
 
-def position(criterion: Criterion) -> int:
+def position(criterion: Criterion) -> str:
     """
     The seating position a criterion actually assesses.
 
     Step 8 replaced the ``p`` threaded through every constructor with the lazily
     resolved context, so this — not ``criterion.p`` — is what says which occupant a
-    migrated criterion is looking at. The unmigrated reports still carry ``.p``.
+    criterion is looking at. A ``str``, because a position is one character of the
+    channel code and the lettered seats (``?A…``) are positions too.
     """
-    return int(criterion.ctx.field("p"))
+    return str(criterion.ctx.field("p"))
 
 
 class TestDeclaration(unittest.TestCase):
@@ -205,31 +206,32 @@ class TestPositionSyncF15(unittest.TestCase):
     """
     A seating position set after construction must move the criteria, not only the plots.
 
-    The behaviour under test is unchanged since step 4; the mechanism is not. For
-    ``frontal_50kmh`` (migrated in step 8) there is no rebuild any more — the context is
-    resolved at the start of ``calculate()``, so the same subtree simply reads a
-    different position. The ``rebuild`` in the method names below still describes what
-    the *unmigrated* reports do, and ``test_mpdb_syncs_too`` is the one that exercises it.
+    The behaviour under test is unchanged since step 4; the mechanism is gone. Every
+    report is migrated as of step 9, so nothing rebuilds anything any more — the context
+    is resolved at the start of ``calculate()`` and the same subtree simply reads a
+    different position. The ``rebuild`` in the method names below is kept because these
+    are the step-4 regression tests and the names are what a failure will be looked up
+    by; read it as "a position change that used to need a rebuild".
     """
 
     def test_position_set_after_construction_reaches_the_criteria(self) -> None:
         report, (v1,) = build()
         overall = report.overall(v1)
-        self.assertEqual(position(overall.criterion_driver), 1)
+        self.assertEqual(position(overall.criterion_driver), "1")
 
-        overall.p_driver = 3
+        overall.p_driver = "3"
         report.calculate()
 
-        self.assertEqual(position(overall.criterion_driver), 3)
-        self.assertEqual(position(overall.criterion_driver.criterion_head.criterion_hic_15), 3)
+        self.assertEqual(position(overall.criterion_driver), "3")
+        self.assertEqual(position(overall.criterion_driver.criterion_head.criterion_hic_15), "3")
         # ...and the derived positions follow the right-hand-drive rule.
-        self.assertEqual(overall.p_front_passenger, 1)
-        self.assertEqual(position(overall.criterion_front_passenger), 1)
+        self.assertEqual(overall.p_front_passenger, "1")
+        self.assertEqual(position(overall.criterion_front_passenger), "1")
 
     def test_rebuilt_limits_follow_the_new_position(self) -> None:
         report, (v1,) = build()
         overall = report.overall(v1)
-        overall.p_driver = 3
+        overall.p_driver = "3"
         report.calculate()
 
         patterns = overall.criterion_driver.criterion_head.criterion_hic_15.limits.limit_list[0].code_patterns
@@ -241,7 +243,7 @@ class TestPositionSyncF15(unittest.TestCase):
         overall.criterion_driver.criterion_femur.criterion_submarining.submarining = True
         overall.criterion_driver.steering_wheel_airbag_exists = False
 
-        overall.p_driver = 3
+        overall.p_driver = "3"
         report.calculate()
 
         self.assertIs(overall.criterion_driver.criterion_femur.criterion_submarining.submarining, True)
@@ -251,7 +253,7 @@ class TestPositionSyncF15(unittest.TestCase):
         report, (v1,) = build()
         before = len(report.limits[v1].limit_list)
 
-        report.overall(v1).p_driver = 3
+        report.overall(v1).p_driver = "3"
         report.calculate()
 
         self.assertEqual(len(report.limits[v1].limit_list), before)
@@ -265,10 +267,10 @@ class TestPositionSyncF15(unittest.TestCase):
     def test_mpdb_syncs_too(self) -> None:
         report, (v1,) = build(EuroNCAP_Frontal_MPDB)
         overall = report.overall(v1)
-        overall.p_driver = 3
+        overall.p_driver = "3"
         report.calculate()
-        self.assertEqual(overall.criterion_driver.p, 3)
-        self.assertEqual(overall.criterion_passenger.p, 1)
+        self.assertEqual(position(overall.criterion_driver), "3")
+        self.assertEqual(position(overall.criterion_passenger), "1")
 
 
 class TestDerivedVsUserSetPositions(unittest.TestCase):
@@ -278,60 +280,60 @@ class TestDerivedVsUserSetPositions(unittest.TestCase):
         report, (v1,) = build()
         overall = report.overall(v1)
 
-        overall.p_driver = 3            # right-hand drive: would derive 1 / 4
-        overall.p_front_passenger = 5   # ...but this test seated it centrally
+        overall.p_driver = "3"            # right-hand drive: would derive 1 / 4
+        overall.p_front_passenger = "5"   # ...but this test seated it centrally
         report.calculate()
 
-        self.assertEqual(overall.p_front_passenger, 5)
-        self.assertEqual(position(overall.criterion_front_passenger), 5)
-        self.assertEqual(overall.p_rear_passenger, 4)   # untouched -> still derived
+        self.assertEqual(overall.p_front_passenger, "5")
+        self.assertEqual(position(overall.criterion_front_passenger), "5")
+        self.assertEqual(overall.p_rear_passenger, "4")   # untouched -> still derived
 
     def test_explicit_value_equal_to_the_default_still_wins(self) -> None:
         """The case ``value != default`` cannot see: set explicitly *to* the default."""
         report, (v1,) = build()
         overall = report.overall(v1)
 
-        overall.p_driver = 3
-        overall.p_front_passenger = 3   # the declared default, meant literally
+        overall.p_driver = "3"
+        overall.p_front_passenger = "3"   # the declared default, meant literally
         report.calculate()
 
-        self.assertEqual(overall.p_front_passenger, 3)
-        self.assertEqual(position(overall.criterion_front_passenger), 3)
+        self.assertEqual(overall.p_front_passenger, "3")
+        self.assertEqual(position(overall.criterion_front_passenger), "3")
 
     def test_derivation_is_idempotent_across_recalculation(self) -> None:
         """A derived value must follow ``p_driver`` back, not stick at the old one."""
         report, (v1,) = build()
         overall = report.overall(v1)
 
-        overall.p_driver = 3
+        overall.p_driver = "3"
         report.calculate()
-        self.assertEqual(overall.p_front_passenger, 1)
+        self.assertEqual(overall.p_front_passenger, "1")
 
-        overall.p_driver = 1
+        overall.p_driver = "1"
         report.calculate()
-        self.assertEqual(overall.p_front_passenger, 3)
-        self.assertEqual(position(overall.criterion_front_passenger), 3)
+        self.assertEqual(overall.p_front_passenger, "3")
+        self.assertEqual(position(overall.criterion_front_passenger), "3")
 
     def test_set_inputs_counts_as_user_set(self) -> None:
         """A replayed input file pins the positions it recorded."""
         report, (v1,) = build()
-        report.set_inputs({"T0": {"p_driver": 3, "p_front_passenger": 5}})
+        report.set_inputs({"T0": {"p_driver": "3", "p_front_passenger": "5"}})
         report.calculate()
 
-        self.assertEqual(position(report.overall(v1).criterion_front_passenger), 5)
+        self.assertEqual(position(report.overall(v1).criterion_front_passenger), "5")
 
     def test_a_rebuilt_subtree_keeps_derived_values_derived(self) -> None:
         """A value the report derived must not be frozen by a rebuild (MPDB nests one)."""
         report, (v1,) = build()
         overall = report.overall(v1)
 
-        overall.p_driver = 3
+        overall.p_driver = "3"
         report.calculate()
         self.assertFalse(overall.input_is_set("p_front_passenger"))
 
-        overall.p_driver = 1
+        overall.p_driver = "1"
         report.calculate()
-        self.assertEqual(position(overall.criterion_front_passenger), 3)
+        self.assertEqual(position(overall.criterion_front_passenger), "3")
 
     def test_input_is_set_reports_the_source(self) -> None:
         report, (v1,) = build()
@@ -340,7 +342,7 @@ class TestDerivedVsUserSetPositions(unittest.TestCase):
         self.assertFalse(overall.input_is_set("p_driver"))
         self.assertFalse(overall.input_is_set("p_front_passenger"))
 
-        overall.p_front_passenger = 5
+        overall.p_front_passenger = "5"
         self.assertTrue(overall.input_is_set("p_front_passenger"))
 
     def test_set_derived_input_rejects_an_undeclared_name(self) -> None:
@@ -350,7 +352,7 @@ class TestDerivedVsUserSetPositions(unittest.TestCase):
 
     def test_print_inputs_distinguishes_derived_from_user_set(self) -> None:
         report, (v1,) = build()
-        report.overall(v1).p_driver = 3   # derives p_front_passenger = 1
+        report.overall(v1).p_driver = "3"   # derives p_front_passenger = 1
         report.calculate()
 
         buffer = io.StringIO()

@@ -26,10 +26,18 @@ __all__ = [
 logger = logging.getLogger(__name__)
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, eq=False)
 class manual:
     """
     Metadata of a manual input, carried in a :data:`Manual` annotation.
+
+    **Compared by identity, not by value** (``eq=False``). Two declarations that happen
+    to read the same — every report's driver position is ``manual("1", source="test
+    report", …)`` — are still two different declarations, and
+    ``sub(..., at=from_input(P_DRIVER))`` has to resolve to *this* module's. Value
+    equality would also make them interchangeable to ``typing.Annotated``, which caches
+    ``Annotated[str, meta]`` on ``(type, meta)``: the second module to be imported would
+    silently get the first one's annotation object.
 
     :param default: value used when nobody sets the input. Installed as the
         class attribute, so it must be immutable.
@@ -53,6 +61,12 @@ class InputSpec:
     name: str
     type: Any
     owner: type
+    #: The very :class:`manual` object the annotation carries. Kept so a declaration
+    #: can be referenced *by object* instead of by name — see
+    #: :meth:`Criterion.find_input_owner` and :func:`pyisomme.report.ctx.from_input`.
+    #: Compared with ``is``, never ``==``: ``manual`` is a frozen dataclass, so two
+    #: unrelated inputs with the same default and doc compare equal.
+    meta: manual
     default: Any
     unit: str | None = None
     doc: str | None = None
@@ -118,7 +132,11 @@ _SETTABLE: dict[type, frozenset[str]] = {}
 def _resolve_annotation(owner: type, annotation: Any) -> tuple[Any, manual] | None:
     """Return ``(declared_type, manual)`` if ``annotation`` is a ``Manual[...]``."""
     if isinstance(annotation, str):
-        if "manual(" not in annotation:
+        # `from __future__ import annotations` makes every annotation a string, and
+        # evaluating all of them would be wasteful, so filter first. Both spellings
+        # count: the inline `Manual[bool, manual(False, …)]` and the
+        # `Manual[str, P_DRIVER]` that references a hoisted declaration.
+        if "manual(" not in annotation and "Manual[" not in annotation:
             return None
         module = sys.modules.get(owner.__module__)
         globalns = dict(vars(typing))
@@ -159,6 +177,7 @@ def declared_inputs(cls: type) -> dict[str, InputSpec]:
                 name=name,
                 type=declared_type,
                 owner=owner,
+                meta=meta,
                 default=meta.default,
                 unit=meta.unit,
                 doc=meta.doc,

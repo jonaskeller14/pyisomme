@@ -18,8 +18,8 @@ Manual inputs:
 
 | input | type | default | unit | source | doc |
 | --- | --- | --- | --- | --- | --- |
-| p_driver | int | 1 | — | test report | Channel-code position of the driver. Defaults to the 'Driver position object 1' test-info field when the test carries it. |
-| p_passenger | int | 3 | — | test report | Channel-code position of the front passenger. Derived from p_driver (1 for a right-hand-drive test) unless set explicitly. |
+| p_driver | str | '1' | — | test report | Channel-code position of the driver. Defaults to the 'Driver position object 1' test-info field when the test carries it. |
+| p_passenger | str | '3' | — | test report | Channel-code position of the front passenger. Derived from p_driver ('1' for a right-hand-drive test) unless set explicitly. |
 
 ## `criterion_driver` — Driver
 

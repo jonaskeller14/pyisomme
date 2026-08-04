@@ -2,10 +2,15 @@ from __future__ import annotations
 
 from pyisomme.isomme import Isomme
 from pyisomme.report.page import Page_Cover
+from pyisomme.limit import Limit
 from pyisomme.report.report import Report
-from pyisomme.report.criterion import Criterion
+from pyisomme.report.criterion import Criterion, Role, sub
+from pyisomme.report.ctx import from_input
 from pyisomme.report.manual import Manual, manual
-from pyisomme.report.euro_ncap.frontal_50kmh import Criterion_HIC_15, Criterion_Head_a3ms
+from pyisomme.report.euro_ncap.frontal_50kmh import (
+    Criterion_HIC_15 as Criterion_HIC_15_F50,
+    Criterion_Head_a3ms as Criterion_Head_a3ms_F50,
+)
 from pyisomme.report.euro_ncap.side_pole import EuroNCAP_Side_Pole
 from pyisomme.report.euro_ncap.side_pole import Overall as Overall_Side_Pole
 from pyisomme.report.euro_ncap.limits import Limit_G, Limit_P, Limit_C, Limit_M, Limit_A, Limit_W
@@ -17,50 +22,31 @@ from typing import Any
 
 logger = logging.getLogger(__name__)
 
+P = manual("1", source="test report", doc=(
+    "Channel-code position of the struck-side occupant — the only occupant "
+    "§5 assesses. Defaults to the 'Driver position object 1' test-info field "
+    "when the test carries it."))
+
 
 class Overall(Criterion):
     name = "Overall"
+    role = Role.AGGREGATE
     max_rating = 16.
     source = "§5"
-    p: Manual[int, manual(1, source="test report", doc=(
-        "Channel-code position of the struck-side occupant — the only occupant "
-        "§5 assesses. Defaults to the 'Driver position object 1' test-info field "
-        "when the test carries it."))]
-
-    positioned_children = Overall_Side_Pole.positioned_children
+    p: Manual[str, P]
 
     def __init__(self, report: Report, isomme: Isomme) -> None:
         super().__init__(report, isomme)
+        # Also at construction: the pages read `p` when the report is built.
+        self.prepare()
 
-        p = isomme.get_test_info("Driver position object 1")
+    def prepare(self) -> None:
+        """Take the struck-side position from the test info before the occupant reads it."""
+        p = self.isomme.get_test_info("Driver position object 1")
         if p is not None:
-            self.set_derived_input("p", int(p))
-
-        self.criterion_head = self.Criterion_Head(self.report, self.isomme, p=self.p)
-        self.criterion_chest = self.Criterion_Chest(self.report, self.isomme, p=self.p)
-        self.criterion_abdomen = self.Criterion_Abdomen(self.report, self.isomme, p=self.p)
-        self.criterion_pelvis = self.Criterion_Pelvis(self.report, self.isomme, p=self.p)
-
-        # §5.2.4 and §5.2.5 apply to side barrier and pole alike; §5.2.3's head
-        # protection device penalty is pole-only and deliberately absent here.
-        self.criterion_incorrect_airbag_deployment = Overall_Side_Pole.Criterion_IncorrectAirbagDeployment(report, isomme)
-        self.criterion_door_opening_during_impact = Overall_Side_Pole.Criterion_DoorOpeningDuringImpact(report, isomme)
-
-    def sync_position(self) -> None:
-        """Same interim F15 rebuild as the pole report — see its ``sync_position``."""
-        for attr in self.positioned_children:
-            if getattr(self, attr).p != self.p:
-                logger.info(f"{self}: rebuilding {attr} for position {self.p}")
-                self.rebuild_child(attr, p=self.p)
+            self.set_derived_input("p", str(p).strip())
 
     def calculation(self) -> None:
-        self.sync_position()
-
-        self.criterion_head.calculate()
-        self.criterion_chest.calculate()
-        self.criterion_abdomen.calculate()
-        self.criterion_pelvis.calculate()
-
         self.rating = np.sum([
             self.criterion_head.rating,
             self.criterion_chest.rating,
@@ -70,8 +56,6 @@ class Overall(Criterion):
         self.rating = float(np.interp(self.rating, [0, 16], [0, 16], left=0, right=np.nan))
 
         # Modifier
-        self.criterion_incorrect_airbag_deployment.calculate()
-        self.criterion_door_opening_during_impact.calculate()
 
         self.rating += np.sum([
             self.criterion_incorrect_airbag_deployment.rating,
@@ -88,47 +72,30 @@ class Overall(Criterion):
         #: exceedance on the same sliding scale as the frontal tests.
         source = "§5.1.1.1"
 
-        def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
-            super().__init__(report, isomme)
-
-            self.p = p
-
-            self.criterion_hic_15 = self.Criterion_HIC_15(self.report, self.isomme, p=self.p)
-            self.criterion_head_acceleration = self.Criterion_Head_a3ms(self.report, self.isomme, p=self.p)
 
         def calculation(self) -> None:
-            self.criterion_hic_15.calculate()
-            self.criterion_head_acceleration.calculate()
 
             self.rating = np.min([
                 self.criterion_hic_15.rating,
                 self.criterion_head_acceleration.rating,
             ])
 
-        class Criterion_HIC_15(Criterion_HIC_15):  # noqa: F811 - the nested name deliberately shadows the import
+        class Criterion_HIC_15(Criterion_HIC_15_F50):
             pass
 
-        class Criterion_Head_a3ms(Criterion_Head_a3ms):  # noqa: F811
+        class Criterion_Head_a3ms(Criterion_Head_a3ms_F50):
             pass
+
+        criterion_hic_15 = sub(Criterion_HIC_15)
+        criterion_head_acceleration = sub(Criterion_Head_a3ms)
 
     class Criterion_Chest(Criterion):
         name = "Chest"
         max_rating = 4.
         source = "§5.1.2"
 
-        def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
-            super().__init__(report, isomme)
-
-            self.p = p
-
-            self.criterion_chest_lateral_compression = self.Criterion_Chest_Lateral_Compression(self.report, self.isomme, p=self.p)
-            self.criterion_chest_lateral_vc = self.Criterion_Chest_Lateral_VC(self.report, self.isomme, p=self.p)
-            self.criterion_shoulder_lateral_force = self.Criterion_Shoulder_Lateral_Force(self.report, self.isomme, p=self.p)
 
         def calculation(self) -> None:
-            self.criterion_chest_lateral_compression.calculate()
-            self.criterion_chest_lateral_vc.calculate()
-            self.criterion_shoulder_lateral_force.calculate()
 
             self.rating = np.min([
                 self.criterion_chest_lateral_compression.rating,
@@ -141,22 +108,20 @@ class Overall(Criterion):
             #: the capping row differs from EuroNCAP_Side_Pole.
             name = "Chest Lateral Compression"
 
-            def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
-                super().__init__(report, isomme)
+            def define_limits(self) -> list[Limit]:
+                codes = self.ctx.codes("?{p}TRRI??0[0123]??DSY?")
+                return [
+                    Limit_C(codes, func=lambda x: -50.000, y_unit="mm", upper=True),
+                    Limit_P(codes, func=lambda x: -50.000, y_unit="mm"),
+                    Limit_W(codes, func=lambda x: -42.667, y_unit="mm", upper=True),
+                    Limit_M(codes, func=lambda x: -35.333, y_unit="mm", upper=True),
+                    Limit_A(codes, func=lambda x: -28.000, y_unit="mm", upper=True),
+                    Limit_G(codes, func=lambda x: -28.000, y_unit="mm", lower=True),
+                ]
 
-                self.p = p
-
-                self.extend_limit_list([
-                    Limit_C([f"?{self.p}TRRI??0[0123]??DSY?"], func=lambda x: -50.000, y_unit="mm", upper=True),
-                    Limit_P([f"?{self.p}TRRI??0[0123]??DSY?"], func=lambda x: -50.000, y_unit="mm"),
-                    Limit_W([f"?{self.p}TRRI??0[0123]??DSY?"], func=lambda x: -42.667, y_unit="mm", upper=True),
-                    Limit_M([f"?{self.p}TRRI??0[0123]??DSY?"], func=lambda x: -35.333, y_unit="mm", upper=True),
-                    Limit_A([f"?{self.p}TRRI??0[0123]??DSY?"], func=lambda x: -28.000, y_unit="mm", upper=True),
-                    Limit_G([f"?{self.p}TRRI??0[0123]??DSY?"], func=lambda x: -28.000, y_unit="mm", lower=True),
-                ])
 
             def calculation(self) -> None:
-                self.channel = self.require_channel(f"?{self.p}TRRI??00??DSYC").convert_unit("mm")
+                self.channel = self.require_channel(self.ctx.code("?{p}TRRI??00??DSYC")).convert_unit("mm")
                 self.value = np.min(self.channel.get_data())
                 self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=True)
                 self.color = self.limits.get_limit_min_color(self.channel)
@@ -167,22 +132,17 @@ class Overall(Criterion):
         class Criterion_Shoulder_Lateral_Force(Overall_Side_Pole.Criterion_Chest.Criterion_Shoulder_Lateral_Force):
             pass
 
+        criterion_chest_lateral_compression = sub(Criterion_Chest_Lateral_Compression)
+        criterion_chest_lateral_vc = sub(Criterion_Chest_Lateral_VC)
+        criterion_shoulder_lateral_force = sub(Criterion_Shoulder_Lateral_Force)
+
     class Criterion_Abdomen(Criterion):
         name = "Abdomen"
         max_rating = 4.
         source = "§5.1.3"
 
-        def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
-            super().__init__(report, isomme)
-
-            self.p = p
-
-            self.criterion_abdomen_lateral_compression = self.Criterion_Abdomen_Lateral_Compression(self.report, self.isomme, p=self.p)
-            self.criterion_abdomen_lateral_vc = self.Criterion_Abdomen_Lateral_VC(self.report, self.isomme, p=self.p)
 
         def calculation(self) -> None:
-            self.criterion_abdomen_lateral_compression.calculate()
-            self.criterion_abdomen_lateral_vc.calculate()
 
             self.rating = np.min([
                 self.criterion_abdomen_lateral_compression.rating,
@@ -195,25 +155,34 @@ class Overall(Criterion):
         class Criterion_Abdomen_Lateral_VC(Overall_Side_Pole.Criterion_Abdomen.Criterion_Abdomen_Lateral_VC):
             pass
 
+        criterion_abdomen_lateral_compression = sub(Criterion_Abdomen_Lateral_Compression)
+        criterion_abdomen_lateral_vc = sub(Criterion_Abdomen_Lateral_VC)
+
     class Criterion_Pelvis(Criterion):
         name = "Pelvis"
         max_rating = 4.
         source = "§5.1.4"
 
-        def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
-            super().__init__(report, isomme)
-
-            self.p = p
-
-            self.criterion_pubic_symphysis_force = self.Criterion_Pubic_Symphysis_Force(self.report, self.isomme, p=self.p)
 
         def calculation(self) -> None:
-            self.criterion_pubic_symphysis_force.calculate()
 
             self.rating = self.criterion_pubic_symphysis_force.rating
 
         class Criterion_Pubic_Symphysis_Force(Overall_Side_Pole.Criterion_Pelvis.Criterion_Pubic_Symphysis_Force):
             pass
+
+        criterion_pubic_symphysis_force = sub(Criterion_Pubic_Symphysis_Force)
+
+    criterion_head = sub(Criterion_Head, at=from_input(P), role=Role.AGGREGATE)
+    criterion_chest = sub(Criterion_Chest, at=from_input(P), role=Role.AGGREGATE)
+    criterion_abdomen = sub(Criterion_Abdomen, at=from_input(P), role=Role.AGGREGATE)
+    criterion_pelvis = sub(Criterion_Pelvis, at=from_input(P), role=Role.AGGREGATE)
+    # §5.2.4 and §5.2.5 apply to side barrier and pole alike; §5.2.3's head
+    # protection device penalty is pole-only and deliberately absent here.
+    criterion_incorrect_airbag_deployment = sub(Overall_Side_Pole.Criterion_IncorrectAirbagDeployment,
+                                                role=Role.MODIFIER)
+    criterion_door_opening_during_impact = sub(Overall_Side_Pole.Criterion_DoorOpeningDuringImpact,
+                                               role=Role.MODIFIER)
 
 
 class EuroNCAP_Side_Barrier(Report[Overall]):

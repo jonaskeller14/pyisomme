@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 from pyisomme.isomme import Isomme
-from pyisomme.report.criterion import Criterion
+from pyisomme.limit import Limit
+from pyisomme.report.criterion import Criterion, Role, sub
+from pyisomme.report.ctx import from_input
 from pyisomme.report.manual import Manual, manual
 from pyisomme.report.page import Page_Cover, Page_Criterion_Values_Chart, Page_Criterion_Values_Table, \
     Page_Criterion_Rating_Table, Page_Plot_nxn
@@ -17,81 +19,42 @@ from typing import Any
 
 logger = logging.getLogger(__name__)
 
+P_DRIVER = manual("1", source="test report", doc=(
+    "Channel-code position of the driver. Defaults to the "
+    "'Driver position object 1' test-info field when the test carries it."))
+
 
 class Overall(Criterion):
     name = "Overall"
-    p_driver: Manual[int, manual(1, source="test report", doc=(
-        "Channel-code position of the driver. Defaults to the "
-        "'Driver position object 1' test-info field when the test carries it."))]
+    role = Role.AGGREGATE
+    p_driver: Manual[str, P_DRIVER]
 
     def __init__(self, report: Report, isomme: Isomme) -> None:
         super().__init__(report, isomme)
+        # Also at construction: the pages read `p_driver` when the report is built.
+        self.prepare()
 
-        p_driver = isomme.get_test_info("Driver position object 1")
+    def prepare(self) -> None:
+        """Take the driver position from the test info before the occupant reads it."""
+        p_driver = self.isomme.get_test_info("Driver position object 1")
         if p_driver is not None:
-            self.set_derived_input("p_driver", int(p_driver))
-
-        self.criterion_driver = self.Criterion_Driver(report, isomme, p=self.p_driver)
-
-    def sync_positions(self) -> None:
-        """Honour a seating position set after construction (F15) — see ``Criterion.rebuild_child``."""
-        if self.criterion_driver.p != self.p_driver:
-            logger.info(f"{self}: rebuilding criterion_driver for position {self.p_driver}")
-            self.rebuild_child("criterion_driver", p=self.p_driver)
+            self.set_derived_input("p_driver", str(p_driver).strip())
 
     def calculation(self) -> None:
-        self.sync_positions()
-
-        self.criterion_driver.calculate()
-
         self.rating = self.criterion_driver.rating
 
     class Criterion_Driver(Criterion):
         name = "Driver"
-
-        def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
-            super().__init__(report, isomme)
-
-            self.p = p
-
-            self.criterion_head_neck = self.Criterion_Head_Neck(report, isomme, p=self.p)
-            self.criterion_chest = self.Criterion_Chest(report, isomme, p=self.p)
-            self.criterion_thigh_hip = self.Criterion_Thigh_Hip(report, isomme, p=self.p)
-            self.criterion_leg_foot = self.Criterion_Leg_Foot(report, isomme, p=self.p)
+        role = Role.AGGREGATE
 
         def calculation(self) -> None:
-            self.criterion_head_neck.calculate()
-            self.criterion_chest.calculate()
-            self.criterion_thigh_hip.calculate()
-            self.criterion_leg_foot.calculate()
-
             self.rating = self.criterion_head_neck.rating
 
         class Criterion_Head_Neck(Criterion):
             name = "Head & Neck"
-
-            def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
-                super().__init__(report, isomme)
-
-                self.p = p
-
-                self.criterion_hic_15 = self.Criterion_HIC_15(report, isomme, p=self.p)
-                self.criterion_nij = self.Criterion_NIJ(report, isomme, p=self.p)
-                self.criterion_fz_tension = self.Criterion_Fz_Tension(report, isomme, p=self.p)
-                self.criterion_fz_compression = self.Criterion_Fz_Compression(report, isomme, p=self.p)
-                self.criterion_fz_tension_corridor = self.Criterion_Fz_Tension_Corridor(report, isomme, p=self.p)
-                self.criterion_fz_compression_corridor = self.Criterion_Fz_Compression_Corridor(report, isomme, p=self.p)
-                self.criterion_fx_shear_corridor = self.Criterion_Fx_Shear_Corridor(report, isomme, p=self.p)
+            role = Role.AGGREGATE
 
             def calculation(self) -> None:
-                self.criterion_hic_15.calculate()
-                self.criterion_nij.calculate()
-                self.criterion_fz_tension.calculate()
-                self.criterion_fz_compression.calculate()
-                self.criterion_fz_tension_corridor.calculate()
-                self.criterion_fz_compression_corridor.calculate()
-                self.criterion_fx_shear_corridor.calculate()
-
                 self.rating = np.max([
                     self.criterion_hic_15.rating,
                     self.criterion_nij.rating,
@@ -105,20 +68,17 @@ class Overall(Criterion):
             class Criterion_HIC_15(Criterion):
                 name = "HIC 15"
 
-                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
-                    super().__init__(report, isomme)
-
-                    self.p = p
-
-                    self.extend_limit_list([
-                        Limit_G([f"?{self.p}HICR??15??00RX"], func=lambda x: 560, y_unit=1, upper=True, rating=0),
-                        Limit_A([f"?{self.p}HICR??15??00RX"], func=lambda x: 560, y_unit=1, lower=True, rating=-2),
-                        Limit_M([f"?{self.p}HICR??15??00RX"], func=lambda x: 700, y_unit=1, lower=True, rating=-10),
-                        Limit_P([f"?{self.p}HICR??15??00RX"], func=lambda x: 840, y_unit=1, lower=True, rating=-20),
-                    ])
+                def define_limits(self) -> list[Limit]:
+                    codes = self.ctx.codes("?{p}HICR??15??00RX")
+                    return [
+                        Limit_G(codes, func=lambda x: 560, y_unit=1, upper=True, rating=0),
+                        Limit_A(codes, func=lambda x: 560, y_unit=1, lower=True, rating=-2),
+                        Limit_M(codes, func=lambda x: 700, y_unit=1, lower=True, rating=-10),
+                        Limit_P(codes, func=lambda x: 840, y_unit=1, lower=True, rating=-20),
+                    ]
 
                 def calculation(self) -> None:
-                    self.channel = self.require_channel(f"?{self.p}HICR??15??00RX")
+                    self.channel = self.require_channel(self.ctx.code("?{p}HICR??15??00RX"))
                     self.value = self.channel.get_data()[0]
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                     self.color = self.limits.get_limit_min_color(self.channel)
@@ -126,20 +86,17 @@ class Overall(Criterion):
             class Criterion_NIJ(Criterion):
                 name = "NIJ"
 
-                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
-                    super().__init__(report, isomme)
-
-                    self.p = p
-
-                    self.extend_limit_list([
-                        Limit_G([f"?{self.p}NIJCIP????00Y?"], func=lambda x: 0.8, y_unit=1, upper=True, rating=0),
-                        Limit_A([f"?{self.p}NIJCIP????00Y?"], func=lambda x: 0.8, y_unit=1, lower=True, rating=-2),
-                        Limit_M([f"?{self.p}NIJCIP????00Y?"], func=lambda x: 1.0, y_unit=1, lower=True, rating=-10),
-                        Limit_P([f"?{self.p}NIJCIP????00Y?"], func=lambda x: 1.2, y_unit=1, lower=True, rating=-20),
-                    ])
+                def define_limits(self) -> list[Limit]:
+                    codes = self.ctx.codes("?{p}NIJCIP????00Y?")
+                    return [
+                        Limit_G(codes, func=lambda x: 0.8, y_unit=1, upper=True, rating=0),
+                        Limit_A(codes, func=lambda x: 0.8, y_unit=1, lower=True, rating=-2),
+                        Limit_M(codes, func=lambda x: 1.0, y_unit=1, lower=True, rating=-10),
+                        Limit_P(codes, func=lambda x: 1.2, y_unit=1, lower=True, rating=-20),
+                    ]
 
                 def calculation(self) -> None:
-                    self.channel = self.require_channel(f"?{self.p}NIJCIP00??00YB")
+                    self.channel = self.require_channel(self.ctx.code("?{p}NIJCIP00??00YB"))
                     self.value = np.max(self.channel.get_data())
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                     self.color = self.limits.get_limit_min_color(self.channel)
@@ -147,20 +104,17 @@ class Overall(Criterion):
             class Criterion_Fz_Tension(Criterion):
                 name = "Neck Fz Tension"
 
-                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
-                    super().__init__(report, isomme)
-
-                    self.p = p
-
-                    self.extend_limit_list([
-                        Limit_G([f"?{self.p}NECKUP00??FOZ?"], lambda x: 2.6, y_unit="kN", upper=True, rating=0),
-                        Limit_A([f"?{self.p}NECKUP00??FOZ?"], lambda x: 2.6, y_unit="kN", lower=True, rating=-2),
-                        Limit_M([f"?{self.p}NECKUP00??FOZ?"], lambda x: 3.3, y_unit="kN", lower=True, rating=-10),
-                        Limit_P([f"?{self.p}NECKUP00??FOZ?"], lambda x: 4.0, y_unit="kN", lower=True, rating=-20),
-                    ])
+                def define_limits(self) -> list[Limit]:
+                    codes = self.ctx.codes("?{p}NECKUP00??FOZ?")
+                    return [
+                        Limit_G(codes, lambda x: 2.6, y_unit="kN", upper=True, rating=0),
+                        Limit_A(codes, lambda x: 2.6, y_unit="kN", lower=True, rating=-2),
+                        Limit_M(codes, lambda x: 3.3, y_unit="kN", lower=True, rating=-10),
+                        Limit_P(codes, lambda x: 4.0, y_unit="kN", lower=True, rating=-20),
+                    ]
 
                 def calculation(self) -> None:
-                    self.channel = self.require_channel(f"?{self.p}NECKUP00??FOZB").convert_unit("kN")
+                    self.channel = self.require_channel(self.ctx.code("?{p}NECKUP00??FOZB")).convert_unit("kN")
                     self.value = np.max(self.channel.get_data())
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                     self.color = self.limits.get_limit_min_color(self.channel)
@@ -168,20 +122,17 @@ class Overall(Criterion):
             class Criterion_Fz_Compression(Criterion):
                 name = "Neck Fz Compression"
 
-                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
-                    super().__init__(report, isomme)
-
-                    self.p = p
-
-                    self.extend_limit_list([
-                        Limit_G([f"?{self.p}NECKUP00??FOZ?"], lambda x: -3.2, y_unit="kN", lower=True, rating=0),
-                        Limit_A([f"?{self.p}NECKUP00??FOZ?"], lambda x: -3.2, y_unit="kN", upper=True, rating=-2),
-                        Limit_M([f"?{self.p}NECKUP00??FOZ?"], lambda x: -4.0, y_unit="kN", upper=True, rating=-10),
-                        Limit_P([f"?{self.p}NECKUP00??FOZ?"], lambda x: -4.8, y_unit="kN", upper=True, rating=-20),
-                    ])
+                def define_limits(self) -> list[Limit]:
+                    codes = self.ctx.codes("?{p}NECKUP00??FOZ?")
+                    return [
+                        Limit_G(codes, lambda x: -3.2, y_unit="kN", lower=True, rating=0),
+                        Limit_A(codes, lambda x: -3.2, y_unit="kN", upper=True, rating=-2),
+                        Limit_M(codes, lambda x: -4.0, y_unit="kN", upper=True, rating=-10),
+                        Limit_P(codes, lambda x: -4.8, y_unit="kN", upper=True, rating=-20),
+                    ]
 
                 def calculation(self) -> None:
-                    self.channel = self.require_channel(f"?{self.p}NECKUP00??FOZB").convert_unit("kN")
+                    self.channel = self.require_channel(self.ctx.code("?{p}NECKUP00??FOZB")).convert_unit("kN")
                     self.value = np.min(self.channel.get_data())
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                     self.color = self.limits.get_limit_min_color(self.channel)
@@ -189,18 +140,15 @@ class Overall(Criterion):
             class Criterion_Fz_Tension_Corridor(Criterion):
                 name = "Neck Fz Tension Corridor"
 
-                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
-                    super().__init__(report, isomme)
-
-                    self.p = p
-
-                    self.extend_limit_list([
-                        Limit_G([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: np.interp(x, [0, 35, 45], [3.3, 2.9, 1.1]), x_unit="ms", y_unit="kN", upper=True, rating=0),
-                        Limit_A([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: np.interp(x, [0, 35, 45], [3.3, 2.9, 1.1]), x_unit="ms", y_unit="kN", lower=True, rating=-2),
-                    ])
+                def define_limits(self) -> list[Limit]:
+                    codes = self.ctx.codes("?{p}NECKUP00??FOZ?")
+                    return [
+                        Limit_G(codes, func=lambda x: np.interp(x, [0, 35, 45], [3.3, 2.9, 1.1]), x_unit="ms", y_unit="kN", upper=True, rating=0),
+                        Limit_A(codes, func=lambda x: np.interp(x, [0, 35, 45], [3.3, 2.9, 1.1]), x_unit="ms", y_unit="kN", lower=True, rating=-2),
+                    ]
 
                 def calculation(self) -> None:
-                    self.channel = self.require_channel(f"?{self.p}NECKUP00??FOZB").convert_unit("kN")
+                    self.channel = self.require_channel(self.ctx.code("?{p}NECKUP00??FOZB")).convert_unit("kN")
                     self.value = self.limits.get_limit_min_y(self.channel)
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                     self.color = self.limits.get_limit_min_color(self.channel)
@@ -208,18 +156,15 @@ class Overall(Criterion):
             class Criterion_Fz_Compression_Corridor(Criterion):
                 name = "Neck Fz Compression Corridor"
 
-                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
-                    super().__init__(report, isomme)
-
-                    self.p = p
-
-                    self.extend_limit_list([
-                        Limit_G([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: np.interp(x, [0, 30], [-4, -1.1]), x_unit="ms", y_unit="kN", lower=True, rating=0),
-                        Limit_A([f"?{self.p}NECKUP00??FOZ?"], func=lambda x: np.interp(x, [0, 30], [-4, -1.1]), x_unit="ms", y_unit="kN", upper=True, rating=-2),
-                    ])
+                def define_limits(self) -> list[Limit]:
+                    codes = self.ctx.codes("?{p}NECKUP00??FOZ?")
+                    return [
+                        Limit_G(codes, func=lambda x: np.interp(x, [0, 30], [-4, -1.1]), x_unit="ms", y_unit="kN", lower=True, rating=0),
+                        Limit_A(codes, func=lambda x: np.interp(x, [0, 30], [-4, -1.1]), x_unit="ms", y_unit="kN", upper=True, rating=-2),
+                    ]
 
                 def calculation(self) -> None:
-                    self.channel = self.require_channel(f"?{self.p}NECKUP00??FOZB").convert_unit("kN")
+                    self.channel = self.require_channel(self.ctx.code("?{p}NECKUP00??FOZB")).convert_unit("kN")
                     self.value = self.limits.get_limit_min_y(self.channel)
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                     self.color = self.limits.get_limit_min_color(self.channel)
@@ -227,44 +172,35 @@ class Overall(Criterion):
             class Criterion_Fx_Shear_Corridor(Criterion):
                 name = "Neck Fx Shear Corridor"
 
-                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
-                    super().__init__(report, isomme)
+                def define_limits(self) -> list[Limit]:
+                    codes = self.ctx.codes("?{p}NECKUP00??FOX?")
+                    return [
+                        Limit_G(codes, func=lambda x: np.interp(x, [0, 25, 35, 45], [-3.1, -1.5, -1.5, -1.1]), x_unit="ms", y_unit="kN", lower=True, rating=0),
+                        Limit_A(codes, func=lambda x: np.interp(x, [0, 25, 35, 45], [-3.1, -1.5, -1.5, -1.1]), x_unit="ms", y_unit="kN", upper=True, rating=-2),
 
-                    self.p = p
-
-                    self.extend_limit_list([
-                        Limit_G([f"?{self.p}NECKUP00??FOX?"], func=lambda x: np.interp(x, [0, 25, 35, 45], [-3.1, -1.5, -1.5, -1.1]), x_unit="ms", y_unit="kN", lower=True, rating=0),
-                        Limit_A([f"?{self.p}NECKUP00??FOX?"], func=lambda x: np.interp(x, [0, 25, 35, 45], [-3.1, -1.5, -1.5, -1.1]), x_unit="ms", y_unit="kN", upper=True, rating=-2),
-
-                        Limit_G([f"?{self.p}NECKUP00??FOX?"], func=lambda x: np.interp(x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1]), x_unit="ms", y_unit="kN", upper=True, rating=0),
-                        Limit_A([f"?{self.p}NECKUP00??FOX?"], func=lambda x: np.interp(x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1]), x_unit="ms", y_unit="kN", lower=True, rating=-2),
-                    ])
+                        Limit_G(codes, func=lambda x: np.interp(x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1]), x_unit="ms", y_unit="kN", upper=True, rating=0),
+                        Limit_A(codes, func=lambda x: np.interp(x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1]), x_unit="ms", y_unit="kN", lower=True, rating=-2),
+                    ]
 
                 def calculation(self) -> None:
-                    self.channel = self.require_channel(f"?{self.p}NECKUP00??FOXB").convert_unit("kN")
+                    self.channel = self.require_channel(self.ctx.code("?{p}NECKUP00??FOXB")).convert_unit("kN")
                     self.value = self.limits.get_limit_min_y(self.channel)
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                     self.color = self.limits.get_limit_min_color(self.channel)
 
+            criterion_hic_15 = sub(Criterion_HIC_15)
+            criterion_nij = sub(Criterion_NIJ)
+            criterion_fz_tension = sub(Criterion_Fz_Tension)
+            criterion_fz_compression = sub(Criterion_Fz_Compression)
+            criterion_fz_tension_corridor = sub(Criterion_Fz_Tension_Corridor)
+            criterion_fz_compression_corridor = sub(Criterion_Fz_Compression_Corridor)
+            criterion_fx_shear_corridor = sub(Criterion_Fx_Shear_Corridor)
+
         class Criterion_Chest(Criterion):
             name = "Chest"
-
-            def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
-                super().__init__(report, isomme)
-
-                self.p = p
-
-                self.criterion_acceleration = self.Criterion_Acceleration(report, isomme, p)
-                self.criterion_deflection = self.Criterion_Deflection(report, isomme, p)
-                self.criterion_deflection_rate = self.Criterion_Deflection_Rate(report, isomme, p)
-                self.criterion_vc = self.Criterion_VC(report, isomme, p)
+            role = Role.AGGREGATE
 
             def calculation(self) -> None:
-                self.criterion_acceleration.calculate()
-                self.criterion_deflection.calculate()
-                self.criterion_deflection_rate.calculate()
-                self.criterion_vc.calculate()
-
                 self.rating = np.max([
                     self.criterion_acceleration.rating,
                     self.criterion_deflection.rating,
@@ -275,20 +211,17 @@ class Overall(Criterion):
             class Criterion_Acceleration(Criterion):
                 name = "Thoracic Spine Acceleration (3ms)"  # TODO: nicht THSP?
 
-                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
-                    super().__init__(report, isomme)
-
-                    self.p = p
-
-                    self.extend_limit_list([
-                        Limit_G([f"?{self.p}CHST003C??ACR?"], func=lambda x: 60, y_unit=Unit(g0), upper=True, rating=0),
-                        Limit_A([f"?{self.p}CHST003C??ACR?"], func=lambda x: 60, y_unit=Unit(g0), lower=True, rating=-2),
-                        Limit_M([f"?{self.p}CHST003C??ACR?"], func=lambda x: 75, y_unit=Unit(g0), lower=True, rating=-10),
-                        Limit_P([f"?{self.p}CHST003C??ACR?"], func=lambda x: 90, y_unit=Unit(g0), lower=True, rating=-20),
-                    ])
+                def define_limits(self) -> list[Limit]:
+                    codes = self.ctx.codes("?{p}CHST003C??ACR?")
+                    return [
+                        Limit_G(codes, func=lambda x: 60, y_unit=Unit(g0), upper=True, rating=0),
+                        Limit_A(codes, func=lambda x: 60, y_unit=Unit(g0), lower=True, rating=-2),
+                        Limit_M(codes, func=lambda x: 75, y_unit=Unit(g0), lower=True, rating=-10),
+                        Limit_P(codes, func=lambda x: 90, y_unit=Unit(g0), lower=True, rating=-20),
+                    ]
 
                 def calculation(self) -> None:
-                    self.channel = self.require_channel(f"?{self.p}CHST003C??ACRX").convert_unit(Unit(g0))
+                    self.channel = self.require_channel(self.ctx.code("?{p}CHST003C??ACRX")).convert_unit(Unit(g0))
                     self.value = self.channel.get_data()[0]
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                     self.color = self.limits.get_limit_min_color(self.channel)
@@ -296,20 +229,17 @@ class Overall(Criterion):
             class Criterion_Deflection(Criterion):
                 name = "Sternum Deflection"
 
-                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
-                    super().__init__(report, isomme)
-
-                    self.p = p
-
-                    self.extend_limit_list([
-                        Limit_G([f"1{self.p}CHST0000??DSX?"], func=lambda x: -50, y_unit="mm", lower=True, rating=0),
-                        Limit_A([f"1{self.p}CHST0000??DSX?"], func=lambda x: -50, y_unit="mm", upper=True, rating=-2),
-                        Limit_M([f"1{self.p}CHST0000??DSX?"], func=lambda x: -60, y_unit="mm", upper=True, rating=-10),
-                        Limit_P([f"1{self.p}CHST0000??DSX?"], func=lambda x: -75, y_unit="mm", upper=True, rating=-20),
-                    ])
+                def define_limits(self) -> list[Limit]:
+                    codes = self.ctx.codes("1{p}CHST0000??DSX?")
+                    return [
+                        Limit_G(codes, func=lambda x: -50, y_unit="mm", lower=True, rating=0),
+                        Limit_A(codes, func=lambda x: -50, y_unit="mm", upper=True, rating=-2),
+                        Limit_M(codes, func=lambda x: -60, y_unit="mm", upper=True, rating=-10),
+                        Limit_P(codes, func=lambda x: -75, y_unit="mm", upper=True, rating=-20),
+                    ]
 
                 def calculation(self) -> None:
-                    self.channel = self.require_channel(f"1{self.p}CHST0000??DSXC").convert_unit("mm")
+                    self.channel = self.require_channel(self.ctx.code("1{p}CHST0000??DSXC")).convert_unit("mm")
                     self.value = np.min(self.channel.get_data())
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                     self.color = self.limits.get_limit_min_color(self.channel)
@@ -317,20 +247,17 @@ class Overall(Criterion):
             class Criterion_Deflection_Rate(Criterion):
                 name = "Sternum Deflection Rate"
 
-                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
-                    super().__init__(report, isomme)
-
-                    self.p = p
-
-                    self.extend_limit_list([
-                        Limit_G([f"1{self.p}CHST0000??VEX?"], func=lambda x: -6.6, y_unit="m/s", lower=True, rating=0),
-                        Limit_A([f"1{self.p}CHST0000??VEX?"], func=lambda x: -6.6, y_unit="m/s", upper=True, rating=-2),
-                        Limit_M([f"1{self.p}CHST0000??VEX?"], func=lambda x: -8.2, y_unit="m/s", upper=True, rating=-10),
-                        Limit_P([f"1{self.p}CHST0000??VEX?"], func=lambda x: -9.8, y_unit="m/s", upper=True, rating=-20),
-                    ])
+                def define_limits(self) -> list[Limit]:
+                    codes = self.ctx.codes("1{p}CHST0000??VEX?")
+                    return [
+                        Limit_G(codes, func=lambda x: -6.6, y_unit="m/s", lower=True, rating=0),
+                        Limit_A(codes, func=lambda x: -6.6, y_unit="m/s", upper=True, rating=-2),
+                        Limit_M(codes, func=lambda x: -8.2, y_unit="m/s", upper=True, rating=-10),
+                        Limit_P(codes, func=lambda x: -9.8, y_unit="m/s", upper=True, rating=-20),
+                    ]
 
                 def calculation(self) -> None:
-                    self.channel = self.require_channel(f"1{self.p}CHST0000??VEXC").convert_unit("m/s")
+                    self.channel = self.require_channel(self.ctx.code("1{p}CHST0000??VEXC")).convert_unit("m/s")
                     self.value = np.min(self.channel.get_data())
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                     self.color = self.limits.get_limit_min_color(self.channel)
@@ -338,58 +265,49 @@ class Overall(Criterion):
             class Criterion_VC(Criterion):
                 name = "Viscous Criterion"
 
-                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
-                    super().__init__(report, isomme)
+                def define_limits(self) -> list[Limit]:
+                    codes = self.ctx.codes("?{p}VCCR0000??VEX?")
+                    return [
+                        Limit_P(codes, func=lambda x: -1.2, y_unit="m/s", upper=True, rating=-20),
+                        Limit_M(codes, func=lambda x: -1.2, y_unit="m/s", lower=True, rating=-10),
+                        Limit_A(codes, func=lambda x: -1.0, y_unit="m/s", lower=True, rating=-2),
+                        Limit_G(codes, func=lambda x: -0.8, y_unit="m/s", lower=True, rating=0),
 
-                    self.p = p
-
-                    self.extend_limit_list([
-                        Limit_P([f"?{self.p}VCCR0000??VEX?"], func=lambda x: -1.2, y_unit="m/s", upper=True, rating=-20),
-                        Limit_M([f"?{self.p}VCCR0000??VEX?"], func=lambda x: -1.2, y_unit="m/s", lower=True, rating=-10),
-                        Limit_A([f"?{self.p}VCCR0000??VEX?"], func=lambda x: -1.0, y_unit="m/s", lower=True, rating=-2),
-                        Limit_G([f"?{self.p}VCCR0000??VEX?"], func=lambda x: -0.8, y_unit="m/s", lower=True, rating=0),
-
-                        Limit_G([f"?{self.p}VCCR0000??VEX?"], func=lambda x: 0.8, y_unit="m/s", upper=True, rating=0),
-                        Limit_A([f"?{self.p}VCCR0000??VEX?"], func=lambda x: 0.8, y_unit="m/s", lower=True, rating=-2),
-                        Limit_M([f"?{self.p}VCCR0000??VEX?"], func=lambda x: 1.0, y_unit="m/s", lower=True, rating=-10),
-                        Limit_P([f"?{self.p}VCCR0000??VEX?"], func=lambda x: 1.2, y_unit="m/s", lower=True, rating=-20),
-                    ])
+                        Limit_G(codes, func=lambda x: 0.8, y_unit="m/s", upper=True, rating=0),
+                        Limit_A(codes, func=lambda x: 0.8, y_unit="m/s", lower=True, rating=-2),
+                        Limit_M(codes, func=lambda x: 1.0, y_unit="m/s", lower=True, rating=-10),
+                        Limit_P(codes, func=lambda x: 1.2, y_unit="m/s", lower=True, rating=-20),
+                    ]
 
                 def calculation(self) -> None:
-                    self.channel = self.require_channel(f"1{self.p}VCCR0000??VEXC").convert_unit("m/s")
+                    self.channel = self.require_channel(self.ctx.code("1{p}VCCR0000??VEXC")).convert_unit("m/s")
                     self.value = self.channel.get_data()[np.argmax(np.abs(self.channel.get_data()))]
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                     self.color = self.limits.get_limit_min_color(self.channel)
 
+            criterion_acceleration = sub(Criterion_Acceleration)
+            criterion_deflection = sub(Criterion_Deflection)
+            criterion_deflection_rate = sub(Criterion_Deflection_Rate)
+            criterion_vc = sub(Criterion_VC)
+
         class Criterion_Thigh_Hip(Criterion):
             name = "Tight & Hip"
-
-            def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
-                super().__init__(report, isomme)
-
-                self.p = p
-
-                self.criterion_kth = self.Criterion_KTH(report, isomme, p)
+            role = Role.AGGREGATE
 
             def calculation(self) -> None:
-                self.criterion_kth.calculate()
-
                 self.rating = self.criterion_kth.rating
 
             class Criterion_KTH(Criterion):
                 name = "Knee Thigh Hip Injury Risk (KTH)"
 
-                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
-                    super().__init__(report, isomme)
-
-                    self.p = p
-
-                    self.extend_limit_list([
-                        Limit_G([f"?{self.p}KTHC??????00??"], func=lambda x: np.interp(x, [5.22, 5.69], [113.5, 113.5], left=np.inf, right=-np.inf), y_unit="N*s", x_unit="kN", upper=True, rating=0),
-                        Limit_A([f"?{self.p}KTHC??????00??"], func=lambda x: np.interp(x, [5.22, 5.69], [113.5, 113.5], left=np.inf, right=-np.inf), y_unit="N*s", x_unit="kN", lower=True, rating=-2),
-                        Limit_M([f"?{self.p}KTHC??????00??"], func=lambda x: np.interp(x, [5.92, 7.69], [127.7, 127.7], left=np.inf, right=-np.inf), y_unit="N*s", x_unit="kN", lower=True, rating=6),
-                        Limit_P([f"?{self.p}KTHC??????00??"], func=lambda x: np.interp(x, [6.38, 8.92], [137.1, 137.1], left=np.inf, right=-np.inf), y_unit="N*s", x_unit="kN", lower=True, rating=-10),
-                    ])
+                def define_limits(self) -> list[Limit]:
+                    codes = self.ctx.codes("?{p}KTHC??????00??")
+                    return [
+                        Limit_G(codes, func=lambda x: np.interp(x, [5.22, 5.69], [113.5, 113.5], left=np.inf, right=-np.inf), y_unit="N*s", x_unit="kN", upper=True, rating=0),
+                        Limit_A(codes, func=lambda x: np.interp(x, [5.22, 5.69], [113.5, 113.5], left=np.inf, right=-np.inf), y_unit="N*s", x_unit="kN", lower=True, rating=-2),
+                        Limit_M(codes, func=lambda x: np.interp(x, [5.92, 7.69], [127.7, 127.7], left=np.inf, right=-np.inf), y_unit="N*s", x_unit="kN", lower=True, rating=6),
+                        Limit_P(codes, func=lambda x: np.interp(x, [6.38, 8.92], [137.1, 137.1], left=np.inf, right=-np.inf), y_unit="N*s", x_unit="kN", lower=True, rating=-10),
+                    ]
 
                 def calculation(self) -> None:
                     #TODO: rechts und links separat berechnen, da sonst integral zu groß wenn channel mit get_channel() berechnet wird (minum links rechts mit zeitversatz)
@@ -401,26 +319,13 @@ class Overall(Criterion):
                     #                        unit="1",
                     #                        info=...)
 
+            criterion_kth = sub(Criterion_KTH)
 
         class Criterion_Leg_Foot(Criterion):
             name = "Leg & Foot"
-
-            def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
-                super().__init__(report, isomme)
-
-                self.p = p
-
-                self.criterion_tibia_femur_displacement = self.Criterion_Tibia_Femur_Displacemnt(report, isomme, p=self.p)
-                self.criterion_tibia_index = self.Criterion_Tibia_Index(report, isomme, p=self.p)
-                self.criterion_tibia_axial_force = self.Criterion_Tibia_Axial_Force(report, isomme, p=self.p)
-                self.criterion_foot_acceleration = self.Criterion_Foot_Acceleration(report, isomme, p=self.p)
+            role = Role.AGGREGATE
 
             def calculation(self) -> None:
-                self.criterion_tibia_femur_displacement.calculate()
-                self.criterion_tibia_index.calculate()
-                self.criterion_tibia_axial_force.calculate()
-                self.criterion_foot_acceleration.calculate()
-
                 self.rating = np.max([
                     self.criterion_tibia_femur_displacement.rating,
                     self.criterion_tibia_index.rating,
@@ -431,14 +336,10 @@ class Overall(Criterion):
             class Criterion_Tibia_Femur_Displacemnt(Criterion):
                 name = "Tibia/Femur Displacement"
 
-                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
-                    super().__init__(report, isomme)
-
-                    self.p = p
-
-                    self.extend_limit_list([
+                def define_limits(self) -> list[Limit]:
+                    return [
                         #TODO
-                    ])
+                    ]
 
                 def calculation(self) -> None:
                     pass
@@ -446,20 +347,17 @@ class Overall(Criterion):
             class Criterion_Tibia_Index(Criterion):
                 name = "Tibia Index"
 
-                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
-                    super().__init__(report, isomme)
-
-                    self.p = p
-
-                    self.extend_limit_list([
-                        Limit_G([f"?{self.p}TIIN??TO??000?"], func=lambda x: 0.8, y_unit="1", upper=True, rating=0),
-                        Limit_A([f"?{self.p}TIIN??TO??000?"], func=lambda x: 0.8, y_unit="1", lower=True, rating=-1),
-                        Limit_M([f"?{self.p}TIIN??TO??000?"], func=lambda x: 1.0, y_unit="1", lower=True, rating=-2),
-                        Limit_P([f"?{self.p}TIIN??TO??000?"], func=lambda x: 1.2, y_unit="1", lower=True, rating=-4),
-                    ])
+                def define_limits(self) -> list[Limit]:
+                    codes = self.ctx.codes("?{p}TIIN??TO??000?")
+                    return [
+                        Limit_G(codes, func=lambda x: 0.8, y_unit="1", upper=True, rating=0),
+                        Limit_A(codes, func=lambda x: 0.8, y_unit="1", lower=True, rating=-1),
+                        Limit_M(codes, func=lambda x: 1.0, y_unit="1", lower=True, rating=-2),
+                        Limit_P(codes, func=lambda x: 1.2, y_unit="1", lower=True, rating=-4),
+                    ]
 
                 def calculation(self) -> None:
-                    self.channel = self.require_channel(f"?{self.p}TIIN00TO??000B")
+                    self.channel = self.require_channel(self.ctx.code("?{p}TIIN00TO??000B"))
                     self.value = np.max(self.channel.get_data())
                     self.rating = self.limits.get_limit_min_rating(self.channel)
                     self.color = self.limits.get_limit_min_color(self.channel)
@@ -467,20 +365,17 @@ class Overall(Criterion):
             class Criterion_Tibia_Axial_Force(Criterion):
                 name = "Tibia Axial Force"
 
-                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
-                    super().__init__(report, isomme)
-
-                    self.p = p
-
-                    self.extend_limit_list([
-                        Limit_G([f"?{self.p}TIBI??LO??FOZ?"], func=lambda x: -4, y_unit="kN", lower=True, rating=0),
-                        Limit_A([f"?{self.p}TIBI??LO??FOZ?"], func=lambda x: -4, y_unit="kN", upper=True, rating=-1),
-                        Limit_M([f"?{self.p}TIBI??LO??FOZ?"], func=lambda x: -6, y_unit="kN", upper=True, rating=-2),
-                        Limit_P([f"?{self.p}TIBI??LO??FOZ?"], func=lambda x: -8, y_unit="kN", upper=True, rating=-4),
-                    ])
+                def define_limits(self) -> list[Limit]:
+                    codes = self.ctx.codes("?{p}TIBI??LO??FOZ?")
+                    return [
+                        Limit_G(codes, func=lambda x: -4, y_unit="kN", lower=True, rating=0),
+                        Limit_A(codes, func=lambda x: -4, y_unit="kN", upper=True, rating=-1),
+                        Limit_M(codes, func=lambda x: -6, y_unit="kN", upper=True, rating=-2),
+                        Limit_P(codes, func=lambda x: -8, y_unit="kN", upper=True, rating=-4),
+                    ]
 
                 def calculation(self) -> None:
-                    self.channel = self.require_channel(f"?{self.p}TIBI00LO??FOZA").convert_unit("kN")
+                    self.channel = self.require_channel(self.ctx.code("?{p}TIBI00LO??FOZA")).convert_unit("kN")
                     self.value = np.min(self.channel.get_data())
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                     self.color = self.limits.get_limit_min_color(self.channel)
@@ -488,23 +383,30 @@ class Overall(Criterion):
             class Criterion_Foot_Acceleration(Criterion):
                 name = "Foot Acceleration"
 
-                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
-                    super().__init__(report, isomme)
-
-                    self.p = p
-
-                    self.extend_limit_list([
-                        Limit_G([f"?{self.p}FOOT0000??AC??", f"?{self.p}FOOTLE00??AC??", f"?{self.p}FOOTRI00??AC??"], func=lambda x: 150, y_unit=Unit(g0), upper=True, rating=0),
-                        Limit_A([f"?{self.p}FOOT0000??AC??", f"?{self.p}FOOTLE00??AC??", f"?{self.p}FOOTRI00??AC??"], func=lambda x: 150, y_unit=Unit(g0), lower=True, rating=-1),
-                        Limit_M([f"?{self.p}FOOT0000??AC??", f"?{self.p}FOOTLE00??AC??", f"?{self.p}FOOTRI00??AC??"], func=lambda x: 200, y_unit=Unit(g0), lower=True, rating=-2),
-                        Limit_P([f"?{self.p}FOOT0000??AC??", f"?{self.p}FOOTLE00??AC??", f"?{self.p}FOOTRI00??AC??"], func=lambda x: 260, y_unit=Unit(g0), lower=True, rating=-4),
-                    ])
+                def define_limits(self) -> list[Limit]:
+                    codes = self.ctx.codes("?{p}FOOT0000??AC??", "?{p}FOOTLE00??AC??", "?{p}FOOTRI00??AC??")
+                    return [
+                        Limit_G(codes, func=lambda x: 150, y_unit=Unit(g0), upper=True, rating=0),
+                        Limit_A(codes, func=lambda x: 150, y_unit=Unit(g0), lower=True, rating=-1),
+                        Limit_M(codes, func=lambda x: 200, y_unit=Unit(g0), lower=True, rating=-2),
+                        Limit_P(codes, func=lambda x: 260, y_unit=Unit(g0), lower=True, rating=-4),
+                    ]
 
                 def calculation(self) -> None:
-                    self.channel = self.require_channel(f"?{self.p}FOOT0000??ACRA").convert_unit(Unit(g0))
+                    self.channel = self.require_channel(self.ctx.code("?{p}FOOT0000??ACRA")).convert_unit(Unit(g0))
                     self.value = np.max(self.channel.get_data())
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                     self.color = self.limits.get_limit_min_color(self.channel)
+
+            criterion_tibia_femur_displacement = sub(Criterion_Tibia_Femur_Displacemnt)
+            criterion_tibia_index = sub(Criterion_Tibia_Index)
+            criterion_tibia_axial_force = sub(Criterion_Tibia_Axial_Force)
+            criterion_foot_acceleration = sub(Criterion_Foot_Acceleration)
+
+        criterion_head_neck = sub(Criterion_Head_Neck)
+        criterion_chest = sub(Criterion_Chest)
+        criterion_thigh_hip = sub(Criterion_Thigh_Hip)
+        criterion_leg_foot = sub(Criterion_Leg_Foot)
 
     class Criterion_Passenger(Criterion):
         class Criterion_Head_Neck(Criterion):
@@ -515,6 +417,8 @@ class Overall(Criterion):
             pass
         class Criterion_Leg_Foot(Criterion):
             pass
+
+    criterion_driver = sub(Criterion_Driver, at=from_input(P_DRIVER), role=Role.AGGREGATE)
 
 
 class IIHS_Frontal_Small_Overlap(Report[Overall]):
@@ -646,7 +550,6 @@ class IIHS_Frontal_Small_Overlap(Report[Overall]):
                              limits=report.criterion_overall[report.isomme_list[0]].criterion_driver.criterion_head_neck.criterion_fz_tension.limits +
                                     report.criterion_overall[report.isomme_list[0]].criterion_driver.criterion_head_neck.criterion_fz_compression.limits)
             self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p_driver}NECKUP00??FOZA"]] for isomme in self.report.isomme_list}
-
 
     class Page_Driver_Neck_Load_Corridor(Page_Plot_nxn):
         name: str = "Driver Neck Load Corridor"

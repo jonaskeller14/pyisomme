@@ -6,7 +6,7 @@ from pyisomme.limit import Limit
 from pyisomme.limits import Limits
 from pyisomme.errors import MissingData, Status
 from pyisomme.report.ctx import Ctx, CtxSource
-from pyisomme.report.manual import InputSpec, declared_inputs, settable_names, suggest
+from pyisomme.report.manual import InputSpec, declared_inputs, manual, settable_names, suggest
 
 import numpy as np
 import itertools
@@ -133,7 +133,6 @@ class Criterion:
     na_reason: MissingData | None = None
     report: Report
     isomme: Isomme
-    p: int
     role: Role = Role.RESULT
     skip_missing: str | None = None  # --> NaN-tolerant aggregation
 
@@ -310,14 +309,44 @@ class Criterion:
             yield node
             node = node._parent
 
-    def find_input_owner(self, name: str) -> Criterion | None:
-        """The nearest criterion at or above this one that declares the manual input"""
+    def find_input_owner(self, key: str | manual) -> Criterion | None:
+        """
+        The nearest criterion at or above this one that declares the manual input.
+
+        ``key`` is either the attribute *name* or the :class:`~pyisomme.report.manual.manual`
+        **object** the declaration carries. The object form is what lets a ``sub(...,
+        at=from_input(P_DRIVER))`` reference the declaration itself instead of repeating
+        its name in a string, so a typo or a rename is a static error rather than a
+        ``Status.NA`` at calculate time.
+
+        Matching on the object is by **identity**: ``manual`` is a frozen dataclass, so
+        two unrelated inputs that happen to share a default and a doc compare equal.
+        """
         for node in itertools.chain([self], self.ancestors()):
-            if name in node.get_input_specs():
+            specs = node.get_input_specs()
+            if isinstance(key, str):
+                if key in specs:
+                    return node
+            elif any(spec.meta is key for spec in specs.values()):
                 return node
         return None
 
+    def find_input_spec(self, key: str | manual) -> InputSpec | None:
+        """The :class:`InputSpec` :meth:`find_input_owner` would resolve ``key`` to."""
+        owner = self.find_input_owner(key)
+        if owner is None:
+            return None
+        specs = owner.get_input_specs()
+        if isinstance(key, str):
+            return specs.get(key)
+        return next((spec for spec in specs.values() if spec.meta is key), None)
+
     # -- context ------------------------------------------------------------ #
+
+    @property
+    def ctx_source(self) -> CtxSource | None:
+        """This criterion's ``at=``, or ``None`` when it inherits its parent's context."""
+        return self._ctx_source
 
     @property
     def ctx(self) -> Ctx:
@@ -350,47 +379,6 @@ class Criterion:
         yield path, self
         for attr, child in self.get_children():
             yield from child.walk(f"{path}/{attr}" if path else attr)
-
-    def rebuild_child(self, attr: str, *args: Any, **kwargs: Any) -> None:
-        """
-        Reconstruct the subcriterion at ``attr``, preserving its manual inputs.
-
-        Interim fix for F15: a few criteria are *constructed* with a position
-        (``p=``), which is baked into their limits' code patterns, so a position
-        set after construction cannot simply be re-read — the subtree has to be
-        rebuilt. Step 7's lazy ``Ctx`` removes the need for this.
-
-        The old subtree's limits are dropped from the report-level list (they
-        were added there by :meth:`extend_limit_list`) so the rebuild does not
-        leave duplicate limit bars in the plots.
-        """
-        old = getattr(self, attr)
-        assert isinstance(old, Criterion), f"{attr} is not a subcriterion"
-
-        # Carried over as ``(path, value, set by the user)`` — a value the old
-        # subtree only *derived* must stay derived, or the rebuild would freeze
-        # it and the next derivation could no longer correct it.
-        overrides = [
-            (input_path, getattr(criterion, spec.name), criterion.input_is_set(spec.name))
-            for input_path, criterion, spec in old.iter_inputs()
-            if criterion.input_is_set(spec.name) or getattr(criterion, spec.name) != spec.default
-        ]
-
-        stale = {id(limit) for _, criterion in old.walk() for limit in criterion.limits.limit_list}
-        report_limits = self.report.limits[self.isomme].limit_list
-        report_limits[:] = [limit for limit in report_limits if id(limit) not in stale]
-
-        new = type(old)(self.report, self.isomme, *args, **kwargs)
-        setattr(self, attr, new)
-        for input_path, value, was_set in overrides:
-            *parents, name = input_path.split("/")
-            target: Criterion = new
-            for parent in parents:
-                target = getattr(target, parent)
-            if was_set:
-                setattr(target, name, value)
-            else:
-                target.set_derived_input(name, value)
 
     def require(self, value: T | None, *what: Any) -> T:
         """

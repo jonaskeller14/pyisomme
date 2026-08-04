@@ -19,9 +19,9 @@ Manual inputs:
 | input | type | default | unit | source | doc |
 | --- | --- | --- | --- | --- | --- |
 | front_passenger_meets_90_percent | bool | True | — | test report | Does the manufacturer-provided front-passenger dummy score reach 90 % of the driver's total (§4.3)? When it does not, every front-row body region is assessed on the worse of driver and front passenger. |
-| p_driver | int | 1 | — | test report | Channel-code position of the driver. Defaults to the 'Driver position object 1' test-info field when the test carries it. |
-| p_front_passenger | int | 3 | — | test report | Channel-code position of the front passenger. Derived from p_driver (1 for a right-hand-drive test) unless set explicitly. |
-| p_rear_passenger | int | 6 | — | test report | Channel-code position of the rear passenger. Derived from p_driver (4 for a right-hand-drive test) unless set explicitly. |
+| p_driver | str | '1' | — | test report | Channel-code position of the driver. Defaults to the 'Driver position object 1' test-info field when the test carries it. |
+| p_front_passenger | str | '3' | — | test report | Channel-code position of the front passenger. Derived from p_driver ('1' for a right-hand-drive test) unless set explicitly. |
+| p_rear_passenger | str | '6' | — | test report | Channel-code position of the rear passenger. Derived from p_driver ('4' for a right-hand-drive test) unless set explicitly. |
 
 ## `criterion_driver` — Driver
 

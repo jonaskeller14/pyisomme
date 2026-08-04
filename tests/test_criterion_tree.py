@@ -32,9 +32,8 @@ import pyisomme
 from pyisomme.errors import InvalidCodeError, MissingData, Status
 from pyisomme.limit import Limit
 from pyisomme.report.criterion import Criterion, Role, sub
-from pyisomme.report.ctx import Ctx, where
+from pyisomme.report.ctx import Ctx, from_input, where
 from pyisomme.report.manual import Manual, manual
-from pyisomme.report.occupant import Seat, seat
 from pyisomme.report.report import Report
 from pyisomme.report.validate import validate_tree
 
@@ -456,23 +455,29 @@ class TestAggregation(unittest.TestCase):
 # context
 # --------------------------------------------------------------------------- #
 
+#: Declared once and referenced twice — by the ``Manual[...]`` annotation and by the
+#: ``at=`` that reads it. That is the point: the wiring names the declaration, not a
+#: string that has to match it.
+P_DRIVER = manual("1", doc="Channel-code position of the driver.")
+P_FRONT_PASSENGER = manual("3", doc="… of the front passenger.")
+
+
 class Occupant(Criterion):
     """One occupant class serving every seat — what `p` threading used to prevent."""
 
     name = "Occupant"
 
     def calculation(self) -> None:
-        self.value = float(self.ctx.field("p"))
-        self.rating = self.value
+        self.value = self.ctx.field("p")
 
 
 class Seated(Criterion):
     name = "Seated"
-    p_driver: Manual[int, manual(1, doc="Channel-code position of the driver.")]
-    p_front_passenger: Manual[int, manual(3, doc="… of the front passenger.")]
+    p_driver: Manual[str, P_DRIVER]
+    p_front_passenger: Manual[str, P_FRONT_PASSENGER]
 
-    driver = sub(Occupant, at=seat(Seat.DRIVER), name="Driver")
-    front_passenger = sub(Occupant, at=seat(Seat.FRONT_PASSENGER), name="Front Passenger")
+    driver = sub(Occupant, at=from_input(P_DRIVER), name="Driver")
+    front_passenger = sub(Occupant, at=from_input(P_FRONT_PASSENGER), name="Front Passenger")
     trolley = sub(Occupant, at=where(p="M"), name="Trolley")
 
     def calculation(self) -> None:
@@ -491,19 +496,28 @@ class TestContext(unittest.TestCase):
         self.assertIs(ctx.isomme, v1)
         self.assertEqual(dict(ctx.fields), {})
 
-    def test_seat_reads_the_manual_input_of_the_nearest_ancestor(self) -> None:
+    def test_from_input_reads_the_manual_input_of_the_nearest_ancestor(self) -> None:
         report, (v1,) = report_of(Seated)
         report.calculate()
         overall = report.overall(v1)
-        self.assertEqual(overall.driver.value, 1.)
-        self.assertEqual(overall.front_passenger.value, 3.)
+        self.assertEqual(overall.driver.value, "1")
+        self.assertEqual(overall.front_passenger.value, "3")
 
     def test_a_position_set_after_construction_is_honoured(self) -> None:
         """F15, properly: no rebuild_child(), no sync_positions()."""
         report, (v1,) = report_of(Seated)
-        report.overall(v1).p_driver = 2
+        report.overall(v1).p_driver = "2"
         report.calculate()
-        self.assertEqual(report.overall(v1).driver.value, 2.)
+        self.assertEqual(report.overall(v1).driver.value, "2")
+
+    def test_a_lettered_seat_is_a_position_like_any_other(self) -> None:
+        """``?A…`` is a valid channel code — the reason a position is a `str`, not an `int`."""
+        report, (v1,) = report_of(Seated)
+        report.overall(v1).p_driver = "A"
+        report.calculate()
+        self.assertEqual(report.overall(v1).driver.value, "A")
+        self.assertEqual(report.overall(v1).driver.code("?{p}HEAD??00??ACRA"),
+                         "?AHEAD??00??ACRA")
 
     def test_children_inherit_the_context(self) -> None:
         class Leaf(Criterion):
@@ -517,14 +531,14 @@ class TestContext(unittest.TestCase):
                 pass
 
         class Overall(Criterion):
-            p_driver: Manual[int, manual(1, doc="…")]
-            driver = sub(Region, at=seat(Seat.DRIVER))
+            p_driver: Manual[str, P_DRIVER]
+            driver = sub(Region, at=from_input(P_DRIVER))
 
             def calculation(self) -> None:
                 pass
 
         report, (v1,) = report_of(Overall)
-        report.overall(v1).p_driver = 4
+        report.overall(v1).p_driver = "4"
         report.calculate()
         self.assertEqual(report.overall(v1).driver.leaf.value, 4.)
 
@@ -562,8 +576,8 @@ class TestContext(unittest.TestCase):
 
     def test_a_missing_seat_input_is_n_a_not_a_silent_default(self) -> None:
         class Overall(Criterion):
-            # Declares no p_driver at all.
-            driver = sub(Occupant, at=seat(Seat.DRIVER))
+            # Declares no position at all.
+            driver = sub(Occupant, at=from_input(P_DRIVER))
 
             def calculation(self) -> None:
                 pass
@@ -571,13 +585,53 @@ class TestContext(unittest.TestCase):
         report, (v1,) = report_of(Overall)
         report.calculate()
         self.assertEqual(report.overall(v1).driver.status, Status.NA)
-        self.assertIn("p_driver", str(report.overall(v1).driver.na_reason))
+        self.assertIn("Channel-code position of the driver",
+                      str(report.overall(v1).driver.na_reason))
+
+    def test_from_input_still_accepts_a_name(self) -> None:
+        """The string form is the escape hatch for a declaration in another module."""
+        class Overall(Criterion):
+            p_driver: Manual[str, P_DRIVER]
+            driver = sub(Occupant, at=from_input("p_driver"))
+
+            def calculation(self) -> None:
+                pass
+
+        report, (v1,) = report_of(Overall)
+        report.overall(v1).p_driver = "5"
+        report.calculate()
+        self.assertEqual(report.overall(v1).driver.value, "5")
+
+    def test_a_declaration_is_an_identity_not_a_value(self) -> None:
+        """
+        Two declarations that read the same are still two declarations.
+
+        Every report's driver position is ``manual("1", source="test report", …)``. If
+        ``manual`` compared by value they would be interchangeable — and, worse,
+        ``typing.Annotated`` caches ``Annotated[str, meta]`` on ``(type, meta)``, so the
+        second report module to be imported would silently inherit the first one's
+        annotation object and its ``at=`` would resolve to the wrong module's input.
+        """
+        twin = manual("1", doc="Channel-code position of the driver.")
+        self.assertNotEqual(twin, P_DRIVER)
+        self.assertIsNot(Manual[str, twin], Manual[str, P_DRIVER])
+
+        class Overall(Criterion):
+            p_driver: Manual[str, P_DRIVER]
+            driver = sub(Occupant, at=from_input(twin))
+
+            def calculation(self) -> None:
+                pass
+
+        report, (v1,) = report_of(Overall)
+        report.calculate()
+        self.assertEqual(report.overall(v1).driver.status, Status.NA)
 
     def test_a_resolved_code_of_the_wrong_length_is_an_error(self) -> None:
         ctx = Ctx.__new__(Ctx)
         object.__setattr__(ctx, "report", None)
         object.__setattr__(ctx, "isomme", None)
-        object.__setattr__(ctx, "fields", {"p": 12})
+        object.__setattr__(ctx, "fields", {"p": "12"})
         with self.assertRaises(InvalidCodeError):
             ctx.code("?{p}HEAD??00??ACRA")
 
@@ -589,17 +643,31 @@ class TestContext(unittest.TestCase):
     def test_at_derives_without_mutating(self) -> None:
         report, (v1,) = report_of(Seated)
         overall = report.overall(v1)
-        derived = overall.ctx.at(p=1).at(object="M")
-        self.assertEqual(dict(derived.fields), {"p": 1, "object": "M"})
+        derived = overall.ctx.at(p="1").at(object="M")
+        self.assertEqual(dict(derived.fields), {"p": "1", "object": "M"})
         self.assertEqual(dict(overall.ctx.fields), {})
 
     def test_manual_input_api_is_unchanged(self) -> None:
-        """Step 4's public API keeps working: the seat source is not a second truth."""
+        """Step 4's public API keeps working: the context source is not a second truth."""
         report, (v1,) = report_of(Seated)
-        report.set_inputs({"T0": {"p_driver": 2, "p_front_passenger": 5}})
+        report.set_inputs({"T0": {"p_driver": "2", "p_front_passenger": "5"}})
         report.calculate()
-        self.assertEqual(report.overall(v1).front_passenger.value, 5.)
-        self.assertEqual(report.get_inputs()["T0"]["p_driver"], 2)
+        self.assertEqual(report.overall(v1).front_passenger.value, "5")
+        self.assertEqual(report.get_inputs()["T0"]["p_driver"], "2")
+
+    def test_a_saved_int_position_is_refused(self) -> None:
+        """
+        Positions were ``int`` before they became the character the code actually is.
+
+        A file saved before that is *rejected*, loudly, by the declaration's own type
+        check — not quietly coerced. It says which input and what it expected, which is
+        all a user needs to fix the file.
+        """
+        report, _ = report_of(Seated)
+        with self.assertRaises(TypeError) as caught:
+            report.set_inputs({"T0": {"p_driver": 2}})
+        self.assertIn("p_driver", str(caught.exception))
+        self.assertIn("str", str(caught.exception))
 
 
 # --------------------------------------------------------------------------- #
@@ -694,14 +762,14 @@ class TestLimits(unittest.TestCase):
                 pass
 
         class Overall(Criterion):
-            p_driver: Manual[int, manual(1, doc="…")]
-            driver = sub(Leaf, at=seat(Seat.DRIVER))
+            p_driver: Manual[str, P_DRIVER]
+            driver = sub(Leaf, at=from_input(P_DRIVER))
 
             def calculation(self) -> None:
                 pass
 
         report, (v1,) = report_of(Overall)
-        report.overall(v1).p_driver = 2
+        report.overall(v1).p_driver = "2"
         report.calculate()
         self.assertEqual([limit.code_patterns for limit in report.overall(v1).driver.limits.limit_list],
                          [["?2HEAD??00??ACRA"]])

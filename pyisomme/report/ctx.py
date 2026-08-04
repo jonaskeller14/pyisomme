@@ -14,9 +14,9 @@ pyisomme's reports are not all occupant tests. Under ``euro_ncap/`` and ``iihs/`
 modifiers reading the literal ``M?MBAR0OLC??VEX?``, the structural measurements), and
 ``Correlation.Criterion_Curve_Correlation`` is built from two ``Channel`` objects with no
 position at all. So the core carries only what every report has — the report and the test
-— plus a free mapping of **code-template fields**. ``{"p": 1}`` is what the occupant
-helper in :mod:`pyisomme.report.occupant` puts in it; a barrier, a trolley, a second test
-object or nothing at all are equally valid, and none of them require a change here.
+— plus a free mapping of **code-template fields**. ``{"p": "1"}`` is what a seating
+position puts in it; a barrier, a trolley, a second test object or nothing at all are
+equally valid, and none of them require a change here.
 """
 
 from __future__ import annotations
@@ -25,10 +25,11 @@ from collections.abc import Mapping
 from dataclasses import dataclass, replace
 from string import Formatter
 from types import MappingProxyType
-from typing import TYPE_CHECKING, Protocol, Union
+from typing import TYPE_CHECKING, Protocol
 
 from pyisomme.code import CODE_LENGTH, pattern_length
 from pyisomme.errors import InvalidCodeError, MissingData
+from pyisomme.report.manual import InputSpec, manual
 
 if TYPE_CHECKING:
     from pyisomme.isomme import Isomme
@@ -40,12 +41,16 @@ __all__ = [
     "Ctx",
     "CtxSource",
     "FieldValue",
+    "from_input",
     "where",
 ]
 
-#: What a code-template field may hold. A position is an ``int`` (``"?{p}HEAD…"``), a
-#: test object a ``str`` (``"{object}?MBAR0OLC??VEX?"``).
-FieldValue = Union[str, int]
+#: What a code-template field may hold: the **characters** it contributes to a channel
+#: code. A seating position is one character of ``channel_codes.xml``'s ``Position``
+#: element — ``"1"`` (front left) through ``"9"``, then ``"A"``–``"Z"`` for the lettered
+#: seats — which is why it is a ``str`` and not an ``int``: ``?A…`` is a valid code and
+#: ``?10…`` is not a code at all.
+FieldValue = str
 
 _NO_FIELDS: Mapping[str, FieldValue] = MappingProxyType({})
 _FORMATTER = Formatter()
@@ -57,10 +62,10 @@ class Ctx:
 
     report: Report
     isomme: Isomme
-    fields: Mapping[str, FieldValue] = _NO_FIELDS  # fields, e.g. ``{"p": 1}``
+    fields: Mapping[str, FieldValue] = _NO_FIELDS  # fields, e.g. ``{"p": "1"}``
 
     def at(self, **fields: FieldValue) -> Ctx:
-        """Derive a child context: ``ctx.at(p=3)``, ``ctx.at(object="M")``."""
+        """Derive a child context: ``ctx.at(p="3")``, ``ctx.at(object="M")``."""
         return replace(self, fields=MappingProxyType({**dict(self.fields), **fields}))
 
     def field(self, name: str, *, wanted_for: str | None = None) -> FieldValue:
@@ -118,11 +123,11 @@ class CtxSource(Protocol):
     """
     What ``sub(..., at=...)`` takes: something that derives a child's context.
 
-    The default (``at=None``) is "inherit the parent's unchanged". Occupant seating is
-    *one* implementation, living in :mod:`pyisomme.report.occupant` beside the reports
-    that need it — not in :mod:`pyisomme.report.criterion`. Anything else a report needs
-    (a barrier, a trolley, the second test object of a correlation run) is another
-    implementation of this protocol and requires **no change to the framework**.
+    The default (``at=None``) is "inherit the parent's unchanged". Two implementations
+    cover every report today — :func:`where` for a field the protocol fixes and
+    :func:`from_input` for one the user chooses. Anything else a report needs (a barrier,
+    a trolley, the second test object of a correlation run) is another implementation of
+    this protocol and requires **no change to the framework**.
     """
 
     def resolve(self, parent: Ctx, criterion: Criterion) -> Ctx:
@@ -149,6 +154,65 @@ def where(**fields: FieldValue) -> CtxSource:
 
     The simplest context source there is, and the one that covers every criterion whose
     context is a constant of the protocol rather than something the user chooses — the
-    MPDB trolley, the Far-Side occupant that is pinned to ``p=1``.
+    MPDB trolley, an occupant a protocol pins to one seat.
     """
     return Where(MappingProxyType(dict(fields)))
+
+
+@dataclass(frozen=True)
+class FromInput:
+    """A :class:`CtxSource` reading a manual input — see :func:`from_input`."""
+
+    #: The declaration itself (preferred) or its attribute name.
+    input_name: str | manual
+    field: str = "p"
+
+    def _describe(self) -> str:
+        if isinstance(self.input_name, str):
+            return repr(self.input_name)
+        doc = self.input_name.doc
+        return f"the input declared with default {self.input_name.default!r}" + (
+            f" ({doc})" if doc else ""
+        )
+
+    def resolve(self, parent: Ctx, criterion: Criterion) -> Ctx:
+        spec = criterion.find_input_spec(self.input_name)
+        if spec is None:
+            raise MissingData(str(self.input_name), message=(
+                f"no criterion at or above {criterion!r} declares {self._describe()}, "
+                f"so field {self.field!r} is unknown."
+            ))
+        owner = criterion.find_input_owner(self.input_name)
+        assert owner is not None  # find_input_spec resolved, so the owner exists
+        return parent.at(**{self.field: getattr(owner, spec.name)})
+
+    def reads(self, spec: InputSpec) -> bool:
+        """Does this source read ``spec``? Used by ``validate``'s unused-input check."""
+        if isinstance(self.input_name, str):
+            return self.input_name == spec.name
+        return self.input_name is spec.meta
+
+    def __repr__(self) -> str:
+        return f"from_input({self._describe()})"
+
+
+def from_input(input_name: str | manual, *, field: str = "p") -> CtxSource:
+    """
+    Take a field from a manual input on the nearest ancestor that declares it.
+
+    The general form of a *user-chosen* context, and the reason a position set after
+    construction takes effect: the input is read at ``calculate()`` time, not baked in::
+
+        P_DRIVER = manual("1", source="test report", doc="Position of the driver.")
+
+        class Overall(Criterion):
+            p_driver: Manual[str, P_DRIVER]
+            driver = sub(Occupant, at=from_input(P_DRIVER))
+
+    **Pass the declaration, not its name.** ``manual(...)`` hoisted to a module-level
+    constant is referenced by both the annotation and the ``at=``, so the two cannot drift
+    apart: a typo or a rename is a `mypy`/`ruff` error instead of a ``Status.NA`` nobody
+    reads. The string form (``from_input("p_driver")``) still works and is the escape
+    hatch for a declaration in another module.
+    """
+    return FromInput(input_name, field)
