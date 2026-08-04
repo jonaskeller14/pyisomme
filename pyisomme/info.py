@@ -35,7 +35,7 @@ class Info(list[tuple[str, Any]]):
     def update(self, other: Mapping[str, Any] | Iterable[tuple[str, Any]]) -> Info:
         """Replace the FIRST occurrence of a key if it exists, else append."""
         iterable = other.items() if isinstance(other, Mapping) else other
-        
+
         for o_name, o_value in iterable:
             # Single pass replacement
             for idx, (name, _) in enumerate(self):
@@ -45,7 +45,7 @@ class Info(list[tuple[str, Any]]):
             else:
                 # The for-else block executes if no 'break' was hit
                 self.append((o_name, o_value)) # type: ignore
-                
+
         return self
 
     def add(self, other: Mapping[str, Any] | Iterable[tuple[str, Any]]) -> Info:

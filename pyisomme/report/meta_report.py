@@ -11,6 +11,8 @@ from typing import Any
 class MetaReport(Report[Criterion]):
     reports: list[Report]
     rating: float = np.nan
+    max_rating: float = np.nan
+    ratings: dict[str, float] = {}
 
     def calculate(self) -> MetaReport:
         for report in self.reports:
@@ -19,11 +21,35 @@ class MetaReport(Report[Criterion]):
         return self
 
     def calculation(self) -> None:
+        """
+        Combine the sub-reports into :attr:`rating` and :attr:`ratings`.
+
+        The default is a no-op: not every meta-report has a scoring scheme that
+        ties its load cases together. See ``EuroNCAP`` for one that does.
+        """
         pass
+
+    def sub_rating(self, report: Report) -> float:
+        """
+        The overall rating ``report`` produced, as a single number.
+
+        A load case is normally one test of one vehicle, so this is that test's
+        ``Overall``. Several tests in one load case are averaged. ``nan``
+        propagates on purpose: a load case whose data is missing must not read as
+        a low score, it must read as unknown.
+        """
+        ratings = [report.criterion_overall[isomme].rating for isomme in report.isomme_list]
+        return float(np.mean(ratings)) if ratings else float(np.nan)
 
     def print_results(self) -> MetaReport:
         for report in self.reports:
             report.print_results()
+
+        if self.ratings:
+            print(f"\n{self._report_key(self)}")
+            for label, points in self.ratings.items():
+                print(f"  {label:<34}{points:>8.5g}")
+            print(f"  {'TOTAL':<34}{self.rating:>8.5g} / {self.max_rating:.5g}")
         return self
 
     def validate(self, errors_only: bool = False) -> list[Issue]:

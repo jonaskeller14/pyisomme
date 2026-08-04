@@ -158,6 +158,21 @@
         "limits": [],
         "name": "Chest"
       },
+      "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_CompartmentIntegrity": {
+        "class": "Criterion_CompartmentIntegrity",
+        "limits": [],
+        "name": "Modifier for Integrity of the Passenger Compartment"
+      },
+      "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_DisplacementAPillar": {
+        "class": "Criterion_DisplacementAPillar",
+        "limits": [],
+        "name": "Modifier for Displacement of the A Pillar"
+      },
+      "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_SteeringWheelContact": {
+        "class": "Criterion_SteeringWheelContact",
+        "limits": [],
+        "name": "Modifier Chest Steering Wheel Contact"
+      },
       "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_chest_compression": {
         "class": "Criterion_Chest_Compression",
         "limits": [
@@ -355,6 +370,26 @@
         "class": "Criterion_Head",
         "limits": [],
         "name": "Head"
+      },
+      "criterion_driver/criterion_head_neck/criterion_head/criterion_DisplacementSteeringColumn": {
+        "class": "Criterion_DisplacementSteeringColumn",
+        "limits": [],
+        "name": "Modifier for Displacement of Steering Column"
+      },
+      "criterion_driver/criterion_head_neck/criterion_head/criterion_HazardousAirbagDeployment": {
+        "class": "Criterion_HazardousAirbagDeployment",
+        "limits": [],
+        "name": "Modifier for Hazardous Airbag Deployment"
+      },
+      "criterion_driver/criterion_head_neck/criterion_head/criterion_IncorrectAirbagDeployment": {
+        "class": "Criterion_IncorrectAirbagDeployment",
+        "limits": [],
+        "name": "Modifier for Incorrect Airbag Deployment"
+      },
+      "criterion_driver/criterion_head_neck/criterion_head/criterion_UnstableAirbagContact": {
+        "class": "Criterion_UnstableAirbagContact",
+        "limits": [],
+        "name": "Modifier for Unstable Airbag Contact"
       },
       "criterion_driver/criterion_head_neck/criterion_head/criterion_damage": {
         "class": "Criterion_DAMAGE",
@@ -1272,6 +1307,16 @@
         "limits": [],
         "name": "Knee, Femur and Pelvis"
       },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_ConcentratedLoading": {
+        "class": "Criterion_ConcentratedLoading",
+        "limits": [],
+        "name": "Modifier for Concentrated Loading"
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_VariableContact": {
+        "class": "Criterion_VariableContact",
+        "limits": [],
+        "name": "Modifier for Variable Contact"
+      },
       "criterion_driver/criterion_knee_femur_pelvis/criterion_femur": {
         "class": "Criterion_Femur",
         "limits": [],
@@ -1644,6 +1689,21 @@
         "class": "Criterion_LowerLeg_Foot_Ankle",
         "limits": [],
         "name": "Lower Leg, Foot and Ankle"
+      },
+      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_FootwellRupture": {
+        "class": "Criterion_FootwellRupture",
+        "limits": [],
+        "name": "Modifier for Footwell Rupture"
+      },
+      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_PedalBlocking": {
+        "class": "Criterion_PedalBlocking",
+        "limits": [],
+        "name": "Modifier for Pedal Blocking"
+      },
+      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_PedalUpwardDisplacement": {
+        "class": "Criterion_PedalUpwardDisplacement",
+        "limits": [],
+        "name": "Modifier for Upward Displacement of the Worst Performing Pedal"
       },
       "criterion_driver/criterion_lowerleg_foot_ankle/criterion_pedal_rearward_displacement": {
         "class": "Criterion_Pedal_Rearward_Displacement",
@@ -2227,6 +2287,21 @@
         "class": "Criterion_Head",
         "limits": [],
         "name": "Head"
+      },
+      "criterion_passenger/criterion_head_neck/criterion_head/criterion_HazardousAirbagDeployment": {
+        "class": "Criterion_HazardousAirbagDeployment",
+        "limits": [],
+        "name": "Modifier for Hazardous Airbag Deployment"
+      },
+      "criterion_passenger/criterion_head_neck/criterion_head/criterion_IncorrectAirbagDeployment": {
+        "class": "Criterion_IncorrectAirbagDeployment",
+        "limits": [],
+        "name": "Modifier for Incorrect Airbag Deployment"
+      },
+      "criterion_passenger/criterion_head_neck/criterion_head/criterion_UnstableAirbagContact": {
+        "class": "Criterion_UnstableAirbagContact",
+        "limits": [],
+        "name": "Modifier for Unstable Airbag Contact"
       },
       "criterion_passenger/criterion_head_neck/criterion_head/criterion_head_a3ms": {
         "class": "Criterion_Head_a3ms",
@@ -3072,6 +3147,16 @@
         "limits": [],
         "name": "Knee, Femur and Pelvis"
       },
+      "criterion_passenger/criterion_knee_femur_pelvis/criterion_ConcentratedLoading": {
+        "class": "Criterion_ConcentratedLoading",
+        "limits": [],
+        "name": "Modifier for Concentrated Loading"
+      },
+      "criterion_passenger/criterion_knee_femur_pelvis/criterion_VariableContact": {
+        "class": "Criterion_VariableContact",
+        "limits": [],
+        "name": "Modifier for Variable Contact"
+      },
       "criterion_passenger/criterion_knee_femur_pelvis/criterion_femur_compression": {
         "class": "Criterion_Femur_Compression",
         "limits": [
@@ -3630,6 +3715,24 @@
         "status": "OK",
         "value": "nan"
       },
+      "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_CompartmentIntegrity": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_DisplacementAPillar": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": 0.0
+      },
+      "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_SteeringWheelContact": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": "nan"
+      },
       "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_chest_compression": {
         "color": "green",
         "rating": 4.0,
@@ -3653,6 +3756,30 @@
         "rating": "nan",
         "status": "OK",
         "value": "nan"
+      },
+      "criterion_driver/criterion_head_neck/criterion_head/criterion_DisplacementSteeringColumn": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": 0.0
+      },
+      "criterion_driver/criterion_head_neck/criterion_head/criterion_HazardousAirbagDeployment": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_driver/criterion_head_neck/criterion_head/criterion_IncorrectAirbagDeployment": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_driver/criterion_head_neck/criterion_head/criterion_UnstableAirbagContact": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
       },
       "criterion_driver/criterion_head_neck/criterion_head/criterion_damage": {
         "color": null,
@@ -3702,6 +3829,18 @@
         "status": "OK",
         "value": "nan"
       },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_ConcentratedLoading": {
+        "color": null,
+        "rating": -0.0,
+        "status": "OK",
+        "value": 0
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_VariableContact": {
+        "color": null,
+        "rating": -0.0,
+        "status": "OK",
+        "value": 0
+      },
       "criterion_driver/criterion_knee_femur_pelvis/criterion_femur": {
         "color": null,
         "rating": 0.0,
@@ -3749,6 +3888,24 @@
         "rating": 2.215290228348533,
         "status": "OK",
         "value": "nan"
+      },
+      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_FootwellRupture": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_PedalBlocking": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": 0.0
+      },
+      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_PedalUpwardDisplacement": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": 0.0
       },
       "criterion_driver/criterion_lowerleg_foot_ankle/criterion_pedal_rearward_displacement": {
         "color": null,
@@ -3810,6 +3967,24 @@
         "status": "OK",
         "value": "nan"
       },
+      "criterion_passenger/criterion_head_neck/criterion_head/criterion_HazardousAirbagDeployment": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_passenger/criterion_head_neck/criterion_head/criterion_IncorrectAirbagDeployment": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_passenger/criterion_head_neck/criterion_head/criterion_UnstableAirbagContact": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
       "criterion_passenger/criterion_head_neck/criterion_head/criterion_head_a3ms": {
         "color": null,
         "rating": "nan",
@@ -3851,6 +4026,18 @@
         "rating": "nan",
         "status": "OK",
         "value": "nan"
+      },
+      "criterion_passenger/criterion_knee_femur_pelvis/criterion_ConcentratedLoading": {
+        "color": null,
+        "rating": -0.0,
+        "status": "OK",
+        "value": 0
+      },
+      "criterion_passenger/criterion_knee_femur_pelvis/criterion_VariableContact": {
+        "color": null,
+        "rating": -0.0,
+        "status": "OK",
+        "value": 0
       },
       "criterion_passenger/criterion_knee_femur_pelvis/criterion_femur_compression": {
         "color": null,
@@ -3938,6 +4125,24 @@
         "status": "OK",
         "value": "nan"
       },
+      "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_CompartmentIntegrity": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_DisplacementAPillar": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": 0.0
+      },
+      "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_SteeringWheelContact": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": "nan"
+      },
       "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_chest_compression": {
         "color": "green",
         "rating": 4.0,
@@ -3961,6 +4166,30 @@
         "rating": 3.0,
         "status": "OK",
         "value": "nan"
+      },
+      "criterion_driver/criterion_head_neck/criterion_head/criterion_DisplacementSteeringColumn": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": 0.0
+      },
+      "criterion_driver/criterion_head_neck/criterion_head/criterion_HazardousAirbagDeployment": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_driver/criterion_head_neck/criterion_head/criterion_IncorrectAirbagDeployment": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_driver/criterion_head_neck/criterion_head/criterion_UnstableAirbagContact": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
       },
       "criterion_driver/criterion_head_neck/criterion_head/criterion_damage": {
         "color": "red",
@@ -4010,6 +4239,18 @@
         "status": "OK",
         "value": "nan"
       },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_ConcentratedLoading": {
+        "color": null,
+        "rating": -0.0,
+        "status": "OK",
+        "value": 0
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_VariableContact": {
+        "color": null,
+        "rating": -0.0,
+        "status": "OK",
+        "value": 0
+      },
       "criterion_driver/criterion_knee_femur_pelvis/criterion_femur": {
         "color": null,
         "rating": 4.0,
@@ -4057,6 +4298,24 @@
         "rating": 2.9249033824023214,
         "status": "OK",
         "value": "nan"
+      },
+      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_FootwellRupture": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_PedalBlocking": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": 0.0
+      },
+      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_PedalUpwardDisplacement": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": 0.0
       },
       "criterion_driver/criterion_lowerleg_foot_ankle/criterion_pedal_rearward_displacement": {
         "color": null,
@@ -4118,6 +4377,24 @@
         "status": "OK",
         "value": 4.0
       },
+      "criterion_passenger/criterion_head_neck/criterion_head/criterion_HazardousAirbagDeployment": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_passenger/criterion_head_neck/criterion_head/criterion_IncorrectAirbagDeployment": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_passenger/criterion_head_neck/criterion_head/criterion_UnstableAirbagContact": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
       "criterion_passenger/criterion_head_neck/criterion_head/criterion_head_a3ms": {
         "color": "green",
         "rating": 4.0,
@@ -4159,6 +4436,18 @@
         "rating": "nan",
         "status": "OK",
         "value": "nan"
+      },
+      "criterion_passenger/criterion_knee_femur_pelvis/criterion_ConcentratedLoading": {
+        "color": null,
+        "rating": -0.0,
+        "status": "OK",
+        "value": 0
+      },
+      "criterion_passenger/criterion_knee_femur_pelvis/criterion_VariableContact": {
+        "color": null,
+        "rating": -0.0,
+        "status": "OK",
+        "value": 0
       },
       "criterion_passenger/criterion_knee_femur_pelvis/criterion_femur_compression": {
         "color": "green",
@@ -4246,6 +4535,24 @@
         "status": "OK",
         "value": "nan"
       },
+      "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_CompartmentIntegrity": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_DisplacementAPillar": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": 0.0
+      },
+      "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_SteeringWheelContact": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": "nan"
+      },
       "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_chest_compression": {
         "color": "green",
         "rating": 4.0,
@@ -4269,6 +4576,30 @@
         "rating": "nan",
         "status": "OK",
         "value": "nan"
+      },
+      "criterion_driver/criterion_head_neck/criterion_head/criterion_DisplacementSteeringColumn": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": 0.0
+      },
+      "criterion_driver/criterion_head_neck/criterion_head/criterion_HazardousAirbagDeployment": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_driver/criterion_head_neck/criterion_head/criterion_IncorrectAirbagDeployment": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_driver/criterion_head_neck/criterion_head/criterion_UnstableAirbagContact": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
       },
       "criterion_driver/criterion_head_neck/criterion_head/criterion_damage": {
         "color": null,
@@ -4318,6 +4649,18 @@
         "status": "OK",
         "value": "nan"
       },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_ConcentratedLoading": {
+        "color": null,
+        "rating": -0.0,
+        "status": "OK",
+        "value": 0
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_VariableContact": {
+        "color": null,
+        "rating": -0.0,
+        "status": "OK",
+        "value": 0
+      },
       "criterion_driver/criterion_knee_femur_pelvis/criterion_femur": {
         "color": null,
         "rating": 4.0,
@@ -4366,6 +4709,24 @@
         "status": "OK",
         "value": "nan"
       },
+      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_FootwellRupture": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_PedalBlocking": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": 0.0
+      },
+      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_PedalUpwardDisplacement": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": 0.0
+      },
       "criterion_driver/criterion_lowerleg_foot_ankle/criterion_pedal_rearward_displacement": {
         "color": null,
         "rating": 4.0,
@@ -4406,7 +4767,7 @@
         "color": "green",
         "rating": 4.0,
         "status": "OK",
-        "value": -0.09054386076048354
+        "value": 0.10817830301035382
       },
       "criterion_passenger/criterion_chest/criterion_shoulder_belt_load": {
         "color": "green",
@@ -4425,6 +4786,24 @@
         "rating": 4.0,
         "status": "OK",
         "value": 4.0
+      },
+      "criterion_passenger/criterion_head_neck/criterion_head/criterion_HazardousAirbagDeployment": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_passenger/criterion_head_neck/criterion_head/criterion_IncorrectAirbagDeployment": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_passenger/criterion_head_neck/criterion_head/criterion_UnstableAirbagContact": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
       },
       "criterion_passenger/criterion_head_neck/criterion_head/criterion_head_a3ms": {
         "color": "green",
@@ -4467,6 +4846,18 @@
         "rating": 4.0,
         "status": "OK",
         "value": 4.0
+      },
+      "criterion_passenger/criterion_knee_femur_pelvis/criterion_ConcentratedLoading": {
+        "color": null,
+        "rating": -0.0,
+        "status": "OK",
+        "value": 0
+      },
+      "criterion_passenger/criterion_knee_femur_pelvis/criterion_VariableContact": {
+        "color": null,
+        "rating": -0.0,
+        "status": "OK",
+        "value": 0
       },
       "criterion_passenger/criterion_knee_femur_pelvis/criterion_femur_compression": {
         "color": "green",

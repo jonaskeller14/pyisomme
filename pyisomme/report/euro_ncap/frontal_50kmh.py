@@ -20,6 +20,12 @@ logger = logging.getLogger(__name__)
 class Overall(Criterion):
     report: EuroNCAP_Frontal_50kmh
     name = "Overall"
+    max_rating = 8.
+    source = "§4"
+    front_passenger_meets_90_percent: Manual[bool, manual(True, source="test report", doc=(
+        "Does the manufacturer-provided front-passenger dummy score reach 90 % of "
+        "the driver's total (§4.3)? When it does not, every front-row body region "
+        "is assessed on the worse of driver and front passenger."))]
     p_driver: Manual[int, manual(1, source="test report", doc=(
         "Channel-code position of the driver. Defaults to the "
         "'Driver position object 1' test-info field when the test carries it."))]
@@ -84,11 +90,21 @@ class Overall(Criterion):
         logger.info("Calculate Rear Passenger")
         self.criterion_rear_passenger.calculate()
 
-        self.rating = float(np.nanmean([
-            self.criterion_driver.rating,
-            self.criterion_front_passenger.rating,
-            self.criterion_rear_passenger.rating,
-        ])) / 2
+        # §4.3: the front row scores the driver. The front passenger enters only
+        # when the manufacturer-provided data misses the 90 % requirement — then
+        # each body region is taken from the worse of the two front occupants.
+        if self.front_passenger_meets_90_percent:
+            front_row = self.criterion_driver.rating
+        else:
+            front_row = float(np.sum([
+                np.min([getattr(self.criterion_driver, attr).rating,
+                        getattr(self.criterion_front_passenger, attr).rating])
+                for attr in ("criterion_head", "criterion_neck",
+                             "criterion_chest", "criterion_femur")
+            ]))
+
+        # §4.3: front row and rear passenger (16 points each) averaged, then halved.
+        self.rating = float(np.nanmean([front_row, self.criterion_rear_passenger.rating])) / 2
         # Capping (-np.inf) leads to 0 points. More than 8 points should not be possible if sub-criteria defined correctly
         self.rating = float(np.interp(self.rating, [0, 8], [0, 8], left=0, right=np.nan))
 
@@ -99,6 +115,7 @@ class Overall(Criterion):
     class Criterion_Driver(Criterion):
         report: EuroNCAP_Frontal_50kmh
         name = "Driver"
+        max_rating, aggregation = 16., "sum"
         steering_wheel_airbag_exists: Manual[bool, manual(True, source="test report", doc=(
             "Is a steering-wheel airbag fitted? Without one the head and neck "
             "boxes score 0."))]
@@ -129,6 +146,10 @@ class Overall(Criterion):
         class Criterion_Head(Criterion):
             report: EuroNCAP_Frontal_50kmh
             name = "Head"
+            max_rating = 4.
+            #: Narrower than the root's section; the two rated leaves below inherit
+            #: it. The modifiers carry §4.2.1 themselves.
+            source = "§4.1.1"
             hard_contact: Manual[bool, manual(True, source="video", doc=(
                 "Was hard head contact observed? A head-acceleration peak above "
                 "80 g forces this to True regardless (Appendix A2: 'video OR curve')."))]
@@ -140,11 +161,10 @@ class Overall(Criterion):
 
                 self.criterion_hic_15 = self.Criterion_HIC_15(report, isomme, p=self.p)
                 self.criterion_head_a3ms = self.Criterion_Head_a3ms(report, isomme, p=self.p)
-                self.criterion_UnstableAirbagSteeringWheelContact = self.Criterion_UnstableAirbagSteeringWheelContact(report, isomme, p=self.p)
+                self.criterion_UnstableAirbagContact = self.Criterion_UnstableAirbagContact(report, isomme, p=self.p)
                 self.criterion_HazardousAirbagDeployment = self.Criterion_HazardousAirbagDeployment(report, isomme, p=self.p)
                 self.criterion_IncorrectAirbagDeployment = self.Criterion_IncorrectAirbagDeployment(report, isomme, p=self.p)
                 self.criterion_DisplacementSteeringColumn = self.Criterion_DisplacementSteeringColumn(report, isomme, p=self.p)
-                self.criterion_ExceedingForwardExcursionLine = self.Criterion_ExceedingForwardExcursionLine(report, isomme, p=self.p)
 
             def calculation(self) -> None:
                 if self.report.criterion_overall[self.isomme].criterion_driver.steering_wheel_airbag_exists:
@@ -163,17 +183,15 @@ class Overall(Criterion):
                     self.rating = 0
 
                 # Modifiers
-                self.criterion_UnstableAirbagSteeringWheelContact.calculate()
+                self.criterion_UnstableAirbagContact.calculate()
                 self.criterion_HazardousAirbagDeployment.calculate()
                 self.criterion_IncorrectAirbagDeployment.calculate()
                 self.criterion_DisplacementSteeringColumn.calculate()
-                self.criterion_ExceedingForwardExcursionLine.calculate()
 
-                self.rating += np.sum([self.criterion_UnstableAirbagSteeringWheelContact.rating,
+                self.rating += np.sum([self.criterion_UnstableAirbagContact.rating,
                                        self.criterion_HazardousAirbagDeployment.rating,
                                        self.criterion_IncorrectAirbagDeployment.rating,
-                                       self.criterion_DisplacementSteeringColumn.rating,
-                                       self.criterion_ExceedingForwardExcursionLine.rating])
+                                       self.criterion_DisplacementSteeringColumn.rating])
 
             class Criterion_HIC_15(Criterion):
                 name = "HIC 15"
@@ -221,21 +239,30 @@ class Overall(Criterion):
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=True)
                     self.color = self.limits.get_limit_min_color(self.channel)
 
-            class Criterion_UnstableAirbagSteeringWheelContact(Criterion):
-                name = "Modifier for Unstable airbag/steering wheel contact"
-                unstable_airbag_steering_wheel_contact: Manual[bool, manual(False, source="video", doc=(
-                    "Unstable contact between head and airbag/steering wheel. −1 point."))]
+            class Criterion_UnstableAirbagContact(Criterion):
+                #: §4.2.1 scopes this to "Driver and Rear Passenger", so the class is
+                #: shared by both — hence no steering wheel in the name. Detachment of
+                #: the steering wheel is only one (driver-specific) example of the
+                #: compromised airbag protection the modifier really covers.
+                name = "Modifier for Unstable Airbag Contact"
+                source = "§4.2.1"
+                unstable_airbag_contact: Manual[bool, manual(False, source="video", doc=(
+                    "During the head's forward movement its centre of gravity moved "
+                    "further than the outside edge of the airbag, or head protection by "
+                    "the airbag was otherwise compromised — steering wheel detached from "
+                    "the column, airbag bottomed out by the head. −1 point."))]
 
                 def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
                     self.p = p
 
                 def calculation(self) -> None:
-                    self.value = self.unstable_airbag_steering_wheel_contact
-                    self.rating = -1 if self.unstable_airbag_steering_wheel_contact else 0
+                    self.value = self.unstable_airbag_contact
+                    self.rating = -1 if self.unstable_airbag_contact else 0
 
             class Criterion_HazardousAirbagDeployment(Criterion):
                 name = "Modifier for Hazardous Airbag Deployment"
+                source = "§4.2.1"
                 hazardous_airbag_deployment: Manual[bool, manual(False, source="video", doc=(
                     "Hazardous airbag deployment observed. −1 point."))]
 
@@ -249,6 +276,7 @@ class Overall(Criterion):
 
             class Criterion_IncorrectAirbagDeployment(Criterion):
                 name = "Modifier for Incorrect Airbag Deployment"
+                source = "§4.2.1"
                 incorrect_airbag_deployment: Manual[bool, manual(False, source="video", doc=(
                     "Incorrect airbag deployment observed. −1 point."))]
 
@@ -263,6 +291,7 @@ class Overall(Criterion):
             class Criterion_DisplacementSteeringColumn(Criterion):
                 report: EuroNCAP_Frontal_50kmh
                 name = "Modifier for Displacement of Steering Column"
+                source = "§4.2.1"
                 displacement_steering_column_rearwards: Manual[float, manual(
                     0.0, unit="mm", source="measurement",
                     doc="Rearward displacement of the steering column (limit 100 mm).")]
@@ -290,27 +319,11 @@ class Overall(Criterion):
                     else:
                         self.rating = 0
 
-            class Criterion_ExceedingForwardExcursionLine(Criterion):
-                name = "Modifier for Exceeding forward excursion line"
-                forward_excursion: Manual[float, manual(
-                    0.0, unit="mm", source="video",
-                    doc="Forward head excursion beyond the excursion line.")]
-                simulation_contact_seat_H3: Manual[bool, manual(
-                    False, source="simulation",
-                    doc="Hybrid-III simulation shows head contact with the front seat.")]
-                simulation_hic_15_H3: Manual[float, manual(
-                    0.0, source="simulation", doc="HIC15 from the Hybrid-III simulation.")]
-
-                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
-                    super().__init__(report, isomme)
-                    self.p = p
-
-                def calculation(self) -> None:
-                    self.rating = 0
-
         class Criterion_Neck(Criterion):
             report: EuroNCAP_Frontal_50kmh
             name = "Neck"
+            max_rating = 4.
+            source = "§4.1.2"
 
             def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                 super().__init__(report, isomme)
@@ -414,6 +427,8 @@ class Overall(Criterion):
         class Criterion_Chest(Criterion):
             report: EuroNCAP_Frontal_50kmh
             name = "Chest"
+            max_rating = 4.
+            source = "§4.1.3"
 
             def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                 super().__init__(report, isomme)
@@ -480,13 +495,14 @@ class Overall(Criterion):
 
                 def calculation(self) -> None:
                     self.channel = self.require_channel(f"?{self.p}VCCR0003??VEXC", f"?{self.p}VCCR0000??VEXC").convert_unit("m/s")
-                    self.value = np.min(self.channel.get_data())
+                    self.value = self.channel.get_data()[np.argmax(np.abs(self.channel.get_data()))]
                     self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=True)
                     self.color = self.limits.get_limit_min_color(self.channel)
 
             class Criterion_SteeringWheelContact(Criterion):
                 report: EuroNCAP_Frontal_50kmh
                 name = "Modifier Chest Steering Wheel Contact"
+                source = "§4.2.2"
                 steering_wheel_contact: Manual[bool, manual(False, source="video", doc=(
                     "Chest contact with the steering wheel (driver only). −1 point."))]
 
@@ -520,6 +536,8 @@ class Overall(Criterion):
 
         class Criterion_Femur(Criterion):
             name = "Femur"
+            max_rating = 4.
+            source = "§4.1.4"
 
             def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                 super().__init__(report, isomme)
@@ -616,6 +634,7 @@ class Overall(Criterion):
     class Criterion_Front_Passenger(Criterion):
         report: EuroNCAP_Frontal_50kmh
         name = "Front Passenger"
+        max_rating, aggregation = 16., "sum"
 
         def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
             super().__init__(report, isomme)
@@ -643,6 +662,8 @@ class Overall(Criterion):
         class Criterion_Head(Criterion):
             report: EuroNCAP_Frontal_50kmh
             name = "Head"
+            max_rating = 4.
+            source = "§4.1.1"
             hard_contact: Manual[bool, manual(True, source="video", doc=(
                 "Was hard head contact observed? A head-acceleration peak above "
                 "80 g forces this to True regardless (Appendix A2: 'video OR curve')."))]
@@ -656,7 +677,6 @@ class Overall(Criterion):
                 self.criterion_head_a3ms = Overall.Criterion_Driver.Criterion_Head.Criterion_Head_a3ms(report, isomme, p=self.p)
                 self.criterion_HazardousAirbagDeployment = self.Criterion_HazardousAirbagDeployment(report, isomme, p=self.p)
                 self.criterion_IncorrectAirbagDeployment = self.Criterion_IncorrectAirbagDeployment(report, isomme, p=self.p)
-                self.criterion_ExceedingForwardExcursionLine = self.Criterion_ExceedingForwardExcursionLine(report, isomme, p=self.p)
 
             def calculation(self) -> None:
                 if np.max(np.abs(self.require_channel(f"?{self.p}HEAD??00??ACRA").get_data(unit=g0))) > 80:
@@ -674,14 +694,13 @@ class Overall(Criterion):
                 # Modifiers
                 self.criterion_HazardousAirbagDeployment.calculate()
                 self.criterion_IncorrectAirbagDeployment.calculate()
-                self.criterion_ExceedingForwardExcursionLine.calculate()
 
                 self.rating += np.sum([self.criterion_HazardousAirbagDeployment.rating,
-                                       self.criterion_IncorrectAirbagDeployment.rating,
-                                       self.criterion_ExceedingForwardExcursionLine.rating])
+                                       self.criterion_IncorrectAirbagDeployment.rating])
 
             class Criterion_HazardousAirbagDeployment(Criterion):
                 name = "Modifier for Hazardous Airbag Deployment"
+                source = "§4.2.1"
                 hazardous_airbag_deployment: Manual[bool, manual(False, source="video", doc=(
                     "Hazardous airbag deployment observed. −1 point."))]
 
@@ -695,6 +714,7 @@ class Overall(Criterion):
 
             class Criterion_IncorrectAirbagDeployment(Criterion):
                 name = "Modifier for Incorrect Airbag Deployment"
+                source = "§4.2.1"
                 incorrect_airbag_deployment: Manual[bool, manual(False, source="video", doc=(
                     "Incorrect airbag deployment observed. −1 point."))]
 
@@ -706,26 +726,10 @@ class Overall(Criterion):
                     self.value = self.incorrect_airbag_deployment
                     self.rating = -1 if self.incorrect_airbag_deployment else 0
 
-            class Criterion_ExceedingForwardExcursionLine(Criterion):
-                name = "Modifier for Exceeding forward excursion line"
-                forward_excursion: Manual[float, manual(
-                    0.0, unit="mm", source="video",
-                    doc="Forward head excursion beyond the excursion line.")]
-                simulation_contact_seat_H3: Manual[bool, manual(
-                    False, source="simulation",
-                    doc="Hybrid-III simulation shows head contact with the front seat.")]
-                simulation_hic_15_H3: Manual[float, manual(
-                    0.0, source="simulation", doc="HIC15 from the Hybrid-III simulation.")]
-
-                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
-                    super().__init__(report, isomme)
-                    self.p = p
-
-                def calculation(self) -> None:
-                    self.rating = 0
-
         class Criterion_Neck(Criterion):
             name = "Neck"
+            max_rating = 4.
+            source = "§4.1.2"
 
             def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                 super().__init__(report, isomme)
@@ -821,6 +825,8 @@ class Overall(Criterion):
         class Criterion_Chest(Criterion):
             report: EuroNCAP_Frontal_50kmh
             name = "Chest"
+            max_rating = 4.
+            source = "§4.1.3"
 
             def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                 super().__init__(report, isomme)
@@ -845,6 +851,8 @@ class Overall(Criterion):
         class Criterion_Femur(Criterion):
             report: EuroNCAP_Frontal_50kmh
             name = "Femur"
+            max_rating = 4.
+            source = "§4.1.4"
 
             def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                 super().__init__(report, isomme)
@@ -860,6 +868,7 @@ class Overall(Criterion):
     class Criterion_Rear_Passenger(Criterion):
         report: EuroNCAP_Frontal_50kmh
         name = "Rear Passenger"
+        max_rating, aggregation = 16., "sum"
 
         def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
             super().__init__(report, isomme)
@@ -887,9 +896,12 @@ class Overall(Criterion):
         class Criterion_Head(Criterion):
             report: EuroNCAP_Frontal_50kmh
             name = "Head"
+            max_rating = 4.
+            source = "§4.1.1.3"
             hard_contact: Manual[bool, manual(True, source="video", doc=(
-                "Was hard head contact observed? A head-acceleration peak above "
-                "80 g forces this to True regardless (Appendix A2: 'video OR curve')."))]
+                "Was hard head contact seen on the high speed film? §4.1.1.3 has no "
+                "80 g rule for the rear passenger, so this input alone decides. "
+                "Without contact only the 3 ms resultant is scored."))]
 
             def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                 super().__init__(report, isomme)
@@ -898,31 +910,38 @@ class Overall(Criterion):
 
                 self.criterion_hic_15 = Overall.Criterion_Driver.Criterion_Head.Criterion_HIC_15(report, isomme, p=self.p)
                 self.criterion_head_a3ms = Overall.Criterion_Driver.Criterion_Head.Criterion_Head_a3ms(report, isomme, p=self.p)
+                self.criterion_UnstableAirbagContact = Overall.Criterion_Driver.Criterion_Head.Criterion_UnstableAirbagContact(report, isomme, p=self.p)
                 self.criterion_HazardousAirbagDeployment = self.Criterion_HazardousAirbagDeployment(report, isomme, p=self.p)
                 self.criterion_IncorrectAirbagDeployment = self.Criterion_IncorrectAirbagDeployment(report, isomme, p=self.p)
                 self.criterion_ExceedingForwardExcursionLine = self.Criterion_ExceedingForwardExcursionLine(report, isomme, p=self.p)
 
             def calculation(self) -> None:
+                # §4.1.1.3: without hard contact on the high speed film the score is
+                # based on the 3 ms resultant alone; with hard contact HIC15 is scored
+                # alongside it and the worse of the two counts.
                 if self.hard_contact:
-                    self.criterion_head_a3ms.calculate()
-                    self.rating = self.criterion_head_a3ms.rating
-                else:
                     self.criterion_hic_15.calculate()
                     self.criterion_head_a3ms.calculate()
                     self.rating = np.min([self.criterion_hic_15.rating,
                                           self.criterion_head_a3ms.rating])
+                else:
+                    self.criterion_head_a3ms.calculate()
+                    self.rating = self.criterion_head_a3ms.rating
 
                 # Modifiers
+                self.criterion_UnstableAirbagContact.calculate()
                 self.criterion_HazardousAirbagDeployment.calculate()
                 self.criterion_IncorrectAirbagDeployment.calculate()
                 self.criterion_ExceedingForwardExcursionLine.calculate()
 
-                self.rating += np.sum([self.criterion_HazardousAirbagDeployment.rating,
+                self.rating += np.sum([self.criterion_UnstableAirbagContact.rating,
+                                       self.criterion_HazardousAirbagDeployment.rating,
                                        self.criterion_IncorrectAirbagDeployment.rating,
                                        self.criterion_ExceedingForwardExcursionLine.rating])
 
             class Criterion_HazardousAirbagDeployment(Criterion):
                 name = "Modifier for Hazardous Airbag Deployment"
+                source = "§4.2.1"
                 hazardous_airbag_deployment: Manual[bool, manual(False, source="video", doc=(
                     "Hazardous airbag deployment observed. −1 point."))]
 
@@ -936,6 +955,7 @@ class Overall(Criterion):
 
             class Criterion_IncorrectAirbagDeployment(Criterion):
                 name = "Modifier for Incorrect Airbag Deployment"
+                source = "§4.2.1"
                 incorrect_airbag_deployment: Manual[bool, manual(False, source="video", doc=(
                     "Incorrect airbag deployment observed. −1 point."))]
 
@@ -949,6 +969,7 @@ class Overall(Criterion):
 
             class Criterion_ExceedingForwardExcursionLine(Criterion):
                 name = "Modifier for Exceeding forward excursion line"
+                source = "§4.2.1"
                 forward_excursion: Manual[float, manual(
                     0.0, unit="mm", source="video",
                     doc="Forward head excursion beyond the excursion line.")]
@@ -979,6 +1000,8 @@ class Overall(Criterion):
 
         class Criterion_Neck(Criterion):
             name = "Neck"
+            max_rating, aggregation = 4., "sum"
+            source = "§4.1.2"
 
             def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                 super().__init__(report, isomme)
@@ -1001,6 +1024,8 @@ class Overall(Criterion):
 
             class Criterion_My_extension(Criterion):
                 name = "Neck My extension"
+                max_rating: float = 2.
+                validate_ignore = {"max_rating": "shared 4 pt. limit block rescaled to the §4.1.2 rear-passenger budget"}
 
                 def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
@@ -1018,12 +1043,16 @@ class Overall(Criterion):
                 def calculation(self) -> None:
                     self.channel = self.require_channel(f"?{self.p}NECKUP00??MOYB")
                     self.value = np.min(self.channel.get_data(unit="Nm"))
-                    self.rating = self.limits.get_limit_min_rating(self.channel)
-                    # Reduce max. rating for rear passenger
-                    self.rating = np.min([2, self.rating])
+                    # Rescale the 4 pt. block onto the rear passenger's 2 pt. budget.
+                    # TODO(test): the rear passenger's neck is nan in both golden
+                    #   fixtures, so this rescaling has no regression test. Verified by
+                    #   hand (Fx 1.5 kN -> 0.6002 against a 0.6 linear expectation).
+                    self.rating = self.limits.get_limit_min_rating(self.channel) * self.max_rating / 4
 
             class Criterion_Fz_tension(Criterion):
                 name = "Neck Fz tension"
+                max_rating: float = 1.
+                validate_ignore = {"max_rating": "shared 4 pt. limit block rescaled to the §4.1.2 rear-passenger budget"}
 
                 def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
@@ -1041,12 +1070,13 @@ class Overall(Criterion):
                 def calculation(self) -> None:
                     self.channel = self.require_channel(f"?{self.p}NECKUP00??FOZA").convert_unit("kN")
                     self.value = np.max(self.channel.get_data())
-                    self.rating = self.limits.get_limit_min_rating(self.channel)
-                    # Reduce max. rating for rear passenger
-                    self.rating = np.min([1, self.rating])
+                    # Rescale the 4 pt. block onto the rear passenger's 1 pt. budget.
+                    self.rating = self.limits.get_limit_min_rating(self.channel) * self.max_rating / 4
 
             class Criterion_Fx_shear(Criterion):
                 name = "Neck Fx shear"
+                max_rating: float = 1.
+                validate_ignore = {"max_rating": "shared 4 pt. limit block rescaled to the §4.1.2 rear-passenger budget"}
 
                 def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
@@ -1070,13 +1100,14 @@ class Overall(Criterion):
                 def calculation(self) -> None:
                     self.channel = self.require_channel(f"?{self.p}NECKUP00??FOXA").convert_unit("kN")
                     self.value = self.channel.get_data(unit="kN")[np.argmax(np.abs(self.channel.get_data()))]
-                    self.rating = self.limits.get_limit_min_rating(self.channel)
-                    # Reduce max. rating for rear passenger
-                    self.rating = np.min([1, self.rating])
+                    # Rescale the 4 pt. block onto the rear passenger's 1 pt. budget.
+                    self.rating = self.limits.get_limit_min_rating(self.channel) * self.max_rating / 4
 
         class Criterion_Chest(Criterion):
             report: EuroNCAP_Frontal_50kmh
             name = "Chest"
+            max_rating = 4.
+            source = "§4.1.3"
 
             def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                 super().__init__(report, isomme)
@@ -1101,6 +1132,8 @@ class Overall(Criterion):
         class Criterion_Femur(Criterion):
             report: EuroNCAP_Frontal_50kmh
             name = "Femur"
+            max_rating = 4.
+            source = "§4.1.4"
 
             def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                 super().__init__(report, isomme)

@@ -59,7 +59,7 @@ def calculate_tibia_index(channel_MOX: Channel,
 def calculate_adjusted_upper_tibia_moment_My(channel_MOY: Channel,
                                              channel_FOZ: Channel) -> Channel:
     """
-    References: 
+    References:
     - Effect of Hybrid III Leg Geometry on Upper Tibia Bending Moments (David S. Zuby, Joseph M. Nolan, Christopher P. Sherwood)
     - references/IIHS/small_overlap_rating_protocol.pdf
     :param channel_MOY: Measured upper bending moment
@@ -76,7 +76,7 @@ def calculate_adjusted_upper_tibia_moment_My(channel_MOY: Channel,
 def calculate_adjusted_lower_tibia_moment_My(channel_MOY: Channel,
                                              channel_FOZ: Channel) -> Channel:
     """
-    References: 
+    References:
     - Effect of Hybrid III Leg Geometry on Upper Tibia Bending Moments (David S. Zuby, Joseph M. Nolan, Christopher P. Sherwood)
     - references/IIHS/small_overlap_rating_protocol.pdf
     :param channel_MOY: Measured lower bending moment

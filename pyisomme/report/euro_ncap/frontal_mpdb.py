@@ -23,6 +23,11 @@ logger = logging.getLogger(__name__)
 class Overall(Criterion):
     report: EuroNCAP_Frontal_MPDB
     name: str = "Overall"
+    #: §3.4: the four body regions are scored on the worse of driver and passenger
+    #: (16 points), and that sum is halved. The compatibility penalty of §3.3 and
+    #: the door modifier then apply to this 8-point test score.
+    max_rating = 8.
+    source = "§3"
     p_driver: Manual[int, manual(1, source="test report", doc=(
         "Channel-code position of the driver. Defaults to the "
         "'Driver position object 1' test-info field when the test carries it."))]
@@ -85,7 +90,18 @@ class Overall(Criterion):
             ])
         ])
 
-        # Modifier
+        # Capping (-np.inf) leads to 0 points. More than 16 points should not be possible if sub-criteria defined correctly
+        self.rating = float(np.interp(self.rating, [0, 16], [0, 16], left=0, right=np.nan))
+        # §3.4: "This score is halved with a total achievable score of 8 points."
+        # TODO(test): no golden fixture reaches this line with a number — the MPDB
+        #   driver is nan in all three, so Overall is nan. Verified by hand only
+        #   (4/4/4/4 on both occupants -> 8.0; -8 compatibility -> 0.0). Add a
+        #   fixture-free regression test once Step 7's Ctx makes pinning a region's
+        #   rating cheap.
+        self.rating /= 2
+
+        # Modifier — §3.3 applies the compatibility penalty to the test score, so
+        # both modifiers land on the halved scale.
         self.criterion_door_opening_during_impact.calculate()
         self.criterion_compatibility_modifier.calculate()
 
@@ -94,11 +110,12 @@ class Overall(Criterion):
             self.criterion_compatibility_modifier.rating
         ])
 
-        # Capping (-np.inf) leads to 0 points. More than 16 points should not be possible if sub-criteria defined correctly
-        self.rating = float(np.interp(self.rating, [0, 16], [0, 16], left=0, right=np.nan))
+        # A modifier must not drive the load case below zero.
+        self.rating = float(np.max([0., self.rating]))
 
     class Criterion_Driver(Criterion):
         name = "Driver"
+        max_rating, aggregation = 16., "sum"
 
         def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
             super().__init__(report, isomme)
@@ -125,6 +142,9 @@ class Overall(Criterion):
 
         class Criterion_Head_Neck(Criterion):
             name = "Head & Neck"
+            #: §3.4 groups head and neck into one 4-point body region.
+            max_rating = 4.
+            source = "§3.1.1"
 
             steering_wheel_airbag_exists: Manual[bool, manual(True, source="test report", doc=(
                 "Is a steering-wheel airbag fitted? Without one the head & neck box scores 0."))]
@@ -151,6 +171,7 @@ class Overall(Criterion):
 
             class Criterion_Head(Criterion):
                 name = "Head"
+                source = "§3.1.1"
                 hard_contact: Manual[bool, manual(True, source="video", doc=(
                     "Was hard head contact observed? A head-acceleration peak above "
                     "80 g forces this to True regardless (Appendix A2: 'video OR curve')."))]
@@ -163,6 +184,10 @@ class Overall(Criterion):
                     self.criterion_hic_15 = Overall_Frontal_50kmh.Criterion_Driver.Criterion_Head.Criterion_HIC_15(report, isomme, p=self.p)
                     self.criterion_head_a3ms = Overall_Frontal_50kmh.Criterion_Driver.Criterion_Head.Criterion_Head_a3ms(report, isomme, p=self.p)
                     self.criterion_damage = self.Criterion_DAMAGE(self.report, self.isomme, p=self.p)
+                    self.criterion_UnstableAirbagContact = self.Criterion_UnstableAirbagContact(report, isomme, p=self.p)
+                    self.criterion_HazardousAirbagDeployment = self.Criterion_HazardousAirbagDeployment(report, isomme, p=self.p)
+                    self.criterion_IncorrectAirbagDeployment = self.Criterion_IncorrectAirbagDeployment(report, isomme, p=self.p)
+                    self.criterion_DisplacementSteeringColumn = self.Criterion_DisplacementSteeringColumn(report, isomme, p=self.p)
 
                 def calculation(self) -> None:
                     if np.max(np.abs(self.require_channel(f"?{self.p}HEAD??00??ACRA").get_data(unit=g0))) > 80:
@@ -179,10 +204,33 @@ class Overall(Criterion):
 
                     # Modifier
                     self.criterion_damage.calculate()
-                    self.rating += self.criterion_damage.rating
+                    self.criterion_UnstableAirbagContact.calculate()
+                    self.criterion_HazardousAirbagDeployment.calculate()
+                    self.criterion_IncorrectAirbagDeployment.calculate()
+                    self.criterion_DisplacementSteeringColumn.calculate()
+
+                    self.rating += np.sum([self.criterion_damage.rating,
+                                           self.criterion_UnstableAirbagContact.rating,
+                                           self.criterion_HazardousAirbagDeployment.rating,
+                                           self.criterion_IncorrectAirbagDeployment.rating,
+                                           self.criterion_DisplacementSteeringColumn.rating])
+
+                # §3.2.1.1 repeats §4.2.1 word for word; only the section differs.
+                class Criterion_UnstableAirbagContact(Overall_Frontal_50kmh.Criterion_Driver.Criterion_Head.Criterion_UnstableAirbagContact):
+                    source = "§3.2.1.1"
+
+                class Criterion_HazardousAirbagDeployment(Overall_Frontal_50kmh.Criterion_Driver.Criterion_Head.Criterion_HazardousAirbagDeployment):
+                    source = "§3.2.1.1"
+
+                class Criterion_IncorrectAirbagDeployment(Overall_Frontal_50kmh.Criterion_Driver.Criterion_Head.Criterion_IncorrectAirbagDeployment):
+                    source = "§3.2.1.1"
+
+                class Criterion_DisplacementSteeringColumn(Overall_Frontal_50kmh.Criterion_Driver.Criterion_Head.Criterion_DisplacementSteeringColumn):
+                    source = "§3.2.1.1"
 
                 class Criterion_DAMAGE(Criterion):
                     name = "Modifier for Brain Injury - DAMAGE"
+                    source = "§3.2.1.1"
 
                     def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                         super().__init__(report, isomme)
@@ -203,6 +251,7 @@ class Overall(Criterion):
 
             class Criterion_Neck(Criterion):
                 name = "Neck"
+                source = "§3.1.2"
 
                 def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
@@ -302,6 +351,9 @@ class Overall(Criterion):
 
         class Criterion_Chest_Abdomen(Criterion):
             name = "Chest and Abdomen"
+            #: §3.4 groups chest and abdomen into one 4-point body region.
+            max_rating = 4.
+            source = "§3.1.3"
 
             def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                 super().__init__(report, isomme)
@@ -323,6 +375,7 @@ class Overall(Criterion):
 
             class Criterion_Chest(Criterion):
                 name = "Chest"
+                source = "§3.1.3.1"
 
                 def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
@@ -332,6 +385,9 @@ class Overall(Criterion):
                     self.criterion_chest_compression = self.Criterion_Chest_Compression(report, isomme, p=self.p)
 
                     self.criterion_shoulder_belt_load = Overall_Frontal_50kmh.Criterion_Driver.Criterion_Chest.Criterion_ShoulderBeltLoad(report, isomme, p=self.p)
+                    self.criterion_SteeringWheelContact = self.Criterion_SteeringWheelContact(report, isomme, p=self.p)
+                    self.criterion_DisplacementAPillar = self.Criterion_DisplacementAPillar(report, isomme, p=self.p)
+                    self.criterion_CompartmentIntegrity = self.Criterion_CompartmentIntegrity(report, isomme, p=self.p)
 
                 def calculation(self) -> None:
                     self.criterion_chest_compression.calculate()
@@ -340,7 +396,61 @@ class Overall(Criterion):
 
                     # Modifier
                     self.criterion_shoulder_belt_load.calculate()
-                    self.rating += self.criterion_shoulder_belt_load.rating
+                    self.criterion_SteeringWheelContact.calculate()
+                    self.criterion_DisplacementAPillar.calculate()
+                    self.criterion_CompartmentIntegrity.calculate()
+
+                    self.rating += np.sum([self.criterion_shoulder_belt_load.rating,
+                                           self.criterion_SteeringWheelContact.rating,
+                                           self.criterion_DisplacementAPillar.rating,
+                                           self.criterion_CompartmentIntegrity.rating])
+
+                # §3.2.1.2 repeats §4.2.2 word for word; only the section differs.
+                class Criterion_SteeringWheelContact(Overall_Frontal_50kmh.Criterion_Driver.Criterion_Chest.Criterion_SteeringWheelContact):
+                    source = "§3.2.1.2"
+
+                class Criterion_DisplacementAPillar(Criterion):
+                    report: EuroNCAP_Frontal_MPDB
+                    name = "Modifier for Displacement of the A Pillar"
+                    source = "§3.2.1.2"
+                    displacement_a_pillar: Manual[float, manual(
+                        0.0, unit="mm", source="measurement", doc=(
+                            "Rearward displacement of the driver's front door pillar, "
+                            "100 mm below the lowest level of the side window aperture. "
+                            "No penalty up to 100 mm, −2 points above 200 mm, linear "
+                            "in between (driver only)."))]
+
+                    def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
+                        super().__init__(report, isomme)
+                        self.p = p
+
+                    def calculation(self) -> None:
+                        if self.report.criterion_overall[self.isomme].p_driver != self.p:
+                            self.rating = 0
+                            return
+
+                        self.value = self.displacement_a_pillar
+                        self.rating = float(np.interp(self.value, [100, 200], [0, -2], left=0, right=-2))
+
+                class Criterion_CompartmentIntegrity(Criterion):
+                    report: EuroNCAP_Frontal_MPDB
+                    name = "Modifier for Integrity of the Passenger Compartment"
+                    source = "§3.2.1.2"
+                    compartment_integrity_compromised: Manual[bool, manual(
+                        False, source="test report", doc=(
+                            "Structural integrity of the passenger compartment compromised "
+                            "— door latch/hinge failure, door buckling, cross facia rail to "
+                            "A pillar separation, or severe loss of door aperture strength. "
+                            "−1 point (driver only)."))]
+
+                    def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
+                        super().__init__(report, isomme)
+                        self.p = p
+
+                    def calculation(self) -> None:
+                        is_driver = self.report.criterion_overall[self.isomme].p_driver == self.p
+                        self.value = self.compartment_integrity_compromised
+                        self.rating = -1 if is_driver and self.compartment_integrity_compromised else 0
 
                 class Criterion_Chest_Compression(Criterion):
                     name = "Chest Compression"
@@ -360,6 +470,10 @@ class Overall(Criterion):
                         ])
 
                     def calculation(self) -> None:
+                        # TODO(channel): §3.1.3.1 rates "max compression of all 4 ribs";
+                        #   this reads the single aggregate channel. Confirm get_channel
+                        #   synthesises the worst of the four THOR IR-TRACC channels, or
+                        #   take the minimum over them here.
                         self.channel = self.require_channel(f"?{self.p}CHST0000??DSXC").convert_unit("mm")
                         self.value = np.min(self.channel.get_data())
                         self.rating = self.limits.get_limit_min_rating(self.channel)
@@ -367,6 +481,7 @@ class Overall(Criterion):
 
             class Criterion_Abdomen(Criterion):
                 name = "Abdomen"
+                source = "§3.1.3.2"
 
                 def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
@@ -394,6 +509,9 @@ class Overall(Criterion):
                         ])
 
                     def calculation(self) -> None:
+                        # TODO(channel): §3.1.3.2 rates "max compression (left or right)";
+                        #   this reads the single aggregate channel. Same question as the
+                        #   chest above.
                         self.channel = self.require_channel(f"?{self.p}ABDO0000??DSXC").convert_unit("mm")
                         self.value = np.min(self.channel.get_data())
                         self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
@@ -401,6 +519,8 @@ class Overall(Criterion):
 
         class Criterion_Knee_Femur_Pelvis(Criterion):
             name = "Knee, Femur and Pelvis"
+            max_rating = 4.
+            source = "§3.1.4"
 
             def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                 super().__init__(report, isomme)
@@ -412,6 +532,8 @@ class Overall(Criterion):
                 self.criterion_knee = self.Criterion_Knee(report, isomme, p=self.p)
 
                 self.criterion_submarining = Overall_Frontal_50kmh.Criterion_Driver.Criterion_Femur.Criterion_Submarining(report, isomme, p=self.p)
+                self.criterion_VariableContact = self.Criterion_VariableContact(report, isomme, p=self.p)
+                self.criterion_ConcentratedLoading = self.Criterion_ConcentratedLoading(report, isomme, p=self.p)
 
             def calculation(self) -> None:
                 self.criterion_pelvis.calculate()
@@ -426,11 +548,52 @@ class Overall(Criterion):
 
                 # Modifier
                 self.criterion_submarining.calculate()
+                self.criterion_VariableContact.calculate()
+                self.criterion_ConcentratedLoading.calculate()
 
-                self.rating += self.criterion_submarining.rating
+                self.rating += np.sum([self.criterion_submarining.rating,
+                                       self.criterion_VariableContact.rating,
+                                       self.criterion_ConcentratedLoading.rating])
+
+            class Criterion_VariableContact(Criterion):
+                name = "Modifier for Variable Contact"
+                source = "§3.2.1.4"
+                variable_contact_left: Manual[bool, manual(False, source="knee mapping", doc=(
+                    "Over the left knee's contact area, femur loads above 3.8 kN and/or "
+                    "knee slider displacements above 6 mm would be expected. −1 point."))]
+                variable_contact_right: Manual[bool, manual(False, source="knee mapping", doc=(
+                    "Over the right knee's contact area, femur loads above 3.8 kN and/or "
+                    "knee slider displacements above 6 mm would be expected. −1 point."))]
+
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
+                    super().__init__(report, isomme)
+                    self.p = p
+
+                def calculation(self) -> None:
+                    self.value = int(self.variable_contact_left) + int(self.variable_contact_right)
+                    self.rating = -1. * self.value
+
+            class Criterion_ConcentratedLoading(Criterion):
+                name = "Modifier for Concentrated Loading"
+                source = "§3.2.1.4"
+                concentrated_loading_left: Manual[bool, manual(False, source="knee mapping", doc=(
+                    "Structures in the left knee impact area could concentrate forces on "
+                    "part of the knee. −1 point."))]
+                concentrated_loading_right: Manual[bool, manual(False, source="knee mapping", doc=(
+                    "Structures in the right knee impact area could concentrate forces on "
+                    "part of the knee. −1 point."))]
+
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
+                    super().__init__(report, isomme)
+                    self.p = p
+
+                def calculation(self) -> None:
+                    self.value = int(self.concentrated_loading_left) + int(self.concentrated_loading_right)
+                    self.rating = -1. * self.value
 
             class Criterion_Pelvis(Criterion):
                 name = "Pelvis"
+                source = "§3.1.4.1"
 
                 def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
@@ -542,6 +705,8 @@ class Overall(Criterion):
 
         class Criterion_LowerLeg_Foot_Ankle(Criterion):
             name = "Lower Leg, Foot and Ankle"
+            max_rating = 4.
+            source = "§3.1.5"
 
             def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                 super().__init__(report, isomme)
@@ -551,6 +716,10 @@ class Overall(Criterion):
                 self.criterion_tibia_index = self.Criterion_Tibia_Index(report, isomme, p=self.p)
                 self.criterion_tibia_compression = self.Criterion_Tibia_Compression(report, isomme, p=self.p)
                 self.criterion_pedal_rearward_displacement = self.Criterion_Pedal_Rearward_Displacement(report, isomme, p=self.p)
+
+                self.criterion_PedalUpwardDisplacement = self.Criterion_PedalUpwardDisplacement(report, isomme, p=self.p)
+                self.criterion_FootwellRupture = self.Criterion_FootwellRupture(report, isomme, p=self.p)
+                self.criterion_PedalBlocking = self.Criterion_PedalBlocking(report, isomme, p=self.p)
 
             def calculation(self) -> None:
                 self.criterion_tibia_index.calculate()
@@ -563,8 +732,68 @@ class Overall(Criterion):
                     self.criterion_pedal_rearward_displacement.rating,
                 ])
 
+                # Modifier
+                self.criterion_PedalUpwardDisplacement.calculate()
+                self.criterion_FootwellRupture.calculate()
+                self.criterion_PedalBlocking.calculate()
+
+                self.rating += np.sum([self.criterion_PedalUpwardDisplacement.rating,
+                                       self.criterion_FootwellRupture.rating,
+                                       self.criterion_PedalBlocking.rating])
+
+            class Criterion_PedalUpwardDisplacement(Criterion):
+                name = "Modifier for Upward Displacement of the Worst Performing Pedal"
+                source = "§3.2.1.5"
+                pedal_upward_displacement: Manual[float, manual(
+                    0.0, unit="mm", source="measurement", doc=(
+                        "Upward static displacement of the worst performing pedal. No "
+                        "penalty up to 90 % of the 80 mm EEVC limit, −1 point beyond "
+                        "110 %, linear in between."))]
+
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
+                    super().__init__(report, isomme)
+                    self.p = p
+
+                def calculation(self) -> None:
+                    self.value = self.pedal_upward_displacement / 80
+                    self.rating = float(np.interp(self.value, [0.9, 1.1], [0, -1], left=0, right=-1))
+
+            class Criterion_FootwellRupture(Criterion):
+                name = "Modifier for Footwell Rupture"
+                source = "§3.2.1.6"
+                footwell_rupture: Manual[bool, manual(False, source="test report", doc=(
+                    "Significant rupture of the footwell area, usually separation of spot "
+                    "welded seams. −1 point."))]
+
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
+                    super().__init__(report, isomme)
+                    self.p = p
+
+                def calculation(self) -> None:
+                    self.value = self.footwell_rupture
+                    self.rating = -1 if self.footwell_rupture else 0
+
+            class Criterion_PedalBlocking(Criterion):
+                name = "Modifier for Pedal Blocking"
+                source = "§3.2.1.6"
+                blocked_pedal_rearward_displacement: Manual[float, manual(
+                    0.0, unit="mm", source="measurement", doc=(
+                        "Rearward displacement of a 'blocked' pedal relative to the pre-test "
+                        "measurement. A pedal is blocked when its forward movement under a "
+                        "200 N load is below 25 mm. Sliding scale 0 to −1 point between "
+                        "50 mm and 175 mm."))]
+
+                def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
+                    super().__init__(report, isomme)
+                    self.p = p
+
+                def calculation(self) -> None:
+                    self.value = self.blocked_pedal_rearward_displacement
+                    self.rating = float(np.interp(self.value, [50, 175], [0, -1], left=0, right=-1))
+
             class Criterion_Tibia_Index(Criterion):
                 name = "Tibia Index"
+                source = "§3.1.5.1"
 
                 def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
@@ -587,6 +816,7 @@ class Overall(Criterion):
 
             class Criterion_Tibia_Compression(Criterion):
                 name = "Tibia Compression"
+                source = "§3.1.5.1"
 
                 def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
@@ -609,6 +839,7 @@ class Overall(Criterion):
 
             class Criterion_Pedal_Rearward_Displacement(Criterion):
                 name = "Pedal Rearward Displacement"
+                source = "§3.1.5.2"
                 pedal_rearward_displacement: Manual[float, manual(
                     0, unit="mm", source="measurement",
                     doc="Rearward displacement of the pedal (4 points below 100 mm, 0 above 200 mm).")]
@@ -625,6 +856,7 @@ class Overall(Criterion):
     class Criterion_Passenger(Criterion):
         report: EuroNCAP_Frontal_MPDB
         name = "Passenger"
+        max_rating, aggregation = 16., "sum"
 
         def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
             super().__init__(report, isomme)
@@ -651,6 +883,8 @@ class Overall(Criterion):
 
         class Criterion_Head_Neck(Criterion):
             name = "Head and Neck"
+            max_rating = 4.
+            source = "§3.1.6"
 
             def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                 super().__init__(report, isomme)
@@ -671,14 +905,20 @@ class Overall(Criterion):
 
             class Criterion_Head(Criterion):
                 name = "Head"
+                source = "§3.1.6.1"
 
                 def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
 
                     self.p = p
 
+                    # §3.1.1.1: "These criteria are always used for the passenger" —
+                    # no hard-contact branch here, unlike the driver.
                     self.criterion_hic_15 = Overall_Frontal_50kmh.Criterion_Driver.Criterion_Head.Criterion_HIC_15(report, isomme, p=self.p)
                     self.criterion_head_a3ms = Overall_Frontal_50kmh.Criterion_Driver.Criterion_Head.Criterion_Head_a3ms(report, isomme, p=self.p)
+                    self.criterion_UnstableAirbagContact = Overall.Criterion_Driver.Criterion_Head_Neck.Criterion_Head.Criterion_UnstableAirbagContact(report, isomme, p=self.p)
+                    self.criterion_HazardousAirbagDeployment = Overall.Criterion_Driver.Criterion_Head_Neck.Criterion_Head.Criterion_HazardousAirbagDeployment(report, isomme, p=self.p)
+                    self.criterion_IncorrectAirbagDeployment = Overall.Criterion_Driver.Criterion_Head_Neck.Criterion_Head.Criterion_IncorrectAirbagDeployment(report, isomme, p=self.p)
 
                 def calculation(self) -> None:
                     self.criterion_hic_15.calculate()
@@ -689,8 +929,19 @@ class Overall(Criterion):
                         self.criterion_head_a3ms.rating,
                     ])
 
+                    # Modifier — §3.2.2 gives the passenger the airbag modifiers but
+                    # neither the steering column nor the compartment ones.
+                    self.criterion_UnstableAirbagContact.calculate()
+                    self.criterion_HazardousAirbagDeployment.calculate()
+                    self.criterion_IncorrectAirbagDeployment.calculate()
+
+                    self.rating += np.sum([self.criterion_UnstableAirbagContact.rating,
+                                           self.criterion_HazardousAirbagDeployment.rating,
+                                           self.criterion_IncorrectAirbagDeployment.rating])
+
             class Criterion_Neck(Criterion):
                 name = "Neck"
+                source = "§3.1.6.2"
 
                 def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                     super().__init__(report, isomme)
@@ -790,6 +1041,10 @@ class Overall(Criterion):
 
         class Criterion_Chest(Criterion):
             name = "Chest"
+            #: §3.4 groups chest and abdomen into one 4-point body region; only the
+            #: chest is measured on the passenger (§3.1.7).
+            max_rating = 4.
+            source = "§3.1.7"
 
             def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                 super().__init__(report, isomme)
@@ -840,6 +1095,10 @@ class Overall(Criterion):
         class Criterion_Knee_Femur_Pelvis(Criterion):
             report: EuroNCAP_Frontal_MPDB
             name = "Knee, Femur and Pelvis"
+            #: §3.4 groups pelvis and upper leg into one 4-point body region; §3.1.8
+            #: has no acetabulum row for the passenger.
+            max_rating = 4.
+            source = "§3.1.8"
 
             def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                 super().__init__(report, isomme)
@@ -848,6 +1107,11 @@ class Overall(Criterion):
 
                 self.criterion_femur_compression = Overall.Criterion_Driver.Criterion_Knee_Femur_Pelvis.Criterion_Femur.Criterion_Femur_Compression(report, isomme, p)
                 self.criterion_knee_slider_compression = Overall.Criterion_Driver.Criterion_Knee_Femur_Pelvis.Criterion_Knee.Criterion_Knee_Slider_Compression(report, isomme, p)
+
+                # §3.2.2: the passenger gets the two knee modifiers but not
+                # submarining, which §3.2.1.3 scopes to the driver.
+                self.criterion_VariableContact = Overall.Criterion_Driver.Criterion_Knee_Femur_Pelvis.Criterion_VariableContact(report, isomme, p=self.p)
+                self.criterion_ConcentratedLoading = Overall.Criterion_Driver.Criterion_Knee_Femur_Pelvis.Criterion_ConcentratedLoading(report, isomme, p=self.p)
 
             def calculation(self) -> None:
                 self.criterion_femur_compression.calculate()
@@ -858,9 +1122,20 @@ class Overall(Criterion):
                     self.criterion_knee_slider_compression.rating,
                 ])
 
+                # Modifier
+                self.criterion_VariableContact.calculate()
+                self.criterion_ConcentratedLoading.calculate()
+
+                self.rating += np.sum([self.criterion_VariableContact.rating,
+                                       self.criterion_ConcentratedLoading.rating])
+
         class Criterion_LowerLeg(Criterion):
             report: EuroNCAP_Frontal_MPDB
             name = "Lower Leg"
+            #: §3.4 groups lower leg and foot into one 4-point body region; §3.1.9
+            #: has no pedal row for the passenger.
+            max_rating = 4.
+            source = "§3.1.9"
 
             def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                 super().__init__(report, isomme)
@@ -881,6 +1156,7 @@ class Overall(Criterion):
 
     class Criterion_Compatibility_Modifier(Criterion):
         name = "Compatibility Modifier"
+        source = "§3.3"
 
         def __init__(self, report: Report, isomme: Isomme) -> None:
             super().__init__(report, isomme)
@@ -918,6 +1194,13 @@ class Overall(Criterion):
                 self.value = self.channel.get_data(unit=g0)[0]
                 self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=True)
 
+        # TODO(protocol): §3.3 bases the compatibility penalty on three parameters;
+        #   only OLC (§3.3.2) is implemented. Missing: §3.3.1 barrier deformation,
+        #   assessed on the standard deviation of the post-test measurements over
+        #   50-150 mm, and §3.3.3 barrier face bottoming out, a flat -2 points for a
+        #   630 mm penetration caused by a load bearing structure over an area larger
+        #   than 40x40 mm. Both need TB027 for the exact scaling. Until they exist the
+        #   penalty cannot reach the -8 that §3.3 caps it at.
         class Criterion_SD_Modifier(Criterion):
             pass
 

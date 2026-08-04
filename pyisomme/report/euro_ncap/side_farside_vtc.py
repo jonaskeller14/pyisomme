@@ -21,6 +21,10 @@ logger = logging.getLogger(__name__)
 class Overall(Criterion):
     report: EuroNCAP_Side_Farside_VTC
     name = "Overall"
+    # TODO(input): make this a manual input as in EuroNCAP_Side_Pole/Side_Barrier —
+    #   declare `p: Manual[int, manual(1, ...)]`, derive it from the
+    #   "Driver position object 1" test info, and add the sync_position()/
+    #   rebuild_child() pair, so the occupant is not pinned to position 1.
     p: int = 1
 
     def __init__(self, report: Report, isomme: Isomme) -> None:
@@ -120,6 +124,7 @@ class Overall(Criterion):
 
         class Criterion_Individual_ISO_Score(Criterion):
             name = "Individual ISO-Score"
+            validate_ignore = {"code_pattern": "ISO-score threshold, read directly"}
             # Deliberately optional: a missing channel leaves the score at nan rather
             # than marking the criterion n/a (see the guard in calculation()).
             ref_channel: Channel | None = None
@@ -274,6 +279,7 @@ class Overall(Criterion):
 
         class Criterion_Reference_ISO_Score(Criterion):
             name = "Reference ISO-Score"
+            validate_ignore = {"code_pattern": "ISO-score threshold, read directly"}
             criteria_individual_iso_score: tuple[Criterion, ...]
             values: np.ndarray
             weights: np.ndarray

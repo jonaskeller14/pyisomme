@@ -12,12 +12,13 @@
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Overall` | §TODO full-width frontal | 8 | — |
+| `Overall` | §4 | 8 | — |
 
 Manual inputs:
 
 | input | type | default | unit | source | doc |
 | --- | --- | --- | --- | --- | --- |
+| front_passenger_meets_90_percent | bool | True | — | test report | Does the manufacturer-provided front-passenger dummy score reach 90 % of the driver's total (§4.3)? When it does not, every front-row body region is assessed on the worse of driver and front passenger. |
 | p_driver | int | 1 | — | test report | Channel-code position of the driver. Defaults to the 'Driver position object 1' test-info field when the test carries it. |
 | p_front_passenger | int | 3 | — | test report | Channel-code position of the front passenger. Derived from p_driver (1 for a right-hand-drive test) unless set explicitly. |
 | p_rear_passenger | int | 6 | — | test report | Channel-code position of the rear passenger. Derived from p_driver (4 for a right-hand-drive test) unless set explicitly. |
@@ -26,7 +27,7 @@ Manual inputs:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_DoorOpeningDuringImpact` | §TODO full-width frontal (inherited) | — | — |
+| `Criterion_DoorOpeningDuringImpact` | §4 (inherited) | — | — |
 
 Manual inputs:
 
@@ -38,7 +39,7 @@ Manual inputs:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Driver` | §TODO full-width frontal (inherited) | 16 | sum |
+| `Criterion_Driver` | §4 (inherited) | 16 | sum |
 
 Manual inputs:
 
@@ -50,13 +51,13 @@ Manual inputs:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Chest` | §TODO full-width frontal (inherited) | 4 | — |
+| `Criterion_Chest` | §4.1.3 | 4 | — |
 
 ## `criterion_driver/criterion_chest/criterion_SteeringWheelContact` — Modifier Chest Steering Wheel Contact
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_SteeringWheelContact` | §TODO full-width frontal (inherited) | — | — |
+| `Criterion_SteeringWheelContact` | §4.2.2 | — | — |
 
 Manual inputs:
 
@@ -68,7 +69,7 @@ Manual inputs:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Chest_Deflection` | §TODO full-width frontal (inherited) | 4 (from limits) | — |
+| `Criterion_Chest_Deflection` | §4.1.3 (inherited) | 4 (from limits) | — |
 
 Limits for `?1CHST000[03]??DSX?`:
 
@@ -85,7 +86,7 @@ Limits for `?1CHST000[03]??DSX?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Chest_VC` | §TODO full-width frontal (inherited) | 4 (from limits) | — |
+| `Criterion_Chest_VC` | §4.1.3 (inherited) | 4 (from limits) | — |
 
 Limits for `?1VCCR000[03]??VEX?`:
 
@@ -102,7 +103,7 @@ Limits for `?1VCCR000[03]??VEX?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_ShoulderBeltLoad` | §TODO full-width frontal (inherited) | 0 (from limits) | — |
+| `Criterion_ShoulderBeltLoad` | §4.1.3 (inherited) | 0 (from limits) | — |
 
 Limits for `?1SEBE????B3FO[X0]?`:
 
@@ -115,19 +116,19 @@ Limits for `?1SEBE????B3FO[X0]?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Femur` | §TODO full-width frontal (inherited) | 4 | — |
+| `Criterion_Femur` | §4.1.4 | 4 | — |
 
 ## `criterion_driver/criterion_femur/criterion_femur_axial_force` — Femur Axial Force
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Femur_Axial_Force` | §TODO full-width frontal (inherited) | — | — |
+| `Criterion_Femur_Axial_Force` | §4.1.4 (inherited) | — | — |
 
 ## `criterion_driver/criterion_femur/criterion_femur_axial_force/criterion_femur_axial_force_left` — Femur Axial Force Left
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Femur_Axial_Force_Left` | §TODO full-width frontal (inherited) | 4 (from limits) | — |
+| `Criterion_Femur_Axial_Force_Left` | §4.1.4 (inherited) | 4 (from limits) | — |
 
 Limits for `?1FEMRLE00??FOZ?`:
 
@@ -143,7 +144,7 @@ Limits for `?1FEMRLE00??FOZ?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Femur_Axial_Force_Right` | §TODO full-width frontal (inherited) | 4 (from limits) | — |
+| `Criterion_Femur_Axial_Force_Right` | §4.1.4 (inherited) | 4 (from limits) | — |
 
 Limits for `?1FEMRRI00??FOZ?`:
 
@@ -159,7 +160,7 @@ Limits for `?1FEMRRI00??FOZ?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Submarining` | §TODO full-width frontal (inherited) | — | — |
+| `Criterion_Submarining` | §4.1.4 (inherited) | — | — |
 
 Manual inputs:
 
@@ -171,7 +172,7 @@ Manual inputs:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Head` | §TODO head | 4 | — |
+| `Criterion_Head` | §4.1.1 | 4 | — |
 
 Manual inputs:
 
@@ -183,7 +184,7 @@ Manual inputs:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_DisplacementSteeringColumn` | §TODO head (inherited) | — | — |
+| `Criterion_DisplacementSteeringColumn` | §4.2.1 | — | — |
 
 Manual inputs:
 
@@ -193,25 +194,11 @@ Manual inputs:
 | displacement_steering_column_rearwards | float | 0 | mm | measurement | Rearward displacement of the steering column (limit 100 mm). |
 | displacement_steering_column_upwards | float | 0 | mm | measurement | Upward displacement of the steering column (limit 80 mm). |
 
-## `criterion_driver/criterion_head/criterion_ExceedingForwardExcursionLine` — Modifier for Exceeding forward excursion line
-
-| class | source | max rating | aggregation |
-| --- | --- | --- | --- |
-| `Criterion_ExceedingForwardExcursionLine` | §TODO head (inherited) | — | — |
-
-Manual inputs:
-
-| input | type | default | unit | source | doc |
-| --- | --- | --- | --- | --- | --- |
-| forward_excursion | float | 0 | mm | video | Forward head excursion beyond the excursion line. |
-| simulation_contact_seat_H3 | bool | False | — | simulation | Hybrid-III simulation shows head contact with the front seat. |
-| simulation_hic_15_H3 | float | 0 | — | simulation | HIC15 from the Hybrid-III simulation. |
-
 ## `criterion_driver/criterion_head/criterion_HazardousAirbagDeployment` — Modifier for Hazardous Airbag Deployment
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_HazardousAirbagDeployment` | §TODO head (inherited) | — | — |
+| `Criterion_HazardousAirbagDeployment` | §4.2.1 | — | — |
 
 Manual inputs:
 
@@ -223,7 +210,7 @@ Manual inputs:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_IncorrectAirbagDeployment` | §TODO head (inherited) | — | — |
+| `Criterion_IncorrectAirbagDeployment` | §4.2.1 | — | — |
 
 Manual inputs:
 
@@ -231,23 +218,23 @@ Manual inputs:
 | --- | --- | --- | --- | --- | --- |
 | incorrect_airbag_deployment | bool | False | — | video | Incorrect airbag deployment observed. −1 point. |
 
-## `criterion_driver/criterion_head/criterion_UnstableAirbagSteeringWheelContact` — Modifier for Unstable airbag/steering wheel contact
+## `criterion_driver/criterion_head/criterion_UnstableAirbagContact` — Modifier for Unstable Airbag Contact
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_UnstableAirbagSteeringWheelContact` | §TODO head (inherited) | — | — |
+| `Criterion_UnstableAirbagContact` | §4.2.1 | — | — |
 
 Manual inputs:
 
 | input | type | default | unit | source | doc |
 | --- | --- | --- | --- | --- | --- |
-| unstable_airbag_steering_wheel_contact | bool | False | — | video | Unstable contact between head and airbag/steering wheel. −1 point. |
+| unstable_airbag_contact | bool | False | — | video | During the head's forward movement its centre of gravity moved further than the outside edge of the airbag, or head protection by the airbag was otherwise compromised — steering wheel detached from the column, airbag bottomed out by the head. −1 point. |
 
 ## `criterion_driver/criterion_head/criterion_head_a3ms` — Head a3ms
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Head_a3ms` | §TODO head (inherited) | 4 (from limits) | — |
+| `Criterion_Head_a3ms` | §4.1.1 (inherited) | 4 (from limits) | — |
 
 Limits for `?1HEAD003C??ACR?`, `?1HEADCG3C??ACR?`:
 
@@ -264,7 +251,7 @@ Limits for `?1HEAD003C??ACR?`, `?1HEADCG3C??ACR?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_HIC_15` | §TODO head (inherited) | 4 (from limits) | — |
+| `Criterion_HIC_15` | §4.1.1 (inherited) | 4 (from limits) | — |
 
 Limits for `?1HICR0015??00RX`, `?1HICRCG15??00RX`:
 
@@ -281,13 +268,13 @@ Limits for `?1HICR0015??00RX`, `?1HICRCG15??00RX`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Neck` | §TODO full-width frontal (inherited) | 4 | — |
+| `Criterion_Neck` | §4.1.2 | 4 | — |
 
 ## `criterion_driver/criterion_neck/criterion_fx_shear` — Neck Fx shear
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Fx_shear` | §TODO full-width frontal (inherited) | 4 (from limits) | — |
+| `Criterion_Fx_shear` | §4.1.2 (inherited) | 4 (from limits) | — |
 
 Limits for `?1NECKUP00??FOX?`:
 
@@ -310,7 +297,7 @@ Limits for `?1NECKUP00??FOX?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Fz_tension` | §TODO full-width frontal (inherited) | 4 (from limits) | — |
+| `Criterion_Fz_tension` | §4.1.2 (inherited) | 4 (from limits) | — |
 
 Limits for `?1NECKUP00??FOZ?`:
 
@@ -327,7 +314,7 @@ Limits for `?1NECKUP00??FOZ?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_My_extension` | §TODO full-width frontal (inherited) | 4 (from limits) | — |
+| `Criterion_My_extension` | §4.1.2 (inherited) | 4 (from limits) | — |
 
 Limits for `?1NECKUP00??MOY?`:
 
@@ -344,19 +331,19 @@ Limits for `?1NECKUP00??MOY?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Front_Passenger` | §TODO full-width frontal (inherited) | — | — |
+| `Criterion_Front_Passenger` | §4 (inherited) | 16 | sum |
 
 ## `criterion_front_passenger/criterion_chest` — Chest
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Chest` | §TODO full-width frontal (inherited) | — | — |
+| `Criterion_Chest` | §4.1.3 | 4 | — |
 
 ## `criterion_front_passenger/criterion_chest/criterion_chest_deflection` — Chest Deflection
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Chest_Deflection` | §TODO full-width frontal (inherited) | 4 (from limits) | — |
+| `Criterion_Chest_Deflection` | §4.1.3 (inherited) | 4 (from limits) | — |
 
 Limits for `?3CHST000[03]??DSX?`:
 
@@ -373,7 +360,7 @@ Limits for `?3CHST000[03]??DSX?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Chest_VC` | §TODO full-width frontal (inherited) | 4 (from limits) | — |
+| `Criterion_Chest_VC` | §4.1.3 (inherited) | 4 (from limits) | — |
 
 Limits for `?3VCCR000[03]??VEX?`:
 
@@ -390,7 +377,7 @@ Limits for `?3VCCR000[03]??VEX?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_ShoulderBeltLoad` | §TODO full-width frontal (inherited) | 0 (from limits) | — |
+| `Criterion_ShoulderBeltLoad` | §4.1.3 (inherited) | 0 (from limits) | — |
 
 Limits for `?3SEBE????B3FO[X0]?`:
 
@@ -403,19 +390,19 @@ Limits for `?3SEBE????B3FO[X0]?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Femur` | §TODO full-width frontal (inherited) | — | — |
+| `Criterion_Femur` | §4.1.4 | 4 | — |
 
 ## `criterion_front_passenger/criterion_femur/criterion_femur_axial_force` — Femur Axial Force
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Femur_Axial_Force` | §TODO full-width frontal (inherited) | — | — |
+| `Criterion_Femur_Axial_Force` | §4.1.4 (inherited) | — | — |
 
 ## `criterion_front_passenger/criterion_femur/criterion_femur_axial_force/criterion_femur_axial_force_left` — Femur Axial Force Left
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Femur_Axial_Force_Left` | §TODO full-width frontal (inherited) | 4 (from limits) | — |
+| `Criterion_Femur_Axial_Force_Left` | §4.1.4 (inherited) | 4 (from limits) | — |
 
 Limits for `?3FEMRLE00??FOZ?`:
 
@@ -431,7 +418,7 @@ Limits for `?3FEMRLE00??FOZ?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Femur_Axial_Force_Right` | §TODO full-width frontal (inherited) | 4 (from limits) | — |
+| `Criterion_Femur_Axial_Force_Right` | §4.1.4 (inherited) | 4 (from limits) | — |
 
 Limits for `?3FEMRRI00??FOZ?`:
 
@@ -447,7 +434,7 @@ Limits for `?3FEMRRI00??FOZ?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Head` | §TODO full-width frontal (inherited) | — | — |
+| `Criterion_Head` | §4.1.1 | 4 | — |
 
 Manual inputs:
 
@@ -455,25 +442,11 @@ Manual inputs:
 | --- | --- | --- | --- | --- | --- |
 | hard_contact | bool | True | — | video | Was hard head contact observed? A head-acceleration peak above 80 g forces this to True regardless (Appendix A2: 'video OR curve'). |
 
-## `criterion_front_passenger/criterion_head/criterion_ExceedingForwardExcursionLine` — Modifier for Exceeding forward excursion line
-
-| class | source | max rating | aggregation |
-| --- | --- | --- | --- |
-| `Criterion_ExceedingForwardExcursionLine` | §TODO full-width frontal (inherited) | — | — |
-
-Manual inputs:
-
-| input | type | default | unit | source | doc |
-| --- | --- | --- | --- | --- | --- |
-| forward_excursion | float | 0 | mm | video | Forward head excursion beyond the excursion line. |
-| simulation_contact_seat_H3 | bool | False | — | simulation | Hybrid-III simulation shows head contact with the front seat. |
-| simulation_hic_15_H3 | float | 0 | — | simulation | HIC15 from the Hybrid-III simulation. |
-
 ## `criterion_front_passenger/criterion_head/criterion_HazardousAirbagDeployment` — Modifier for Hazardous Airbag Deployment
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_HazardousAirbagDeployment` | §TODO full-width frontal (inherited) | — | — |
+| `Criterion_HazardousAirbagDeployment` | §4.2.1 | — | — |
 
 Manual inputs:
 
@@ -485,7 +458,7 @@ Manual inputs:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_IncorrectAirbagDeployment` | §TODO full-width frontal (inherited) | — | — |
+| `Criterion_IncorrectAirbagDeployment` | §4.2.1 | — | — |
 
 Manual inputs:
 
@@ -497,7 +470,7 @@ Manual inputs:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Head_a3ms` | §TODO full-width frontal (inherited) | 4 (from limits) | — |
+| `Criterion_Head_a3ms` | §4.1.1 (inherited) | 4 (from limits) | — |
 
 Limits for `?3HEAD003C??ACR?`, `?3HEADCG3C??ACR?`:
 
@@ -514,7 +487,7 @@ Limits for `?3HEAD003C??ACR?`, `?3HEADCG3C??ACR?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_HIC_15` | §TODO full-width frontal (inherited) | 4 (from limits) | — |
+| `Criterion_HIC_15` | §4.1.1 (inherited) | 4 (from limits) | — |
 
 Limits for `?3HICR0015??00RX`, `?3HICRCG15??00RX`:
 
@@ -531,13 +504,13 @@ Limits for `?3HICR0015??00RX`, `?3HICRCG15??00RX`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Neck` | §TODO full-width frontal (inherited) | — | — |
+| `Criterion_Neck` | §4.1.2 | 4 | — |
 
 ## `criterion_front_passenger/criterion_neck/criterion_fx_shear` — Neck Fx shear
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Fx_shear` | §TODO full-width frontal (inherited) | 4 (from limits) | — |
+| `Criterion_Fx_shear` | §4.1.2 (inherited) | 4 (from limits) | — |
 
 Limits for `?3NECKUP00??FOX?`:
 
@@ -558,7 +531,7 @@ Limits for `?3NECKUP00??FOX?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Fz_tension` | §TODO full-width frontal (inherited) | 4 (from limits) | — |
+| `Criterion_Fz_tension` | §4.1.2 (inherited) | 4 (from limits) | — |
 
 Limits for `?3NECKUP00??FOZ?`:
 
@@ -574,7 +547,7 @@ Limits for `?3NECKUP00??FOZ?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_My_extension` | §TODO full-width frontal (inherited) | 4 (from limits) | — |
+| `Criterion_My_extension` | §4.1.2 (inherited) | 4 (from limits) | — |
 
 Limits for `?3NECKUP00??MOY?`:
 
@@ -590,19 +563,19 @@ Limits for `?3NECKUP00??MOY?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Rear_Passenger` | §TODO full-width frontal (inherited) | — | — |
+| `Criterion_Rear_Passenger` | §4 (inherited) | 16 | sum |
 
 ## `criterion_rear_passenger/criterion_chest` — Chest
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Chest` | §TODO full-width frontal (inherited) | — | — |
+| `Criterion_Chest` | §4.1.3 | 4 | — |
 
 ## `criterion_rear_passenger/criterion_chest/criterion_chest_deflection` — Chest Deflection
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Chest_Deflection` | §TODO full-width frontal (inherited) | 4 (from limits) | — |
+| `Criterion_Chest_Deflection` | §4.1.3 (inherited) | 4 (from limits) | — |
 
 Limits for `?6CHST000[03]??DSX?`:
 
@@ -619,7 +592,7 @@ Limits for `?6CHST000[03]??DSX?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Chest_VC` | §TODO full-width frontal (inherited) | 4 (from limits) | — |
+| `Criterion_Chest_VC` | §4.1.3 (inherited) | 4 (from limits) | — |
 
 Limits for `?6VCCR000[03]??VEX?`:
 
@@ -636,7 +609,7 @@ Limits for `?6VCCR000[03]??VEX?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_ShoulderBeltLoad` | §TODO full-width frontal (inherited) | 0 (from limits) | — |
+| `Criterion_ShoulderBeltLoad` | §4.1.3 (inherited) | 0 (from limits) | — |
 
 Limits for `?6SEBE????B3FO[X0]?`:
 
@@ -649,19 +622,19 @@ Limits for `?6SEBE????B3FO[X0]?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Femur` | §TODO full-width frontal (inherited) | — | — |
+| `Criterion_Femur` | §4.1.4 | 4 | — |
 
 ## `criterion_rear_passenger/criterion_femur/criterion_femur_axial_force` — Femur Axial Force
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Femur_Axial_Force` | §TODO full-width frontal (inherited) | — | — |
+| `Criterion_Femur_Axial_Force` | §4.1.4 (inherited) | — | — |
 
 ## `criterion_rear_passenger/criterion_femur/criterion_femur_axial_force/criterion_femur_axial_force_left` — Femur Axial Force Left
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Femur_Axial_Force_Left` | §TODO full-width frontal (inherited) | 4 (from limits) | — |
+| `Criterion_Femur_Axial_Force_Left` | §4.1.4 (inherited) | 4 (from limits) | — |
 
 Limits for `?6FEMRLE00??FOZ?`:
 
@@ -677,7 +650,7 @@ Limits for `?6FEMRLE00??FOZ?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Femur_Axial_Force_Right` | §TODO full-width frontal (inherited) | 4 (from limits) | — |
+| `Criterion_Femur_Axial_Force_Right` | §4.1.4 (inherited) | 4 (from limits) | — |
 
 Limits for `?6FEMRRI00??FOZ?`:
 
@@ -693,7 +666,7 @@ Limits for `?6FEMRRI00??FOZ?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Submarining` | §TODO full-width frontal (inherited) | — | — |
+| `Criterion_Submarining` | §4.1.4 (inherited) | — | — |
 
 Manual inputs:
 
@@ -705,19 +678,19 @@ Manual inputs:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Head` | §TODO full-width frontal (inherited) | — | — |
+| `Criterion_Head` | §4.1.1.3 | 4 | — |
 
 Manual inputs:
 
 | input | type | default | unit | source | doc |
 | --- | --- | --- | --- | --- | --- |
-| hard_contact | bool | True | — | video | Was hard head contact observed? A head-acceleration peak above 80 g forces this to True regardless (Appendix A2: 'video OR curve'). |
+| hard_contact | bool | True | — | video | Was hard head contact seen on the high speed film? §4.1.1.3 has no 80 g rule for the rear passenger, so this input alone decides. Without contact only the 3 ms resultant is scored. |
 
 ## `criterion_rear_passenger/criterion_head/criterion_ExceedingForwardExcursionLine` — Modifier for Exceeding forward excursion line
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_ExceedingForwardExcursionLine` | §TODO full-width frontal (inherited) | — | — |
+| `Criterion_ExceedingForwardExcursionLine` | §4.2.1 | — | — |
 
 Manual inputs:
 
@@ -731,7 +704,7 @@ Manual inputs:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_HazardousAirbagDeployment` | §TODO full-width frontal (inherited) | — | — |
+| `Criterion_HazardousAirbagDeployment` | §4.2.1 | — | — |
 
 Manual inputs:
 
@@ -743,7 +716,7 @@ Manual inputs:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_IncorrectAirbagDeployment` | §TODO full-width frontal (inherited) | — | — |
+| `Criterion_IncorrectAirbagDeployment` | §4.2.1 | — | — |
 
 Manual inputs:
 
@@ -751,11 +724,23 @@ Manual inputs:
 | --- | --- | --- | --- | --- | --- |
 | incorrect_airbag_deployment | bool | False | — | video | Incorrect airbag deployment observed. −1 point. |
 
+## `criterion_rear_passenger/criterion_head/criterion_UnstableAirbagContact` — Modifier for Unstable Airbag Contact
+
+| class | source | max rating | aggregation |
+| --- | --- | --- | --- |
+| `Criterion_UnstableAirbagContact` | §4.2.1 | — | — |
+
+Manual inputs:
+
+| input | type | default | unit | source | doc |
+| --- | --- | --- | --- | --- | --- |
+| unstable_airbag_contact | bool | False | — | video | During the head's forward movement its centre of gravity moved further than the outside edge of the airbag, or head protection by the airbag was otherwise compromised — steering wheel detached from the column, airbag bottomed out by the head. −1 point. |
+
 ## `criterion_rear_passenger/criterion_head/criterion_head_a3ms` — Head a3ms
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Head_a3ms` | §TODO full-width frontal (inherited) | 4 (from limits) | — |
+| `Criterion_Head_a3ms` | §4.1.1.3 (inherited) | 4 (from limits) | — |
 
 Limits for `?6HEAD003C??ACR?`, `?6HEADCG3C??ACR?`:
 
@@ -772,7 +757,7 @@ Limits for `?6HEAD003C??ACR?`, `?6HEADCG3C??ACR?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_HIC_15` | §TODO full-width frontal (inherited) | 4 (from limits) | — |
+| `Criterion_HIC_15` | §4.1.1.3 (inherited) | 4 (from limits) | — |
 
 Limits for `?6HICR0015??00RX`, `?6HICRCG15??00RX`:
 
@@ -789,13 +774,13 @@ Limits for `?6HICR0015??00RX`, `?6HICRCG15??00RX`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Neck` | §TODO full-width frontal (inherited) | — | — |
+| `Criterion_Neck` | §4.1.2 | 4 | sum |
 
 ## `criterion_rear_passenger/criterion_neck/criterion_fx_shear` — Neck Fx shear
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Fx_shear` | §TODO full-width frontal (inherited) | 4 (from limits) | — |
+| `Criterion_Fx_shear` | §4.1.2 (inherited) | 1 | — |
 
 Limits for `?6NECKUP00??FOX?`:
 
@@ -816,7 +801,7 @@ Limits for `?6NECKUP00??FOX?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Fz_tension` | §TODO full-width frontal (inherited) | 4 (from limits) | — |
+| `Criterion_Fz_tension` | §4.1.2 (inherited) | 1 | — |
 
 Limits for `?6NECKUP00??FOZ?`:
 
@@ -832,7 +817,7 @@ Limits for `?6NECKUP00??FOZ?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_My_extension` | §TODO full-width frontal (inherited) | 4 (from limits) | — |
+| `Criterion_My_extension` | §4.1.2 (inherited) | 2 | — |
 
 Limits for `?6NECKUP00??MOY?`:
 

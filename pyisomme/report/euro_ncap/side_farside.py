@@ -24,6 +24,10 @@ logger = logging.getLogger(__name__)
 class Overall(Criterion):
     report: EuroNCAP_Side_FarSide
     name = "Overall"
+    # TODO(input): make this a manual input as in EuroNCAP_Side_Pole/Side_Barrier —
+    #   declare `p: Manual[int, manual(1, ...)]`, derive it from the
+    #   "Driver position object 1" test info, and add the sync_position()/
+    #   rebuild_child() pair, so the far-side occupant is not pinned to position 1.
     p: int = 1
 
     def __init__(self, report: Report, isomme: Isomme) -> None:
@@ -358,6 +362,7 @@ class Overall(Criterion):
 
         class Criterion_Pubic_Symphysis(Criterion):
             name = "Modifier Pubic Symphysis"
+            validate_ignore = {"limit_symmetry": "shared 0 pt. row spans both signs"}
 
             def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                 super().__init__(report, isomme)
@@ -378,6 +383,7 @@ class Overall(Criterion):
 
         class Criterion_Lumbar_Fy(Criterion):
             name = "Modifier Lumbar Fy"
+            validate_ignore = {"limit_symmetry": "shared 0 pt. row spans both signs"}
 
             def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                 super().__init__(report, isomme)
@@ -398,6 +404,7 @@ class Overall(Criterion):
 
         class Criterion_Lumbar_Fz(Criterion):
             name = "Modifier Lumbar Fz"
+            validate_ignore = {"limit_symmetry": "shared 0 pt. row spans both signs"}
 
             def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                 super().__init__(report, isomme)
@@ -418,6 +425,7 @@ class Overall(Criterion):
 
         class Criterion_Lumbar_Mx(Criterion):
             name = "Modifier Lumbar Mx"
+            validate_ignore = {"limit_symmetry": "shared 0 pt. row spans both signs"}
 
             def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                 super().__init__(report, isomme)

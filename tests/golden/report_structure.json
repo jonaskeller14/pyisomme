@@ -622,11 +622,6 @@
     "limits": [],
     "name": "Modifier for Displacement of Steering Column"
    },
-   "criterion_driver/criterion_head/criterion_ExceedingForwardExcursionLine": {
-    "class": "Criterion_ExceedingForwardExcursionLine",
-    "limits": [],
-    "name": "Modifier for Exceeding forward excursion line"
-   },
    "criterion_driver/criterion_head/criterion_HazardousAirbagDeployment": {
     "class": "Criterion_HazardousAirbagDeployment",
     "limits": [],
@@ -637,10 +632,10 @@
     "limits": [],
     "name": "Modifier for Incorrect Airbag Deployment"
    },
-   "criterion_driver/criterion_head/criterion_UnstableAirbagSteeringWheelContact": {
-    "class": "Criterion_UnstableAirbagSteeringWheelContact",
+   "criterion_driver/criterion_head/criterion_UnstableAirbagContact": {
+    "class": "Criterion_UnstableAirbagContact",
     "limits": [],
-    "name": "Modifier for Unstable airbag/steering wheel contact"
+    "name": "Modifier for Unstable Airbag Contact"
    },
    "criterion_driver/criterion_head/criterion_head_a3ms": {
     "class": "Criterion_Head_a3ms",
@@ -2064,11 +2059,6 @@
     "limits": [],
     "name": "Head"
    },
-   "criterion_front_passenger/criterion_head/criterion_ExceedingForwardExcursionLine": {
-    "class": "Criterion_ExceedingForwardExcursionLine",
-    "limits": [],
-    "name": "Modifier for Exceeding forward excursion line"
-   },
    "criterion_front_passenger/criterion_head/criterion_HazardousAirbagDeployment": {
     "class": "Criterion_HazardousAirbagDeployment",
     "limits": [],
@@ -3433,6 +3423,11 @@
     "limits": [],
     "name": "Modifier for Incorrect Airbag Deployment"
    },
+   "criterion_rear_passenger/criterion_head/criterion_UnstableAirbagContact": {
+    "class": "Criterion_UnstableAirbagContact",
+    "limits": [],
+    "name": "Modifier for Unstable Airbag Contact"
+   },
    "criterion_rear_passenger/criterion_head/criterion_head_a3ms": {
     "class": "Criterion_Head_a3ms",
     "limits": [
@@ -4376,6 +4371,21 @@
     "limits": [],
     "name": "Chest"
    },
+   "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_CompartmentIntegrity": {
+    "class": "Criterion_CompartmentIntegrity",
+    "limits": [],
+    "name": "Modifier for Integrity of the Passenger Compartment"
+   },
+   "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_DisplacementAPillar": {
+    "class": "Criterion_DisplacementAPillar",
+    "limits": [],
+    "name": "Modifier for Displacement of the A Pillar"
+   },
+   "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_SteeringWheelContact": {
+    "class": "Criterion_SteeringWheelContact",
+    "limits": [],
+    "name": "Modifier Chest Steering Wheel Contact"
+   },
    "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_chest_compression": {
     "class": "Criterion_Chest_Compression",
     "limits": [
@@ -4573,6 +4583,26 @@
     "class": "Criterion_Head",
     "limits": [],
     "name": "Head"
+   },
+   "criterion_driver/criterion_head_neck/criterion_head/criterion_DisplacementSteeringColumn": {
+    "class": "Criterion_DisplacementSteeringColumn",
+    "limits": [],
+    "name": "Modifier for Displacement of Steering Column"
+   },
+   "criterion_driver/criterion_head_neck/criterion_head/criterion_HazardousAirbagDeployment": {
+    "class": "Criterion_HazardousAirbagDeployment",
+    "limits": [],
+    "name": "Modifier for Hazardous Airbag Deployment"
+   },
+   "criterion_driver/criterion_head_neck/criterion_head/criterion_IncorrectAirbagDeployment": {
+    "class": "Criterion_IncorrectAirbagDeployment",
+    "limits": [],
+    "name": "Modifier for Incorrect Airbag Deployment"
+   },
+   "criterion_driver/criterion_head_neck/criterion_head/criterion_UnstableAirbagContact": {
+    "class": "Criterion_UnstableAirbagContact",
+    "limits": [],
+    "name": "Modifier for Unstable Airbag Contact"
    },
    "criterion_driver/criterion_head_neck/criterion_head/criterion_damage": {
     "class": "Criterion_DAMAGE",
@@ -5490,6 +5520,16 @@
     "limits": [],
     "name": "Knee, Femur and Pelvis"
    },
+   "criterion_driver/criterion_knee_femur_pelvis/criterion_ConcentratedLoading": {
+    "class": "Criterion_ConcentratedLoading",
+    "limits": [],
+    "name": "Modifier for Concentrated Loading"
+   },
+   "criterion_driver/criterion_knee_femur_pelvis/criterion_VariableContact": {
+    "class": "Criterion_VariableContact",
+    "limits": [],
+    "name": "Modifier for Variable Contact"
+   },
    "criterion_driver/criterion_knee_femur_pelvis/criterion_femur": {
     "class": "Criterion_Femur",
     "limits": [],
@@ -5862,6 +5902,21 @@
     "class": "Criterion_LowerLeg_Foot_Ankle",
     "limits": [],
     "name": "Lower Leg, Foot and Ankle"
+   },
+   "criterion_driver/criterion_lowerleg_foot_ankle/criterion_FootwellRupture": {
+    "class": "Criterion_FootwellRupture",
+    "limits": [],
+    "name": "Modifier for Footwell Rupture"
+   },
+   "criterion_driver/criterion_lowerleg_foot_ankle/criterion_PedalBlocking": {
+    "class": "Criterion_PedalBlocking",
+    "limits": [],
+    "name": "Modifier for Pedal Blocking"
+   },
+   "criterion_driver/criterion_lowerleg_foot_ankle/criterion_PedalUpwardDisplacement": {
+    "class": "Criterion_PedalUpwardDisplacement",
+    "limits": [],
+    "name": "Modifier for Upward Displacement of the Worst Performing Pedal"
    },
    "criterion_driver/criterion_lowerleg_foot_ankle/criterion_pedal_rearward_displacement": {
     "class": "Criterion_Pedal_Rearward_Displacement",
@@ -6445,6 +6500,21 @@
     "class": "Criterion_Head",
     "limits": [],
     "name": "Head"
+   },
+   "criterion_passenger/criterion_head_neck/criterion_head/criterion_HazardousAirbagDeployment": {
+    "class": "Criterion_HazardousAirbagDeployment",
+    "limits": [],
+    "name": "Modifier for Hazardous Airbag Deployment"
+   },
+   "criterion_passenger/criterion_head_neck/criterion_head/criterion_IncorrectAirbagDeployment": {
+    "class": "Criterion_IncorrectAirbagDeployment",
+    "limits": [],
+    "name": "Modifier for Incorrect Airbag Deployment"
+   },
+   "criterion_passenger/criterion_head_neck/criterion_head/criterion_UnstableAirbagContact": {
+    "class": "Criterion_UnstableAirbagContact",
+    "limits": [],
+    "name": "Modifier for Unstable Airbag Contact"
    },
    "criterion_passenger/criterion_head_neck/criterion_head/criterion_head_a3ms": {
     "class": "Criterion_Head_a3ms",
@@ -7289,6 +7359,16 @@
     "class": "Criterion_Knee_Femur_Pelvis",
     "limits": [],
     "name": "Knee, Femur and Pelvis"
+   },
+   "criterion_passenger/criterion_knee_femur_pelvis/criterion_ConcentratedLoading": {
+    "class": "Criterion_ConcentratedLoading",
+    "limits": [],
+    "name": "Modifier for Concentrated Loading"
+   },
+   "criterion_passenger/criterion_knee_femur_pelvis/criterion_VariableContact": {
+    "class": "Criterion_VariableContact",
+    "limits": [],
+    "name": "Modifier for Variable Contact"
    },
    "criterion_passenger/criterion_knee_femur_pelvis/criterion_femur_compression": {
     "class": "Criterion_Femur_Compression",
@@ -8374,12 +8454,17 @@
     ],
     "name": "Modifier Shoulder Lateral Force"
    },
+   "criterion_door_opening_during_impact": {
+    "class": "Criterion_DoorOpeningDuringImpact",
+    "limits": [],
+    "name": "Door Opening During Impact"
+   },
    "criterion_head": {
     "class": "Criterion_Head",
     "limits": [],
     "name": "Head"
    },
-   "criterion_head/criterion_head_a3ms": {
+   "criterion_head/criterion_head_acceleration": {
     "class": "Criterion_Head_a3ms",
     "limits": [
      {
@@ -8666,6 +8751,11 @@
      }
     ],
     "name": "HIC 15"
+   },
+   "criterion_incorrect_airbag_deployment": {
+    "class": "Criterion_IncorrectAirbagDeployment",
+    "limits": [],
+    "name": "Modifier for Incorrect Airbag Deployment"
    },
    "criterion_pelvis": {
     "class": "Criterion_Pelvis",
@@ -12105,6 +12195,11 @@
     ],
     "name": "Modifier Shoulder Lateral Force"
    },
+   "criterion_door_opening_during_impact": {
+    "class": "Criterion_DoorOpeningDuringImpact",
+    "limits": [],
+    "name": "Door Opening During Impact"
+   },
    "criterion_head": {
     "class": "Criterion_Head",
     "limits": [],
@@ -12115,13 +12210,13 @@
     "limits": [],
     "name": "Direct head contact with the pole"
    },
-   "criterion_head/criterion_head_a3ms": {
-    "class": "Criterion_Head_a3ms",
+   "criterion_head/criterion_head_acceleration": {
+    "class": "Criterion_Head_Peak_Acceleration",
     "limits": [
      {
       "code_patterns": [
-       "?1HEAD003C??ACR?",
-       "?1HEADCG3C??ACR?"
+       "?1HEAD??00??ACR?",
+       "?1HEADCG00??ACR?"
       ],
       "color": "green",
       "func_samples": [
@@ -12143,8 +12238,8 @@
      },
      {
       "code_patterns": [
-       "?1HEAD003C??ACR?",
-       "?1HEADCG3C??ACR?"
+       "?1HEAD??00??ACR?",
+       "?1HEADCG00??ACR?"
       ],
       "color": "gray",
       "func_samples": [
@@ -12165,7 +12260,7 @@
       "y_unit": "g0"
      }
     ],
-    "name": "Head a3ms"
+    "name": "Head Peak Acceleration"
    },
    "criterion_head/criterion_hic_15": {
     "class": "Criterion_HIC_15",
@@ -12218,6 +12313,11 @@
      }
     ],
     "name": "HIC 15"
+   },
+   "criterion_incorrect_airbag_deployment": {
+    "class": "Criterion_IncorrectAirbagDeployment",
+    "limits": [],
+    "name": "Modifier for Incorrect Airbag Deployment"
    },
    "criterion_pelvis": {
     "class": "Criterion_Pelvis",
@@ -12493,6 +12593,11 @@
      }
     ],
     "name": "Pubic Symphysis Force"
+   },
+   "criterion_side_head_protection_device": {
+    "class": "Criterion_SideHeadProtectionDevice",
+    "limits": [],
+    "name": "Modifier for Side Head Protection Device"
    }
   },
   "pages": [

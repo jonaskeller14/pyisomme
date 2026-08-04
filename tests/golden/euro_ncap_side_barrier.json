@@ -582,12 +582,17 @@
         ],
         "name": "Modifier Shoulder Lateral Force"
       },
+      "criterion_door_opening_during_impact": {
+        "class": "Criterion_DoorOpeningDuringImpact",
+        "limits": [],
+        "name": "Door Opening During Impact"
+      },
       "criterion_head": {
         "class": "Criterion_Head",
         "limits": [],
         "name": "Head"
       },
-      "criterion_head/criterion_head_a3ms": {
+      "criterion_head/criterion_head_acceleration": {
         "class": "Criterion_Head_a3ms",
         "limits": [
           {
@@ -874,6 +879,11 @@
           }
         ],
         "name": "HIC 15"
+      },
+      "criterion_incorrect_airbag_deployment": {
+        "class": "Criterion_IncorrectAirbagDeployment",
+        "limits": [],
+        "name": "Modifier for Incorrect Airbag Deployment"
       },
       "criterion_pelvis": {
         "class": "Criterion_Pelvis",
@@ -1216,13 +1226,19 @@
         "status": "OK",
         "value": -3.999995661823441
       },
+      "criterion_door_opening_during_impact": {
+        "color": null,
+        "rating": -0.0,
+        "status": "OK",
+        "value": 0
+      },
       "criterion_head": {
         "color": null,
         "rating": 4.0,
         "status": "OK",
         "value": "nan"
       },
-      "criterion_head/criterion_head_a3ms": {
+      "criterion_head/criterion_head_acceleration": {
         "color": "green",
         "rating": 4.0,
         "status": "OK",
@@ -1233,6 +1249,12 @@
         "rating": 4.0,
         "status": "OK",
         "value": 224.27072720427321
+      },
+      "criterion_incorrect_airbag_deployment": {
+        "color": null,
+        "rating": -0.0,
+        "status": "OK",
+        "value": 0
       },
       "criterion_pelvis": {
         "color": null,

@@ -271,7 +271,7 @@ literal. See the withdrawn Step 5.
 - Base `Criterion.calculate()` walks declared children **in declaration order**, calculates them, then calls `self.calculation()`.
 - Aggregation helpers: `min_of_children()`, `sum_of_children()`, `modifiers_sum()` — **all NaN-propagating** (G9). A NaN-tolerant variant must take an explicit `skip_missing="<reason>"` argument that Step 13 renders in the output.
 - `add_child(name, criterion)` escape hatch for dynamic trees (the correlation report's `self.criteria` list — F6/A12).
-- `Ctx` frozen dataclass (`report`, `isomme`, `position`, `dummy`, `side`) resolved **lazily at the start of `calculate()`**, replacing the `p` threading; children inherit unless overridden. This is the proper F15 fix that supersedes Step 4's interim one.
+- `Ctx` resolved **lazily at the start of `calculate()`**, replacing the `p` threading; children inherit unless overridden. This is the proper F15 fix that supersedes Step 4's interim one. **See "What `Ctx` may and may not assume" below — it is not an occupant object.**
 - Replace `dir()`-based discovery in `get_subcriterion`/`get_subcriteria`/`print_results` with the ordered children list (F6, A11).
 
 **Out of scope:** migrating reports (Steps 8–9). Framework must coexist with the old manual style during the transition.

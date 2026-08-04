@@ -85,6 +85,11 @@ def calculate_damage(c_aa_x: Channel,
     sol = solve_ivp(dydt, t_span, initial_conditions, t_eval=t_array)
 
     # Create time channels
+    # TODO(unit): DAMAGE is dimensionless, but these channels inherit the angular
+    #   acceleration unit of their inputs (rad/s^2). The Euro NCAP MPDB limit rows in
+    #   report/euro_ncap/frontal_mpdb.py declare the same wrong unit, so the report is
+    #   self-consistent today — fix both together or the 0.42/0.47 thresholds stop
+    #   matching.
     damage_x = Channel(code=c_aa_x.code.set(fine_location_1="DA", fine_location_2="MA", direction="X"),
                        data=pd.DataFrame(beta * np.abs(sol.y[0]), index=sol.t),
                        unit=c_aa_x.unit,

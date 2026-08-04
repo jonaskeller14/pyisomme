@@ -14,7 +14,6 @@ from scipy.integrate import cumulative_trapezoid
 from scipy import interpolate as scipy_interpolate
 import copy
 from typing import Literal
-from astropy.units import CompositeUnit
 
 
 logger = logging.getLogger(__name__)
@@ -387,21 +386,21 @@ class Channel:
             index=self.data.index
         )
         new_code = self.code.integrate()
-        
+
         # 1. Multiply by Unit("s") instead of raw string "s"
         new_unit = Unit(self.unit) * Unit("s")
-        
+
         # 2. Deepcopy metadata to ensure source channel remains untouched
         new_info = copy.deepcopy(self.info) if self.info is not None else {}
         new_info["Dimension"] = new_code.physical_dimension
 
         new_channel = Channel(new_code, new_data, unit=new_unit, info=new_info)
-        
+
         # 3. Cast 0-d ndarray from get_data(t=0) to a standard float
         initial_val = float(new_channel.get_data(t=0))
         new_channel -= initial_val
         new_channel += x_0
-        
+
         return new_channel
 
     def adjust_to_range(self, target_range: tuple = (-45, 45), unit="deg") -> Channel:

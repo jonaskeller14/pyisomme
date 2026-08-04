@@ -1795,9 +1795,10 @@ Nothing else changed: a key-by-key diff of the regenerated files against the old
 - `... -m unittest tests.test_golden tests.test_report_structure tests.test_validate tests.test_describe`
   → **OK, 51 tests** (1 skipped), 57 s. `validate.json` and the `describe/*.md` dumps needed **no**
   regeneration — they were already current.
-- Full suite → recorded in the handover; the only remaining failures are the two known non-code ones
-  (`test_isomme.test_read` wants the missing fixture `data/nhtsa/11391.tar`; `test_plotting`'s `KeyError`
-  is in the maintainer's own uncommitted test).
+- Full suite, `... -m unittest discover -s tests` → **251 tests, 0 failures, 2 errors** (409 s), from
+  12 failures / 2 errors before the re-baseline and 12 failures / 5 errors at the start of the day. Both
+  remaining errors are known and are not code: `test_isomme.test_read` wants the missing fixture
+  `data/nhtsa/11391.tar`, and `test_plotting`'s `KeyError` is in the maintainer's own uncommitted test.
 
 **Note for review:** `tests/golden/euro_ncap_frontal_50kmh.json` (like `pyisomme/unit.py` and
 `tests/test_unit.py`) shows up **staged** rather than unstaged in `git status`. Nothing in this session ran

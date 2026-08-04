@@ -17,11 +17,11 @@ g0 = g0_unit
 class Unit:
     """
     Custom Unit class wrapping Astropy unit functionality.
-    
+
     Handles custom string sanitization, degree symbols, unit unitless/dash representations,
     and supports standard earth gravity (g0) as a valid unit representation.
     """
-    
+
     def __init__(self, unit_input):
         # 1. Handle pass-through if already an instance of our custom Unit class
         if isinstance(unit_input, Unit):
@@ -46,10 +46,10 @@ class Unit:
     def to(self, other, value=1.0, equivalencies=None):
         """
         Return the value(s) converted from this unit to `other` unit.
-        
+
         Matches Astropy's native Unit.to() signature while gracefully handling
         custom Unit wrappers, raw strings, and Astropy unit objects.
-        
+
         :param other: Target unit (Unit wrapper, str, or Astropy Unit)
         :param value: Scalar float or NumPy array to convert (default 1.0)
         :param equivalencies: Optional Astropy unit equivalencies
@@ -64,7 +64,7 @@ class Unit:
             target = Unit(other)._astropy_unit
 
         return self._astropy_unit.to(target, value=value, equivalencies=equivalencies) # type: ignore
-            
+
 
     # Automatically delegate all standard Astropy Unit attributes & methods.
     def __getattr__(self, name):

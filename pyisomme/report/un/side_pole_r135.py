@@ -18,6 +18,10 @@ logger = logging.getLogger(__name__)
 
 class Overall(Criterion):
     name = "Overall"
+    # TODO(input): make this a manual input as in EuroNCAP_Side_Pole/Side_Barrier —
+    #   declare `p: Manual[int, manual(1, ...)]`, derive it from the
+    #   "Driver position object 1" test info, and add the sync_position()/
+    #   rebuild_child() pair, so the struck-side occupant is not pinned to position 1.
     p: int = 1
 
     def __init__(self, report: Report, isomme: Isomme) -> None:

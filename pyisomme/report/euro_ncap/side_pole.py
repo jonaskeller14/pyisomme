@@ -19,17 +19,51 @@ logger = logging.getLogger(__name__)
 
 class Overall(Criterion):
     name = "Overall"
-    p: int = 1
+    max_rating = 16.
+    source = "§5"
+    p: Manual[int, manual(1, source="test report", doc=(
+        "Channel-code position of the struck-side occupant — the only occupant "
+        "§5 assesses. Defaults to the 'Driver position object 1' test-info field "
+        "when the test carries it."))]
+
+    #: The subcriteria that bake ``p`` into their limits' code patterns and so have
+    #: to be rebuilt when it changes after construction.
+    positioned_children = ("criterion_head", "criterion_chest",
+                           "criterion_abdomen", "criterion_pelvis")
 
     def __init__(self, report: Report, isomme: Isomme) -> None:
         super().__init__(report, isomme)
+
+        p = isomme.get_test_info("Driver position object 1")
+        if p is not None:
+            self.set_derived_input("p", int(p))
 
         self.criterion_head = self.Criterion_Head(self.report, self.isomme, p=self.p)
         self.criterion_chest = self.Criterion_Chest(self.report, self.isomme, p=self.p)
         self.criterion_abdomen = self.Criterion_Abdomen(self.report, self.isomme, p=self.p)
         self.criterion_pelvis = self.Criterion_Pelvis(self.report, self.isomme, p=self.p)
 
+        self.criterion_side_head_protection_device = self.Criterion_SideHeadProtectionDevice(report, isomme)
+        self.criterion_incorrect_airbag_deployment = self.Criterion_IncorrectAirbagDeployment(report, isomme)
+        self.criterion_door_opening_during_impact = self.Criterion_DoorOpeningDuringImpact(report, isomme)
+
+    def sync_position(self) -> None:
+        """
+        Honour a seating position set *after* construction (F15, interim fix).
+
+        The body regions bake their position into their limits' code patterns at
+        construction time, so a changed position cannot simply be re-read — the
+        affected subtree is rebuilt, manual inputs and all. Step 7's lazy ``Ctx``
+        resolution replaces this.
+        """
+        for attr in self.positioned_children:
+            if getattr(self, attr).p != self.p:
+                logger.info(f"{self}: rebuilding {attr} for position {self.p}")
+                self.rebuild_child(attr, p=self.p)
+
     def calculation(self) -> None:
+        self.sync_position()
+
         self.criterion_head.calculate()
         self.criterion_chest.calculate()
         self.criterion_abdomen.calculate()
@@ -43,8 +77,60 @@ class Overall(Criterion):
         ])
         self.rating = float(np.interp(self.rating, [0, 16], [0, 16], left=0, right=np.nan))
 
+        # Modifier — §5.2.3 and §5.2.5 apply to the overall test score.
+        self.criterion_side_head_protection_device.calculate()
+        self.criterion_incorrect_airbag_deployment.calculate()
+        self.criterion_door_opening_during_impact.calculate()
+
+        self.rating += np.sum([
+            self.criterion_side_head_protection_device.rating,
+            self.criterion_incorrect_airbag_deployment.rating,
+            self.criterion_door_opening_during_impact.rating,
+        ])
+
+        # A modifier must not drive the load case below zero.
+        self.rating = float(np.max([0., self.rating]))
+
+    class Criterion_SideHeadProtectionDevice(Criterion):
+        name = "Modifier for Side Head Protection Device"
+        source = "§5.2.3"
+        head_protection_device_insufficient_front: Manual[bool, manual(False, source="geometric assessment", doc=(
+            "The head protection device does not cover the front seat positions "
+            "sufficiently, on the worst performing side. −2 points."))]
+        head_protection_device_insufficient_rear: Manual[bool, manual(False, source="geometric assessment", doc=(
+            "The head protection device does not cover the rear seat positions "
+            "sufficiently, on the worst performing side. −2 points."))]
+
+        def calculation(self) -> None:
+            self.value = int(self.head_protection_device_insufficient_front) + int(self.head_protection_device_insufficient_rear)
+            self.rating = -2. * self.value
+
+    class Criterion_IncorrectAirbagDeployment(Criterion):
+        name = "Modifier for Incorrect Airbag Deployment"
+        source = "§5.2.4"
+        number_of_body_regions_with_incorrect_airbag_deployment: Manual[int, manual(0, source="test report", doc=(
+            "How many body regions (head, chest, abdomen, pelvis) an incorrectly "
+            "deployed airbag was intended to protect. −1 point each."))]
+
+        def calculation(self) -> None:
+            self.value = self.number_of_body_regions_with_incorrect_airbag_deployment
+            self.rating = -1. * self.number_of_body_regions_with_incorrect_airbag_deployment
+
+    class Criterion_DoorOpeningDuringImpact(Criterion):
+        name = "Door Opening During Impact"
+        source = "§5.2.5"
+        number_of_door_openings_during_impact: Manual[int, manual(0, source="test report", doc=(
+            "How many doors, tailgates or moveable roofs opened during the impact. "
+            "−1 point each."))]
+
+        def calculation(self) -> None:
+            self.value = self.number_of_door_openings_during_impact
+            self.rating = -1. * self.number_of_door_openings_during_impact
+
     class Criterion_Head(Criterion):
         name = "Head"
+        max_rating = 4.
+        source = "§5.1.1.2"
 
         def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
             super().__init__(report, isomme)
@@ -52,17 +138,17 @@ class Overall(Criterion):
             self.p = p
 
             self.criterion_hic_15 = self.Criterion_HIC_15(self.report, self.isomme, p=self.p)
-            self.criterion_head_a3ms = self.Criterion_Head_a3ms(self.report, self.isomme, p=self.p)
+            self.criterion_head_acceleration = self.Criterion_Head_Peak_Acceleration(self.report, self.isomme, p=self.p)
             self.criterion_direct_head_contact_with_the_pole = self.Criterion_DirectHeadContactWithThePole(report, isomme)
 
         def calculation(self) -> None:
             self.criterion_hic_15.calculate()
-            self.criterion_head_a3ms.calculate()
+            self.criterion_head_acceleration.calculate()
             self.criterion_direct_head_contact_with_the_pole.calculate()
 
             self.rating = np.min([
                 self.criterion_hic_15.rating,
-                self.criterion_head_a3ms.rating,
+                self.criterion_head_acceleration.rating,
                 self.criterion_direct_head_contact_with_the_pole.rating,
             ])
 
@@ -85,8 +171,11 @@ class Overall(Criterion):
                 self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                 self.color = self.limits.get_limit_min_color(self.channel)
 
-        class Criterion_Head_a3ms(Criterion):
-            name = "Head a3ms"
+        class Criterion_Head_Peak_Acceleration(Criterion):
+            #: §5.1.1.2 caps the pole test on the *peak* resultant head acceleration.
+            #: The barrier test uses the 3 ms exceedance instead (§5.1.1.1), so this
+            #: class is deliberately not shared with EuroNCAP_Side_Barrier.
+            name = "Head Peak Acceleration"
 
             def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                 super().__init__(report, isomme)
@@ -94,18 +183,19 @@ class Overall(Criterion):
                 self.p = p
 
                 self.extend_limit_list([
-                    Limit_G([f"?{self.p}HEAD003C??ACR?", f"?{self.p}HEADCG3C??ACR?"], func=lambda x: 80.000, y_unit=Unit(g0), upper=True),
-                    Limit_C([f"?{self.p}HEAD003C??ACR?", f"?{self.p}HEADCG3C??ACR?"], func=lambda x: 80.000, y_unit=Unit(g0), lower=True),
+                    Limit_G([f"?{self.p}HEAD??00??ACR?", f"?{self.p}HEADCG00??ACR?"], func=lambda x: 80.000, y_unit=Unit(g0), upper=True),
+                    Limit_C([f"?{self.p}HEAD??00??ACR?", f"?{self.p}HEADCG00??ACR?"], func=lambda x: 80.000, y_unit=Unit(g0), lower=True),
                 ])
 
             def calculation(self) -> None:
-                self.channel = self.require_channel(f"?{self.p}HEAD003C??ACRX", f"?{self.p}HEADCG3C??ACRX")
-                self.value = self.channel.get_data(unit=g0)[0]
+                self.channel = self.require_channel(f"?{self.p}HEAD??00??ACRA", f"?{self.p}HEADCG00??ACRA")
+                self.value = np.max(self.channel.get_data(unit=g0))
                 self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                 self.color = self.limits.get_limit_min_color(self.channel)
 
         class Criterion_DirectHeadContactWithThePole(Criterion):
             name = "Direct head contact with the pole"
+            source = "§5.1.1.2"
             direct_head_contact_with_the_pole: Manual[bool, manual(False, source="video", doc=(
                 "Direct head contact with the pole. Caps the head box (−inf → 0 points)."))]
 
@@ -115,6 +205,8 @@ class Overall(Criterion):
 
     class Criterion_Chest(Criterion):
         name = "Chest"
+        max_rating = 4.
+        source = "§5.1.2"
 
         def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
             super().__init__(report, isomme)
@@ -161,6 +253,7 @@ class Overall(Criterion):
 
         class Criterion_Chest_Lateral_VC(Criterion):
             name = "Modifier Chest Lateral Viscous Criterion"
+            source = "§5.2.2"
 
             def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                 super().__init__(report, isomme)
@@ -182,6 +275,7 @@ class Overall(Criterion):
 
         class Criterion_Shoulder_Lateral_Force(Criterion):
             name = "Modifier Shoulder Lateral Force"
+            source = "§5.2.1"
 
             def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                 super().__init__(report, isomme)
@@ -203,6 +297,8 @@ class Overall(Criterion):
 
     class Criterion_Abdomen(Criterion):
         name = "Abdomen"
+        max_rating = 4.
+        source = "§5.1.3"
 
         def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
             super().__init__(report, isomme)
@@ -246,6 +342,7 @@ class Overall(Criterion):
 
         class Criterion_Abdomen_Lateral_VC(Criterion):
             name = "Modifier Abdomen Lateral Viscous Criterion"
+            source = "§5.2.2"
 
             def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
                 super().__init__(report, isomme)
@@ -267,6 +364,8 @@ class Overall(Criterion):
 
     class Criterion_Pelvis(Criterion):
         name = "Pelvis"
+        max_rating = 4.
+        source = "§5.1.4"
 
         def __init__(self, report: Report, isomme: Isomme, p: int) -> None:
             super().__init__(report, isomme)
@@ -349,7 +448,7 @@ class EuroNCAP_Side_Pole(Report[Overall]):
 
             self.criteria = {isomme: [
                 self.report.criterion_overall[isomme].criterion_head.criterion_hic_15,
-                self.report.criterion_overall[isomme].criterion_head.criterion_head_a3ms,
+                self.report.criterion_overall[isomme].criterion_head.criterion_head_acceleration,
                 self.report.criterion_overall[isomme].criterion_chest.criterion_chest_lateral_compression,
                 self.report.criterion_overall[isomme].criterion_chest.criterion_chest_lateral_vc,
                 self.report.criterion_overall[isomme].criterion_chest.criterion_shoulder_lateral_force,
@@ -367,7 +466,7 @@ class EuroNCAP_Side_Pole(Report[Overall]):
 
             self.criteria = {isomme: [
                 self.report.criterion_overall[isomme].criterion_head.criterion_hic_15,
-                self.report.criterion_overall[isomme].criterion_head.criterion_head_a3ms,
+                self.report.criterion_overall[isomme].criterion_head.criterion_head_acceleration,
                 self.report.criterion_overall[isomme].criterion_chest.criterion_chest_lateral_compression,
                 self.report.criterion_overall[isomme].criterion_chest.criterion_chest_lateral_vc,
                 self.report.criterion_overall[isomme].criterion_chest.criterion_shoulder_lateral_force,

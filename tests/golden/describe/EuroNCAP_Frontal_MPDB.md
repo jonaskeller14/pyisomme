@@ -12,7 +12,7 @@
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Overall` | — | — | — |
+| `Overall` | §3 | 8 | — |
 
 Manual inputs:
 
@@ -25,13 +25,13 @@ Manual inputs:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Compatibility_Modifier` | — | — | — |
+| `Criterion_Compatibility_Modifier` | §3.3 | — | — |
 
 ## `criterion_compatibility_modifier/criterion_olc_modifier` — Occupant Load Criterion (OLC) Modifier
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_OLC_Modifier` | — | 0 (from limits) | — |
+| `Criterion_OLC_Modifier` | §3.3 (inherited) | 0 (from limits) | — |
 
 Limits for `M?MBAR0OLC??VEX?`:
 
@@ -45,7 +45,7 @@ Limits for `M?MBAR0OLC??VEX?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_DoorOpeningDuringImpact` | — | — | — |
+| `Criterion_DoorOpeningDuringImpact` | §3 (inherited) | — | — |
 
 Manual inputs:
 
@@ -57,25 +57,25 @@ Manual inputs:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Driver` | — | — | — |
+| `Criterion_Driver` | §3 (inherited) | 16 | sum |
 
 ## `criterion_driver/criterion_chest_abdomen` — Chest and Abdomen
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Chest_Abdomen` | — | — | — |
+| `Criterion_Chest_Abdomen` | §3.1.3 | 4 | — |
 
 ## `criterion_driver/criterion_chest_abdomen/criterion_abdomen` — Abdomen
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Abdomen` | — | — | — |
+| `Criterion_Abdomen` | §3.1.3.2 | — | — |
 
 ## `criterion_driver/criterion_chest_abdomen/criterion_abdomen/criterion_abdomen_compression` — Abdomen Compression
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Abdomen_Compression` | — | 4 (from limits) | — |
+| `Criterion_Abdomen_Compression` | §3.1.3.2 (inherited) | 4 (from limits) | — |
 
 Limits for `?1ABDO??????DSX?`:
 
@@ -88,13 +88,43 @@ Limits for `?1ABDO??????DSX?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Chest` | — | — | — |
+| `Criterion_Chest` | §3.1.3.1 | — | — |
+
+## `criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_CompartmentIntegrity` — Modifier for Integrity of the Passenger Compartment
+
+| class | source | max rating | aggregation |
+| --- | --- | --- | --- |
+| `Criterion_CompartmentIntegrity` | §3.2.1.2 | — | — |
+
+Manual inputs:
+
+| input | type | default | unit | source | doc |
+| --- | --- | --- | --- | --- | --- |
+| compartment_integrity_compromised | bool | False | — | test report | Structural integrity of the passenger compartment compromised — door latch/hinge failure, door buckling, cross facia rail to A pillar separation, or severe loss of door aperture strength. −1 point (driver only). |
+
+## `criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_DisplacementAPillar` — Modifier for Displacement of the A Pillar
+
+| class | source | max rating | aggregation |
+| --- | --- | --- | --- |
+| `Criterion_DisplacementAPillar` | §3.2.1.2 | — | — |
+
+Manual inputs:
+
+| input | type | default | unit | source | doc |
+| --- | --- | --- | --- | --- | --- |
+| displacement_a_pillar | float | 0 | mm | measurement | Rearward displacement of the driver's front door pillar, 100 mm below the lowest level of the side window aperture. No penalty up to 100 mm, −2 points above 200 mm, linear in between (driver only). |
+
+## `criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_SteeringWheelContact` — Modifier Chest Steering Wheel Contact
+
+| class | source | max rating | aggregation |
+| --- | --- | --- | --- |
+| `Criterion_SteeringWheelContact` | §3.2.1.2 | — | — |
 
 ## `criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_chest_compression` — Chest Compression
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Chest_Compression` | — | 4 (from limits) | — |
+| `Criterion_Chest_Compression` | §3.1.3.1 (inherited) | 4 (from limits) | — |
 
 Limits for `?1CHST??????DSX?`:
 
@@ -111,7 +141,7 @@ Limits for `?1CHST??????DSX?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_ShoulderBeltLoad` | — | 0 (from limits) | — |
+| `Criterion_ShoulderBeltLoad` | §3.1.3.1 (inherited) | 0 (from limits) | — |
 
 Limits for `?1SEBE????B3FO[X0]?`:
 
@@ -124,7 +154,7 @@ Limits for `?1SEBE????B3FO[X0]?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Head_Neck` | — | — | — |
+| `Criterion_Head_Neck` | §3.1.1 | 4 | — |
 
 Manual inputs:
 
@@ -136,7 +166,7 @@ Manual inputs:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Head` | — | — | — |
+| `Criterion_Head` | §3.1.1 | — | — |
 
 Manual inputs:
 
@@ -144,11 +174,35 @@ Manual inputs:
 | --- | --- | --- | --- | --- | --- |
 | hard_contact | bool | True | — | video | Was hard head contact observed? A head-acceleration peak above 80 g forces this to True regardless (Appendix A2: 'video OR curve'). |
 
+## `criterion_driver/criterion_head_neck/criterion_head/criterion_DisplacementSteeringColumn` — Modifier for Displacement of Steering Column
+
+| class | source | max rating | aggregation |
+| --- | --- | --- | --- |
+| `Criterion_DisplacementSteeringColumn` | §3.2.1.1 | — | — |
+
+## `criterion_driver/criterion_head_neck/criterion_head/criterion_HazardousAirbagDeployment` — Modifier for Hazardous Airbag Deployment
+
+| class | source | max rating | aggregation |
+| --- | --- | --- | --- |
+| `Criterion_HazardousAirbagDeployment` | §3.2.1.1 | — | — |
+
+## `criterion_driver/criterion_head_neck/criterion_head/criterion_IncorrectAirbagDeployment` — Modifier for Incorrect Airbag Deployment
+
+| class | source | max rating | aggregation |
+| --- | --- | --- | --- |
+| `Criterion_IncorrectAirbagDeployment` | §3.2.1.1 | — | — |
+
+## `criterion_driver/criterion_head_neck/criterion_head/criterion_UnstableAirbagContact` — Modifier for Unstable Airbag Contact
+
+| class | source | max rating | aggregation |
+| --- | --- | --- | --- |
+| `Criterion_UnstableAirbagContact` | §3.2.1.1 | — | — |
+
 ## `criterion_driver/criterion_head_neck/criterion_head/criterion_damage` — Modifier for Brain Injury - DAMAGE
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_DAMAGE` | — | 0 (from limits) | — |
+| `Criterion_DAMAGE` | §3.2.1.1 | 0 (from limits) | — |
 
 Limits for `?1HEADDAMA??AAR?`:
 
@@ -162,7 +216,7 @@ Limits for `?1HEADDAMA??AAR?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Head_a3ms` | — | 4 (from limits) | — |
+| `Criterion_Head_a3ms` | §3.1.1 (inherited) | 4 (from limits) | — |
 
 Limits for `?1HEAD003C??ACR?`, `?1HEADCG3C??ACR?`:
 
@@ -179,7 +233,7 @@ Limits for `?1HEAD003C??ACR?`, `?1HEADCG3C??ACR?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_HIC_15` | — | 4 (from limits) | — |
+| `Criterion_HIC_15` | §3.1.1 (inherited) | 4 (from limits) | — |
 
 Limits for `?1HICR0015??00RX`, `?1HICRCG15??00RX`:
 
@@ -196,13 +250,13 @@ Limits for `?1HICR0015??00RX`, `?1HICRCG15??00RX`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Neck` | — | — | — |
+| `Criterion_Neck` | §3.1.2 | — | — |
 
 ## `criterion_driver/criterion_head_neck/criterion_neck/criterion_fx_shear` — Neck Fx shear
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Fx_Shear` | — | 4 (from limits) | — |
+| `Criterion_Fx_Shear` | §3.1.2 (inherited) | 4 (from limits) | — |
 
 Limits for `?1NECKUP00??FOX?`:
 
@@ -225,7 +279,7 @@ Limits for `?1NECKUP00??FOX?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Fz_Tension` | — | 4 (from limits) | — |
+| `Criterion_Fz_Tension` | §3.1.2 (inherited) | 4 (from limits) | — |
 
 Limits for `?1NECKUP00??FOZ?`:
 
@@ -242,7 +296,7 @@ Limits for `?1NECKUP00??FOZ?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_My_Extension` | — | 4 (from limits) | — |
+| `Criterion_My_Extension` | §3.1.2 (inherited) | 4 (from limits) | — |
 
 Limits for `?1NECKUP00??MOY?`:
 
@@ -259,19 +313,45 @@ Limits for `?1NECKUP00??MOY?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Knee_Femur_Pelvis` | — | — | — |
+| `Criterion_Knee_Femur_Pelvis` | §3.1.4 | 4 | — |
+
+## `criterion_driver/criterion_knee_femur_pelvis/criterion_ConcentratedLoading` — Modifier for Concentrated Loading
+
+| class | source | max rating | aggregation |
+| --- | --- | --- | --- |
+| `Criterion_ConcentratedLoading` | §3.2.1.4 | — | — |
+
+Manual inputs:
+
+| input | type | default | unit | source | doc |
+| --- | --- | --- | --- | --- | --- |
+| concentrated_loading_left | bool | False | — | knee mapping | Structures in the left knee impact area could concentrate forces on part of the knee. −1 point. |
+| concentrated_loading_right | bool | False | — | knee mapping | Structures in the right knee impact area could concentrate forces on part of the knee. −1 point. |
+
+## `criterion_driver/criterion_knee_femur_pelvis/criterion_VariableContact` — Modifier for Variable Contact
+
+| class | source | max rating | aggregation |
+| --- | --- | --- | --- |
+| `Criterion_VariableContact` | §3.2.1.4 | — | — |
+
+Manual inputs:
+
+| input | type | default | unit | source | doc |
+| --- | --- | --- | --- | --- | --- |
+| variable_contact_left | bool | False | — | knee mapping | Over the left knee's contact area, femur loads above 3.8 kN and/or knee slider displacements above 6 mm would be expected. −1 point. |
+| variable_contact_right | bool | False | — | knee mapping | Over the right knee's contact area, femur loads above 3.8 kN and/or knee slider displacements above 6 mm would be expected. −1 point. |
 
 ## `criterion_driver/criterion_knee_femur_pelvis/criterion_femur` — Femur
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Femur` | — | — | — |
+| `Criterion_Femur` | §3.1.4 (inherited) | — | — |
 
 ## `criterion_driver/criterion_knee_femur_pelvis/criterion_femur/criterion_femur_compression` — Femur Compression
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Femur_Compression` | — | 4 (from limits) | — |
+| `Criterion_Femur_Compression` | §3.1.4 (inherited) | 4 (from limits) | — |
 
 Limits for `?1FEMR??00??FOZ?`:
 
@@ -287,13 +367,13 @@ Limits for `?1FEMR??00??FOZ?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Knee` | — | — | — |
+| `Criterion_Knee` | §3.1.4 (inherited) | — | — |
 
 ## `criterion_driver/criterion_knee_femur_pelvis/criterion_knee/criterion_knee_slider_compression` — Knee Slider Compression
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Knee_Slider_Compression` | — | 4 (from limits) | — |
+| `Criterion_Knee_Slider_Compression` | §3.1.4 (inherited) | 4 (from limits) | — |
 
 Limits for `?1KNSL??00??DSX?`:
 
@@ -309,13 +389,13 @@ Limits for `?1KNSL??00??DSX?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Pelvis` | — | — | — |
+| `Criterion_Pelvis` | §3.1.4.1 | — | — |
 
 ## `criterion_driver/criterion_knee_femur_pelvis/criterion_pelvis/criterion_acetabulum_force` — Acetabulum Force
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Acetabulum_Force` | — | 4 (from limits) | — |
+| `Criterion_Acetabulum_Force` | §3.1.4.1 (inherited) | 4 (from limits) | — |
 
 Limits for `?1ACTB??00??FOR?`:
 
@@ -331,7 +411,7 @@ Limits for `?1ACTB??00??FOR?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Submarining` | — | — | — |
+| `Criterion_Submarining` | §3.1.4 (inherited) | — | — |
 
 Manual inputs:
 
@@ -343,13 +423,49 @@ Manual inputs:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_LowerLeg_Foot_Ankle` | — | — | — |
+| `Criterion_LowerLeg_Foot_Ankle` | §3.1.5 | 4 | — |
+
+## `criterion_driver/criterion_lowerleg_foot_ankle/criterion_FootwellRupture` — Modifier for Footwell Rupture
+
+| class | source | max rating | aggregation |
+| --- | --- | --- | --- |
+| `Criterion_FootwellRupture` | §3.2.1.6 | — | — |
+
+Manual inputs:
+
+| input | type | default | unit | source | doc |
+| --- | --- | --- | --- | --- | --- |
+| footwell_rupture | bool | False | — | test report | Significant rupture of the footwell area, usually separation of spot welded seams. −1 point. |
+
+## `criterion_driver/criterion_lowerleg_foot_ankle/criterion_PedalBlocking` — Modifier for Pedal Blocking
+
+| class | source | max rating | aggregation |
+| --- | --- | --- | --- |
+| `Criterion_PedalBlocking` | §3.2.1.6 | — | — |
+
+Manual inputs:
+
+| input | type | default | unit | source | doc |
+| --- | --- | --- | --- | --- | --- |
+| blocked_pedal_rearward_displacement | float | 0 | mm | measurement | Rearward displacement of a 'blocked' pedal relative to the pre-test measurement. A pedal is blocked when its forward movement under a 200 N load is below 25 mm. Sliding scale 0 to −1 point between 50 mm and 175 mm. |
+
+## `criterion_driver/criterion_lowerleg_foot_ankle/criterion_PedalUpwardDisplacement` — Modifier for Upward Displacement of the Worst Performing Pedal
+
+| class | source | max rating | aggregation |
+| --- | --- | --- | --- |
+| `Criterion_PedalUpwardDisplacement` | §3.2.1.5 | — | — |
+
+Manual inputs:
+
+| input | type | default | unit | source | doc |
+| --- | --- | --- | --- | --- | --- |
+| pedal_upward_displacement | float | 0 | mm | measurement | Upward static displacement of the worst performing pedal. No penalty up to 90 % of the 80 mm EEVC limit, −1 point beyond 110 %, linear in between. |
 
 ## `criterion_driver/criterion_lowerleg_foot_ankle/criterion_pedal_rearward_displacement` — Pedal Rearward Displacement
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Pedal_Rearward_Displacement` | — | — | — |
+| `Criterion_Pedal_Rearward_Displacement` | §3.1.5.2 | — | — |
 
 Manual inputs:
 
@@ -361,7 +477,7 @@ Manual inputs:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Tibia_Compression` | — | 4 (from limits) | — |
+| `Criterion_Tibia_Compression` | §3.1.5.1 | 4 (from limits) | — |
 
 Limits for `?1TIBI??????FOZ?`:
 
@@ -377,7 +493,7 @@ Limits for `?1TIBI??????FOZ?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Tibia_Index` | — | 4 (from limits) | — |
+| `Criterion_Tibia_Index` | §3.1.5.1 | 4 (from limits) | — |
 
 Limits for `?1TIIN??00??000?`:
 
@@ -393,19 +509,19 @@ Limits for `?1TIIN??00??000?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Passenger` | — | — | — |
+| `Criterion_Passenger` | §3 (inherited) | 16 | sum |
 
 ## `criterion_passenger/criterion_chest` — Chest
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Chest` | — | — | — |
+| `Criterion_Chest` | §3.1.7 | 4 | — |
 
 ## `criterion_passenger/criterion_chest/criterion_chest_compression` — Chest Compression
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Chest_Compression` | — | 4 (from limits) | — |
+| `Criterion_Chest_Compression` | §3.1.7 (inherited) | 4 (from limits) | — |
 
 Limits for `?3CHST000[03]??DSX?`:
 
@@ -422,7 +538,7 @@ Limits for `?3CHST000[03]??DSX?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Chest_VC` | — | 4 (from limits) | — |
+| `Criterion_Chest_VC` | §3.1.7 (inherited) | 4 (from limits) | — |
 
 Limits for `?3VCCR000[03]??VEX?`:
 
@@ -439,7 +555,7 @@ Limits for `?3VCCR000[03]??VEX?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_ShoulderBeltLoad` | — | 0 (from limits) | — |
+| `Criterion_ShoulderBeltLoad` | §3.1.7 (inherited) | 0 (from limits) | — |
 
 Limits for `?3SEBE????B3FO[X0]?`:
 
@@ -452,19 +568,37 @@ Limits for `?3SEBE????B3FO[X0]?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Head_Neck` | — | — | — |
+| `Criterion_Head_Neck` | §3.1.6 | 4 | — |
 
 ## `criterion_passenger/criterion_head_neck/criterion_head` — Head
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Head` | — | — | — |
+| `Criterion_Head` | §3.1.6.1 | — | — |
+
+## `criterion_passenger/criterion_head_neck/criterion_head/criterion_HazardousAirbagDeployment` — Modifier for Hazardous Airbag Deployment
+
+| class | source | max rating | aggregation |
+| --- | --- | --- | --- |
+| `Criterion_HazardousAirbagDeployment` | §3.2.1.1 | — | — |
+
+## `criterion_passenger/criterion_head_neck/criterion_head/criterion_IncorrectAirbagDeployment` — Modifier for Incorrect Airbag Deployment
+
+| class | source | max rating | aggregation |
+| --- | --- | --- | --- |
+| `Criterion_IncorrectAirbagDeployment` | §3.2.1.1 | — | — |
+
+## `criterion_passenger/criterion_head_neck/criterion_head/criterion_UnstableAirbagContact` — Modifier for Unstable Airbag Contact
+
+| class | source | max rating | aggregation |
+| --- | --- | --- | --- |
+| `Criterion_UnstableAirbagContact` | §3.2.1.1 | — | — |
 
 ## `criterion_passenger/criterion_head_neck/criterion_head/criterion_head_a3ms` — Head a3ms
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Head_a3ms` | — | 4 (from limits) | — |
+| `Criterion_Head_a3ms` | §3.1.6.1 (inherited) | 4 (from limits) | — |
 
 Limits for `?3HEAD003C??ACR?`, `?3HEADCG3C??ACR?`:
 
@@ -481,7 +615,7 @@ Limits for `?3HEAD003C??ACR?`, `?3HEADCG3C??ACR?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_HIC_15` | — | 4 (from limits) | — |
+| `Criterion_HIC_15` | §3.1.6.1 (inherited) | 4 (from limits) | — |
 
 Limits for `?3HICR0015??00RX`, `?3HICRCG15??00RX`:
 
@@ -498,13 +632,13 @@ Limits for `?3HICR0015??00RX`, `?3HICRCG15??00RX`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Neck` | — | — | — |
+| `Criterion_Neck` | §3.1.6.2 | — | — |
 
 ## `criterion_passenger/criterion_head_neck/criterion_neck/criterion_fx_shear` — Neck Fx shear
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Fx_Shear` | — | 4 (from limits) | — |
+| `Criterion_Fx_Shear` | §3.1.6.2 (inherited) | 4 (from limits) | — |
 
 Limits for `?3NECKUP00??FOX?`:
 
@@ -527,7 +661,7 @@ Limits for `?3NECKUP00??FOX?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Fz_Tension` | — | 4 (from limits) | — |
+| `Criterion_Fz_Tension` | §3.1.6.2 (inherited) | 4 (from limits) | — |
 
 Limits for `?3NECKUP00??FOZ?`:
 
@@ -544,7 +678,7 @@ Limits for `?3NECKUP00??FOZ?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_My_Extension` | — | 4 (from limits) | — |
+| `Criterion_My_Extension` | §3.1.6.2 (inherited) | 4 (from limits) | — |
 
 Limits for `?3NECKUP00??MOY?`:
 
@@ -561,13 +695,39 @@ Limits for `?3NECKUP00??MOY?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Knee_Femur_Pelvis` | — | — | — |
+| `Criterion_Knee_Femur_Pelvis` | §3.1.8 | 4 | — |
+
+## `criterion_passenger/criterion_knee_femur_pelvis/criterion_ConcentratedLoading` — Modifier for Concentrated Loading
+
+| class | source | max rating | aggregation |
+| --- | --- | --- | --- |
+| `Criterion_ConcentratedLoading` | §3.2.1.4 | — | — |
+
+Manual inputs:
+
+| input | type | default | unit | source | doc |
+| --- | --- | --- | --- | --- | --- |
+| concentrated_loading_left | bool | False | — | knee mapping | Structures in the left knee impact area could concentrate forces on part of the knee. −1 point. |
+| concentrated_loading_right | bool | False | — | knee mapping | Structures in the right knee impact area could concentrate forces on part of the knee. −1 point. |
+
+## `criterion_passenger/criterion_knee_femur_pelvis/criterion_VariableContact` — Modifier for Variable Contact
+
+| class | source | max rating | aggregation |
+| --- | --- | --- | --- |
+| `Criterion_VariableContact` | §3.2.1.4 | — | — |
+
+Manual inputs:
+
+| input | type | default | unit | source | doc |
+| --- | --- | --- | --- | --- | --- |
+| variable_contact_left | bool | False | — | knee mapping | Over the left knee's contact area, femur loads above 3.8 kN and/or knee slider displacements above 6 mm would be expected. −1 point. |
+| variable_contact_right | bool | False | — | knee mapping | Over the right knee's contact area, femur loads above 3.8 kN and/or knee slider displacements above 6 mm would be expected. −1 point. |
 
 ## `criterion_passenger/criterion_knee_femur_pelvis/criterion_femur_compression` — Femur Compression
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Femur_Compression` | — | 4 (from limits) | — |
+| `Criterion_Femur_Compression` | §3.1.8 (inherited) | 4 (from limits) | — |
 
 Limits for `?3FEMR??00??FOZ?`:
 
@@ -583,7 +743,7 @@ Limits for `?3FEMR??00??FOZ?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Knee_Slider_Compression` | — | 4 (from limits) | — |
+| `Criterion_Knee_Slider_Compression` | §3.1.8 (inherited) | 4 (from limits) | — |
 
 Limits for `?3KNSL??00??DSX?`:
 
@@ -599,13 +759,13 @@ Limits for `?3KNSL??00??DSX?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_LowerLeg` | — | — | — |
+| `Criterion_LowerLeg` | §3.1.9 | 4 | — |
 
 ## `criterion_passenger/criterion_lowerleg/criterion_tibia_compression` — Tibia Compression
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Tibia_Compression` | — | 4 (from limits) | — |
+| `Criterion_Tibia_Compression` | §3.1.5.1 | 4 (from limits) | — |
 
 Limits for `?3TIBI??????FOZ?`:
 
@@ -621,7 +781,7 @@ Limits for `?3TIBI??????FOZ?`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Tibia_Index` | — | 4 (from limits) | — |
+| `Criterion_Tibia_Index` | §3.1.5.1 | 4 (from limits) | — |
 
 Limits for `?3TIIN??00??000?`:
 
