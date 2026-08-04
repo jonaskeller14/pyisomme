@@ -23,18 +23,6 @@ Manual inputs:
 | p_front_passenger | int | 3 | — | test report | Channel-code position of the front passenger. Derived from p_driver (1 for a right-hand-drive test) unless set explicitly. |
 | p_rear_passenger | int | 6 | — | test report | Channel-code position of the rear passenger. Derived from p_driver (4 for a right-hand-drive test) unless set explicitly. |
 
-## `criterion_door_opening_during_impact` — Door Opening During Impact
-
-| class | source | max rating | aggregation |
-| --- | --- | --- | --- |
-| `Criterion_DoorOpeningDuringImpact` | §4 (inherited) | — | — |
-
-Manual inputs:
-
-| input | type | default | unit | source | doc |
-| --- | --- | --- | --- | --- | --- |
-| number_of_door_openings_during_impact | int | 0 | — | test report | How many doors opened during the impact. −1 point each. |
-
 ## `criterion_driver` — Driver
 
 | class | source | max rating | aggregation |
@@ -47,23 +35,170 @@ Manual inputs:
 | --- | --- | --- | --- | --- | --- |
 | steering_wheel_airbag_exists | bool | True | — | test report | Is a steering-wheel airbag fitted? Without one the head and neck boxes score 0. |
 
-## `criterion_driver/criterion_chest` — Chest
+## `criterion_driver/criterion_head` — Head
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Chest` | §4.1.3 | 4 | — |
-
-## `criterion_driver/criterion_chest/criterion_SteeringWheelContact` — Modifier Chest Steering Wheel Contact
-
-| class | source | max rating | aggregation |
-| --- | --- | --- | --- |
-| `Criterion_SteeringWheelContact` | §4.2.2 | — | — |
+| `Criterion_Head` | §4.1.1 | 4 | — |
 
 Manual inputs:
 
 | input | type | default | unit | source | doc |
 | --- | --- | --- | --- | --- | --- |
-| steering_wheel_contact | bool | False | — | video | Chest contact with the steering wheel (driver only). −1 point. |
+| hard_contact | bool | True | — | video | Was hard head contact observed? A head-acceleration peak above 80 g forces this to True regardless (Appendix A2: 'video OR curve'). |
+
+## `criterion_driver/criterion_head/criterion_hic_15` — HIC 15
+
+| class | source | max rating | aggregation |
+| --- | --- | --- | --- |
+| `Criterion_HIC_15` | §4.1.1 (inherited) | 4 (from limits) | — |
+
+Limits for `?1HICR0015??00RX`, `?1HICRCG15??00RX`:
+
+| row | threshold | rating | color | flag | y_unit | linestyle |
+| --- | --- | --- | --- | --- | --- | --- |
+| Good | 500 | 4 | green | upper | 1 | - |
+| Adequate | 500 | 4 | yellow | lower | 1 | - |
+| Marginal | 566.667 | 2.669 | orange | lower | 1 | - |
+| Weak | 633.333 | 1.329 | brown | lower | 1 | - |
+| Poor | 700 | 0 | red | — | 1 | - |
+| Capping | 700 | -inf | gray | lower | 1 | - |
+
+## `criterion_driver/criterion_head/criterion_head_a3ms` — Head a3ms
+
+| class | source | max rating | aggregation |
+| --- | --- | --- | --- |
+| `Criterion_Head_a3ms` | §4.1.1 (inherited) | 4 (from limits) | — |
+
+Limits for `?1HEAD003C??ACR?`, `?1HEADCG3C??ACR?`:
+
+| row | threshold | rating | color | flag | y_unit | linestyle |
+| --- | --- | --- | --- | --- | --- | --- |
+| Good | 72 | 4 | green | upper | g0 | - |
+| Adequate | 72 | 4 | yellow | lower | g0 | - |
+| Marginal | 74.667 | 2.669 | orange | lower | g0 | - |
+| Weak | 77.333 | 1.329 | brown | lower | g0 | - |
+| Poor | 80 | 0 | red | — | g0 | - |
+| Capping | 80 | -inf | gray | lower | g0 | - |
+
+## `criterion_driver/criterion_head/criterion_UnstableAirbagContact` — Modifier for Unstable Airbag Contact
+
+| class | source | max rating | aggregation |
+| --- | --- | --- | --- |
+| `Criterion_UnstableAirbagContact` | §4.2.1 | — | — |
+
+Manual inputs:
+
+| input | type | default | unit | source | doc |
+| --- | --- | --- | --- | --- | --- |
+| unstable_airbag_contact | bool | False | — | video | During the head's forward movement its centre of gravity moved further than the outside edge of the airbag, or head protection by the airbag was otherwise compromised — steering wheel detached from the column, airbag bottomed out by the head. −1 point. |
+
+## `criterion_driver/criterion_head/criterion_HazardousAirbagDeployment` — Modifier for Hazardous Airbag Deployment
+
+| class | source | max rating | aggregation |
+| --- | --- | --- | --- |
+| `Criterion_HazardousAirbagDeployment` | §4.2.1 | — | — |
+
+Manual inputs:
+
+| input | type | default | unit | source | doc |
+| --- | --- | --- | --- | --- | --- |
+| hazardous_airbag_deployment | bool | False | — | video | Hazardous airbag deployment observed. −1 point. |
+
+## `criterion_driver/criterion_head/criterion_IncorrectAirbagDeployment` — Modifier for Incorrect Airbag Deployment
+
+| class | source | max rating | aggregation |
+| --- | --- | --- | --- |
+| `Criterion_IncorrectAirbagDeployment` | §4.2.1 | — | — |
+
+Manual inputs:
+
+| input | type | default | unit | source | doc |
+| --- | --- | --- | --- | --- | --- |
+| incorrect_airbag_deployment | bool | False | — | video | Incorrect airbag deployment observed. −1 point. |
+
+## `criterion_driver/criterion_head/criterion_DisplacementSteeringColumn` — Modifier for Displacement of Steering Column
+
+| class | source | max rating | aggregation |
+| --- | --- | --- | --- |
+| `Criterion_DisplacementSteeringColumn` | §4.2.1 | — | — |
+
+Manual inputs:
+
+| input | type | default | unit | source | doc |
+| --- | --- | --- | --- | --- | --- |
+| displacement_steering_column_lateral | float | 0 | mm | measurement | Lateral displacement of the steering column (limit 100 mm). |
+| displacement_steering_column_rearwards | float | 0 | mm | measurement | Rearward displacement of the steering column (limit 100 mm). |
+| displacement_steering_column_upwards | float | 0 | mm | measurement | Upward displacement of the steering column (limit 80 mm). |
+
+## `criterion_driver/criterion_neck` — Neck
+
+| class | source | max rating | aggregation |
+| --- | --- | --- | --- |
+| `Criterion_Neck` | §4.1.2 | 4 | — |
+
+## `criterion_driver/criterion_neck/criterion_my_extension` — Neck My extension
+
+| class | source | max rating | aggregation |
+| --- | --- | --- | --- |
+| `Criterion_My_extension` | §4.1.2 (inherited) | 4 (from limits) | — |
+
+Limits for `?1NECKUP00??MOY?`:
+
+| row | threshold | rating | color | flag | y_unit | linestyle |
+| --- | --- | --- | --- | --- | --- | --- |
+| Good | -36 | 4 | green | lower | Nm | - |
+| Adequate | -36 | 4 | yellow | upper | Nm | - |
+| Marginal | -40.333 | 2.669 | orange | upper | Nm | - |
+| Weak | -44.667 | 1.329 | brown | upper | Nm | - |
+| Poor | -49 | 0 | red | upper | Nm | - |
+| Capping | -57 | -inf | gray | upper | Nm | - |
+
+## `criterion_driver/criterion_neck/criterion_fz_tension` — Neck Fz tension
+
+| class | source | max rating | aggregation |
+| --- | --- | --- | --- |
+| `Criterion_Fz_tension` | §4.1.2 (inherited) | 4 (from limits) | — |
+
+Limits for `?1NECKUP00??FOZ?`:
+
+| row | threshold | rating | color | flag | y_unit | linestyle |
+| --- | --- | --- | --- | --- | --- | --- |
+| Good | 1.7 | 4 | green | upper | kN | - |
+| Adequate | 1.7 | 4 | yellow | lower | kN | - |
+| Marginal | 2.007 | 2.669 | orange | lower | kN | - |
+| Weak | 2.313 | 1.329 | brown | lower | kN | - |
+| Poor | 2.62 | 0 | red | lower | kN | - |
+| Capping | 2.9 | -inf | gray | lower | kN | - |
+
+## `criterion_driver/criterion_neck/criterion_fx_shear` — Neck Fx shear
+
+| class | source | max rating | aggregation |
+| --- | --- | --- | --- |
+| `Criterion_Fx_shear` | §4.1.2 (inherited) | 4 (from limits) | — |
+
+Limits for `?1NECKUP00??FOX?`:
+
+| row | threshold | rating | color | flag | y_unit | linestyle |
+| --- | --- | --- | --- | --- | --- | --- |
+| Good | 1.2 | 4 | green | upper | kN | - |
+| Adequate | 1.2 | 4 | yellow | lower | kN | - |
+| Marginal | 1.45 | 2.669 | orange | lower | kN | - |
+| Weak | 1.7 | 1.329 | brown | lower | kN | - |
+| Poor | 1.95 | 0 | red | lower | kN | - |
+| Good | -1.2 | 4 | green | lower | kN | - |
+| Adequate | -1.2 | 4 | yellow | upper | kN | - |
+| Marginal | -1.45 | 2.669 | orange | upper | kN | - |
+| Weak | -1.7 | 1.329 | brown | upper | kN | - |
+| Poor | -1.95 | 0 | red | upper | kN | - |
+| Capping | 2.7 | -inf | gray | lower | kN | - |
+| Capping | -2.7 | -inf | gray | upper | kN | - |
+
+## `criterion_driver/criterion_chest` — Chest
+
+| class | source | max rating | aggregation |
+| --- | --- | --- | --- |
+| `Criterion_Chest` | §4.1.3 | 4 | — |
 
 ## `criterion_driver/criterion_chest/criterion_chest_deflection` — Chest Deflection
 
@@ -98,6 +233,18 @@ Limits for `?1VCCR000[03]??VEX?`:
 | Weak | 0.833 | 1.329 | brown | lower | m/s | - |
 | Poor | 1 | 0 | red | — | m/s | - |
 | Capping | 1 | -inf | gray | lower | m/s | - |
+
+## `criterion_driver/criterion_chest/criterion_SteeringWheelContact` — Modifier Chest Steering Wheel Contact
+
+| class | source | max rating | aggregation |
+| --- | --- | --- | --- |
+| `Criterion_SteeringWheelContact` | §4.2.2 | — | — |
+
+Manual inputs:
+
+| input | type | default | unit | source | doc |
+| --- | --- | --- | --- | --- | --- |
+| steering_wheel_contact | bool | False | — | video | Chest contact with the steering wheel (driver only). −1 point. |
 
 ## `criterion_driver/criterion_chest/criterion_shoulder_belt_load` — Modifier Shoulder Belt Load
 
@@ -168,7 +315,13 @@ Manual inputs:
 | --- | --- | --- | --- | --- | --- |
 | submarining | bool | False | — | video | Pelvis slid under the lap belt. Caps the femur box at 0 points. |
 
-## `criterion_driver/criterion_head` — Head
+## `criterion_front_passenger` — Front Passenger
+
+| class | source | max rating | aggregation |
+| --- | --- | --- | --- |
+| `Criterion_Front_Passenger` | §4 (inherited) | 16 | sum |
+
+## `criterion_front_passenger/criterion_head` — Head
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
@@ -180,21 +333,41 @@ Manual inputs:
 | --- | --- | --- | --- | --- | --- |
 | hard_contact | bool | True | — | video | Was hard head contact observed? A head-acceleration peak above 80 g forces this to True regardless (Appendix A2: 'video OR curve'). |
 
-## `criterion_driver/criterion_head/criterion_DisplacementSteeringColumn` — Modifier for Displacement of Steering Column
+## `criterion_front_passenger/criterion_head/criterion_hic_15` — HIC 15
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_DisplacementSteeringColumn` | §4.2.1 | — | — |
+| `Criterion_HIC_15` | §4.1.1 (inherited) | 4 (from limits) | — |
 
-Manual inputs:
+Limits for `?3HICR0015??00RX`, `?3HICRCG15??00RX`:
 
-| input | type | default | unit | source | doc |
-| --- | --- | --- | --- | --- | --- |
-| displacement_steering_column_lateral | float | 0 | mm | measurement | Lateral displacement of the steering column (limit 100 mm). |
-| displacement_steering_column_rearwards | float | 0 | mm | measurement | Rearward displacement of the steering column (limit 100 mm). |
-| displacement_steering_column_upwards | float | 0 | mm | measurement | Upward displacement of the steering column (limit 80 mm). |
+| row | threshold | rating | color | flag | y_unit | linestyle |
+| --- | --- | --- | --- | --- | --- | --- |
+| Good | 500 | 4 | green | upper | 1 | - |
+| Adequate | 500 | 4 | yellow | lower | 1 | - |
+| Marginal | 566.667 | 2.669 | orange | lower | 1 | - |
+| Weak | 633.333 | 1.329 | brown | lower | 1 | - |
+| Poor | 700 | 0 | red | — | 1 | - |
+| Capping | 700 | -inf | gray | lower | 1 | - |
 
-## `criterion_driver/criterion_head/criterion_HazardousAirbagDeployment` — Modifier for Hazardous Airbag Deployment
+## `criterion_front_passenger/criterion_head/criterion_head_a3ms` — Head a3ms
+
+| class | source | max rating | aggregation |
+| --- | --- | --- | --- |
+| `Criterion_Head_a3ms` | §4.1.1 (inherited) | 4 (from limits) | — |
+
+Limits for `?3HEAD003C??ACR?`, `?3HEADCG3C??ACR?`:
+
+| row | threshold | rating | color | flag | y_unit | linestyle |
+| --- | --- | --- | --- | --- | --- | --- |
+| Good | 72 | 4 | green | upper | g0 | - |
+| Adequate | 72 | 4 | yellow | lower | g0 | - |
+| Marginal | 74.667 | 2.669 | orange | lower | g0 | - |
+| Weak | 77.333 | 1.329 | brown | lower | g0 | - |
+| Poor | 80 | 0 | red | — | g0 | - |
+| Capping | 80 | -inf | gray | lower | g0 | - |
+
+## `criterion_front_passenger/criterion_head/criterion_HazardousAirbagDeployment` — Modifier for Hazardous Airbag Deployment
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
@@ -206,7 +379,7 @@ Manual inputs:
 | --- | --- | --- | --- | --- | --- |
 | hazardous_airbag_deployment | bool | False | — | video | Hazardous airbag deployment observed. −1 point. |
 
-## `criterion_driver/criterion_head/criterion_IncorrectAirbagDeployment` — Modifier for Incorrect Airbag Deployment
+## `criterion_front_passenger/criterion_head/criterion_IncorrectAirbagDeployment` — Modifier for Incorrect Airbag Deployment
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
@@ -218,65 +391,51 @@ Manual inputs:
 | --- | --- | --- | --- | --- | --- |
 | incorrect_airbag_deployment | bool | False | — | video | Incorrect airbag deployment observed. −1 point. |
 
-## `criterion_driver/criterion_head/criterion_UnstableAirbagContact` — Modifier for Unstable Airbag Contact
-
-| class | source | max rating | aggregation |
-| --- | --- | --- | --- |
-| `Criterion_UnstableAirbagContact` | §4.2.1 | — | — |
-
-Manual inputs:
-
-| input | type | default | unit | source | doc |
-| --- | --- | --- | --- | --- | --- |
-| unstable_airbag_contact | bool | False | — | video | During the head's forward movement its centre of gravity moved further than the outside edge of the airbag, or head protection by the airbag was otherwise compromised — steering wheel detached from the column, airbag bottomed out by the head. −1 point. |
-
-## `criterion_driver/criterion_head/criterion_head_a3ms` — Head a3ms
-
-| class | source | max rating | aggregation |
-| --- | --- | --- | --- |
-| `Criterion_Head_a3ms` | §4.1.1 (inherited) | 4 (from limits) | — |
-
-Limits for `?1HEAD003C??ACR?`, `?1HEADCG3C??ACR?`:
-
-| row | threshold | rating | color | flag | y_unit | linestyle |
-| --- | --- | --- | --- | --- | --- | --- |
-| Good | 72 | 4 | green | upper | g0 | - |
-| Adequate | 72 | 4 | yellow | lower | g0 | - |
-| Marginal | 74.667 | 2.669 | orange | lower | g0 | - |
-| Weak | 77.333 | 1.329 | brown | lower | g0 | - |
-| Poor | 80 | 0 | red | — | g0 | - |
-| Capping | 80 | -inf | gray | lower | g0 | - |
-
-## `criterion_driver/criterion_head/criterion_hic_15` — HIC 15
-
-| class | source | max rating | aggregation |
-| --- | --- | --- | --- |
-| `Criterion_HIC_15` | §4.1.1 (inherited) | 4 (from limits) | — |
-
-Limits for `?1HICR0015??00RX`, `?1HICRCG15??00RX`:
-
-| row | threshold | rating | color | flag | y_unit | linestyle |
-| --- | --- | --- | --- | --- | --- | --- |
-| Good | 500 | 4 | green | upper | 1 | - |
-| Adequate | 500 | 4 | yellow | lower | 1 | - |
-| Marginal | 566.667 | 2.669 | orange | lower | 1 | - |
-| Weak | 633.333 | 1.329 | brown | lower | 1 | - |
-| Poor | 700 | 0 | red | — | 1 | - |
-| Capping | 700 | -inf | gray | lower | 1 | - |
-
-## `criterion_driver/criterion_neck` — Neck
+## `criterion_front_passenger/criterion_neck` — Neck
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
 | `Criterion_Neck` | §4.1.2 | 4 | — |
 
-## `criterion_driver/criterion_neck/criterion_fx_shear` — Neck Fx shear
+## `criterion_front_passenger/criterion_neck/criterion_my_extension` — Neck My extension
+
+| class | source | max rating | aggregation |
+| --- | --- | --- | --- |
+| `Criterion_My_extension` | §4.1.2 (inherited) | 4 (from limits) | — |
+
+Limits for `?3NECKUP00??MOY?`:
+
+| row | threshold | rating | color | flag | y_unit | linestyle |
+| --- | --- | --- | --- | --- | --- | --- |
+| Good | -36 | 4 | green | lower | Nm | - |
+| Adequate | -36 | 4 | yellow | upper | Nm | - |
+| Marginal | -40.333 | 2.669 | orange | upper | Nm | - |
+| Weak | -44.667 | 1.329 | brown | upper | Nm | - |
+| Poor | -49 | 0 | red | upper | Nm | - |
+
+## `criterion_front_passenger/criterion_neck/criterion_fz_tension` — Neck Fz tension
+
+| class | source | max rating | aggregation |
+| --- | --- | --- | --- |
+| `Criterion_Fz_tension` | §4.1.2 (inherited) | 4 (from limits) | — |
+
+Limits for `?3NECKUP00??FOZ?`:
+
+| row | threshold | rating | color | flag | y_unit | linestyle |
+| --- | --- | --- | --- | --- | --- | --- |
+| Good | 1.7 | 4 | green | upper | kN | - |
+| Adequate | 1.7 | 4 | yellow | lower | kN | - |
+| Marginal | 2.007 | 2.669 | orange | lower | kN | - |
+| Weak | 2.313 | 1.329 | brown | lower | kN | - |
+| Poor | 2.62 | 0 | red | lower | kN | - |
+
+## `criterion_front_passenger/criterion_neck/criterion_fx_shear` — Neck Fx shear
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
 | `Criterion_Fx_shear` | §4.1.2 (inherited) | 4 (from limits) | — |
 
-Limits for `?1NECKUP00??FOX?`:
+Limits for `?3NECKUP00??FOX?`:
 
 | row | threshold | rating | color | flag | y_unit | linestyle |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -290,48 +449,6 @@ Limits for `?1NECKUP00??FOX?`:
 | Marginal | -1.45 | 2.669 | orange | upper | kN | - |
 | Weak | -1.7 | 1.329 | brown | upper | kN | - |
 | Poor | -1.95 | 0 | red | upper | kN | - |
-| Capping | 2.7 | -inf | gray | lower | kN | - |
-| Capping | -2.7 | -inf | gray | upper | kN | - |
-
-## `criterion_driver/criterion_neck/criterion_fz_tension` — Neck Fz tension
-
-| class | source | max rating | aggregation |
-| --- | --- | --- | --- |
-| `Criterion_Fz_tension` | §4.1.2 (inherited) | 4 (from limits) | — |
-
-Limits for `?1NECKUP00??FOZ?`:
-
-| row | threshold | rating | color | flag | y_unit | linestyle |
-| --- | --- | --- | --- | --- | --- | --- |
-| Good | 1.7 | 4 | green | upper | kN | - |
-| Adequate | 1.7 | 4 | yellow | lower | kN | - |
-| Marginal | 2.007 | 2.669 | orange | lower | kN | - |
-| Weak | 2.313 | 1.329 | brown | lower | kN | - |
-| Poor | 2.62 | 0 | red | lower | kN | - |
-| Capping | 2.9 | -inf | gray | lower | kN | - |
-
-## `criterion_driver/criterion_neck/criterion_my_extension` — Neck My extension
-
-| class | source | max rating | aggregation |
-| --- | --- | --- | --- |
-| `Criterion_My_extension` | §4.1.2 (inherited) | 4 (from limits) | — |
-
-Limits for `?1NECKUP00??MOY?`:
-
-| row | threshold | rating | color | flag | y_unit | linestyle |
-| --- | --- | --- | --- | --- | --- | --- |
-| Good | -36 | 4 | green | lower | Nm | - |
-| Adequate | -36 | 4 | yellow | upper | Nm | - |
-| Marginal | -40.333 | 2.669 | orange | upper | Nm | - |
-| Weak | -44.667 | 1.329 | brown | upper | Nm | - |
-| Poor | -49 | 0 | red | upper | Nm | - |
-| Capping | -57 | -inf | gray | upper | Nm | - |
-
-## `criterion_front_passenger` — Front Passenger
-
-| class | source | max rating | aggregation |
-| --- | --- | --- | --- |
-| `Criterion_Front_Passenger` | §4 (inherited) | 16 | sum |
 
 ## `criterion_front_passenger/criterion_chest` — Chest
 
@@ -430,19 +547,71 @@ Limits for `?3FEMRRI00??FOZ?`:
 | Weak | -5 | 1.329 | brown | upper | kN | - |
 | Poor | -6.2 | 0 | red | upper | kN | - |
 
-## `criterion_front_passenger/criterion_head` — Head
+## `criterion_rear_passenger` — Rear Passenger
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Head` | §4.1.1 | 4 | — |
+| `Criterion_Rear_Passenger` | §4 (inherited) | 16 | sum |
+
+## `criterion_rear_passenger/criterion_head` — Head
+
+| class | source | max rating | aggregation |
+| --- | --- | --- | --- |
+| `Criterion_Head` | §4.1.1.3 | 4 | — |
 
 Manual inputs:
 
 | input | type | default | unit | source | doc |
 | --- | --- | --- | --- | --- | --- |
-| hard_contact | bool | True | — | video | Was hard head contact observed? A head-acceleration peak above 80 g forces this to True regardless (Appendix A2: 'video OR curve'). |
+| hard_contact | bool | True | — | video | Was hard head contact seen on the high speed film? §4.1.1.3 has no 80 g rule for the rear passenger, so this input alone decides. Without contact only the 3 ms resultant is scored. |
 
-## `criterion_front_passenger/criterion_head/criterion_HazardousAirbagDeployment` — Modifier for Hazardous Airbag Deployment
+## `criterion_rear_passenger/criterion_head/criterion_hic_15` — HIC 15
+
+| class | source | max rating | aggregation |
+| --- | --- | --- | --- |
+| `Criterion_HIC_15` | §4.1.1.3 (inherited) | 4 (from limits) | — |
+
+Limits for `?6HICR0015??00RX`, `?6HICRCG15??00RX`:
+
+| row | threshold | rating | color | flag | y_unit | linestyle |
+| --- | --- | --- | --- | --- | --- | --- |
+| Good | 500 | 4 | green | upper | 1 | - |
+| Adequate | 500 | 4 | yellow | lower | 1 | - |
+| Marginal | 566.667 | 2.669 | orange | lower | 1 | - |
+| Weak | 633.333 | 1.329 | brown | lower | 1 | - |
+| Poor | 700 | 0 | red | — | 1 | - |
+| Capping | 700 | -inf | gray | lower | 1 | - |
+
+## `criterion_rear_passenger/criterion_head/criterion_head_a3ms` — Head a3ms
+
+| class | source | max rating | aggregation |
+| --- | --- | --- | --- |
+| `Criterion_Head_a3ms` | §4.1.1.3 (inherited) | 4 (from limits) | — |
+
+Limits for `?6HEAD003C??ACR?`, `?6HEADCG3C??ACR?`:
+
+| row | threshold | rating | color | flag | y_unit | linestyle |
+| --- | --- | --- | --- | --- | --- | --- |
+| Good | 72 | 4 | green | upper | g0 | - |
+| Adequate | 72 | 4 | yellow | lower | g0 | - |
+| Marginal | 74.667 | 2.669 | orange | lower | g0 | - |
+| Weak | 77.333 | 1.329 | brown | lower | g0 | - |
+| Poor | 80 | 0 | red | — | g0 | - |
+| Capping | 80 | -inf | gray | lower | g0 | - |
+
+## `criterion_rear_passenger/criterion_head/criterion_UnstableAirbagContact` — Modifier for Unstable Airbag Contact
+
+| class | source | max rating | aggregation |
+| --- | --- | --- | --- |
+| `Criterion_UnstableAirbagContact` | §4.2.1 | — | — |
+
+Manual inputs:
+
+| input | type | default | unit | source | doc |
+| --- | --- | --- | --- | --- | --- |
+| unstable_airbag_contact | bool | False | — | video | During the head's forward movement its centre of gravity moved further than the outside edge of the airbag, or head protection by the airbag was otherwise compromised — steering wheel detached from the column, airbag bottomed out by the head. −1 point. |
+
+## `criterion_rear_passenger/criterion_head/criterion_HazardousAirbagDeployment` — Modifier for Hazardous Airbag Deployment
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
@@ -454,7 +623,7 @@ Manual inputs:
 | --- | --- | --- | --- | --- | --- |
 | hazardous_airbag_deployment | bool | False | — | video | Hazardous airbag deployment observed. −1 point. |
 
-## `criterion_front_passenger/criterion_head/criterion_IncorrectAirbagDeployment` — Modifier for Incorrect Airbag Deployment
+## `criterion_rear_passenger/criterion_head/criterion_IncorrectAirbagDeployment` — Modifier for Incorrect Airbag Deployment
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
@@ -466,53 +635,65 @@ Manual inputs:
 | --- | --- | --- | --- | --- | --- |
 | incorrect_airbag_deployment | bool | False | — | video | Incorrect airbag deployment observed. −1 point. |
 
-## `criterion_front_passenger/criterion_head/criterion_head_a3ms` — Head a3ms
+## `criterion_rear_passenger/criterion_head/criterion_ExceedingForwardExcursionLine` — Modifier for Exceeding forward excursion line
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Head_a3ms` | §4.1.1 (inherited) | 4 (from limits) | — |
+| `Criterion_ExceedingForwardExcursionLine` | §4.2.1 | — | — |
 
-Limits for `?3HEAD003C??ACR?`, `?3HEADCG3C??ACR?`:
+Manual inputs:
+
+| input | type | default | unit | source | doc |
+| --- | --- | --- | --- | --- | --- |
+| forward_excursion | float | 0 | mm | video | Forward head excursion beyond the excursion line. |
+| simulation_contact_seat_H3 | bool | False | — | simulation | Hybrid-III simulation shows head contact with the front seat. |
+| simulation_hic_15_H3 | float | 0 | — | simulation | HIC15 from the Hybrid-III simulation. |
+
+## `criterion_rear_passenger/criterion_neck` — Neck
+
+| class | source | max rating | aggregation |
+| --- | --- | --- | --- |
+| `Criterion_Neck` | §4.1.2 | 4 | sum |
+
+## `criterion_rear_passenger/criterion_neck/criterion_my_extension` — Neck My extension
+
+| class | source | max rating | aggregation |
+| --- | --- | --- | --- |
+| `Criterion_My_extension` | §4.1.2 (inherited) | 2 | — |
+
+Limits for `?6NECKUP00??MOY?`:
 
 | row | threshold | rating | color | flag | y_unit | linestyle |
 | --- | --- | --- | --- | --- | --- | --- |
-| Good | 72 | 4 | green | upper | g0 | - |
-| Adequate | 72 | 4 | yellow | lower | g0 | - |
-| Marginal | 74.667 | 2.669 | orange | lower | g0 | - |
-| Weak | 77.333 | 1.329 | brown | lower | g0 | - |
-| Poor | 80 | 0 | red | — | g0 | - |
-| Capping | 80 | -inf | gray | lower | g0 | - |
+| Good | -36 | 4 | green | lower | Nm | - |
+| Adequate | -36 | 4 | yellow | upper | Nm | - |
+| Marginal | -40.333 | 2.669 | orange | upper | Nm | - |
+| Weak | -44.667 | 1.329 | brown | upper | Nm | - |
+| Poor | -49 | 0 | red | upper | Nm | - |
 
-## `criterion_front_passenger/criterion_head/criterion_hic_15` — HIC 15
+## `criterion_rear_passenger/criterion_neck/criterion_fz_tension` — Neck Fz tension
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_HIC_15` | §4.1.1 (inherited) | 4 (from limits) | — |
+| `Criterion_Fz_tension` | §4.1.2 (inherited) | 1 | — |
 
-Limits for `?3HICR0015??00RX`, `?3HICRCG15??00RX`:
+Limits for `?6NECKUP00??FOZ?`:
 
 | row | threshold | rating | color | flag | y_unit | linestyle |
 | --- | --- | --- | --- | --- | --- | --- |
-| Good | 500 | 4 | green | upper | 1 | - |
-| Adequate | 500 | 4 | yellow | lower | 1 | - |
-| Marginal | 566.667 | 2.669 | orange | lower | 1 | - |
-| Weak | 633.333 | 1.329 | brown | lower | 1 | - |
-| Poor | 700 | 0 | red | — | 1 | - |
-| Capping | 700 | -inf | gray | lower | 1 | - |
+| Good | 1.7 | 4 | green | upper | kN | - |
+| Adequate | 1.7 | 4 | yellow | lower | kN | - |
+| Marginal | 2.007 | 2.669 | orange | lower | kN | - |
+| Weak | 2.313 | 1.329 | brown | lower | kN | - |
+| Poor | 2.62 | 0 | red | lower | kN | - |
 
-## `criterion_front_passenger/criterion_neck` — Neck
-
-| class | source | max rating | aggregation |
-| --- | --- | --- | --- |
-| `Criterion_Neck` | §4.1.2 | 4 | — |
-
-## `criterion_front_passenger/criterion_neck/criterion_fx_shear` — Neck Fx shear
+## `criterion_rear_passenger/criterion_neck/criterion_fx_shear` — Neck Fx shear
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Fx_shear` | §4.1.2 (inherited) | 4 (from limits) | — |
+| `Criterion_Fx_shear` | §4.1.2 (inherited) | 1 | — |
 
-Limits for `?3NECKUP00??FOX?`:
+Limits for `?6NECKUP00??FOX?`:
 
 | row | threshold | rating | color | flag | y_unit | linestyle |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -526,44 +707,6 @@ Limits for `?3NECKUP00??FOX?`:
 | Marginal | -1.45 | 2.669 | orange | upper | kN | - |
 | Weak | -1.7 | 1.329 | brown | upper | kN | - |
 | Poor | -1.95 | 0 | red | upper | kN | - |
-
-## `criterion_front_passenger/criterion_neck/criterion_fz_tension` — Neck Fz tension
-
-| class | source | max rating | aggregation |
-| --- | --- | --- | --- |
-| `Criterion_Fz_tension` | §4.1.2 (inherited) | 4 (from limits) | — |
-
-Limits for `?3NECKUP00??FOZ?`:
-
-| row | threshold | rating | color | flag | y_unit | linestyle |
-| --- | --- | --- | --- | --- | --- | --- |
-| Good | 1.7 | 4 | green | upper | kN | - |
-| Adequate | 1.7 | 4 | yellow | lower | kN | - |
-| Marginal | 2.007 | 2.669 | orange | lower | kN | - |
-| Weak | 2.313 | 1.329 | brown | lower | kN | - |
-| Poor | 2.62 | 0 | red | lower | kN | - |
-
-## `criterion_front_passenger/criterion_neck/criterion_my_extension` — Neck My extension
-
-| class | source | max rating | aggregation |
-| --- | --- | --- | --- |
-| `Criterion_My_extension` | §4.1.2 (inherited) | 4 (from limits) | — |
-
-Limits for `?3NECKUP00??MOY?`:
-
-| row | threshold | rating | color | flag | y_unit | linestyle |
-| --- | --- | --- | --- | --- | --- | --- |
-| Good | -36 | 4 | green | lower | Nm | - |
-| Adequate | -36 | 4 | yellow | upper | Nm | - |
-| Marginal | -40.333 | 2.669 | orange | upper | Nm | - |
-| Weak | -44.667 | 1.329 | brown | upper | Nm | - |
-| Poor | -49 | 0 | red | upper | Nm | - |
-
-## `criterion_rear_passenger` — Rear Passenger
-
-| class | source | max rating | aggregation |
-| --- | --- | --- | --- |
-| `Criterion_Rear_Passenger` | §4 (inherited) | 16 | sum |
 
 ## `criterion_rear_passenger/criterion_chest` — Chest
 
@@ -674,157 +817,14 @@ Manual inputs:
 | --- | --- | --- | --- | --- | --- |
 | submarining | bool | False | — | video | Pelvis slid under the lap belt. Caps the femur box at 0 points. |
 
-## `criterion_rear_passenger/criterion_head` — Head
+## `criterion_door_opening_during_impact` — Door Opening During Impact
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Head` | §4.1.1.3 | 4 | — |
+| `Criterion_DoorOpeningDuringImpact` | §4 (inherited) | — | — |
 
 Manual inputs:
 
 | input | type | default | unit | source | doc |
 | --- | --- | --- | --- | --- | --- |
-| hard_contact | bool | True | — | video | Was hard head contact seen on the high speed film? §4.1.1.3 has no 80 g rule for the rear passenger, so this input alone decides. Without contact only the 3 ms resultant is scored. |
-
-## `criterion_rear_passenger/criterion_head/criterion_ExceedingForwardExcursionLine` — Modifier for Exceeding forward excursion line
-
-| class | source | max rating | aggregation |
-| --- | --- | --- | --- |
-| `Criterion_ExceedingForwardExcursionLine` | §4.2.1 | — | — |
-
-Manual inputs:
-
-| input | type | default | unit | source | doc |
-| --- | --- | --- | --- | --- | --- |
-| forward_excursion | float | 0 | mm | video | Forward head excursion beyond the excursion line. |
-| simulation_contact_seat_H3 | bool | False | — | simulation | Hybrid-III simulation shows head contact with the front seat. |
-| simulation_hic_15_H3 | float | 0 | — | simulation | HIC15 from the Hybrid-III simulation. |
-
-## `criterion_rear_passenger/criterion_head/criterion_HazardousAirbagDeployment` — Modifier for Hazardous Airbag Deployment
-
-| class | source | max rating | aggregation |
-| --- | --- | --- | --- |
-| `Criterion_HazardousAirbagDeployment` | §4.2.1 | — | — |
-
-Manual inputs:
-
-| input | type | default | unit | source | doc |
-| --- | --- | --- | --- | --- | --- |
-| hazardous_airbag_deployment | bool | False | — | video | Hazardous airbag deployment observed. −1 point. |
-
-## `criterion_rear_passenger/criterion_head/criterion_IncorrectAirbagDeployment` — Modifier for Incorrect Airbag Deployment
-
-| class | source | max rating | aggregation |
-| --- | --- | --- | --- |
-| `Criterion_IncorrectAirbagDeployment` | §4.2.1 | — | — |
-
-Manual inputs:
-
-| input | type | default | unit | source | doc |
-| --- | --- | --- | --- | --- | --- |
-| incorrect_airbag_deployment | bool | False | — | video | Incorrect airbag deployment observed. −1 point. |
-
-## `criterion_rear_passenger/criterion_head/criterion_UnstableAirbagContact` — Modifier for Unstable Airbag Contact
-
-| class | source | max rating | aggregation |
-| --- | --- | --- | --- |
-| `Criterion_UnstableAirbagContact` | §4.2.1 | — | — |
-
-Manual inputs:
-
-| input | type | default | unit | source | doc |
-| --- | --- | --- | --- | --- | --- |
-| unstable_airbag_contact | bool | False | — | video | During the head's forward movement its centre of gravity moved further than the outside edge of the airbag, or head protection by the airbag was otherwise compromised — steering wheel detached from the column, airbag bottomed out by the head. −1 point. |
-
-## `criterion_rear_passenger/criterion_head/criterion_head_a3ms` — Head a3ms
-
-| class | source | max rating | aggregation |
-| --- | --- | --- | --- |
-| `Criterion_Head_a3ms` | §4.1.1.3 (inherited) | 4 (from limits) | — |
-
-Limits for `?6HEAD003C??ACR?`, `?6HEADCG3C??ACR?`:
-
-| row | threshold | rating | color | flag | y_unit | linestyle |
-| --- | --- | --- | --- | --- | --- | --- |
-| Good | 72 | 4 | green | upper | g0 | - |
-| Adequate | 72 | 4 | yellow | lower | g0 | - |
-| Marginal | 74.667 | 2.669 | orange | lower | g0 | - |
-| Weak | 77.333 | 1.329 | brown | lower | g0 | - |
-| Poor | 80 | 0 | red | — | g0 | - |
-| Capping | 80 | -inf | gray | lower | g0 | - |
-
-## `criterion_rear_passenger/criterion_head/criterion_hic_15` — HIC 15
-
-| class | source | max rating | aggregation |
-| --- | --- | --- | --- |
-| `Criterion_HIC_15` | §4.1.1.3 (inherited) | 4 (from limits) | — |
-
-Limits for `?6HICR0015??00RX`, `?6HICRCG15??00RX`:
-
-| row | threshold | rating | color | flag | y_unit | linestyle |
-| --- | --- | --- | --- | --- | --- | --- |
-| Good | 500 | 4 | green | upper | 1 | - |
-| Adequate | 500 | 4 | yellow | lower | 1 | - |
-| Marginal | 566.667 | 2.669 | orange | lower | 1 | - |
-| Weak | 633.333 | 1.329 | brown | lower | 1 | - |
-| Poor | 700 | 0 | red | — | 1 | - |
-| Capping | 700 | -inf | gray | lower | 1 | - |
-
-## `criterion_rear_passenger/criterion_neck` — Neck
-
-| class | source | max rating | aggregation |
-| --- | --- | --- | --- |
-| `Criterion_Neck` | §4.1.2 | 4 | sum |
-
-## `criterion_rear_passenger/criterion_neck/criterion_fx_shear` — Neck Fx shear
-
-| class | source | max rating | aggregation |
-| --- | --- | --- | --- |
-| `Criterion_Fx_shear` | §4.1.2 (inherited) | 1 | — |
-
-Limits for `?6NECKUP00??FOX?`:
-
-| row | threshold | rating | color | flag | y_unit | linestyle |
-| --- | --- | --- | --- | --- | --- | --- |
-| Good | 1.2 | 4 | green | upper | kN | - |
-| Adequate | 1.2 | 4 | yellow | lower | kN | - |
-| Marginal | 1.45 | 2.669 | orange | lower | kN | - |
-| Weak | 1.7 | 1.329 | brown | lower | kN | - |
-| Poor | 1.95 | 0 | red | lower | kN | - |
-| Good | -1.2 | 4 | green | lower | kN | - |
-| Adequate | -1.2 | 4 | yellow | upper | kN | - |
-| Marginal | -1.45 | 2.669 | orange | upper | kN | - |
-| Weak | -1.7 | 1.329 | brown | upper | kN | - |
-| Poor | -1.95 | 0 | red | upper | kN | - |
-
-## `criterion_rear_passenger/criterion_neck/criterion_fz_tension` — Neck Fz tension
-
-| class | source | max rating | aggregation |
-| --- | --- | --- | --- |
-| `Criterion_Fz_tension` | §4.1.2 (inherited) | 1 | — |
-
-Limits for `?6NECKUP00??FOZ?`:
-
-| row | threshold | rating | color | flag | y_unit | linestyle |
-| --- | --- | --- | --- | --- | --- | --- |
-| Good | 1.7 | 4 | green | upper | kN | - |
-| Adequate | 1.7 | 4 | yellow | lower | kN | - |
-| Marginal | 2.007 | 2.669 | orange | lower | kN | - |
-| Weak | 2.313 | 1.329 | brown | lower | kN | - |
-| Poor | 2.62 | 0 | red | lower | kN | - |
-
-## `criterion_rear_passenger/criterion_neck/criterion_my_extension` — Neck My extension
-
-| class | source | max rating | aggregation |
-| --- | --- | --- | --- |
-| `Criterion_My_extension` | §4.1.2 (inherited) | 2 | — |
-
-Limits for `?6NECKUP00??MOY?`:
-
-| row | threshold | rating | color | flag | y_unit | linestyle |
-| --- | --- | --- | --- | --- | --- | --- |
-| Good | -36 | 4 | green | lower | Nm | - |
-| Adequate | -36 | 4 | yellow | upper | Nm | - |
-| Marginal | -40.333 | 2.669 | orange | upper | Nm | - |
-| Weak | -44.667 | 1.329 | brown | upper | Nm | - |
-| Poor | -49 | 0 | red | upper | Nm | - |
+| number_of_door_openings_during_impact | int | 0 | — | test report | How many doors opened during the impact. −1 point each. |

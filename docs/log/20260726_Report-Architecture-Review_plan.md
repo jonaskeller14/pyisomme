@@ -274,11 +274,82 @@ literal. See the withdrawn Step 5.
 - `Ctx` resolved **lazily at the start of `calculate()`**, replacing the `p` threading; children inherit unless overridden. This is the proper F15 fix that supersedes Step 4's interim one. **See "What `Ctx` may and may not assume" below — it is not an occupant object.**
 - Replace `dir()`-based discovery in `get_subcriterion`/`get_subcriteria`/`print_results` with the ordered children list (F6, A11).
 
+### What `Ctx` may and may not assume (revised 2026-08-04)
+
+An earlier draft of this step gave `Ctx` the fields `position`, `dummy`, `side`. **That is wrong**: it
+builds the occupant crash test into the framework, and pyisomme's reports are not all occupant tests.
+The repo already proves it — of the criteria under `euro_ncap/` and `iihs/`, **144 take a position `p`
+and 11 take none** (`DoorOpeningDuringImpact`, the MPDB compatibility modifiers reading
+`M?MBAR0OLC??VEX?`, the structural measurements), and `Correlation.Criterion_Curve_Correlation` takes
+neither — it is constructed with two `Channel`s. A mandatory `position` would be a *regression* against
+code that already distinguishes vehicle-level from occupant-level criteria.
+
+The rule:
+
+- **`Ctx` core = `report`, `isomme`, and an immutable mapping of *code-template fields*** used by
+  `ctx.code("?{p}NECKUP00??MOY?")`. Nothing else is mandatory. A criterion whose templates contain no
+  placeholder (`M?MBAR0OLC??VEX?`) needs no fields, and a criterion with no channel at all needs no
+  `Ctx` beyond `report`/`isomme`. **Constructing or calculating a criterion must never require an
+  occupant to exist.**
+- **`at=` takes a context *source*, not a seat**: an object resolving `(parent_ctx, criterion) -> Ctx`.
+  The default is "inherit the parent's unchanged". Occupant seating is *one* implementation of that
+  protocol, not the framework's only one; a barrier, a trolley, a vehicle body or a second test object
+  are equally valid and must be expressible without touching `criterion.py`.
+- **The occupant layer is a helper, not the base.** `Seat`, the seat→position resolution and the
+  right-hand-drive flip live beside the protocol reports that need them (they must keep reading
+  `Overall`'s existing `p_driver`/`p_front_passenger`/`p_rear_passenger` manual inputs, or Step 4's
+  documented API and `tests/test_manual_inputs.py` break). `dummy` and `side` are fields that helper
+  supplies — not columns of the core object.
+- A field that is *needed and absent* is a clean `Status.NA` naming it (the `require_*` convention),
+  never an `AttributeError` and never a silent default.
+
+### `role` — strict definitions (added 2026-08-04)
+
+`role` classifies what a node **is**; it does not restrict what `calculation()` may do.
+
+| role | definition | rating semantics |
+|---|---|---|
+| `RESULT` | measures something itself — reads channels or a manual input and rates it against limits. Usually a leaf. | on the protocol's scale; contributes to the parent's headline aggregation |
+| `AGGREGATE` | measures nothing itself; its rating is derived from its children's. | same scale as its `RESULT` children; **arbitrary logic is allowed** |
+| `MODIFIER` | an adjustment applied *on top of* the parent's aggregated score. | typically ≤ 0 points; **never** part of the headline aggregation |
+
+Answering the question this raises directly: **`AGGREGATE` is not limited to `min`/`max`/`mean`.**
+`calculation()` may do anything — `frontal_50kmh`'s `Overall` is a `nanmean` of two occupant scores,
+halved, clamped by an `np.interp`, then shifted by a modifier, and that stays exactly as it is. What is
+constrained is the *separate* `aggregation` field from Step 12 (`"min"`/`"sum"`/`"mean"`/`"max"`/
+`"first"`): it is an **optional declaration** that this node's rating equals one named function of its
+children's, and it exists only so `validate()` can check the point budget. Declare it when one rule
+really covers all children; leave it unset when the logic is richer — an unset `aggregation` simply
+skips that check, and CLAUDE.md already forbids writing something untrue there.
+
+What `role` buys, and therefore what it must get right:
+
+1. `modifiers_sum()` sums exactly the `MODIFIER` children — today those lists are hand-written.
+2. `min_of_children()` / `sum_of_children()` consider `RESULT` + `AGGREGATE` children and **exclude**
+   `MODIFIER`s. This is what finally expresses the "min over results **plus** sum over modifiers" box
+   that CLAUDE.md records as inexpressible until this step.
+3. `validate()`'s `max_rating` check compares the parent's budget against its non-modifier children
+   only (a modifier can lower a score, never raise the budget).
+4. Step 11's `Page.select(...)` filters by role.
+
+Rules of thumb for classifying: a node whose rating can only *reduce* its parent's score and is added
+after the aggregation is a `MODIFIER`, even when it is measured (`DisplacementSteeringColumn`) rather
+than judged (`Submarining`). A capping leaf that can return `-inf` is still a `RESULT`. If a real
+"measured, displayed, never rated" criterion turns up during Steps 8–9, raise a fourth role (`INFO`)
+with the maintainer instead of inventing one here — do not add it speculatively.
+
 **Out of scope:** migrating reports (Steps 8–9). Framework must coexist with the old manual style during the transition.
 
 **Acceptance criteria:**
 - [ ] Unit tests for the framework: declaration order preserved; children auto-calculated; `add_child` works; NaN propagation verified explicitly.
 - [ ] mypy resolves `SomeCriterion.child.grandchild.rating` to `float`.
+- [ ] **A criterion tree with no occupant anywhere in it can be built, calculated and validated** —
+      cover it with a test that uses no position at all (a barrier/vehicle-level criterion and a
+      correlation-style one constructed with channels).
+- [ ] A second `at=` source besides seating exists, or the protocol is demonstrated to admit one
+      without changing `criterion.py`.
+- [ ] `role` is documented per value with the three consumers above, and `modifiers_sum()` /
+      `sum_of_children()` are tested against a node that mixes `RESULT` and `MODIFIER` children.
 - [ ] Old-style reports still work and golden tests pass (framework is additive so far).
 - [ ] `print_results()` now emits protocol order, not alphabetical — this changes *output text*; if a golden file captures ordering, regenerate deliberately.
 

@@ -25,8 +25,8 @@ reviewed; a row only reaches ☑/⚠ once the maintainer has approved and the co
 | 4 | Manual inputs as a declared concept (P11) | ⚠ done with deviations | `refactor/step-4-manual-inputs` |
 | 5 | Limit scales: helpers + equivalence proof (P3a) | ✖ **rejected** — reviewed 2026-08-02, stashed | see plan §Step 5 (withdrawn) |
 | 6 | `PeakCriterion` + migrate leaves (P4) | ☐ todo | *(P3b removed with Step 5)* |
-| 7 | `sub()` + `Ctx` framework (P1 + P2) | ☐ todo | |
-| 8 | Migrate `frontal_50kmh` (pilot) | ☐ todo | |
+| 7 | `sub()` + `Ctx` framework (P1 + P2) | ⏳ awaiting review | uncommitted, `refactor/step-4-manual-inputs` |
+| 8 | Migrate `frontal_50kmh` (pilot) | ⏳ awaiting review | uncommitted, `refactor/step-4-manual-inputs` |
 | 9 | Migrate remaining reports | ☐ todo | |
 | 10 | Shared criteria library (P9) | ☐ todo | |
 | 11 | Pages select from the tree (P6) | ☐ todo | |
@@ -1803,3 +1803,476 @@ Nothing else changed: a key-by-key diff of the regenerated files against the old
 **Note for review:** `tests/golden/euro_ncap_frontal_50kmh.json` (like `pyisomme/unit.py` and
 `tests/test_unit.py`) shows up **staged** rather than unstaged in `git status`. Nothing in this session ran
 `git add`; use `git diff HEAD` to see the whole change.
+
+## 2026-08-04 — Step 7 plan revision (no code): `Ctx` generalised, `role` defined
+
+Planning only — nothing under `pyisomme/` was touched. Two corrections to Step 7, both raised by the
+maintainer while reviewing the handover, both now written into the plan's Step 7 section:
+
+1. **`Ctx` must not be an occupant object.** The plan (and the sketch) had it carry `position`,
+   `dummy`, `side`. That builds the occupant crash test into the framework, and pyisomme's reports are
+   not all occupant tests. Measured in the repo: under `euro_ncap/` + `iihs/`, **144 criteria take a
+   position `p` and 11 take none** (`DoorOpeningDuringImpact`, the MPDB compatibility modifiers reading
+   the literal `M?MBAR0OLC??VEX?`, the structural measurements), and
+   `Correlation.Criterion_Curve_Correlation` takes neither — it is constructed with two `Channel`s. The
+   current hand-wired code already distinguishes these; a mandatory `position` would have been a
+   *regression*. Revised: the core carries `report`, `isomme` and an immutable mapping of
+   **code-template fields** (`ctx.code("?{p}NECKUP00??MOY?")`); `at=` takes a context *source*
+   resolving `(parent_ctx, criterion) -> Ctx`, of which occupant seating is one implementation living
+   beside the reports that need it. Two acceptance criteria added: a tree with no occupant anywhere
+   must build/calculate/validate, and a second `at=` source besides seating must exist.
+2. **`role` needed strict definitions.** Added a table for `RESULT`/`AGGREGATE`/`MODIFIER` with their
+   rating semantics, the three consumers that make the classification load-bearing (`modifiers_sum()`;
+   `min_of_children()`/`sum_of_children()` excluding modifiers — the "min over results plus sum over
+   modifiers" box CLAUDE.md records as inexpressible until this step; `validate()`'s budget check and
+   Step 11's `Page.select`), and rules of thumb. Answering the question directly: **`AGGREGATE` is not
+   limited to `min`/`max`/`mean`** — `calculation()` may do anything, and `frontal_50kmh`'s `Overall`
+   (nanmean, halved, interp-clamped, plus a modifier) stays as it is. The *constrained* field is Step
+   12's separate `aggregation` declaration, which is optional and exists only for the budget check.
+   A fourth `INFO` role is explicitly **not** added on spec; raise it if a real case appears in Steps 8-9.
+
+Handover artefacts for the next session (both temporary, delete when Step 7 lands):
+[docs/log/20260803_Step-7-handover.md](20260803_Step-7-handover.md) and
+[docs/log/20260803_Step-7-example.py](20260803_Step-7-example.py) — the latter is a non-executable
+sketch of the target style on real `frontal_50kmh` criteria, ending in the six design questions
+(D-1 … D-6) the implementing session must settle first. `docs/` is excluded from ruff and outside
+mypy's scope, so neither file affects the gates.
+
+## 2026-08-04 — Euro NCAP AOP v9.3 audit of the four main load cases (not a plan step)
+
+Maintainer-requested review of
+[references/Euro-NCAP/euro-ncap-assessment-protocol-aop-v93.pdf](../../references/Euro-NCAP/euro-ncap-assessment-protocol-aop-v93.pdf)
+(§2–§5 and Appendix I) against `frontal_50kmh.py`, `frontal_mpdb.py`, `side_barrier.py` and
+`side_pole.py`, then the fixes and extensions the maintainer signed off on. **Outside the step
+sequence** — it touches criterion *definitions*, not the architecture, so Step 7 is unaffected except
+that its `Ctx` work now has more modifier criteria per occupant to carry.
+
+### Verified correct against the PDF (no change)
+
+Every limit table matched, digit for digit, including the interpolated intermediate bands: §4.1.1
+head (500/700/700, 72/80/80 with the thirds at 566.667/633.333 and 74.667/77.333), §4.1.2 neck with
+capping **driver-only** (the front/rear copies correctly omit `Limit_C`), §4.1.3 chest on the 2023
+value of 34.0 mm, §4.1.4 femur 2.60/6.20, the whole of §3.1.2–§3.1.5, §3.1.6.2's time-dependent
+passenger shear/tension curves, the Appendix I femur cumulative-exceedance curves
+(9.07@0 ms → 7.56@10 ms with thirds at 5.557/5.053 and 7.313/6.307), and §5.1.2's **50 mm MDB /
+55 mm pole** capping split, which `side_barrier` already implemented by overriding only the capping row.
+
+### Fixed
+
+| # | Where | § | Change |
+|---|-------|---|--------|
+| 1 | `frontal_50kmh` rear passenger head | §4.1.1.3 | Branch was **inverted**: hard contact scored the 3 ms exceedance alone and *no* contact scored HIC15 + 3 ms. Swapped. The absent 80 g auto-detect is correct here — §4.1.1.3 is high-speed-film only — and is now documented on the input. |
+| 2 | `frontal_mpdb` `Overall` | §3.4, §3.3 | The 16-point sum was never halved. Now `interp → /2 → modifiers → clamp ≥ 0`, so the compatibility penalty lands on the 8-point test score it is defined against. |
+| 3 | `frontal_50kmh` rear passenger neck | §4.1.2 | `np.min([1, rating])` **clipped** the shared 4-point scale, flattening Good/Marginal/Weak onto 1.0. Replaced with `rating * max_rating / 4`, and the budgets (2/1/1) are now declared as `max_rating` with a `validate_ignore` reason. |
+| 4 | `side_pole` head | §5.1.1.2 | Scored the 3 ms exceedance; the pole table asks for **peak** resultant acceleration (the barrier table, §5.1.1.1, is the one that asks for 3 ms). New `Criterion_Head_Peak_Acceleration` reading `?pHEAD??00??ACRA`. Since peak ≥ a3ms, the old code under-capped. |
+| 5 | `frontal_50kmh` `Overall` | §4.3 | Averaged **all three** occupants. §4.3 averages driver and rear passenger; the front passenger enters only through the 90 % check, which then takes each front-row region from the worse of the two. New input `front_passenger_meets_90_percent` (default `True`) selects between the two. |
+| 6 | `frontal_50kmh` chest VC | — | `self.value` took `np.min` of a curve whose loading peak is **positive** (`vc = v_t * c_t`, both factors carry the deflection's sign), so it reported the unloading trough. Now abs-argmax, matching `calculate_vc` and every side-impact VC site. Ratings were always correct — they scan the whole curve — only the reported number was wrong. |
+
+### Extended (all new modifiers default to no penalty, so no result moved)
+
+- **`frontal_50kmh`** — added the rear passenger's *Unstable Contact on the Airbag* (§4.2.1 says
+  "Driver and Rear Passenger"; only the driver had it). **Removed** the dead
+  `Criterion_ExceedingForwardExcursionLine` from the driver and front passenger: `calculation()` was
+  `self.rating = 0` while declaring three manual inputs, and §4.2.1 scopes the modifier to the rear
+  passenger, where the real logic already lives. That answers open question **Q4 / finding A15**.
+- **`frontal_mpdb`** — §3.2.1 lists ten driver modifiers of which three existed. Added *Unstable
+  Contact on the Airbag*, *Hazardous* and *Incorrect Airbag Deployment*, *Displacement of the Steering
+  Column* (all §3.2.1.1, subclassed from the `frontal_50kmh` originals purely to override `source`),
+  *Steering Wheel Contact*, *Displacement of the A Pillar* (−2, §3.2.1.2), *Integrity of the Passenger
+  Compartment* (−1), *Variable Contact* and *Concentrated Loading* (−1 per leg, §3.2.1.4), *Upward
+  Displacement of the Worst Performing Pedal* (§3.2.1.5), *Footwell Rupture* and *Pedal Blocking*
+  (§3.2.1.6). Per §3.2.2 the passenger got the three airbag modifiers and the two knee modifiers, and
+  deliberately **not** the steering-column, A-pillar, compartment-integrity or submarining ones.
+- **`side_pole` / `side_barrier`** — added *Incorrect Airbag Deployment* (§5.2.4) and *Door Opening
+  during the Impact* (§5.2.5) to both, and the pole-only *Side Head Protection Device* (§5.2.3, −2
+  front / −2 rear). Both `Overall`s now clamp at ≥ 0 after modifiers.
+- **Definition metadata** — `max_rating` / `aggregation` / `source` across all four modules; the two
+  `source = "§TODO …"` placeholders resolved to `§4` and `§4.1.1`. Classes shared *across* protocols
+  (`Criterion_HIC_15`, `Criterion_ShoulderBeltLoad`, `Criterion_Submarining`, `Criterion_Chest_VC`,
+  `Criterion_DoorOpeningDuringImpact`) deliberately carry **no** `source` and inherit it from their
+  position in each tree; where a shared class needed a different section in MPDB it was subclassed
+  with one line. `aggregation` is declared only where every child has a budget (the occupants' `sum`,
+  and the rear passenger's neck) — regions with modifier children leave it unset, as CLAUDE.md requires.
+- `side_pole`/`side_barrier` `criterion_head_a3ms` was **renamed** `criterion_head_acceleration` so the
+  attribute is honest in both (peak in the pole, 3 ms in the barrier) and the pages `side_barrier`
+  inherits from `side_pole` keep working without an override.
+
+### Verified
+
+- `ruff check pyisomme/report/euro_ncap/` → clean; `mypy` → **Success, 60 source files**.
+  (`ruff check pyisomme/` reports **24 pre-existing** errors in `channel.py`, `info.py`, `limit.py`,
+  `providers.py`, `unit.py` and `calculate/tibia_index.py` — untouched here, present on `HEAD`.)
+- `tests.test_validate` → **OK, 28 tests**, `validate.json` unchanged: every new `max_rating` and
+  `aggregation` is self-consistent, and no new warning appeared.
+- `tests.test_golden` before re-baselining reported **13 regressions, every one intended**: six
+  "criterion disappeared" for the two removed excursion criteria, four `chest_vc.value` sign changes
+  (e.g. `-0.1029 → 0.1386`), `Overall.rating 6.6298 → 6.7934` for `AK3T02FO` (arithmetically exactly
+  `mean(13.5869, 12.9322)/2 → 13.5869/2`, i.e. the §4.3 fix), and the `criterion_head_a3ms` rename in
+  `side_barrier`. Tolerated as improvements: 20 new criteria, plus
+  `criterion_rear_passenger/criterion_head/criterion_hic_15.status: PENDING → NA` in both frontal
+  fixtures — direct evidence that fix #1 now reaches HIC15 where it previously never did.
+- Re-baselined deliberately: `tests.test_report_structure --regen`, `tests.test_describe --regen`,
+  `tests.golden_regen`. The structure diff was read back criterion by criterion: **no `limits` block
+  changed anywhere** — the only definition edits are added/removed criteria and the one rename.
+- After the re-baseline, `... -m unittest tests.test_golden tests.test_report_structure
+  tests.test_validate tests.test_describe tests.test_manual_inputs tests.test_report_modules`
+  → **OK, 93 tests** (1 skipped), 393 s. The `Correlation` `ValueError: zero-size array` traceback in
+  that output is pre-existing and *logged*, not a failure — `Criterion.calculate` turns it into
+  `Status.ERROR`; it appears identically on `HEAD`.
+
+### Not verified by the fixtures — read before trusting
+
+`Overall` is `nan` in all three MPDB fixtures (the driver is `nan` in every one) and the rear
+passenger's neck is `nan` in both frontal fixtures, so **fixes #2 and #3 are not exercised by any
+golden**. Both were checked directly instead:
+
+- MPDB perfect 4/4/4/4 on both occupants → `8.0`; with −8 compatibility → `0.0`; with −2 compatibility
+  and −1 door → `5.0`.
+- Rear passenger neck Fx shear at 1.00 / 1.50 / 1.95 / 2.50 kN → `1.0000 / 0.6002 / 0.0000 / 0.0000`
+  against a linear expectation of `1.0 / 0.6 / 0.0 / 0.0` (the 0.0002 is the pre-existing piecewise
+  Good/Marginal/Weak/Poor band structure, identical to the driver's).
+
+A regression test for both belongs in `tests/`; not added here because it needs a fixture-free way to
+pin an occupant's region ratings, which Step 7's `Ctx` will make cheap.
+
+### Still open (not done — out of the agreed scope)
+
+- **§5.3 has no aggregation anywhere.** `EuroNCAP` (`euro_ncap.py`) only concatenates pages: side
+  barrier + pole are never summed and scaled to 12, far side is never capped at 4, and the four load
+  cases are never combined into the Adult Occupant Protection score.
+- **`side_pole` / `side_barrier` hard-code `p = 1`** with no manual input and no
+  `Driver position object 1` lookup, unlike both frontal reports — the struck-side occupant is not
+  always position 1.
+- **MPDB compatibility is one third implemented.** `Criterion_SD_Modifier` and `Criterion_BO_Modifier`
+  are `pass` stubs with their wiring commented out; §3.3.1 (barrier deformation SD, 50–150 mm) and
+  §3.3.3 (bottoming out, −2) are missing. Only OLC (§3.3.2, 25–40 g) exists.
+- **§3.1.3.1 asks for "max compression of all 4 ribs"** and §3.1.3.2 for "max compression (left or
+  right)"; the code reads the single aggregate channels `CHST0000…DSXC` / `ABDO0000…DSXC`. Whether
+  `get_channel` already synthesises the worst-of-four was not established.
+- **`calculate_damage` labels DAMAGE `rad/s²`** (it inherits the angular-acceleration unit); DAMAGE is
+  dimensionless. The limit rows in `frontal_mpdb` match that label, so the report is self-consistent —
+  the wrong unit is in `pyisomme/calculate/damage.py`, outside this review's scope.
+
+### 2026-08-04 (same session, follow-up) — §5.3 aggregation, `p` as an input, TODO markers
+
+Four maintainer follow-ups on the audit above.
+
+**1. The struck-side position is a manual input.** `EuroNCAP_Side_Pole` and `EuroNCAP_Side_Barrier`
+replaced `p: int = 1` with `p: Manual[int, manual(1, source="test report", …)]`, derived from the
+`Driver position object 1` test-info field exactly as the frontal reports do, plus the same interim
+F15 `sync_position()` / `rebuild_child()` pair driven by a new `positioned_children` tuple. Verified:
+setting `overall.p = 3` and calling `calculate()` moves the head limits from `?1HICR0015??00RX` to
+`?3HICR0015??00RX` in both reports. `side_barrier` writes its own `sync_position` rather than aliasing
+the pole's — mypy rejects an unbound method borrowed across unrelated classes
+(`Invalid self argument "Overall"`).
+
+**2. §5.3 aggregation now exists** ([euro_ncap.py](../../pyisomme/report/euro_ncap/euro_ncap.py)),
+with `MetaReport` grown to support it:
+
+- `MetaReport` gained `max_rating`, a `ratings` breakdown dict, a `sub_rating(report)` helper (the
+  sub-report's `Overall`, averaged if a load case holds several tests) and a `print_results` that
+  prints the breakdown and the total. `calculation()` keeps its no-op default and is now documented as
+  the hook — not every meta-report has a scheme tying its load cases together.
+- `EuroNCAP.calculation()` implements §5.3: barrier + pole (16 each, after modifiers) are summed and
+  `np.interp`-scaled to 12 with clamping at both ends, far side is limited to 4, and the two frontal
+  load cases contribute their 8 each. Total budget 32.
+- **`nan` propagates on purpose** — `np.sum`, not `np.nansum`. A load case with no data must read as
+  unknown, not as a low score.
+- Checked by hand: a perfect run of all five sub-reports → `32.0`; halving the barrier and pushing far
+  side to 9 → `{8, 8, 9, 4}` = `29.0` (far side correctly clamped to 4); an `nan` MPDB → total `nan`.
+  `tests.test_report.TestReport.test_EuroNCAP` (opt-in slow) passes end to end — `validate(errors_only=True)`
+  clean, `calculate()`, `out/EuroNCAP.pptx` written — and prints the new breakdown.
+
+**3. Ruff.** `ruff check pyisomme/` is clean — the maintainer fixed the 24 core-module errors. **10
+errors remain under `tests/`** (`test_calculate.py` E701, `test_code.py`/`test_info.py` W293,
+`test_unit.py` W291, `test_info.py` F401), 9 of them `--fix`-able. Untouched here: those files are
+uncommitted work belonging to another thread.
+
+**4. `# TODO` markers for every open issue**, so none of them lives only in this log:
+
+| Marker | File | Issue |
+|---|---|---|
+| `TODO(protocol)` | `euro_ncap.py` | AOP is really out of 38 — whiplash (§6.3, 4 pts) and rescue (§7, 2 pts) are not modelled, so `rating` is deliberately not a percentage |
+| `TODO(protocol)` | `frontal_mpdb.py` | §3.3.1 barrier deformation SD and §3.3.3 bottoming out are missing; only OLC exists, so the penalty cannot reach the −8 cap |
+| `TODO(channel)` ×2 | `frontal_mpdb.py` | §3.1.3.1 "all 4 ribs" and §3.1.3.2 "left or right" read single aggregate channels |
+| `TODO(test)` | `frontal_mpdb.py` | the §3.4 halving is nan in every fixture |
+| `TODO(test)` | `frontal_50kmh.py` | the rear-passenger neck rescaling is nan in every fixture |
+| `TODO(unit)` | `calculate/damage.py` | DAMAGE is dimensionless but carries `rad/s²`; the MPDB limit rows match, so both must change together |
+| `TODO(input)` ×4 | `side_farside.py`, `side_farside_vtc.py`, `un/side_barrier_r95.py`, `un/side_pole_r135.py` | still pin `p = 1`; the pole/barrier pattern is the template |
+
+`side_farside*` and the two UN side reports were given the marker rather than the change: the far-side
+files carry another thread's uncommitted edits, and the UN reports are a different protocol family,
+outside this review.
+
+**5. `Criterion_UnstableAirbagSteeringWheelContact` → `Criterion_UnstableAirbagContact`** (raised in
+review: "rear passenger never has a steering wheel"). §4.2.1 scopes the modifier to "Driver **and
+Rear Passenger**", so extending it to the rear passenger was right, but the class had promoted a
+driver-only *example* — "detachment of the steering wheel from the column" — into its name. Renamed
+class, attribute and the manual input (`unstable_airbag_steering_wheel_contact` →
+`unstable_airbag_contact`) across `frontal_50kmh` and `frontal_mpdb`; the display name is now
+"Modifier for Unstable Airbag Contact" and the input doc carries §4.2.1's actual test (head CoG past
+the outside edge of the airbag) with the steering wheel demoted to the example it is. All three
+goldens re-baselined for the path rename; **93 tests OK**. The genuinely driver-specific criteria
+keep their names and their `is_driver` guards: `Criterion_DisplacementSteeringColumn` (§4.2.1),
+`Criterion_SteeringWheelContact` (§4.2.2, chest) and `steering_wheel_airbag_exists`.
+
+---
+
+## 2026-08-04 — Step 7: the `sub()` + `Ctx` framework (P1 + P2), framework only
+
+Implements the plan's Step 7. **No report is migrated** — the machinery is purely additive and
+coexists with the 13 hand-wired reports, which is what makes it verifiable before Step 8 depends on
+it. Written against `docs/log/20260803_Step-7-handover.md` and `…_Step-7-example.py`.
+
+### The five design decisions
+
+D-1, D-2, D-3 and D-5 were settled with the maintainer at the start of the session; D-4 and D-6 were
+already settled in the plan on 2026-08-04.
+
+| # | Decision | Taken |
+|---|---|---|
+| D-1 | Limits are rebuilt from a hook the framework calls at the start of `calculate()`, replacing the criterion's rows in **both** its own list and the report-level one | recommendation (a) |
+| D-2 | The framework always calculates declared children; a conditional stays in the *aggregation*, not in whether the child runs | recommendation |
+| D-3 | `parent` link added (`Criterion.parent`, `ancestors()`, `find_input_owner()`); existing back-references **not** rewritten — that is Step 9/10 and needs Q5 | recommendation |
+| D-4 | `Ctx` carries `report`, `isomme` and a mapping of code-template fields, nothing occupant-specific; seating is a `CtxSource` living in a shared `occupant.py` | plan |
+| D-5 | Only *framework-owned* children (declared + `add_child`) are auto-calculated; a not-yet-migrated `calculation()` keeps calculating its own, so nothing runs twice | see below |
+| D-6 | `Role` = RESULT / AGGREGATE / MODIFIER, no speculative `INFO` | plan |
+
+Two things the example file did not anticipate, both confirmed with the maintainer before coding:
+
+- **The hook cannot be called `limits()`** — `Criterion.limits` is already the `Limits` object every
+  `calculation()` reads (`self.limits.get_limit_min_rating(...)`); the example's own `HIC15` sketch
+  used both spellings for the same name. It is **`define_limits() -> list[Limit]`**.
+- **A `prepare()` hook was needed.** `calculate()` runs the children *before* `calculation()`, but
+  Step 8's `derive_positions()` (the right-hand-drive flip filling `p_front_passenger` /
+  `p_rear_passenger`) has to run *before* the children, because that is when a seat context source
+  reads those inputs. `prepare()` is a documented no-op hook at the top of `calculate()`. This is an
+  addition beyond the plan's listed scope — small, but it is a deviation, and it is what lets Step 8
+  delete `sync_positions()` without moving the derivation back into `__init__` (F15).
+
+### What was added
+
+**`pyisomme/report/ctx.py` (new).** `Ctx` — a frozen dataclass of `report`, `isomme` and an immutable
+`fields` mapping — plus `at(**fields)`, `field(name)`, `code(template)`, `codes(*templates)`; the
+`CtxSource` protocol; and `where(**fields)`, the literal-field source. `Ctx` is deliberately **not**
+an occupant object: nothing in it mentions a position, a dummy or a side.
+
+- `code("?{p}NECKUP00??MOY?")` → `"?1NECKUP00??MOY?"`. A template with no placeholder passes through
+  untouched (the vehicle-level case). A placeholder with no field raises `MissingData` naming the
+  field, i.e. a clean `Status.NA` — never an `AttributeError`, never a silent default.
+- The result is length-checked as an fnmatch *pattern*, so `?` wildcards and `[…]` character classes
+  survive and count as one character each. That check reuses `check_code_pattern`'s length logic,
+  which moved to `pyisomme/code.py` as the public `pattern_length()` alongside a new `CODE_LENGTH`
+  constant — one source of truth, no behaviour change (`check_code_pattern` now imports both).
+
+**`pyisomme/report/occupant.py` (new).** `Seat`, `SeatSource` and `seat(which, *, field="p")` — the
+occupant layer, explicitly *not* part of the framework. One shared module rather than a copy per
+protocol package, because `euro_ncap`, `un`, `iihs` and `us_ncap` seat dummies identically today.
+`seat(Seat.DRIVER)` resolves by walking up the tree for the **nearest ancestor declaring the manual
+input `p_driver`** and reading it — so it is not a second source of truth, and Step 4's public API
+(`report.overall(v1).p_driver = 3`, `get_inputs()`/`set_inputs()`) is untouched. No ancestor declares
+it → `Status.NA` naming the input. An occupant whose position is fixed by the protocol rather than
+chosen by the user (Far Side's `p=1`) uses `at=where(p=1)` and has no manual input at all.
+
+**`pyisomme/report/criterion.py`.**
+
+- `Role` (+ `SCORING_ROLES`) with the three consumers documented per value, and `Criterion.role`
+  defaulting to `RESULT`. A class may declare its own role; `sub(..., role=…)` overrides it for one
+  placement, and `sub(..., role=None)` (the default) leaves the class's declaration alone.
+- `sub(cls, *, name=…, at=…, role=…)`, a `Generic[C]` descriptor with two `__get__` overloads.
+  `__set_name__` records module-monotone declaration order; **a subclass overriding an inherited
+  child keeps that child's place**, so refining one region does not reorder the tree.
+- Eager construction in `Criterion.__init__` (G8): the whole tree exists and is mutable before
+  `calculate()`, which is when manual inputs are set.
+- `get_children()` no longer walks `dir()` (F6, A11, A12): framework-owned children first (declared,
+  in declaration order; then `add_child`, in insertion order), then not-yet-migrated ones from
+  `vars(self)` **in the order `__init__` assigned them**, then a `dir()`-of-the-class safety net that
+  finds nothing in any report today. `get_subcriterion()`/`get_subcriteria()` are now three lines over
+  `walk()`. Neither has any caller outside `criterion.py`.
+- `add_child(name, criterion)` — the escape hatch for a data-dependent tree (correlation, F6/A12).
+  Added children are calculated like declared ones.
+- `ctx` property, resolved on demand and never cached: the root builds a bare `Ctx`, every other node
+  inherits its parent's and applies its own `at=`. `Criterion.code(template)` is the short spelling.
+  `parent`, `ancestors()`, `find_input_owner(name)`.
+- `calculate()` is now `prepare()` → `apply_limits()` → children in protocol order → `calculation()`.
+- `define_limits()` / `apply_limits()`: `apply_limits()` is a **no-op unless the class overrides
+  `define_limits`**, which is what lets the 12 unmigrated reports keep building rows in `__init__`.
+  When it does apply, it drops the criterion's previous rows from the report-level list before
+  extending it, so recalculating cannot duplicate limit bars in the plots.
+- Aggregation helpers, all NaN-propagating (G9): `children_by_role()`, `ratings_of_children()`,
+  `min_of_children()`, `max_of_children()`, `sum_of_children()`, `mean_of_children()`,
+  `modifiers_sum()`. They default to the scoring roles (`RESULT` + `AGGREGATE`) and exclude
+  `MODIFIER`, which is what finally expresses the "min over results **plus** sum over modifiers" box.
+  `mean_of_children(skip_missing="<reason>")` is the only NaN-tolerant one; when it actually drops a
+  child it records the reason in `Criterion.skip_missing` for Step 13 to render. `sum` over no
+  children is `0.0` (so `+= self.modifiers_sum()` is always safe); `min`/`max`/`mean` over none is
+  `nan` with a warning, not a `ValueError`.
+
+**`tests/test_criterion_tree.py` (new, 43 tests, no fixtures, ~0.04 s).** Declaration order (including
+the three wiring styles in one node and subclass overrides); auto-calculation and the *absence* of
+double-calculation for legacy children; `prepare()` before children before `calculation()`; a failing
+child not stopping its siblings; NaN through every helper and the `skip_missing` exception; modifiers
+in and out of the headline; lazy context, a position set after construction (F15), `where()` as the
+second source, a missing field and a missing seat input both as `Status.NA`; **a vehicle-level tree
+and a correlation-style tree with no occupant anywhere**, built, calculated and validated; and
+`define_limits()` rebuilding from the resolved context without duplicating rows.
+
+### Verified
+
+| Command | Result |
+|---|---|
+| `-m unittest discover -s tests` | **294 tests** (251 + 43 new), 2 errors — both pre-existing and unrelated: `test_isomme.test_read` wants the untracked `data/nhtsa/11391.tar`, `test_plotting`'s `KeyError` is the maintainer's uncommitted test |
+| `-m unittest tests.test_golden` | 17 OK — **no golden result moved** |
+| `-m unittest tests.test_report_structure tests.test_validate tests.test_manual_inputs tests.test_report_modules` | 72 OK, 1 skipped |
+| `PYISOMME_SLOW=1 … test_IIHS_Frontal_Small_Overlap`, `… test_UN_Frontal_50kmh_R137` | both OK (PPTX exported), run one at a time per D8/D9 |
+| `-m ruff check .` | 10 findings, **all pre-existing** in `tests/` (W291/W293/E701/F401) — none in the new code |
+| `-m mypy` | clean, 62 files |
+| mypy on a scratch tree | `self.driver.head.hic15` → `HIC15`, `.rating` → `builtins.float`; `hic_15` → `has no attribute … maybe "hic15"?`; `hard_contct = False` → `variable has type "Undeclared"` |
+
+### Snapshots
+
+`tests/golden/describe/*.md` re-baselined (`-m tests.test_describe --regen`) — **639 insertions, 639
+deletions, and both files are line-for-line identical as multisets**, i.e. pure reordering with no
+definition change. That is the expected consequence of `walk()` following declaration order: the
+50 kmh dump now reads Overall → Driver → Head → HIC 15 → a3ms → the four modifiers → Neck → My
+extension → Fz tension → Fx shear → … instead of alphabetically, and Door Opening moved from first to
+last. The golden JSONs and `report_structure.json` are keyed by path and dumped with `sort_keys=True`,
+so they did not move — Step 1 planned for exactly this.
+
+`print_results()` now emits protocol order too, as the acceptance criterion requires. No golden
+captures it.
+
+### Deviations and what is still open
+
+- **`prepare()` is beyond the plan's listed scope** (see above). Reject it and `derive_positions()`
+  has to move back into `__init__` or into the seat source, both worse.
+- **`define_limits`, not `limits`** — the example file's name collides with `Criterion.limits`.
+- `role` is not yet shown by `describe()` or checked by `validate()`. Deliberate: adding it would
+  churn the describe goldens a second time in one step, and the `max_rating`-vs-non-modifier check is
+  Step 12's wording, already implemented against `get_children()`. Worth a follow-up once Steps 8–9
+  have actually classified nodes — today every criterion is `RESULT` by default, so the check would be
+  vacuous.
+- `sync_positions()` / `rebuild_child()` / the ~180 `__init__(self, report, isomme, p)` blocks / the
+  ~250 explicit `child.calculate()` calls are all **still there**, by design: Step 7 migrates nothing.
+  Step 8 (pilot: `frontal_50kmh`) deletes them.
+- `docs/log/20260803_Step-7-handover.md` says to delete itself when Step 7 lands, and the example file
+  when Step 7 or 8 lands. **Both left in place** — they are untracked, so deleting them is
+  unrecoverable, and the example's section 3 is the Step 8 blueprint. Maintainer's call.
+
+---
+
+## 2026-08-04 — Step 8: `frontal_50kmh` migrated to the declarative tree (pilot)
+
+The plan numbers Step 6 next, but with Step 7 already landed the maintainer chose **8 before 6**: a
+`PeakCriterion` written today wants to be `Ctx`-native, and a `Ctx`-native leaf only resolves once its
+*parents* are wired with `sub(..., at=seat(...))`. Doing 6 first would have needed a transition shim
+inside the new base class and rewritten every migrated leaf again in Step 8. Step 6 now shrinks the leaf
+*bodies* against a tree that already has context.
+
+**Leaf `calculation()` bodies are deliberately unchanged** — this step is the wiring only.
+
+### Attribute names kept
+
+`criterion_driver.criterion_head.criterion_hic_15`, not `driver.head.hic15`. The plan's acceptance
+criterion is "golden test passes **unchanged**", and the golden JSONs, `report_structure.json`,
+`describe/*.md`, the manual-input paths (`get_inputs()`/`set_inputs()`) and all 30 page classes are
+keyed by exactly these names. Renaming is cosmetic, would have re-baselined four snapshots at once and
+would have hidden the one thing this step has to prove. It belongs with Step 10/11, which touch those
+paths anyway.
+
+### What changed in `pyisomme/report/euro_ncap/frontal_50kmh.py`
+
+| | before | after |
+|---|---|---|
+| criterion section | 1163 lines | **946** (−19 %) |
+| `def __init__(self, report, isomme, p: int)` | 43 | **1** (the shim below) |
+| `self.p` references | 216 | **0** |
+| explicit `child.calculate()` | 59 | **0** |
+| `f"?{self.p}…"` code patterns | 134 | **0** (now `self.ctx.code("?{p}…")`) |
+
+- **`Overall.sync_positions()` is gone**, and with it every `rebuild_child()` call in this report. The
+  right-hand-drive derivation moved to `prepare()`, which runs before the occupants calculate — which is
+  when their `seat()` context reads `p_driver`/`p_front_passenger`/`p_rear_passenger`. `__init__` calls
+  `prepare()` too, because the pages build their channel patterns from `p_driver` at construction.
+- Every limit block became a `define_limits()` returning the same hand-written rows, with
+  `self.ctx.codes("?{p}…")` in place of the f-strings. Thresholds, flags, colours and row order are
+  untouched.
+- Roles declared throughout: `AGGREGATE` on `Overall`, the three occupants and the eight body regions;
+  `MODIFIER` on the eleven modifier criteria; `RESULT` (the default) on the rated leaves. The
+  aggregations became `sum_of_children()` / `min_of_children()` / `modifiers_sum()` wherever they were
+  exactly that; the conditional ones (`Head`'s hard-contact branch, `Neck`'s airbag branch,
+  `Overall`'s §4.3 90 % rule) keep their explicit logic, which is what `role` is documented **not** to
+  restrict.
+
+### Two structural moves the migration forced
+
+1. **Eight shared leaves moved to module level** — `Criterion_HIC_15`, `Criterion_Head_a3ms`,
+   `Criterion_UnstableAirbagContact`, `Criterion_Chest_Deflection`, `Criterion_Chest_VC`,
+   `Criterion_ShoulderBeltLoad`, `Criterion_Femur_Axial_Force`, `Criterion_Submarining`. A `sub()` in a
+   class body can only name what is already bound, and the front and rear occupants reuse the driver's
+   leaves; no nested class can reach a sibling's. The old nested names are kept as **class-attribute
+   aliases** so the unmigrated reports' `Overall.Criterion_Driver.Criterion_Head.Criterion_HIC_15`
+   paths still resolve. Step 10's shared criteria library replaces both — the aliases carry a
+   `TODO(step-10)`.
+   *mypy rejects an alias in **type** position*, so the five sites that use one as a **base class**
+   (`side_barrier` ×2, `side_farside` ×2, `frontal_mpdb` ×1) now import the module-level class directly
+   — which is what CLAUDE.md already asks for. The constructor call sites still use the deep path and
+   still work.
+2. **`PositionedCriterion`, a transition shim.** The other reports construct this file's shared leaves
+   with `p=` and have not been migrated. The shim accepts the position and turns it into
+   `where(p=p)`, so one implementation serves both callers and the criterion body only ever reads
+   `self.ctx`. Ten classes use it. `TODO(step-9)`: delete with the `p=` call sites.
+
+### One framework amendment to Step 7
+
+`define_limits()` alone would have left the limit rows **empty for every definition-layer consumer**:
+`validate()`, `describe()` and `tests/test_report_structure.py` read a freshly *constructed* report and
+never calculate, and `apply_limits()` only ran inside `calculate()`. That would have silently switched
+off `validate()`'s limit checks for every migrated report.
+
+Fixed with `Criterion.build_limits()` — one walk applying `apply_limits()` over a finished tree, called
+once by `Report.__init__`. It cannot happen inside `Criterion.__init__`: construction is bottom-up, so a
+node's `_parent` is only set by its parent *after* its own subtree exists, and until then it has no
+context to resolve. `calculate()` still applies them per node, which is what re-resolves a changed
+position.
+
+### Verified
+
+| Command | Result |
+|---|---|
+| `-m unittest discover -s tests` | **294 tests**, 2 errors — the same two pre-existing ones (`test_isomme.test_read` wants the untracked `data/nhtsa/11391.tar`; `test_plotting`'s `KeyError` is the maintainer's uncommitted test) |
+| `-m unittest tests.test_golden` | 17 OK — **`euro_ncap_frontal_50kmh.json` matched unchanged**, no re-baseline. This is the pilot's whole point |
+| `-m unittest tests.test_report_structure` | OK — the definition layer of all 13 reports is byte-identical: same paths, names, classes and `Limit` rows |
+| `-m unittest tests.test_describe tests.test_validate` | OK — **no snapshot moved**, so no threshold and no `source` inheritance changed |
+| `-m unittest tests.test_manual_inputs` | 37 OK after updating the position assertions (below) |
+| `PYISOMME_SLOW=1 … test_UN_Frontal_50kmh_R137`, `… test_IIHS_Frontal_Small_Overlap` | OK, PPTX exported |
+| `-m ruff check .` | 10 findings, all pre-existing in `tests/` |
+| `-m mypy` | clean, 62 files |
+
+Hands-on, on an empty test: 172 limit rows at construction; `p_driver = 3` + `calculate()` moves the
+driver's HIC rows from `?1HICR0015??00RX` to `?3HICR0015??00RX`, flips the front passenger to `?1…`
+via the right-hand-drive rule, and leaves the report-level list at 172 rows — no duplicates, no stale
+rows, and nothing rebuilt.
+
+**`tests/test_manual_inputs.py`** — six assertions read `criterion.p`, the attribute this step deletes.
+Replaced with a `position(criterion)` helper reading `criterion.ctx.field("p")`, which is the same fact
+observed where it now lives. `test_mpdb_syncs_too` still asserts on `.p`: MPDB is unmigrated and still
+rebuilds. The `TestPositionSyncF15` method names still say "rebuild"; the class docstring now records
+that the behaviour is unchanged but the mechanism is gone for the migrated report.
+
+### Verdict on the style (the plan asks for one)
+
+**Worth rolling out.** −19 % on the criterion section is the smallest part of it: the four-places-to-wire-
+a-child problem (F1) is structurally gone, 134 hand-built code patterns became 134 templates resolved in
+one place, and the report no longer contains any machinery for "a position changed" — that is now one
+line of context inheritance. The two costs are real but bounded: the shared leaves had to move to module
+level (Step 10 was going to do that anyway) and the unmigrated reports need the `p=` shim until Step 9.
+
+### Still open
+
+- `role` is declared but not yet read by `describe()`/`validate()` — carried over from Step 7's entry;
+  now that one report has real roles, the `max_rating`-vs-non-modifier check has something to check.
+- The back-references (`self.report.criterion_overall[…].criterion_driver.steering_wheel_airbag_exists`)
+  are **unchanged** on purpose: rewriting them to `self.parent…` is Step 9/10 and needs Q5 answered.
+- `docs/log/20260803_Step-7-example.py` is now spent — its section 3 was the blueprint for this step.
+  Left in place (untracked, so deleting is unrecoverable); maintainer's call.

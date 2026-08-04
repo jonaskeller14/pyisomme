@@ -6,6 +6,7 @@ from pyisomme.report.report import Report
 from pyisomme.limit import Limit
 from pyisomme.calculate import calculate_olc
 from pyisomme.report.euro_ncap.frontal_50kmh import EuroNCAP_Frontal_50kmh
+from pyisomme.report.euro_ncap.frontal_50kmh import Criterion_UnstableAirbagContact
 from pyisomme.report.euro_ncap.frontal_50kmh import Overall as Overall_Frontal_50kmh
 from pyisomme.report.criterion import Criterion
 from pyisomme.report.manual import Manual, manual
@@ -216,7 +217,7 @@ class Overall(Criterion):
                                            self.criterion_DisplacementSteeringColumn.rating])
 
                 # §3.2.1.1 repeats §4.2.1 word for word; only the section differs.
-                class Criterion_UnstableAirbagContact(Overall_Frontal_50kmh.Criterion_Driver.Criterion_Head.Criterion_UnstableAirbagContact):
+                class Criterion_UnstableAirbagContact(Criterion_UnstableAirbagContact):  # noqa: F811 - shadows the import
                     source = "§3.2.1.1"
 
                 class Criterion_HazardousAirbagDeployment(Overall_Frontal_50kmh.Criterion_Driver.Criterion_Head.Criterion_HazardousAirbagDeployment):

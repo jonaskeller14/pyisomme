@@ -4,43 +4,18 @@ import re
 from typing import TYPE_CHECKING
 from collections.abc import Iterator
 
+from pyisomme.code import CODE_LENGTH, pattern_length
 from pyisomme.report.validate.issue import Issue, IssueSeverity
 
 if TYPE_CHECKING:
     from pyisomme.report.criterion import Criterion
 
 _INVALID_PATTERN_CHARS = re.compile(r"[^A-Za-z0-9?*]")
-_CODE_LENGTH = 16
 
 
 def _without_classes(pattern: str) -> str:
     """``pattern`` with every fnmatch character class removed."""
     return re.sub(r"\[!?\]?[^]]*\]", "", pattern)
-
-
-def _pattern_length(pattern: str) -> int | None:
-    """
-    How many characters a code must have to match ``pattern``.
-
-    ``None`` when ``*`` makes it unbounded — such a pattern is not wrong, it just
-    cannot be checked by length.
-    """
-    length = 0
-    index = 0
-    while index < len(pattern):
-        if pattern[index] == "*":
-            return None
-        if pattern[index] == "[":
-            close = pattern.find("]", index + 2)  # `[]...]` starts with a literal ]
-            if close == -1:  # an unmatched '[' is a literal one to fnmatch
-                index += 1
-                length += 1
-                continue
-            index = close + 1
-        else:
-            index += 1
-        length += 1
-    return length
 
 
 def check_code_pattern(path: str, criterion: Criterion) -> Iterator[Issue]:
@@ -67,8 +42,8 @@ def check_code_pattern(path: str, criterion: Criterion) -> Iterator[Issue]:
                             f"{label}: {pattern!r} contains {sorted(set(invalid))}, which no "
                             f"channel code can hold (letters, digits and '?' only).")
                 continue
-            length = _pattern_length(pattern)
-            if length is not None and length != _CODE_LENGTH:
+            length = pattern_length(pattern)
+            if length is not None and length != CODE_LENGTH:
                 yield Issue("code_pattern", IssueSeverity.ERROR, path,
                             f"{label}: {pattern!r} matches codes of {length} characters, "
-                            f"but a channel code is {_CODE_LENGTH}.")
+                            f"but a channel code is {CODE_LENGTH}.")

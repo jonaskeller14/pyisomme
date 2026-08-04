@@ -62,6 +62,7 @@ class Report(Generic[C]):
             # A concrete report's inner ``Criterion_Overall`` *is* the ``C`` it parameterises
             # ``Report`` with, but the language cannot express "this inner class is type[C]".
             self.criterion_overall[isomme] = cast(C, self.Criterion_Overall(self, isomme))
+            self.criterion_overall[isomme].build_limits()
 
         self.pages = [
             Page_Cover(self),

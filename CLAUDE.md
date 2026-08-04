@@ -170,9 +170,71 @@ The domain model is a three-level hierarchy, all re-exported from the top-level 
 Reports live under [pyisomme/report/](pyisomme/report/), one subpackage per protocol family: `euro_ncap/`, `un/`, `us_ncap/`, `iihs/`, `fmvss/`, `correlation/`. Key building blocks:
 
 - **`Report`** ([pyisomme/report/report.py](pyisomme/report/report.py)) — takes an `isomme_list`, builds a tree of criteria and a list of `Page`s. `.calculate()` evaluates all criteria; `.export_pptx(path, template)` renders slides via `python-pptx`. `MetaReport` composes several sub-reports (e.g. the top-level `EuroNCAP` bundles frontal/side load cases).
-- **`Criterion`** ([pyisomme/report/criterion.py](pyisomme/report/criterion.py)) — a nested, self-registering assessment unit. Subclasses implement `calculation()` (sets `.value`, `.rating`, `.color`, attaches `.channel` and `Limit`s). Criteria are discovered reflectively: any attribute that is a `Criterion` instance is treated as a subcriterion (see `get_subcriterion`/`get_subcriteria` and `print_results`).
+- **`Criterion`** ([pyisomme/report/criterion.py](pyisomme/report/criterion.py)) — a nested assessment unit. Subclasses implement `calculation()` (sets `.value`, `.rating`, `.color`, attaches `.channel` and `Limit`s). Children are declared with `sub()` (below); a not-yet-migrated criterion assigning them in `__init__` still works, and `get_children()` returns both, in **protocol order** — declared children in declaration order, then the ones `__init__` assigned, in the order it assigned them. Never alphabetical, and never `dir()`.
 - **`Page`** ([pyisomme/report/page/](pyisomme/report/page/)) — one slide; `construct(presentation)` draws it, often via the plotting helpers. One module per template, all re-exported from the package: import `from pyisomme.report.page import Page_Plot_nxn`, never from a module inside it. `Page_Content` is a titled slide with a footer; `Page_Figure` adds the "measure the content placeholder, remove it, render a figure into the freed area" boilerplate, so a figure page only implements `figure(figsize) -> Figure`.
 - **`Limit`/`Limits`** ([pyisomme/limits.py](pyisomme/limits.py)) — threshold curves/values matched to channels by code patterns; used both for rating criteria and for drawing limit bars in plots. Per-protocol limit definitions live in each subpackage's `limits.py`.
+
+### The criterion tree: `sub()`, `Ctx` and `Role`
+
+Step 7's framework, with `euro_ncap/frontal_50kmh.py` migrated to it in Step 8 as the reference. The
+other 12 reports are still hand-wired and keep working, so both styles are live; write new code in the
+declarative one and migrate the old in Step 9.
+
+```python
+class Head(Criterion):
+    name, max_rating, source = "Head", 4., "§4.1.1"
+    hard_contact: Manual[bool, manual(True, source="video", doc="…")]
+
+    hic15           = sub(HIC15)
+    a3ms            = sub(HeadA3ms)
+    steering_column = sub(DisplacementSteeringColumn, role=Role.MODIFIER)
+
+    def calculation(self) -> None:            # aggregation only — the children are done
+        self.rating = np.min([self.hic15.rating, self.a3ms.rating]) if self.hard_contact else 4.
+        self.rating += self.modifiers_sum()
+```
+
+- **`sub(cls, *, name=…, at=…, role=…)`** is the one place a child is wired. It is **eager** (G8): the
+  child is constructed with its parent, so the whole tree exists and is mutable before `calculate()`,
+  which is when users set manual inputs. `sub` is `Generic[C]` with `__get__` overloads, so
+  `self.driver.head.hic15.rating` resolves to `float` in mypy and in the IDE, and a typo in the chain
+  is a static error. Inner classes stay nested (G4) and must be **defined above** the `sub()` line.
+  `add_child(name, criterion)` is the escape hatch for a tree whose shape depends on the data.
+- **`calculate()` is `prepare()` → `apply_limits()` → children in order → `calculation()`.** Only
+  framework-owned children (declared + `add_child`) are calculated automatically, so an unmigrated
+  parent that calls `child.calculate()` itself does not run them twice. `prepare()` is the hook for
+  deriving inputs the *children's* context depends on — it runs before them; `calculation()` runs
+  after and is pure aggregation.
+- **`Ctx`** ([pyisomme/report/ctx.py](pyisomme/report/ctx.py)) replaces threading `p` through
+  constructors. It carries `report`, `isomme` and an immutable mapping of **code-template fields**, and
+  **nothing occupant-specific** — 11 criteria under `euro_ncap/` + `iihs/` have no position and the
+  correlation report is built from channels, so constructing or calculating a criterion must never
+  require an occupant. `self.code("?{p}NECKUP00??MOY?")` fills the template; a template with no
+  placeholder passes through, and a placeholder with no field is a clean `Status.NA` naming it. The
+  chain is resolved **lazily at the start of `calculate()`**, which is the real F15 fix.
+- **`at=` takes a `CtxSource`**, not a seat. `where(p=1)` is literal fields; `seat(Seat.DRIVER)`
+  ([pyisomme/report/occupant.py](pyisomme/report/occupant.py)) reads the nearest ancestor's `p_driver`
+  manual input, so it is not a second source of truth. Anything else a report needs — a barrier, a
+  trolley, a second test object — is another implementation and needs **no change to `criterion.py`**.
+- **`define_limits() -> list[Limit]`** replaces building rows in `__init__`: the framework calls it
+  when the context is known and swaps the criterion's rows in both its own list and the report-level
+  one, so a position set after construction moves the limits too. It is a no-op unless overridden.
+  Rows stay hand-written — the hook decides *when* they are built, never what is in them.
+  `Report.__init__` runs one `Criterion.build_limits()` pass over the finished tree, so `validate()`,
+  `describe()` and `tests/test_report_structure.py` still see the rows on a report nobody calculated.
+  It cannot happen in `Criterion.__init__`: construction is bottom-up, so a node has no parent — and
+  therefore no context — until its own subtree already exists.
+- **`Role`** says what a node *is*, and never restricts `calculation()`: `RESULT` measures and rates,
+  `AGGREGATE` derives its rating from its children (arbitrary logic allowed), `MODIFIER` is an
+  adjustment added on top of the aggregate, typically ≤ 0 points. The aggregation helpers
+  (`min_of_children`, `sum_of_children`, `max_of_children`, `mean_of_children`, `modifiers_sum`) take
+  `RESULT` + `AGGREGATE` and exclude `MODIFIER`. Do not confuse it with the separate `aggregation`
+  declaration above, which is the constrained one.
+- **All aggregation helpers propagate NaN (G9)** — `np.min`/`np.sum`/`np.mean`, never the `nan*`
+  variants. The one NaN-tolerant path is `mean_of_children(skip_missing="<reason>")`; the reason is
+  mandatory and is recorded on `Criterion.skip_missing` when it actually drops a child.
+
+[tests/test_criterion_tree.py](tests/test_criterion_tree.py) covers all of it and needs no fixtures.
 
 To add a new report/load case: create a module in the appropriate protocol subpackage; define its criterion tree as a module-level `class Overall(Criterion)`; declare `class X(Report[Overall])` with `Criterion_Overall = Overall` and its `name`/`title`/`protocols`; register the class in that subpackage's `__init__.py`; add it to the `REPORTS` list in [pyisomme/__main__.py](pyisomme/__main__.py) so it is reachable from the `report` CLI command; and add it to `REPORTS` in [tests/test_report_structure.py](tests/test_report_structure.py) (a coverage guard fails otherwise).
 
@@ -205,10 +267,13 @@ class Criterion_Submarining(Criterion):
   stored beside the ISO-MME container and replayed. `MetaReport` nests one level deeper, keyed by
   sub-report.
 - **Inputs are read in `calculation()`, never in `__init__`** (F15). The exception is the seating
-  position: children are *constructed* with `p=`, which is baked into their limits' code patterns, so
-  each `Overall` calls `sync_positions()` at the top of `calculation()` and uses
-  `Criterion.rebuild_child()` to rebuild an occupant subtree when its position changed. Step 7's lazy
-  `Ctx` replaces this.
+  position in the **not-yet-migrated** reports: their children are *constructed* with `p=`, which is
+  baked into their limits' code patterns, so each `Overall` calls `sync_positions()` at the top of
+  `calculation()` and uses `Criterion.rebuild_child()` to rebuild an occupant subtree when its
+  position changed. `frontal_50kmh` no longer does any of that — `Ctx` + `seat()` + `prepare()`
+  replaced it in Step 8, and it is the template for the rest; Step 9 deletes `sync_positions`,
+  `rebuild_child` and `frontal_50kmh`'s `PositionedCriterion` shim (which exists only so the
+  unmigrated reports can keep constructing its shared leaves with `p=`).
 
 [tests/test_manual_inputs.py](tests/test_manual_inputs.py) covers all of it and needs no fixture data.
 

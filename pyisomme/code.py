@@ -19,6 +19,8 @@ _CHANNEL_CODES_ROOT: ET.Element = ET.parse(
     Path(__file__).parent.joinpath("channel_codes.xml")
 ).getroot()
 
+CODE_LENGTH = 16
+
 _CODE_REGEX = re.compile(r"[a-zA-Z0-9?]{16}")
 
 _COMPONENTS: tuple[tuple[str, slice], ...] = (
@@ -71,6 +73,30 @@ def _codification() -> tuple[_ElementDefinition, ...]:
         )
         for element in _CHANNEL_CODES_ROOT.findall("Codification/Element")
     )
+
+
+def pattern_length(pattern: str) -> int | None:
+    """
+    How many characters a code must have to match 'pattern' (fnmatch pattern).
+    :param pattern: an fnmatch-style channel code pattern
+    :return: the code length the pattern requires, or None if unbounded
+    """
+    length = 0
+    index = 0
+    while index < len(pattern):
+        if pattern[index] == "*":
+            return None
+        if pattern[index] == "[":
+            close = pattern.find("]", index + 2)  # '[]...]' starts with a literal ]
+            if close == -1:  # an unmatched '[' is a literal one to fnmatch
+                index += 1
+                length += 1
+                continue
+            index = close + 1
+        else:
+            index += 1
+        length += 1
+    return length
 
 
 @lru_cache(maxsize=4096)

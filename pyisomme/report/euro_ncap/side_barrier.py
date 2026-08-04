@@ -5,7 +5,7 @@ from pyisomme.report.page import Page_Cover
 from pyisomme.report.report import Report
 from pyisomme.report.criterion import Criterion
 from pyisomme.report.manual import Manual, manual
-from pyisomme.report.euro_ncap.frontal_50kmh import Overall as Overall_Frontal_50kmh
+from pyisomme.report.euro_ncap.frontal_50kmh import Criterion_HIC_15, Criterion_Head_a3ms
 from pyisomme.report.euro_ncap.side_pole import EuroNCAP_Side_Pole
 from pyisomme.report.euro_ncap.side_pole import Overall as Overall_Side_Pole
 from pyisomme.report.euro_ncap.limits import Limit_G, Limit_P, Limit_C, Limit_M, Limit_A, Limit_W
@@ -105,10 +105,10 @@ class Overall(Criterion):
                 self.criterion_head_acceleration.rating,
             ])
 
-        class Criterion_HIC_15(Overall_Frontal_50kmh.Criterion_Driver.Criterion_Head.Criterion_HIC_15):
+        class Criterion_HIC_15(Criterion_HIC_15):  # noqa: F811 - the nested name deliberately shadows the import
             pass
 
-        class Criterion_Head_a3ms(Overall_Frontal_50kmh.Criterion_Driver.Criterion_Head.Criterion_Head_a3ms):
+        class Criterion_Head_a3ms(Criterion_Head_a3ms):  # noqa: F811
             pass
 
     class Criterion_Chest(Criterion):
