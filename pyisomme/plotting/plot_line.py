@@ -1,43 +1,30 @@
+# matplotlib 3.7.5 ships no stubs and pandas' typed signatures are narrower than its runtime
+# behaviour, so Pylance flags calls that are correct here — DataFrame.truncate rejects the float
+# index labels this module truncates on, and Axes.plot rejects the tuple linestyles matplotlib
+# documents. None of that is a real defect, so the two rule families are switched off for this file.
+# pyright: reportArgumentType=false, reportAttributeAccessIssue=false
 from __future__ import annotations
 
 from pyisomme.limit import Limit
 from pyisomme.limits import Limits, limit_list_unique, limit_list_sort
-from pyisomme.channel import Channel
 from pyisomme.code import Code, combine_codes
-from pyisomme.isomme import Isomme
+from pyisomme.plotting.plot import Plot
 from pyisomme.unit import Unit
 
 import copy
+from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
-import matplotlib.colors as mcolors
 from matplotlib.axes import Axes
 import numpy as np
 import logging
-from typing import cast
+from typing import cast, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from pyisomme.isomme import Isomme
+    from pyisomme.channel import Channel
 
 
 logger = logging.getLogger(__name__)
-
-
-class Plot:
-    colors: list[str] = list(mcolors.TABLEAU_COLORS.values())
-    linestyles: list[str | tuple] = ["-", "--", "-.", ":", (0, (10, 3)), (0, (5, 1)), ]
-    isomme_list: list
-    figsize: tuple[float, float]
-    fig: plt.Figure
-    nrows: int = 1
-    ncols: int = 1
-
-    def __init__(self, figsize: tuple[float, float], nrows: int | None, ncols: int | None):
-        self.figsize = figsize
-        if nrows is not None:
-            self.nrows = nrows
-        if ncols is not None:
-            self.ncols = ncols
-
-    def show(self, *args, **kwargs) -> Plot:
-        plt.show(*args, **kwargs)
-        return self
 
 
 class Plot_Line(Plot):
@@ -89,8 +76,9 @@ class Plot_Line(Plot):
 
         self.fig = self.plot()
 
-    def plot(self) -> plt.Figure:
+    def plot(self) -> Figure:
         fig, subplot_axs = plt.subplots(self.nrows, self.ncols, figsize=self.figsize, layout="constrained")
+        fig = cast(Figure, fig)  # matplotlib is unstubbed: inferred as FigureBase | Unknown
         if (self.nrows * self.ncols) == 1:
             axs = [subplot_axs, ]
         else:
@@ -277,163 +265,3 @@ class Plot_Line(Plot):
                 logger.warning(f"Label of {limit} not visible.")
                 continue
             ax.text(x0, y0, limit.name, color="black", bbox={"facecolor": limit.color, "edgecolor": "black", "linewidth": 1}, verticalalignment="top" if limit.upper else "bottom" if limit.lower else "center")
-
-
-class Plot_Table(Plot):
-    cell_texts: list[np.ndarray | list[list]]
-    cell_colors: list[np.ndarray | list[list]] | None = None
-    row_labels: list[np.ndarray | list]
-    col_labels: list[np.ndarray | list]
-    col_labels_colors: list[np.ndarray | list] | None = None
-    col_labels_fontweight: str = "bold"
-
-    def __init__(self,
-                 cell_texts: list[np.ndarray | list[list]],
-                 row_labels: list[np.ndarray | list],
-                 col_labels: list[np.ndarray | list],
-                 cell_colors: list[np.ndarray | list[list]] | None = None,
-                 col_labels_colors: list[np.ndarray | list] | None = None,
-                 col_labels_fontweight: str | None = None,
-                 nrows: int | None = None,
-                 ncols: int | None = None,
-                 figsize: tuple[float, float] = (10, 10)):
-        super().__init__(figsize=figsize, nrows=nrows, ncols=ncols)
-
-        self.cell_texts = cell_texts
-        self.row_labels = row_labels
-        self.col_labels = col_labels
-
-        if cell_colors is not None:
-            self.cell_colors = cell_colors
-        if col_labels_colors is not None:
-            self.col_labels_colors = col_labels_colors
-        if col_labels_fontweight is not None:
-            self.col_labels_fontweight = col_labels_fontweight
-
-        if self.cell_colors is None:
-            self.cell_colors = [[[None for _ in row] for row in cell_text] for cell_text in self.cell_texts]
-
-        self.fig = self.plot()
-
-    def plot(self) -> plt.Figure:
-        fig, subplot_axs = plt.subplots(self.nrows, self.ncols, figsize=self.figsize, layout="constrained")
-        if (self.nrows * self.ncols) == 1:
-            axs = [subplot_axs, ]
-        else:
-            axs = list(subplot_axs.flat)
-        axs = cast("list[Axes]", axs)
-
-        fig.patch.set_visible(False)
-
-        self.plot_tables(axs)
-
-        return fig
-
-    def plot_tables(self, axs: list[Axes]) -> None:
-        cell_colors = self.cell_colors
-        assert cell_colors is not None  # resolved to a concrete list in __init__
-
-        for idx, ax in enumerate(axs):
-            ax.axis('off')
-            ax.axis('tight')
-
-            table = ax.table(cellText=self.cell_texts[idx],
-                             cellColours=cell_colors[idx],
-                             cellLoc="center",
-                             rowLabels=self.row_labels[idx],
-                             colLabels=self.col_labels[idx],
-                             loc="center",)
-            table.scale(1, 3)
-            table.set_fontsize(20)
-
-            for idx in range(len(self.cell_texts[0][0])):
-                if self.col_labels_colors is not None:
-                    table[0, idx].get_text().set_color(self.col_labels_colors[0][idx])
-                if self.col_labels_fontweight is not None:
-                    table[0, idx].get_text().set_fontweight(self.col_labels_fontweight)
-
-
-class Plot_Line_Table(Plot_Line, Plot_Table):
-    def __init__(self,
-                 channels: dict[Isomme, list[list[Channel | str | None]]],
-                 cell_texts: list[np.ndarray | list[list]],
-                 row_labels: list[np.ndarray | list],
-                 col_labels: list[np.ndarray | list],
-                 xlim: tuple[float, float] | None = None,
-                 ylim: tuple[float, float] | None = None,
-                 sharex: bool = True,
-                 sharey: bool = False,
-                 limits: Limits | dict[Isomme, Limits] | None = None,
-                 cell_colors: list[np.ndarray | list[list]] | None = None,
-                 col_labels_colors: list[np.ndarray | list] | None = None,
-                 col_labels_fontweight: str | None = None,
-                 nrows: int | None = None,
-                 ncols: int | None = None,
-                 figsize: tuple[float, float] = (10, 10)):
-        Plot.__init__(self, figsize=figsize, nrows=nrows, ncols=ncols)
-
-        # Line
-        self.isomme_list = list(channels.keys())
-
-        # Replace Channel-Code with Channel
-        self.channels = {
-            isomme: [[isomme.get_channel(channel_ax) if isinstance(channel_ax, str) else channel_ax
-                      for channel_ax in channel_ax_list]
-                     for channel_ax_list in channel_list]
-            for isomme, channel_list in channels.items()
-        }
-
-        self.xlim = xlim
-        self.ylim = ylim
-
-        self.sharex = sharex
-        self.sharey = sharey
-
-        if isinstance(limits, dict):
-            self.limits = limits
-        elif isinstance(limits, Limits):
-            self.limits = {isomme: limits for isomme in self.isomme_list}
-
-        # Table
-        self.cell_texts = cell_texts
-        self.row_labels = row_labels
-        self.col_labels = col_labels
-
-        if cell_colors is not None:
-            self.cell_colors = cell_colors
-        if col_labels_colors is not None:
-            self.col_labels_colors = col_labels_colors
-        if col_labels_fontweight is not None:
-            self.col_labels_fontweight = col_labels_fontweight
-
-        if self.cell_colors is None:
-            self.cell_colors = [[[(0,0,0,0) for _ in row] for row in cell_text] for cell_text in self.cell_texts]
-
-        self.fig = self.plot()
-
-    def plot(self) -> plt.Figure:
-        fig, subplot_axs = plt.subplots(self.nrows, self.ncols, figsize=self.figsize, layout="constrained")
-        if (self.nrows * self.ncols) == 1:
-            axs = [subplot_axs, ]
-        else:
-            axs = list(subplot_axs.flat)
-        axs = cast("list[Axes]", axs)
-
-        fig.patch.set_visible(False)
-
-        n_lines = max([len(self.channels[isomme]) for isomme in self.isomme_list])
-        n_tables = len(self.cell_texts)
-
-        axs_lines = axs[:n_lines]
-        axs_tables = axs[n_lines:n_lines + n_tables]
-
-        # Remove empty axes
-        for idx, ax in enumerate(axs):
-            if idx >= (n_lines + n_tables):
-                ax.remove()
-                break
-
-        self.plot_lines(axs_lines)
-        self.plot_tables(axs_tables)
-
-        return fig

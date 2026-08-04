@@ -103,6 +103,7 @@ module = [
     "pyisomme.limits",
     "pyisomme.parsing",
     "pyisomme.plotting",
+    "pyisomme.plotting.*",
     "pyisomme.providers",
     "pyisomme.sources",
     "pyisomme.unit",
