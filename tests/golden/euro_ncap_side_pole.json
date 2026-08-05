@@ -1,10 +1,11 @@
 {
   "print_results": [
-    "euro_ncap_side_barrier-0",
+    "euro_ncap_side_pole-0",
     "\tOverall: Value=nan [] Rating=0",
     "\t\tHead: Value=nan [] Rating=-inf",
     "\t\t\tHIC 15: Value=600 [] Rating=-inf",
-    "\t\t\tHead a3ms: Value=35.69 [m / s2] Rating=-inf",
+    "\t\t\tHead Peak Acceleration: Value=81.577 [m / s2] Rating=-inf",
+    "\t\t\tDirect head contact with the pole: Value=0 [] Rating=4",
     "\t\tChest: Value=nan [] Rating=-inf",
     "\t\t\tChest Lateral Compression: Value=-60 [mm] Rating=-inf",
     "\t\t\tModifier Chest Lateral Viscous Criterion: Value=-1.5 [m / s] Rating=0",
@@ -14,12 +15,13 @@
     "\t\t\tModifier Abdomen Lateral Viscous Criterion: Value=-1.5 [m / s] Rating=0",
     "\t\tPelvis: Value=nan [] Rating=-inf",
     "\t\t\tPubic Symphysis Force: Value=4.9999 [kN] Rating=-inf",
+    "\t\tModifier for Side Head Protection Device: Value=0 [] Rating=-0",
     "\t\tModifier for Incorrect Airbag Deployment: Value=0 [] Rating=-0",
     "\t\tDoor Opening During Impact: Value=0 [] Rating=-0"
   ],
-  "report": "EuroNCAP_Side_Barrier",
+  "report": "EuroNCAP_Side_Pole",
   "results": {
-    "euro_ncap_side_barrier-0": {
+    "euro_ncap_side_pole-0": {
       "Overall": {
         "color": null,
         "rating": 0.0,
@@ -51,7 +53,7 @@
         "value": "nan"
       },
       "criterion_chest/criterion_chest_lateral_compression": {
-        "color": "gray",
+        "color": "red",
         "rating": "-inf",
         "status": "OK",
         "value": -59.999514038351805
@@ -80,11 +82,17 @@
         "status": "OK",
         "value": "nan"
       },
+      "criterion_head/criterion_direct_head_contact_with_the_pole": {
+        "color": null,
+        "rating": 4,
+        "status": "OK",
+        "value": false
+      },
       "criterion_head/criterion_head_acceleration": {
         "color": "gray",
         "rating": "-inf",
         "status": "OK",
-        "value": 35.69006745422749
+        "value": 81.57666381298868
       },
       "criterion_head/criterion_hic_15": {
         "color": "gray",
@@ -109,6 +117,12 @@
         "rating": "-inf",
         "status": "OK",
         "value": 4.9999310020182826
+      },
+      "criterion_side_head_protection_device": {
+        "color": null,
+        "rating": -0.0,
+        "status": "OK",
+        "value": 0
       }
     }
   }

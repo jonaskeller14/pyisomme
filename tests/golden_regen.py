@@ -28,13 +28,11 @@ def main(argv: list[str]) -> int:
 
     for stem in stems:
         print(f"regenerating {stem} ...", flush=True)
-        data = golden_utils.produce(stem)
+        data = golden_utils.produce_isolated(stem)
         golden_utils.store(stem, data)
-        criteria = len(data["definition"]["criteria"])
-        limits = sum(len(node["limits"]) for node in data["definition"]["criteria"].values())
         tests = len(data["results"])
         print(f"  -> {golden_utils.golden_path(stem)}"
-              f" ({criteria} criteria, {limits} limit rows, {tests} test(s))")
+              f" ({tests} test(s), {len(data['print_results'])} printed lines)")
 
     print("\nDone. Review `git diff tests/golden/` before committing.")
     return 0

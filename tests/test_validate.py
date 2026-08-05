@@ -19,16 +19,12 @@ objects), so the whole module runs in CI:
 """
 from __future__ import annotations
 
-import importlib
 import json
 import logging
 import os
 import sys
-import tempfile
 import unittest
 from typing import Any
-
-import numpy as np
 
 import pyisomme
 from pyisomme.limit import Limit
@@ -37,7 +33,7 @@ from pyisomme.report.euro_ncap.limits import Limit_A, Limit_C, Limit_G, Limit_M,
 from pyisomme.report.manual import Manual, manual
 from pyisomme.report.report import Report
 from pyisomme.report.validate import validate_tree
-from tests.test_report_structure import REPORTS
+from tests.report_registry import BY_CLASS, REPORTS, build_empty
 
 
 logging.basicConfig(level=logging.ERROR)
@@ -45,19 +41,12 @@ logging.basicConfig(level=logging.ERROR)
 GOLDEN_DIR = os.path.join(os.path.dirname(__file__), "golden")
 VALIDATE_GOLDEN = os.path.join(GOLDEN_DIR, "validate.json")
 
-slow = unittest.skipUnless(
-    os.environ.get("PYISOMME_SLOW"),
-    "renders 13 PPTX files (~2 min) - set PYISOMME_SLOW=1 to run",
-)
-
 CODE = "?1HICR0015??00RX"
 
 
 def build(name: str) -> Report:
     """One registered report, constructed from empty Isommes."""
-    dotted, _, n_isomme = next(entry for entry in REPORTS if entry[1] == name)
-    module = importlib.import_module(f"pyisomme.report.{dotted}")
-    return getattr(module, name)([pyisomme.Isomme(test_number=f"T{i}") for i in range(n_isomme)])
+    return build_empty(BY_CLASS[name])
 
 
 def checks_of(criterion: Criterion) -> set[str]:
@@ -258,7 +247,8 @@ class TestOrphans(unittest.TestCase):
 
 class TestRegisteredReports(unittest.TestCase):
     def test_no_errors(self) -> None:
-        for _, name, _ in REPORTS:
+        for spec in REPORTS:
+            name = spec.class_name
             with self.subTest(report=name):
                 errors = build(name).validate(errors_only=True)
                 self.assertEqual([str(issue) for issue in errors], [])
@@ -280,30 +270,13 @@ class TestRegisteredReports(unittest.TestCase):
                     f"`python -m tests.test_validate --regen` and say why in the progress log.",
                 )
 
-    def test_calculate_smoke(self) -> None:
-        """Every report survives construct -> calculate on a test with no channels."""
-        for _, name, _ in REPORTS:
-            with self.subTest(report=name):
-                with np.errstate(all="ignore"):
-                    build(name).calculate()
-
-    @slow
-    def test_export_smoke(self) -> None:
-        """...and renders, which is where a page that resolves criteria breaks."""
-        with tempfile.TemporaryDirectory() as directory:
-            for _, name, _ in REPORTS:
-                with self.subTest(report=name):
-                    with np.errstate(all="ignore"):
-                        report = build(name).calculate()
-                        report.export_pptx(os.path.join(directory, f"{name}.pptx"))
-
-
 # --------------------------------------------------------------------------- #
 # baseline
 # --------------------------------------------------------------------------- #
 
 def produce_validate() -> dict[str, list[str]]:
-    return {name: [str(issue) for issue in build(name).validate()] for _, name, _ in REPORTS}
+    return {spec.class_name: [str(issue) for issue in build(spec.class_name).validate()]
+            for spec in REPORTS}
 
 
 def _regen() -> int:

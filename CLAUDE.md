@@ -36,23 +36,20 @@ matching `requires-python` and the lower CI leg) with the `dev` extra installed.
 .venv/Scripts/python.exe -m pyisomme <command> --help    # list | merge | report | plot
 
 # Run a single test module / case / method
-.venv/Scripts/python.exe -m unittest tests.test_report
-.venv/Scripts/python.exe -m unittest tests.test_report.TestReport.test_EuroNCAP_Frontal_50kmh
+.venv/Scripts/python.exe -m unittest tests.test_golden
+.venv/Scripts/python.exe -m unittest tests.test_golden.TestGolden.test_all_reports
 ```
 
-Tests read real fixture data from `data/` (e.g. `data/nhtsa/…`) and report tests write `.pptx` into
-`out/`. Fixture folders are largely untracked and must exist locally for those tests to pass.
+The result goldens use deterministic synthetic channels and need no untracked `data/` fixtures.
+PowerPoint export is deliberately opt-in; request all reports or a comma-separated subset by stem:
 
-The full suite is ~6 min; everything outside `tests/test_report.py` and `tests/test_golden.py` runs in
-~6 s. Four report tests are opt-in because they take 79–112 s each:
-
-```bash
-PYISOMME_SLOW=1 .venv/Scripts/python.exe -m unittest tests.test_report   # include the slow four
+```powershell
+$env:PYISOMME_PPTX='1'; .venv/Scripts/python.exe -m unittest tests.test_report
+$env:PYISOMME_PPTX='euro_ncap_side_pole'; .venv/Scripts/python.exe -m unittest tests.test_report
 ```
 
-Known limitation: running all 13 report tests in one process dies with a Windows stack overflow (exit
-`0xC00000FD`). Pre-existing and unrelated to correctness — each passes on its own, so run the slow four
-individually.
+Both result-golden calculations and PPTX exports isolate each report in a fresh process. This avoids
+the known Windows stack overflow when all 13 reports are calculated in one interpreter.
 
 ### Static checking
 
@@ -80,19 +77,18 @@ Both are configured in [pyproject.toml](pyproject.toml) and **blocking in CI**, 
 
 ### The refactor safety net
 
-Three test modules exist to make the report refactor verifiable — read `tests/golden_utils.py` before
-changing any of them.
+Three test modules make the report refactor verifiable — read `tests/golden_utils.py` and
+`tests/report_registry.py` before changing any of them.
 
-- **`tests/test_golden.py`** — builds `EuroNCAP_Frontal_50kmh`, `EuroNCAP_Frontal_MPDB` and
-  `EuroNCAP_Side_Barrier` and compares them against snapshots in `tests/golden/` (**tracked**, unlike
-  `data/`). A *definition* layer (criterion paths, names, all `Limit` rows — data-independent) compared
-  exactly, and a *results* layer (`value`/`rating`/`color`/`status`) compared with **no-regression**
-  semantics: known numbers must stay identical, but `nan` becoming a number — or `ERROR` becoming `NA` —
-  is tolerated as an improvement. `nan == nan`.
-- **`tests/test_report_structure.py`** — the same definition layer for **all 13** reports built from
-  empty `Isomme` objects, so it needs no fixtures and runs in CI. It catches a reparented criterion, a
-  lost `Limit` row, a dropped page. A report module defining an `Overall` but missing from `REPORTS`
-  fails the coverage guard; deliberate omissions go in `EXCLUDED` with a reason.
+- **`tests/test_golden.py`** — builds all 13 concrete reports plus the `EuroNCAP` MetaReport with complete deterministic synthetic
+  channels and compares full-precision `value`/`rating`/`color`/`status` snapshots with no-regression
+  semantics. Known numbers must stay identical; `nan` becoming a number or `ERROR` becoming `NA` is an
+  improvement. `print_results()` is captured too, as an exact rendering/order contract. Every report is
+  calculated in a fresh process; no `data/` fixture or PPTX export is involved.
+- **`tests/test_describe.py`** — exact, fixture-free Markdown definition snapshots for all 13 reports:
+  pages, criterion paths/classes, sources, point budgets, aggregation, every `Limit` row and every manual
+  input. It also owns the registry coverage guard; deliberate omissions carry a reason in
+  `tests/report_registry.py`. This is the single definition snapshot—do not duplicate it in result JSON.
 - **`tests/test_report_modules.py`** — imports every module under `pyisomme/report/` and checks each
   protocol subpackage is reachable as an attribute of `pyisomme.report` in a fresh interpreter. Known
   breakage sits in `BROKEN_MODULES` / `MISSING_REEXPORTS` with a `TODO(step-…)` naming the owning step,
@@ -103,7 +99,7 @@ progress log — the tests never rewrite the files themselves:
 
 ```bash
 .venv/Scripts/python.exe -m tests.golden_regen                       # all (or one, by name)
-.venv/Scripts/python.exe -m tests.test_report_structure --regen
+.venv/Scripts/python.exe -m tests.test_describe --regen
 git diff tests/golden/
 ```
 
@@ -238,7 +234,7 @@ class Overall(Criterion):
   one, so a position set after construction moves the limits too. It is a no-op unless overridden.
   Rows stay hand-written — the hook decides *when* they are built, never what is in them.
   `Report.__init__` runs one `Criterion.build_limits()` pass over the finished tree, so `validate()`,
-  `describe()` and `tests/test_report_structure.py` still see the rows on a report nobody calculated.
+  `describe()` still sees the rows on a report nobody calculated.
   It cannot happen in `Criterion.__init__`: construction is bottom-up, so a node has no parent — and
   therefore no context — until its own subtree already exists.
 - **`Role`** says what a node *is*, and never restricts `calculation()`: `RESULT` measures and rates,
@@ -253,7 +249,7 @@ class Overall(Criterion):
 
 [tests/test_criterion_tree.py](tests/test_criterion_tree.py) covers all of it and needs no fixtures.
 
-To add a new report/load case: create a module in the appropriate protocol subpackage; define its criterion tree as a module-level `class Overall(Criterion)`; declare `class X(Report[Overall])` with `Criterion_Overall = Overall` and its `name`/`title`/`protocols`; register the class in that subpackage's `__init__.py`; add it to the `REPORTS` list in [pyisomme/__main__.py](pyisomme/__main__.py) so it is reachable from the `report` CLI command; and add it to `REPORTS` in [tests/test_report_structure.py](tests/test_report_structure.py) (a coverage guard fails otherwise).
+To add a new report/load case: create a module in the appropriate protocol subpackage; define its criterion tree as a module-level `class Overall(Criterion)`; declare `class X(Report[Overall])` with `Criterion_Overall = Overall` and its `name`/`title`/`protocols`; register the class in that subpackage's `__init__.py`; add it to the `REPORTS` list in [pyisomme/__main__.py](pyisomme/__main__.py) so it is reachable from the `report` CLI command; and add a `ReportSpec` to [tests/report_registry.py](tests/report_registry.py) (a coverage guard fails otherwise).
 
 ### Manual inputs
 

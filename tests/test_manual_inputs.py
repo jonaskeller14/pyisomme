@@ -2,8 +2,8 @@
 Manual inputs as a declared concept (refactor plan step 4, review proposal P11).
 
 Needs **no fixture data** — every report here is built from empty ``Isomme``
-objects, like ``tests/test_report_structure.py`` — so it runs in CI alongside the
-lint job.
+objects, like ``tests/test_describe.py`` — so it runs in CI alongside the lint
+job.
 
 Covers the four things the declaration buys:
 

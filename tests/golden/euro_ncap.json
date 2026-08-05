@@ -1,0 +1,2279 @@
+{
+  "print_results": [
+    "euro_ncap_frontal_50kmh-0",
+    "\tOverall: Value=nan [] Rating=0",
+    "\t\tDriver: Value=-inf [] Rating=-inf",
+    "\t\t\tHead: Value=nan [] Rating=-inf",
+    "\t\t\t\tHIC 15: Value=600 [] Rating=-inf",
+    "\t\t\t\tHead a3ms: Value=35.69 [m / s2] Rating=-inf",
+    "\t\t\t\tModifier for Unstable Airbag Contact: Value=0 [] Rating=0",
+    "\t\t\t\tModifier for Hazardous Airbag Deployment: Value=0 [] Rating=0",
+    "\t\t\t\tModifier for Incorrect Airbag Deployment: Value=0 [] Rating=0",
+    "\t\t\t\tModifier for Displacement of Steering Column: Value=0 [] Rating=0",
+    "\t\t\tNeck: Value=nan [] Rating=-inf",
+    "\t\t\t\tNeck My extension: Value=-79.999 [N m] Rating=-inf",
+    "\t\t\t\tNeck Fz tension: Value=4.9999 [kN] Rating=-inf",
+    "\t\t\t\tNeck Fx shear: Value=4.9999 [kN] Rating=-inf",
+    "\t\t\tChest: Value=nan [] Rating=-inf",
+    "\t\t\t\tChest Deflection: Value=-60 [mm] Rating=-inf",
+    "\t\t\t\tChest VC: Value=-1.5 [m / s] Rating=4",
+    "\t\t\t\tModifier Chest Steering Wheel Contact: Value=nan [] Rating=0",
+    "\t\t\t\tModifier Shoulder Belt Load: Value=4.9999 [N] Rating=0",
+    "\t\t\tFemur: Value=nan [] Rating=1.3291",
+    "\t\t\t\tFemur Axial Force: Value=-4.9999 [] Rating=1.3291",
+    "\t\t\t\t\tFemur Axial Force Left: Value=-4.9999 [N] Rating=1.3291",
+    "\t\t\t\t\tFemur Axial Force Right: Value=-4.9999 [N] Rating=1.3291",
+    "\t\t\t\tSubmarining: Value=0 [] Rating=0",
+    "\t\tFront Passenger: Value=-inf [] Rating=-inf",
+    "\t\t\tHead: Value=nan [] Rating=-inf",
+    "\t\t\t\tHIC 15: Value=600 [] Rating=-inf",
+    "\t\t\t\tHead a3ms: Value=35.69 [m / s2] Rating=-inf",
+    "\t\t\t\tModifier for Hazardous Airbag Deployment: Value=0 [] Rating=0",
+    "\t\t\t\tModifier for Incorrect Airbag Deployment: Value=0 [] Rating=0",
+    "\t\t\tNeck: Value=nan [] Rating=0",
+    "\t\t\t\tNeck My extension: Value=-79.999 [N m] Rating=0",
+    "\t\t\t\tNeck Fz tension: Value=4.9999 [kN] Rating=0",
+    "\t\t\t\tNeck Fx shear: Value=4.9999 [kN] Rating=0",
+    "\t\t\tChest: Value=nan [] Rating=-inf",
+    "\t\t\t\tChest Deflection: Value=-60 [mm] Rating=-inf",
+    "\t\t\t\tChest VC: Value=-1.5 [m / s] Rating=4",
+    "\t\t\t\tModifier Shoulder Belt Load: Value=4.9999 [N] Rating=0",
+    "\t\t\tFemur: Value=nan [] Rating=1.3291",
+    "\t\t\t\tFemur Axial Force: Value=-4.9999 [] Rating=1.3291",
+    "\t\t\t\t\tFemur Axial Force Left: Value=-4.9999 [N] Rating=1.3291",
+    "\t\t\t\t\tFemur Axial Force Right: Value=-4.9999 [N] Rating=1.3291",
+    "\t\tRear Passenger: Value=-inf [] Rating=-inf",
+    "\t\t\tHead: Value=nan [] Rating=-inf",
+    "\t\t\t\tHIC 15: Value=600 [] Rating=-inf",
+    "\t\t\t\tHead a3ms: Value=35.69 [m / s2] Rating=-inf",
+    "\t\t\t\tModifier for Unstable Airbag Contact: Value=0 [] Rating=0",
+    "\t\t\t\tModifier for Hazardous Airbag Deployment: Value=0 [] Rating=0",
+    "\t\t\t\tModifier for Incorrect Airbag Deployment: Value=0 [] Rating=0",
+    "\t\t\t\tModifier for Exceeding forward excursion line: Value=nan [] Rating=0",
+    "\t\t\tNeck: Value=nan [] Rating=0",
+    "\t\t\t\tNeck My extension: Value=-79.999 [N m] Rating=0",
+    "\t\t\t\tNeck Fz tension: Value=4.9999 [kN] Rating=0",
+    "\t\t\t\tNeck Fx shear: Value=4.9999 [kN] Rating=0",
+    "\t\t\tChest: Value=nan [] Rating=-inf",
+    "\t\t\t\tChest Deflection: Value=-60 [mm] Rating=-inf",
+    "\t\t\t\tChest VC: Value=-1.5 [m / s] Rating=4",
+    "\t\t\t\tModifier Shoulder Belt Load: Value=4.9999 [N] Rating=0",
+    "\t\t\tFemur: Value=nan [] Rating=1.3291",
+    "\t\t\t\tFemur Axial Force: Value=-4.9999 [] Rating=1.3291",
+    "\t\t\t\t\tFemur Axial Force Left: Value=-4.9999 [N] Rating=1.3291",
+    "\t\t\t\t\tFemur Axial Force Right: Value=-4.9999 [N] Rating=1.3291",
+    "\t\t\t\tSubmarining: Value=0 [] Rating=0",
+    "\t\tDoor Opening During Impact: Value=0 [] Rating=0",
+    "euro_ncap_frontal_50kmh-1",
+    "\tOverall: Value=nan [] Rating=0",
+    "\t\tDriver: Value=-inf [] Rating=-inf",
+    "\t\t\tHead: Value=nan [] Rating=-inf",
+    "\t\t\t\tHIC 15: Value=576 [] Rating=-inf",
+    "\t\t\t\tHead a3ms: Value=34.262 [m / s2] Rating=0.84036",
+    "\t\t\t\tModifier for Unstable Airbag Contact: Value=0 [] Rating=0",
+    "\t\t\t\tModifier for Hazardous Airbag Deployment: Value=0 [] Rating=0",
+    "\t\t\t\tModifier for Incorrect Airbag Deployment: Value=0 [] Rating=0",
+    "\t\t\t\tModifier for Displacement of Steering Column: Value=0 [] Rating=0",
+    "\t\t\tNeck: Value=nan [] Rating=-inf",
+    "\t\t\t\tNeck My extension: Value=-76.799 [N m] Rating=-inf",
+    "\t\t\t\tNeck Fz tension: Value=4.7999 [kN] Rating=-inf",
+    "\t\t\t\tNeck Fx shear: Value=4.7999 [kN] Rating=-inf",
+    "\t\t\tChest: Value=nan [] Rating=-inf",
+    "\t\t\t\tChest Deflection: Value=-57.6 [mm] Rating=-inf",
+    "\t\t\t\tChest VC: Value=-1.44 [m / s] Rating=4",
+    "\t\t\t\tModifier Chest Steering Wheel Contact: Value=nan [] Rating=0",
+    "\t\t\t\tModifier Shoulder Belt Load: Value=4.7999 [N] Rating=0",
+    "\t\t\tFemur: Value=nan [] Rating=1.5524",
+    "\t\t\t\tFemur Axial Force: Value=-4.7999 [] Rating=1.5524",
+    "\t\t\t\t\tFemur Axial Force Left: Value=-4.7999 [N] Rating=1.5524",
+    "\t\t\t\t\tFemur Axial Force Right: Value=-4.7999 [N] Rating=1.5524",
+    "\t\t\t\tSubmarining: Value=0 [] Rating=0",
+    "\t\tFront Passenger: Value=-inf [] Rating=-inf",
+    "\t\t\tHead: Value=nan [] Rating=-inf",
+    "\t\t\t\tHIC 15: Value=576 [] Rating=-inf",
+    "\t\t\t\tHead a3ms: Value=34.262 [m / s2] Rating=0.84036",
+    "\t\t\t\tModifier for Hazardous Airbag Deployment: Value=0 [] Rating=0",
+    "\t\t\t\tModifier for Incorrect Airbag Deployment: Value=0 [] Rating=0",
+    "\t\t\tNeck: Value=nan [] Rating=0",
+    "\t\t\t\tNeck My extension: Value=-76.799 [N m] Rating=0",
+    "\t\t\t\tNeck Fz tension: Value=4.7999 [kN] Rating=0",
+    "\t\t\t\tNeck Fx shear: Value=4.7999 [kN] Rating=0",
+    "\t\t\tChest: Value=nan [] Rating=-inf",
+    "\t\t\t\tChest Deflection: Value=-57.6 [mm] Rating=-inf",
+    "\t\t\t\tChest VC: Value=-1.44 [m / s] Rating=4",
+    "\t\t\t\tModifier Shoulder Belt Load: Value=4.7999 [N] Rating=0",
+    "\t\t\tFemur: Value=nan [] Rating=1.5524",
+    "\t\t\t\tFemur Axial Force: Value=-4.7999 [] Rating=1.5524",
+    "\t\t\t\t\tFemur Axial Force Left: Value=-4.7999 [N] Rating=1.5524",
+    "\t\t\t\t\tFemur Axial Force Right: Value=-4.7999 [N] Rating=1.5524",
+    "\t\tRear Passenger: Value=-inf [] Rating=-inf",
+    "\t\t\tHead: Value=nan [] Rating=-inf",
+    "\t\t\t\tHIC 15: Value=576 [] Rating=-inf",
+    "\t\t\t\tHead a3ms: Value=34.262 [m / s2] Rating=0.84036",
+    "\t\t\t\tModifier for Unstable Airbag Contact: Value=0 [] Rating=0",
+    "\t\t\t\tModifier for Hazardous Airbag Deployment: Value=0 [] Rating=0",
+    "\t\t\t\tModifier for Incorrect Airbag Deployment: Value=0 [] Rating=0",
+    "\t\t\t\tModifier for Exceeding forward excursion line: Value=nan [] Rating=0",
+    "\t\t\tNeck: Value=nan [] Rating=0",
+    "\t\t\t\tNeck My extension: Value=-76.799 [N m] Rating=0",
+    "\t\t\t\tNeck Fz tension: Value=4.7999 [kN] Rating=0",
+    "\t\t\t\tNeck Fx shear: Value=4.7999 [kN] Rating=0",
+    "\t\t\tChest: Value=nan [] Rating=-inf",
+    "\t\t\t\tChest Deflection: Value=-57.6 [mm] Rating=-inf",
+    "\t\t\t\tChest VC: Value=-1.44 [m / s] Rating=4",
+    "\t\t\t\tModifier Shoulder Belt Load: Value=4.7999 [N] Rating=0",
+    "\t\t\tFemur: Value=nan [] Rating=1.5524",
+    "\t\t\t\tFemur Axial Force: Value=-4.7999 [] Rating=1.5524",
+    "\t\t\t\t\tFemur Axial Force Left: Value=-4.7999 [N] Rating=1.5524",
+    "\t\t\t\t\tFemur Axial Force Right: Value=-4.7999 [N] Rating=1.5524",
+    "\t\t\t\tSubmarining: Value=0 [] Rating=0",
+    "\t\tDoor Opening During Impact: Value=0 [] Rating=0",
+    "euro_ncap_frontal_mpdb-0",
+    "\tOverall: Value=nan [] Rating=0",
+    "\t\tDriver: Value=nan [] Rating=-inf",
+    "\t\t\tHead & Neck: Value=nan [] Rating=-inf",
+    "\t\t\t\tHead: Value=nan [] Rating=-inf",
+    "\t\t\t\t\tHIC 15: Value=600 [] Rating=-inf",
+    "\t\t\t\t\tHead a3ms: Value=35.69 [m / s2] Rating=-inf",
+    "\t\t\t\t\tModifier for Brain Injury - DAMAGE: Value=99.999 [rad / s2] Rating=-1",
+    "\t\t\t\t\tModifier for Unstable Airbag Contact: Value=0 [] Rating=0",
+    "\t\t\t\t\tModifier for Hazardous Airbag Deployment: Value=0 [] Rating=0",
+    "\t\t\t\t\tModifier for Incorrect Airbag Deployment: Value=0 [] Rating=0",
+    "\t\t\t\t\tModifier for Displacement of Steering Column: Value=0 [] Rating=0",
+    "\t\t\t\tNeck: Value=nan [] Rating=-inf",
+    "\t\t\t\t\tNeck My extension: Value=-79.999 [N m] Rating=-inf",
+    "\t\t\t\t\tNeck Fz tension: Value=4.9999 [kN] Rating=-inf",
+    "\t\t\t\t\tNeck Fx shear: Value=4.9999 [kN] Rating=-inf",
+    "\t\t\tChest and Abdomen: Value=nan [] Rating=7.7504e-05",
+    "\t\t\t\tChest: Value=nan [] Rating=7.7504e-05",
+    "\t\t\t\t\tChest Compression: Value=-60 [mm] Rating=7.7504e-05",
+    "\t\t\t\t\tModifier Shoulder Belt Load: Value=4.9999 [N] Rating=0",
+    "\t\t\t\t\tModifier Chest Steering Wheel Contact: Value=nan [] Rating=0",
+    "\t\t\t\t\tModifier for Displacement of the A Pillar: Value=0 [] Rating=0",
+    "\t\t\t\t\tModifier for Integrity of the Passenger Compartment: Value=0 [] Rating=0",
+    "\t\t\t\tAbdomen: Value=nan [] Rating=4",
+    "\t\t\t\t\tAbdomen Compression: Value=-60 [mm] Rating=4",
+    "\t\t\tKnee, Femur and Pelvis: Value=nan [] Rating=0",
+    "\t\t\t\tPelvis: Value=nan [] Rating=0",
+    "\t\t\t\t\tAcetabulum Force: Value=-4.9999 [kN] Rating=0",
+    "\t\t\t\tFemur: Value=nan [] Rating=2.7254",
+    "\t\t\t\t\tFemur Compression: Value=-4.9999 [kN] Rating=2.7254",
+    "\t\t\t\tKnee: Value=nan [] Rating=0",
+    "\t\t\t\t\tKnee Slider Compression: Value=-60 [mm] Rating=0",
+    "\t\t\t\tSubmarining: Value=0 [] Rating=0",
+    "\t\t\t\tModifier for Variable Contact: Value=0 [] Rating=-0",
+    "\t\t\t\tModifier for Concentrated Loading: Value=0 [] Rating=-0",
+    "\t\t\tLower Leg, Foot and Ankle: Value=nan [] Rating=0.88603",
+    "\t\t\t\tTibia Index: Value=1.1 [] Rating=0.88603",
+    "\t\t\t\tTibia Compression: Value=-4.9999 [kN] Rating=1.999",
+    "\t\t\t\tPedal Rearward Displacement: Value=0 [] Rating=4",
+    "\t\t\t\tModifier for Upward Displacement of the Worst Performing Pedal: Value=0 [] Rating=0",
+    "\t\t\t\tModifier for Footwell Rupture: Value=0 [] Rating=0",
+    "\t\t\t\tModifier for Pedal Blocking: Value=0 [] Rating=0",
+    "\t\tPassenger: Value=nan [] Rating=-inf",
+    "\t\t\tHead and Neck: Value=-inf [] Rating=-inf",
+    "\t\t\t\tHead: Value=-inf [] Rating=-inf",
+    "\t\t\t\t\tHIC 15: Value=600 [] Rating=-inf",
+    "\t\t\t\t\tHead a3ms: Value=35.69 [m / s2] Rating=-inf",
+    "\t\t\t\t\tModifier for Unstable Airbag Contact: Value=0 [] Rating=0",
+    "\t\t\t\t\tModifier for Hazardous Airbag Deployment: Value=0 [] Rating=0",
+    "\t\t\t\t\tModifier for Incorrect Airbag Deployment: Value=0 [] Rating=0",
+    "\t\t\t\tNeck: Value=-inf [] Rating=-inf",
+    "\t\t\t\t\tNeck Fx shear: Value=-4.9999 [kN] Rating=-inf",
+    "\t\t\t\t\tFz Tension: Value=4.9944 [kN] Rating=-inf",
+    "\t\t\t\t\tMy Extension: Value=-79.999 [N m] Rating=-inf",
+    "\t\t\tChest: Value=-inf [] Rating=-inf",
+    "\t\t\t\tChest Compression: Value=-60 [mm] Rating=-inf",
+    "\t\t\t\tChest VC: Value=-1.5 [m / s] Rating=4",
+    "\t\t\t\tModifier Shoulder Belt Load: Value=4.9999 [N] Rating=0",
+    "\t\t\tKnee, Femur and Pelvis: Value=0 [] Rating=0",
+    "\t\t\t\tFemur Compression: Value=-4.9999 [kN] Rating=2.7254",
+    "\t\t\t\tKnee Slider Compression: Value=-60 [mm] Rating=0",
+    "\t\t\t\tModifier for Variable Contact: Value=0 [] Rating=-0",
+    "\t\t\t\tModifier for Concentrated Loading: Value=0 [] Rating=-0",
+    "\t\t\tLower Leg: Value=nan [] Rating=0.88603",
+    "\t\t\t\tTibia Index: Value=1.1 [] Rating=0.88603",
+    "\t\t\t\tTibia Compression: Value=-4.9999 [kN] Rating=1.999",
+    "\t\tDoor Opening During Impact: Value=0 [] Rating=0",
+    "\t\tCompatibility Modifier: Value=0 [] Rating=0",
+    "\t\t\tOccupant Load Criterion (OLC) Modifier: Value=0.66412 [g0] Rating=0",
+    "euro_ncap_frontal_mpdb-1",
+    "\tOverall: Value=nan [] Rating=0",
+    "\t\tDriver: Value=nan [] Rating=-inf",
+    "\t\t\tHead & Neck: Value=nan [] Rating=-inf",
+    "\t\t\t\tHead: Value=nan [] Rating=-inf",
+    "\t\t\t\t\tHIC 15: Value=576 [] Rating=-inf",
+    "\t\t\t\t\tHead a3ms: Value=34.262 [m / s2] Rating=0.84036",
+    "\t\t\t\t\tModifier for Brain Injury - DAMAGE: Value=95.999 [rad / s2] Rating=-1",
+    "\t\t\t\t\tModifier for Unstable Airbag Contact: Value=0 [] Rating=0",
+    "\t\t\t\t\tModifier for Hazardous Airbag Deployment: Value=0 [] Rating=0",
+    "\t\t\t\t\tModifier for Incorrect Airbag Deployment: Value=0 [] Rating=0",
+    "\t\t\t\t\tModifier for Displacement of Steering Column: Value=0 [] Rating=0",
+    "\t\t\t\tNeck: Value=nan [] Rating=-inf",
+    "\t\t\t\t\tNeck My extension: Value=-76.799 [N m] Rating=-inf",
+    "\t\t\t\t\tNeck Fz tension: Value=4.7999 [kN] Rating=-inf",
+    "\t\t\t\t\tNeck Fx shear: Value=4.7999 [kN] Rating=-inf",
+    "\t\t\tChest and Abdomen: Value=nan [] Rating=0.38284",
+    "\t\t\t\tChest: Value=nan [] Rating=0.38284",
+    "\t\t\t\t\tChest Compression: Value=-57.6 [mm] Rating=0.38284",
+    "\t\t\t\t\tModifier Shoulder Belt Load: Value=4.7999 [N] Rating=0",
+    "\t\t\t\t\tModifier Chest Steering Wheel Contact: Value=nan [] Rating=0",
+    "\t\t\t\t\tModifier for Displacement of the A Pillar: Value=0 [] Rating=0",
+    "\t\t\t\t\tModifier for Integrity of the Passenger Compartment: Value=0 [] Rating=0",
+    "\t\t\t\tAbdomen: Value=nan [] Rating=4",
+    "\t\t\t\t\tAbdomen Compression: Value=-57.6 [mm] Rating=4",
+    "\t\t\tKnee, Femur and Pelvis: Value=nan [] Rating=0",
+    "\t\t\t\tPelvis: Value=nan [] Rating=0",
+    "\t\t\t\t\tAcetabulum Force: Value=-4.7999 [kN] Rating=0",
+    "\t\t\t\tFemur: Value=nan [] Rating=2.9378",
+    "\t\t\t\t\tFemur Compression: Value=-4.7999 [kN] Rating=2.9378",
+    "\t\t\t\tKnee: Value=nan [] Rating=0",
+    "\t\t\t\t\tKnee Slider Compression: Value=-57.6 [mm] Rating=0",
+    "\t\t\t\tSubmarining: Value=0 [] Rating=0",
+    "\t\t\t\tModifier for Variable Contact: Value=0 [] Rating=-0",
+    "\t\t\t\tModifier for Concentrated Loading: Value=0 [] Rating=-0",
+    "\t\t\tLower Leg, Foot and Ankle: Value=nan [] Rating=1.0809",
+    "\t\t\t\tTibia Index: Value=1.056 [] Rating=1.0809",
+    "\t\t\t\tTibia Compression: Value=-4.7999 [kN] Rating=2.133",
+    "\t\t\t\tPedal Rearward Displacement: Value=0 [] Rating=4",
+    "\t\t\t\tModifier for Upward Displacement of the Worst Performing Pedal: Value=0 [] Rating=0",
+    "\t\t\t\tModifier for Footwell Rupture: Value=0 [] Rating=0",
+    "\t\t\t\tModifier for Pedal Blocking: Value=0 [] Rating=0",
+    "\t\tPassenger: Value=nan [] Rating=-inf",
+    "\t\t\tHead and Neck: Value=-inf [] Rating=-inf",
+    "\t\t\t\tHead: Value=-inf [] Rating=-inf",
+    "\t\t\t\t\tHIC 15: Value=576 [] Rating=-inf",
+    "\t\t\t\t\tHead a3ms: Value=34.262 [m / s2] Rating=0.84036",
+    "\t\t\t\t\tModifier for Unstable Airbag Contact: Value=0 [] Rating=0",
+    "\t\t\t\t\tModifier for Hazardous Airbag Deployment: Value=0 [] Rating=0",
+    "\t\t\t\t\tModifier for Incorrect Airbag Deployment: Value=0 [] Rating=0",
+    "\t\t\t\tNeck: Value=-inf [] Rating=-inf",
+    "\t\t\t\t\tNeck Fx shear: Value=-4.7999 [kN] Rating=-inf",
+    "\t\t\t\t\tFz Tension: Value=4.7946 [kN] Rating=-inf",
+    "\t\t\t\t\tMy Extension: Value=-76.799 [N m] Rating=-inf",
+    "\t\t\tChest: Value=-inf [] Rating=-inf",
+    "\t\t\t\tChest Compression: Value=-57.6 [mm] Rating=-inf",
+    "\t\t\t\tChest VC: Value=-1.44 [m / s] Rating=4",
+    "\t\t\t\tModifier Shoulder Belt Load: Value=4.7999 [N] Rating=0",
+    "\t\t\tKnee, Femur and Pelvis: Value=0 [] Rating=0",
+    "\t\t\t\tFemur Compression: Value=-4.7999 [kN] Rating=2.9378",
+    "\t\t\t\tKnee Slider Compression: Value=-57.6 [mm] Rating=0",
+    "\t\t\t\tModifier for Variable Contact: Value=0 [] Rating=-0",
+    "\t\t\t\tModifier for Concentrated Loading: Value=0 [] Rating=-0",
+    "\t\t\tLower Leg: Value=nan [] Rating=1.0809",
+    "\t\t\t\tTibia Index: Value=1.056 [] Rating=1.0809",
+    "\t\t\t\tTibia Compression: Value=-4.7999 [kN] Rating=2.133",
+    "\t\tDoor Opening During Impact: Value=0 [] Rating=0",
+    "\t\tCompatibility Modifier: Value=0 [] Rating=0",
+    "\t\t\tOccupant Load Criterion (OLC) Modifier: Value=0.63755 [g0] Rating=0",
+    "euro_ncap_side_pole-0",
+    "\tOverall: Value=nan [] Rating=0",
+    "\t\tHead: Value=nan [] Rating=-inf",
+    "\t\t\tHIC 15: Value=600 [] Rating=-inf",
+    "\t\t\tHead Peak Acceleration: Value=81.577 [m / s2] Rating=-inf",
+    "\t\t\tDirect head contact with the pole: Value=0 [] Rating=4",
+    "\t\tChest: Value=nan [] Rating=-inf",
+    "\t\t\tChest Lateral Compression: Value=-60 [mm] Rating=-inf",
+    "\t\t\tModifier Chest Lateral Viscous Criterion: Value=-1.5 [m / s] Rating=0",
+    "\t\t\tModifier Shoulder Lateral Force: Value=4.9999 [kN] Rating=0",
+    "\t\tAbdomen: Value=nan [] Rating=0",
+    "\t\t\tAbdomen Lateral Compression: Value=-60 [mm] Rating=1.1076",
+    "\t\t\tModifier Abdomen Lateral Viscous Criterion: Value=-1.5 [m / s] Rating=0",
+    "\t\tPelvis: Value=nan [] Rating=-inf",
+    "\t\t\tPubic Symphysis Force: Value=4.9999 [kN] Rating=-inf",
+    "\t\tModifier for Side Head Protection Device: Value=0 [] Rating=-0",
+    "\t\tModifier for Incorrect Airbag Deployment: Value=0 [] Rating=-0",
+    "\t\tDoor Opening During Impact: Value=0 [] Rating=-0",
+    "euro_ncap_side_barrier-0",
+    "\tOverall: Value=nan [] Rating=0",
+    "\t\tHead: Value=nan [] Rating=-inf",
+    "\t\t\tHIC 15: Value=600 [] Rating=-inf",
+    "\t\t\tHead a3ms: Value=35.69 [m / s2] Rating=-inf",
+    "\t\tChest: Value=nan [] Rating=-inf",
+    "\t\t\tChest Lateral Compression: Value=-60 [mm] Rating=-inf",
+    "\t\t\tModifier Chest Lateral Viscous Criterion: Value=-1.5 [m / s] Rating=0",
+    "\t\t\tModifier Shoulder Lateral Force: Value=4.9999 [kN] Rating=0",
+    "\t\tAbdomen: Value=nan [] Rating=0",
+    "\t\t\tAbdomen Lateral Compression: Value=-60 [mm] Rating=1.1076",
+    "\t\t\tModifier Abdomen Lateral Viscous Criterion: Value=-1.5 [m / s] Rating=0",
+    "\t\tPelvis: Value=nan [] Rating=-inf",
+    "\t\t\tPubic Symphysis Force: Value=4.9999 [kN] Rating=-inf",
+    "\t\tModifier for Incorrect Airbag Deployment: Value=0 [] Rating=-0",
+    "\t\tDoor Opening During Impact: Value=0 [] Rating=-0",
+    "euro_ncap_side_farside-0",
+    "\tOverall: Value=nan [] Rating=-inf",
+    "\t\tHead Excursion: Value=nan [] Rating=nan",
+    "\t\tHead: Value=-inf [] Rating=-inf",
+    "\t\t\tHIC 15: Value=600 [] Rating=-inf",
+    "\t\t\tHead a3ms: Value=35.69 [m / s2] Rating=-inf",
+    "\t\tNeck: Value=nan [] Rating=0",
+    "\t\t\tUpper_Neck: Value=nan [] Rating=0",
+    "\t\t\t\tUpper Neck Fz tension: Value=4.9999 [kN] Rating=0",
+    "\t\t\t\tLateral flexion MxOC: Value=79.999 [N m] Rating=4",
+    "\t\t\t\tUpper Neck Extension MyOC: Value=-79.999 [N m] Rating=0",
+    "\t\t\tLower_Neck: Value=nan [] Rating=0",
+    "\t\t\t\tLower Neck Fz tension: Value=4.9999 [kN] Rating=0",
+    "\t\t\t\tLateral flexion Mx (base of neck): Value=79.999 [N m] Rating=4",
+    "\t\t\t\tLower Neck Extension My Base: Value=-79.999 [N m] Rating=4",
+    "\t\tChest & Abdomen: Value=nan [] Rating=-inf",
+    "\t\t\tChest Lateral Compression: Value=-60 [mm] Rating=-inf",
+    "\t\t\tAbdomen Lateral Compression: Value=-60 [mm] Rating=1.1076",
+    "\t\tPelvis and Lumbar Modifier: Value=nan [] Rating=-4",
+    "\t\t\tModifier Pubic Symphysis: Value=-4.9999 [kN] Rating=-4",
+    "\t\t\tModifier Lumbar Fy: Value=-4.9999 [kN] Rating=-4",
+    "\t\t\tModifier Lumbar Fz: Value=-4.9999 [kN] Rating=-4",
+    "\t\t\tModifier Lumbar Mx: Value=-79.999 [N m] Rating=0",
+    "",
+    "Euro-NCAP",
+    "  Frontal MPDB (\u00a73.4)                      0",
+    "  Frontal Full Width (\u00a74.3)                0",
+    "  Side Barrier + Pole (\u00a75.3)               0",
+    "  Far Side (\u00a75.3)                       -inf",
+    "  TOTAL                                 -inf / 32"
+  ],
+  "report": "EuroNCAP",
+  "results": {
+    "EuroNCAP": {
+      "Overall": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "-inf"
+      },
+      "ratings/Far Side (\u00a75.3)": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "-inf"
+      },
+      "ratings/Frontal Full Width (\u00a74.3)": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": 0.0
+      },
+      "ratings/Frontal MPDB (\u00a73.4)": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": 0.0
+      },
+      "ratings/Side Barrier + Pole (\u00a75.3)": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": 0.0
+      }
+    },
+    "EuroNCAP_Frontal_50kmh:euro_ncap_frontal_50kmh-0": {
+      "Overall": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_door_opening_during_impact": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": 0
+      },
+      "criterion_driver": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "-inf"
+      },
+      "criterion_driver/criterion_chest": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_chest/criterion_SteeringWheelContact": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_chest/criterion_chest_deflection": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": -59.999514038351805
+      },
+      "criterion_driver/criterion_chest/criterion_chest_vc": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": -1.499986115381481
+      },
+      "criterion_driver/criterion_chest/criterion_shoulder_belt_load": {
+        "color": "green",
+        "rating": 0.0,
+        "status": "OK",
+        "value": 4.999880052753026
+      },
+      "criterion_driver/criterion_femur": {
+        "color": null,
+        "rating": 1.3290770477462517,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_femur/criterion_femur_axial_force": {
+        "color": null,
+        "rating": 1.3290770477462517,
+        "status": "OK",
+        "value": -4.9999310020182826
+      },
+      "criterion_driver/criterion_femur/criterion_femur_axial_force/criterion_femur_axial_force_left": {
+        "color": "orange",
+        "rating": 1.3290770477462517,
+        "status": "OK",
+        "value": -4.9999310020182826
+      },
+      "criterion_driver/criterion_femur/criterion_femur_axial_force/criterion_femur_axial_force_right": {
+        "color": "orange",
+        "rating": 1.3290770477462517,
+        "status": "OK",
+        "value": -4.9999310020182826
+      },
+      "criterion_driver/criterion_femur/criterion_submarining": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_driver/criterion_head": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_head/criterion_DisplacementSteeringColumn": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": 0.0
+      },
+      "criterion_driver/criterion_head/criterion_HazardousAirbagDeployment": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_driver/criterion_head/criterion_IncorrectAirbagDeployment": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_driver/criterion_head/criterion_UnstableAirbagContact": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_driver/criterion_head/criterion_head_a3ms": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": 35.69006745422749
+      },
+      "criterion_driver/criterion_head/criterion_hic_15": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": 600.0
+      },
+      "criterion_driver/criterion_neck": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_neck/criterion_fx_shear": {
+        "color": "red",
+        "rating": "-inf",
+        "status": "OK",
+        "value": 4.9999310020182826
+      },
+      "criterion_driver/criterion_neck/criterion_fz_tension": {
+        "color": "red",
+        "rating": "-inf",
+        "status": "OK",
+        "value": 4.9999310020182826
+      },
+      "criterion_driver/criterion_neck/criterion_my_extension": {
+        "color": "red",
+        "rating": "-inf",
+        "status": "OK",
+        "value": -79.99889603229252
+      },
+      "criterion_front_passenger": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "-inf"
+      },
+      "criterion_front_passenger/criterion_chest": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_front_passenger/criterion_chest/criterion_chest_deflection": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": -59.999514038351805
+      },
+      "criterion_front_passenger/criterion_chest/criterion_chest_vc": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": -1.499986115381481
+      },
+      "criterion_front_passenger/criterion_chest/criterion_shoulder_belt_load": {
+        "color": "green",
+        "rating": 0.0,
+        "status": "OK",
+        "value": 4.999880052753026
+      },
+      "criterion_front_passenger/criterion_femur": {
+        "color": null,
+        "rating": 1.3290770477462517,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_front_passenger/criterion_femur/criterion_femur_axial_force": {
+        "color": null,
+        "rating": 1.3290770477462517,
+        "status": "OK",
+        "value": -4.9999310020182826
+      },
+      "criterion_front_passenger/criterion_femur/criterion_femur_axial_force/criterion_femur_axial_force_left": {
+        "color": "orange",
+        "rating": 1.3290770477462517,
+        "status": "OK",
+        "value": -4.9999310020182826
+      },
+      "criterion_front_passenger/criterion_femur/criterion_femur_axial_force/criterion_femur_axial_force_right": {
+        "color": "orange",
+        "rating": 1.3290770477462517,
+        "status": "OK",
+        "value": -4.9999310020182826
+      },
+      "criterion_front_passenger/criterion_head": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_front_passenger/criterion_head/criterion_HazardousAirbagDeployment": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_front_passenger/criterion_head/criterion_IncorrectAirbagDeployment": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_front_passenger/criterion_head/criterion_head_a3ms": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": 35.69006745422749
+      },
+      "criterion_front_passenger/criterion_head/criterion_hic_15": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": 600.0
+      },
+      "criterion_front_passenger/criterion_neck": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_front_passenger/criterion_neck/criterion_fx_shear": {
+        "color": "red",
+        "rating": 0.0,
+        "status": "OK",
+        "value": 4.9999310020182826
+      },
+      "criterion_front_passenger/criterion_neck/criterion_fz_tension": {
+        "color": "red",
+        "rating": 0.0,
+        "status": "OK",
+        "value": 4.9999310020182826
+      },
+      "criterion_front_passenger/criterion_neck/criterion_my_extension": {
+        "color": "red",
+        "rating": 0.0,
+        "status": "OK",
+        "value": -79.99889603229252
+      },
+      "criterion_rear_passenger": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "-inf"
+      },
+      "criterion_rear_passenger/criterion_chest": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_rear_passenger/criterion_chest/criterion_chest_deflection": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": -59.999514038351805
+      },
+      "criterion_rear_passenger/criterion_chest/criterion_chest_vc": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": -1.499986115381481
+      },
+      "criterion_rear_passenger/criterion_chest/criterion_shoulder_belt_load": {
+        "color": "green",
+        "rating": 0.0,
+        "status": "OK",
+        "value": 4.999880052753026
+      },
+      "criterion_rear_passenger/criterion_femur": {
+        "color": null,
+        "rating": 1.3290770477462517,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_rear_passenger/criterion_femur/criterion_femur_axial_force": {
+        "color": null,
+        "rating": 1.3290770477462517,
+        "status": "OK",
+        "value": -4.9999310020182826
+      },
+      "criterion_rear_passenger/criterion_femur/criterion_femur_axial_force/criterion_femur_axial_force_left": {
+        "color": "orange",
+        "rating": 1.3290770477462517,
+        "status": "OK",
+        "value": -4.9999310020182826
+      },
+      "criterion_rear_passenger/criterion_femur/criterion_femur_axial_force/criterion_femur_axial_force_right": {
+        "color": "orange",
+        "rating": 1.3290770477462517,
+        "status": "OK",
+        "value": -4.9999310020182826
+      },
+      "criterion_rear_passenger/criterion_femur/criterion_submarining": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_rear_passenger/criterion_head": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_rear_passenger/criterion_head/criterion_ExceedingForwardExcursionLine": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_rear_passenger/criterion_head/criterion_HazardousAirbagDeployment": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_rear_passenger/criterion_head/criterion_IncorrectAirbagDeployment": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_rear_passenger/criterion_head/criterion_UnstableAirbagContact": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_rear_passenger/criterion_head/criterion_head_a3ms": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": 35.69006745422749
+      },
+      "criterion_rear_passenger/criterion_head/criterion_hic_15": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": 600.0
+      },
+      "criterion_rear_passenger/criterion_neck": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_rear_passenger/criterion_neck/criterion_fx_shear": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": 4.9999310020182826
+      },
+      "criterion_rear_passenger/criterion_neck/criterion_fz_tension": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": 4.9999310020182826
+      },
+      "criterion_rear_passenger/criterion_neck/criterion_my_extension": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": -79.99889603229252
+      }
+    },
+    "EuroNCAP_Frontal_50kmh:euro_ncap_frontal_50kmh-1": {
+      "Overall": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_door_opening_during_impact": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": 0
+      },
+      "criterion_driver": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "-inf"
+      },
+      "criterion_driver/criterion_chest": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_chest/criterion_SteeringWheelContact": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_chest/criterion_chest_deflection": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": -57.59953347681776
+      },
+      "criterion_driver/criterion_chest/criterion_chest_vc": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": -1.4399866707662214
+      },
+      "criterion_driver/criterion_chest/criterion_shoulder_belt_load": {
+        "color": "green",
+        "rating": 0.0,
+        "status": "OK",
+        "value": 4.799884850642904
+      },
+      "criterion_driver/criterion_femur": {
+        "color": null,
+        "rating": 1.5524072991697346,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_femur/criterion_femur_axial_force": {
+        "color": null,
+        "rating": 1.5524072991697346,
+        "status": "OK",
+        "value": -4.7999337619375515
+      },
+      "criterion_driver/criterion_femur/criterion_femur_axial_force/criterion_femur_axial_force_left": {
+        "color": "orange",
+        "rating": 1.5524072991697346,
+        "status": "OK",
+        "value": -4.7999337619375515
+      },
+      "criterion_driver/criterion_femur/criterion_femur_axial_force/criterion_femur_axial_force_right": {
+        "color": "orange",
+        "rating": 1.5524072991697346,
+        "status": "OK",
+        "value": -4.7999337619375515
+      },
+      "criterion_driver/criterion_femur/criterion_submarining": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_driver/criterion_head": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_head/criterion_DisplacementSteeringColumn": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": 0.0
+      },
+      "criterion_driver/criterion_head/criterion_HazardousAirbagDeployment": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_driver/criterion_head/criterion_IncorrectAirbagDeployment": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_driver/criterion_head/criterion_UnstableAirbagContact": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_driver/criterion_head/criterion_head_a3ms": {
+        "color": "brown",
+        "rating": 0.8403559208235889,
+        "status": "OK",
+        "value": 34.26246475605839
+      },
+      "criterion_driver/criterion_head/criterion_hic_15": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": 576.0
+      },
+      "criterion_driver/criterion_neck": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_neck/criterion_fx_shear": {
+        "color": "red",
+        "rating": "-inf",
+        "status": "OK",
+        "value": 4.7999337619375515
+      },
+      "criterion_driver/criterion_neck/criterion_fz_tension": {
+        "color": "red",
+        "rating": "-inf",
+        "status": "OK",
+        "value": 4.7999337619375515
+      },
+      "criterion_driver/criterion_neck/criterion_my_extension": {
+        "color": "red",
+        "rating": "-inf",
+        "status": "OK",
+        "value": -76.79894019100081
+      },
+      "criterion_front_passenger": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "-inf"
+      },
+      "criterion_front_passenger/criterion_chest": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_front_passenger/criterion_chest/criterion_chest_deflection": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": -57.59953347681776
+      },
+      "criterion_front_passenger/criterion_chest/criterion_chest_vc": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": -1.4399866707662214
+      },
+      "criterion_front_passenger/criterion_chest/criterion_shoulder_belt_load": {
+        "color": "green",
+        "rating": 0.0,
+        "status": "OK",
+        "value": 4.799884850642904
+      },
+      "criterion_front_passenger/criterion_femur": {
+        "color": null,
+        "rating": 1.5524072991697346,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_front_passenger/criterion_femur/criterion_femur_axial_force": {
+        "color": null,
+        "rating": 1.5524072991697346,
+        "status": "OK",
+        "value": -4.7999337619375515
+      },
+      "criterion_front_passenger/criterion_femur/criterion_femur_axial_force/criterion_femur_axial_force_left": {
+        "color": "orange",
+        "rating": 1.5524072991697346,
+        "status": "OK",
+        "value": -4.7999337619375515
+      },
+      "criterion_front_passenger/criterion_femur/criterion_femur_axial_force/criterion_femur_axial_force_right": {
+        "color": "orange",
+        "rating": 1.5524072991697346,
+        "status": "OK",
+        "value": -4.7999337619375515
+      },
+      "criterion_front_passenger/criterion_head": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_front_passenger/criterion_head/criterion_HazardousAirbagDeployment": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_front_passenger/criterion_head/criterion_IncorrectAirbagDeployment": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_front_passenger/criterion_head/criterion_head_a3ms": {
+        "color": "brown",
+        "rating": 0.8403559208235889,
+        "status": "OK",
+        "value": 34.26246475605839
+      },
+      "criterion_front_passenger/criterion_head/criterion_hic_15": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": 576.0
+      },
+      "criterion_front_passenger/criterion_neck": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_front_passenger/criterion_neck/criterion_fx_shear": {
+        "color": "red",
+        "rating": 0.0,
+        "status": "OK",
+        "value": 4.7999337619375515
+      },
+      "criterion_front_passenger/criterion_neck/criterion_fz_tension": {
+        "color": "red",
+        "rating": 0.0,
+        "status": "OK",
+        "value": 4.7999337619375515
+      },
+      "criterion_front_passenger/criterion_neck/criterion_my_extension": {
+        "color": "red",
+        "rating": 0.0,
+        "status": "OK",
+        "value": -76.79894019100081
+      },
+      "criterion_rear_passenger": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "-inf"
+      },
+      "criterion_rear_passenger/criterion_chest": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_rear_passenger/criterion_chest/criterion_chest_deflection": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": -57.59953347681776
+      },
+      "criterion_rear_passenger/criterion_chest/criterion_chest_vc": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": -1.4399866707662214
+      },
+      "criterion_rear_passenger/criterion_chest/criterion_shoulder_belt_load": {
+        "color": "green",
+        "rating": 0.0,
+        "status": "OK",
+        "value": 4.799884850642904
+      },
+      "criterion_rear_passenger/criterion_femur": {
+        "color": null,
+        "rating": 1.5524072991697346,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_rear_passenger/criterion_femur/criterion_femur_axial_force": {
+        "color": null,
+        "rating": 1.5524072991697346,
+        "status": "OK",
+        "value": -4.7999337619375515
+      },
+      "criterion_rear_passenger/criterion_femur/criterion_femur_axial_force/criterion_femur_axial_force_left": {
+        "color": "orange",
+        "rating": 1.5524072991697346,
+        "status": "OK",
+        "value": -4.7999337619375515
+      },
+      "criterion_rear_passenger/criterion_femur/criterion_femur_axial_force/criterion_femur_axial_force_right": {
+        "color": "orange",
+        "rating": 1.5524072991697346,
+        "status": "OK",
+        "value": -4.7999337619375515
+      },
+      "criterion_rear_passenger/criterion_femur/criterion_submarining": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_rear_passenger/criterion_head": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_rear_passenger/criterion_head/criterion_ExceedingForwardExcursionLine": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_rear_passenger/criterion_head/criterion_HazardousAirbagDeployment": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_rear_passenger/criterion_head/criterion_IncorrectAirbagDeployment": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_rear_passenger/criterion_head/criterion_UnstableAirbagContact": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_rear_passenger/criterion_head/criterion_head_a3ms": {
+        "color": "brown",
+        "rating": 0.8403559208235889,
+        "status": "OK",
+        "value": 34.26246475605839
+      },
+      "criterion_rear_passenger/criterion_head/criterion_hic_15": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": 576.0
+      },
+      "criterion_rear_passenger/criterion_neck": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_rear_passenger/criterion_neck/criterion_fx_shear": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": 4.7999337619375515
+      },
+      "criterion_rear_passenger/criterion_neck/criterion_fz_tension": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": 4.7999337619375515
+      },
+      "criterion_rear_passenger/criterion_neck/criterion_my_extension": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": -76.79894019100081
+      }
+    },
+    "EuroNCAP_Frontal_MPDB:euro_ncap_frontal_mpdb-0": {
+      "Overall": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_compatibility_modifier": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": 0.0
+      },
+      "criterion_compatibility_modifier/criterion_olc_modifier": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": 0.6641151358942359
+      },
+      "criterion_door_opening_during_impact": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": 0
+      },
+      "criterion_driver": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_chest_abdomen": {
+        "color": null,
+        "rating": 7.750426382471448e-05,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_chest_abdomen/criterion_abdomen": {
+        "color": null,
+        "rating": 4,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_chest_abdomen/criterion_abdomen/criterion_abdomen_compression": {
+        "color": "green",
+        "rating": 4,
+        "status": "OK",
+        "value": -59.999514038351805
+      },
+      "criterion_driver/criterion_chest_abdomen/criterion_chest": {
+        "color": null,
+        "rating": 7.750426382471448e-05,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_CompartmentIntegrity": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_DisplacementAPillar": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": 0.0
+      },
+      "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_SteeringWheelContact": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_chest_compression": {
+        "color": "brown",
+        "rating": 7.750426382471448e-05,
+        "status": "OK",
+        "value": -59.999514038351805
+      },
+      "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_shoulder_belt_load": {
+        "color": "green",
+        "rating": 0.0,
+        "status": "OK",
+        "value": 4.999880052753026
+      },
+      "criterion_driver/criterion_head_neck": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_head_neck/criterion_head": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_head_neck/criterion_head/criterion_DisplacementSteeringColumn": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": 0.0
+      },
+      "criterion_driver/criterion_head_neck/criterion_head/criterion_HazardousAirbagDeployment": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_driver/criterion_head_neck/criterion_head/criterion_IncorrectAirbagDeployment": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_driver/criterion_head_neck/criterion_head/criterion_UnstableAirbagContact": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_driver/criterion_head_neck/criterion_head/criterion_damage": {
+        "color": "red",
+        "rating": -1.0,
+        "status": "OK",
+        "value": 99.99862004036565
+      },
+      "criterion_driver/criterion_head_neck/criterion_head/criterion_head_a3ms": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": 35.69006745422749
+      },
+      "criterion_driver/criterion_head_neck/criterion_head/criterion_hic_15": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": 600.0
+      },
+      "criterion_driver/criterion_head_neck/criterion_neck": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_head_neck/criterion_neck/criterion_fx_shear": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": 4.9999310020182826
+      },
+      "criterion_driver/criterion_head_neck/criterion_neck/criterion_fz_tension": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": 4.9999310020182826
+      },
+      "criterion_driver/criterion_head_neck/criterion_neck/criterion_my_extension": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": -79.99889603229252
+      },
+      "criterion_driver/criterion_knee_femur_pelvis": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_ConcentratedLoading": {
+        "color": null,
+        "rating": -0.0,
+        "status": "OK",
+        "value": 0
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_VariableContact": {
+        "color": null,
+        "rating": -0.0,
+        "status": "OK",
+        "value": 0
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_femur": {
+        "color": null,
+        "rating": 2.725372574871242,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_femur/criterion_femur_compression": {
+        "color": "yellow",
+        "rating": 2.725372574871242,
+        "status": "OK",
+        "value": -4.9999310020182826
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_knee": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_knee/criterion_knee_slider_compression": {
+        "color": "red",
+        "rating": 0.0,
+        "status": "OK",
+        "value": -59.999514038351805
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_pelvis": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_pelvis/criterion_acetabulum_force": {
+        "color": "red",
+        "rating": 0.0,
+        "status": "OK",
+        "value": -4.9999310020182826
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_submarining": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_driver/criterion_lowerleg_foot_ankle": {
+        "color": null,
+        "rating": 0.8860275094953107,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_FootwellRupture": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_PedalBlocking": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": 0.0
+      },
+      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_PedalUpwardDisplacement": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": 0.0
+      },
+      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_pedal_rearward_displacement": {
+        "color": null,
+        "rating": 4.0,
+        "status": "OK",
+        "value": 0
+      },
+      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_tibia_compression": {
+        "color": "orange",
+        "rating": 1.9990462286477508,
+        "status": "OK",
+        "value": -4.9999310020182826
+      },
+      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_tibia_index": {
+        "color": "brown",
+        "rating": 0.8860275094953107,
+        "status": "OK",
+        "value": 1.0999937901816454
+      },
+      "criterion_passenger": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_passenger/criterion_chest": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "-inf"
+      },
+      "criterion_passenger/criterion_chest/criterion_chest_compression": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": -59.999514038351805
+      },
+      "criterion_passenger/criterion_chest/criterion_chest_vc": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": -1.499986115381481
+      },
+      "criterion_passenger/criterion_chest/criterion_shoulder_belt_load": {
+        "color": "green",
+        "rating": 0.0,
+        "status": "OK",
+        "value": 4.999880052753026
+      },
+      "criterion_passenger/criterion_head_neck": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "-inf"
+      },
+      "criterion_passenger/criterion_head_neck/criterion_head": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "-inf"
+      },
+      "criterion_passenger/criterion_head_neck/criterion_head/criterion_HazardousAirbagDeployment": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_passenger/criterion_head_neck/criterion_head/criterion_IncorrectAirbagDeployment": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_passenger/criterion_head_neck/criterion_head/criterion_UnstableAirbagContact": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_passenger/criterion_head_neck/criterion_head/criterion_head_a3ms": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": 35.69006745422749
+      },
+      "criterion_passenger/criterion_head_neck/criterion_head/criterion_hic_15": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": 600.0
+      },
+      "criterion_passenger/criterion_head_neck/criterion_neck": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "-inf"
+      },
+      "criterion_passenger/criterion_head_neck/criterion_neck/criterion_fx_shear": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": -4.9999310020182826
+      },
+      "criterion_passenger/criterion_head_neck/criterion_neck/criterion_fz_tension": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": 4.994412191723887
+      },
+      "criterion_passenger/criterion_head_neck/criterion_neck/criterion_my_extension": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": -79.99889603229252
+      },
+      "criterion_passenger/criterion_knee_femur_pelvis": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": 0.0
+      },
+      "criterion_passenger/criterion_knee_femur_pelvis/criterion_ConcentratedLoading": {
+        "color": null,
+        "rating": -0.0,
+        "status": "OK",
+        "value": 0
+      },
+      "criterion_passenger/criterion_knee_femur_pelvis/criterion_VariableContact": {
+        "color": null,
+        "rating": -0.0,
+        "status": "OK",
+        "value": 0
+      },
+      "criterion_passenger/criterion_knee_femur_pelvis/criterion_femur_compression": {
+        "color": "yellow",
+        "rating": 2.725372574871242,
+        "status": "OK",
+        "value": -4.9999310020182826
+      },
+      "criterion_passenger/criterion_knee_femur_pelvis/criterion_knee_slider_compression": {
+        "color": "red",
+        "rating": 0.0,
+        "status": "OK",
+        "value": -59.999514038351805
+      },
+      "criterion_passenger/criterion_lowerleg": {
+        "color": null,
+        "rating": 0.8860275094953107,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_passenger/criterion_lowerleg/criterion_tibia_compression": {
+        "color": "orange",
+        "rating": 1.9990462286477508,
+        "status": "OK",
+        "value": -4.9999310020182826
+      },
+      "criterion_passenger/criterion_lowerleg/criterion_tibia_index": {
+        "color": "brown",
+        "rating": 0.8860275094953107,
+        "status": "OK",
+        "value": 1.0999937901816454
+      }
+    },
+    "EuroNCAP_Frontal_MPDB:euro_ncap_frontal_mpdb-1": {
+      "Overall": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_compatibility_modifier": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": 0.0
+      },
+      "criterion_compatibility_modifier/criterion_olc_modifier": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": 0.6375505304584662
+      },
+      "criterion_door_opening_during_impact": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": 0
+      },
+      "criterion_driver": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_chest_abdomen": {
+        "color": null,
+        "rating": 0.3828417147856949,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_chest_abdomen/criterion_abdomen": {
+        "color": null,
+        "rating": 4,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_chest_abdomen/criterion_abdomen/criterion_abdomen_compression": {
+        "color": "green",
+        "rating": 4,
+        "status": "OK",
+        "value": -57.59953347681776
+      },
+      "criterion_driver/criterion_chest_abdomen/criterion_chest": {
+        "color": null,
+        "rating": 0.3828417147856949,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_CompartmentIntegrity": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_DisplacementAPillar": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": 0.0
+      },
+      "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_SteeringWheelContact": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_chest_compression": {
+        "color": "brown",
+        "rating": 0.3828417147856949,
+        "status": "OK",
+        "value": -57.59953347681776
+      },
+      "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_shoulder_belt_load": {
+        "color": "green",
+        "rating": 0.0,
+        "status": "OK",
+        "value": 4.799884850642904
+      },
+      "criterion_driver/criterion_head_neck": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_head_neck/criterion_head": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_head_neck/criterion_head/criterion_DisplacementSteeringColumn": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": 0.0
+      },
+      "criterion_driver/criterion_head_neck/criterion_head/criterion_HazardousAirbagDeployment": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_driver/criterion_head_neck/criterion_head/criterion_IncorrectAirbagDeployment": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_driver/criterion_head_neck/criterion_head/criterion_UnstableAirbagContact": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_driver/criterion_head_neck/criterion_head/criterion_damage": {
+        "color": "red",
+        "rating": -1.0,
+        "status": "OK",
+        "value": 95.99867523875102
+      },
+      "criterion_driver/criterion_head_neck/criterion_head/criterion_head_a3ms": {
+        "color": "brown",
+        "rating": 0.8403559208235889,
+        "status": "OK",
+        "value": 34.26246475605839
+      },
+      "criterion_driver/criterion_head_neck/criterion_head/criterion_hic_15": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": 576.0
+      },
+      "criterion_driver/criterion_head_neck/criterion_neck": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_head_neck/criterion_neck/criterion_fx_shear": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": 4.7999337619375515
+      },
+      "criterion_driver/criterion_head_neck/criterion_neck/criterion_fz_tension": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": 4.7999337619375515
+      },
+      "criterion_driver/criterion_head_neck/criterion_neck/criterion_my_extension": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": -76.79894019100081
+      },
+      "criterion_driver/criterion_knee_femur_pelvis": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_ConcentratedLoading": {
+        "color": null,
+        "rating": -0.0,
+        "status": "OK",
+        "value": 0
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_VariableContact": {
+        "color": null,
+        "rating": -0.0,
+        "status": "OK",
+        "value": 0
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_femur": {
+        "color": null,
+        "rating": 2.9378197628580356,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_femur/criterion_femur_compression": {
+        "color": "yellow",
+        "rating": 2.9378197628580356,
+        "status": "OK",
+        "value": -4.7999337619375515
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_knee": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_knee/criterion_knee_slider_compression": {
+        "color": "red",
+        "rating": 0.0,
+        "status": "OK",
+        "value": -57.59953347681776
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_pelvis": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_pelvis/criterion_acetabulum_force": {
+        "color": "red",
+        "rating": 0.0,
+        "status": "OK",
+        "value": -4.7999337619375515
+      },
+      "criterion_driver/criterion_knee_femur_pelvis/criterion_submarining": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_driver/criterion_lowerleg_foot_ankle": {
+        "color": null,
+        "rating": 1.0809464091154974,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_FootwellRupture": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_PedalBlocking": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": 0.0
+      },
+      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_PedalUpwardDisplacement": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": 0.0
+      },
+      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_pedal_rearward_displacement": {
+        "color": null,
+        "rating": 4.0,
+        "status": "OK",
+        "value": 0
+      },
+      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_tibia_compression": {
+        "color": "orange",
+        "rating": 2.1330443795018406,
+        "status": "OK",
+        "value": -4.7999337619375515
+      },
+      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_tibia_index": {
+        "color": "brown",
+        "rating": 1.0809464091154974,
+        "status": "OK",
+        "value": 1.0559940385743798
+      },
+      "criterion_passenger": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_passenger/criterion_chest": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "-inf"
+      },
+      "criterion_passenger/criterion_chest/criterion_chest_compression": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": -57.59953347681776
+      },
+      "criterion_passenger/criterion_chest/criterion_chest_vc": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": -1.4399866707662214
+      },
+      "criterion_passenger/criterion_chest/criterion_shoulder_belt_load": {
+        "color": "green",
+        "rating": 0.0,
+        "status": "OK",
+        "value": 4.799884850642904
+      },
+      "criterion_passenger/criterion_head_neck": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "-inf"
+      },
+      "criterion_passenger/criterion_head_neck/criterion_head": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "-inf"
+      },
+      "criterion_passenger/criterion_head_neck/criterion_head/criterion_HazardousAirbagDeployment": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_passenger/criterion_head_neck/criterion_head/criterion_IncorrectAirbagDeployment": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_passenger/criterion_head_neck/criterion_head/criterion_UnstableAirbagContact": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_passenger/criterion_head_neck/criterion_head/criterion_head_a3ms": {
+        "color": "brown",
+        "rating": 0.8403559208235889,
+        "status": "OK",
+        "value": 34.26246475605839
+      },
+      "criterion_passenger/criterion_head_neck/criterion_head/criterion_hic_15": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": 576.0
+      },
+      "criterion_passenger/criterion_head_neck/criterion_neck": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "-inf"
+      },
+      "criterion_passenger/criterion_head_neck/criterion_neck/criterion_fx_shear": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": -4.7999337619375515
+      },
+      "criterion_passenger/criterion_head_neck/criterion_neck/criterion_fz_tension": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": 4.794635704054932
+      },
+      "criterion_passenger/criterion_head_neck/criterion_neck/criterion_my_extension": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": -76.79894019100081
+      },
+      "criterion_passenger/criterion_knee_femur_pelvis": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": 0.0
+      },
+      "criterion_passenger/criterion_knee_femur_pelvis/criterion_ConcentratedLoading": {
+        "color": null,
+        "rating": -0.0,
+        "status": "OK",
+        "value": 0
+      },
+      "criterion_passenger/criterion_knee_femur_pelvis/criterion_VariableContact": {
+        "color": null,
+        "rating": -0.0,
+        "status": "OK",
+        "value": 0
+      },
+      "criterion_passenger/criterion_knee_femur_pelvis/criterion_femur_compression": {
+        "color": "yellow",
+        "rating": 2.9378197628580356,
+        "status": "OK",
+        "value": -4.7999337619375515
+      },
+      "criterion_passenger/criterion_knee_femur_pelvis/criterion_knee_slider_compression": {
+        "color": "red",
+        "rating": 0.0,
+        "status": "OK",
+        "value": -57.59953347681776
+      },
+      "criterion_passenger/criterion_lowerleg": {
+        "color": null,
+        "rating": 1.0809464091154974,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_passenger/criterion_lowerleg/criterion_tibia_compression": {
+        "color": "orange",
+        "rating": 2.1330443795018406,
+        "status": "OK",
+        "value": -4.7999337619375515
+      },
+      "criterion_passenger/criterion_lowerleg/criterion_tibia_index": {
+        "color": "brown",
+        "rating": 1.0809464091154974,
+        "status": "OK",
+        "value": 1.0559940385743798
+      }
+    },
+    "EuroNCAP_Side_Barrier:euro_ncap_side_barrier-0": {
+      "Overall": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_abdomen": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_abdomen/criterion_abdomen_lateral_compression": {
+        "color": "brown",
+        "rating": 1.1076076405050752,
+        "status": "OK",
+        "value": -59.999514038351805
+      },
+      "criterion_abdomen/criterion_abdomen_lateral_vc": {
+        "color": "red",
+        "rating": 0,
+        "status": "OK",
+        "value": -1.4999862004036566
+      },
+      "criterion_chest": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_chest/criterion_chest_lateral_compression": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": -59.999514038351805
+      },
+      "criterion_chest/criterion_chest_lateral_vc": {
+        "color": "red",
+        "rating": 0,
+        "status": "OK",
+        "value": -1.4999862004036566
+      },
+      "criterion_chest/criterion_shoulder_lateral_force": {
+        "color": "red",
+        "rating": 0,
+        "status": "OK",
+        "value": 4.9999310020182826
+      },
+      "criterion_door_opening_during_impact": {
+        "color": null,
+        "rating": -0.0,
+        "status": "OK",
+        "value": 0
+      },
+      "criterion_head": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_head/criterion_head_acceleration": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": 35.69006745422749
+      },
+      "criterion_head/criterion_hic_15": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": 600.0
+      },
+      "criterion_incorrect_airbag_deployment": {
+        "color": null,
+        "rating": -0.0,
+        "status": "OK",
+        "value": 0
+      },
+      "criterion_pelvis": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_pelvis/criterion_pubic_symphysis_force": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": 4.9999310020182826
+      }
+    },
+    "EuroNCAP_Side_FarSide:euro_ncap_side_farside-0": {
+      "Overall": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_chest_abdomen": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_chest_abdomen/criterion_abdomen_lateral_compression": {
+        "color": "brown",
+        "rating": 1.1076076405050752,
+        "status": "OK",
+        "value": -59.999514038351805
+      },
+      "criterion_chest_abdomen/criterion_chest_lateral_compression": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": -59.999514038351805
+      },
+      "criterion_head": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "-inf"
+      },
+      "criterion_head/criterion_head_a3ms": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": 35.69006745422749
+      },
+      "criterion_head/criterion_hic_15": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": 600.0
+      },
+      "criterion_head_excursion": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_neck": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_neck/criterion_lower_neck": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_neck/criterion_lower_neck/criterion_extension_my_base": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": -79.99889603229252
+      },
+      "criterion_neck/criterion_lower_neck/criterion_lateral_flexion_mx": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": 79.99889603229252
+      },
+      "criterion_neck/criterion_lower_neck/criterion_tension_fz": {
+        "color": "red",
+        "rating": 0.0,
+        "status": "OK",
+        "value": 4.9999310020182826
+      },
+      "criterion_neck/criterion_upper_neck": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_neck/criterion_upper_neck/criterion_extension_myoc": {
+        "color": "red",
+        "rating": 0.0,
+        "status": "OK",
+        "value": -79.99889603229252
+      },
+      "criterion_neck/criterion_upper_neck/criterion_lateral_flexion_mxoc": {
+        "color": "green",
+        "rating": 4.0,
+        "status": "OK",
+        "value": 79.99889603229252
+      },
+      "criterion_neck/criterion_upper_neck/criterion_tension_fz": {
+        "color": "red",
+        "rating": 0.0,
+        "status": "OK",
+        "value": 4.9999310020182826
+      },
+      "criterion_pelvis_lumbar_modifier": {
+        "color": null,
+        "rating": -4,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_pelvis_lumbar_modifier/criterion_lumbar_fy": {
+        "color": "red",
+        "rating": -4,
+        "status": "OK",
+        "value": -4.9999310020182826
+      },
+      "criterion_pelvis_lumbar_modifier/criterion_lumbar_fz": {
+        "color": "red",
+        "rating": -4,
+        "status": "OK",
+        "value": -4.9999310020182826
+      },
+      "criterion_pelvis_lumbar_modifier/criterion_lumbar_mx": {
+        "color": "green",
+        "rating": 0,
+        "status": "OK",
+        "value": -79.99889603229252
+      },
+      "criterion_pelvis_lumbar_modifier/criterion_pubic_symphysis": {
+        "color": "red",
+        "rating": -4,
+        "status": "OK",
+        "value": -4.9999310020182826
+      }
+    },
+    "EuroNCAP_Side_Pole:euro_ncap_side_pole-0": {
+      "Overall": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_abdomen": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_abdomen/criterion_abdomen_lateral_compression": {
+        "color": "brown",
+        "rating": 1.1076076405050752,
+        "status": "OK",
+        "value": -59.999514038351805
+      },
+      "criterion_abdomen/criterion_abdomen_lateral_vc": {
+        "color": "red",
+        "rating": 0,
+        "status": "OK",
+        "value": -1.4999862004036566
+      },
+      "criterion_chest": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_chest/criterion_chest_lateral_compression": {
+        "color": "red",
+        "rating": "-inf",
+        "status": "OK",
+        "value": -59.999514038351805
+      },
+      "criterion_chest/criterion_chest_lateral_vc": {
+        "color": "red",
+        "rating": 0,
+        "status": "OK",
+        "value": -1.4999862004036566
+      },
+      "criterion_chest/criterion_shoulder_lateral_force": {
+        "color": "red",
+        "rating": 0,
+        "status": "OK",
+        "value": 4.9999310020182826
+      },
+      "criterion_door_opening_during_impact": {
+        "color": null,
+        "rating": -0.0,
+        "status": "OK",
+        "value": 0
+      },
+      "criterion_head": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_head/criterion_direct_head_contact_with_the_pole": {
+        "color": null,
+        "rating": 4,
+        "status": "OK",
+        "value": false
+      },
+      "criterion_head/criterion_head_acceleration": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": 81.57666381298868
+      },
+      "criterion_head/criterion_hic_15": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": 600.0
+      },
+      "criterion_incorrect_airbag_deployment": {
+        "color": null,
+        "rating": -0.0,
+        "status": "OK",
+        "value": 0
+      },
+      "criterion_pelvis": {
+        "color": null,
+        "rating": "-inf",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_pelvis/criterion_pubic_symphysis_force": {
+        "color": "gray",
+        "rating": "-inf",
+        "status": "OK",
+        "value": 4.9999310020182826
+      },
+      "criterion_side_head_protection_device": {
+        "color": null,
+        "rating": -0.0,
+        "status": "OK",
+        "value": 0
+      }
+    }
+  }
+}

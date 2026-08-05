@@ -1,0 +1,143 @@
+{
+  "print_results": [
+    "un_frontal_50kmh_r137-0",
+    "\tOverall: Value=nan [] Rating=0",
+    "\t\tDriver: Value=nan [] Rating=0",
+    "\t\t\tHead Performance Criterion (HPC 36): Value=600 [] Rating=1",
+    "\t\t\tHead a3ms: Value=35.69 [m / s2] Rating=0",
+    "\t\t\tNeck Fz tension: Value=4.9999 [kN] Rating=0",
+    "\t\t\tNeck Fx shear: Value=4.9999 [kN] Rating=0",
+    "\t\t\tNeck My extension: Value=-79.999 [N m] Rating=0",
+    "\t\t\tChest Deflection: Value=-60 [mm] Rating=0",
+    "\t\t\tChest VC: Value=-1.5 [m / s] Rating=0",
+    "\t\t\tFemur Compression: Value=-4.9999 [kN] Rating=1",
+    "\t\tPassenger: Value=nan [] Rating=0",
+    "\t\t\tHead Performance Criterion (HPC 36): Value=600 [] Rating=1",
+    "\t\t\tHead a3ms: Value=35.69 [m / s2] Rating=0",
+    "\t\t\tNeck Fz tension: Value=4.9999 [kN] Rating=0",
+    "\t\t\tNeck Fx shear: Value=4.9999 [kN] Rating=0",
+    "\t\t\tNeck My extension: Value=-79.999 [N m] Rating=0",
+    "\t\t\tChest Deflection: Value=-60 [mm] Rating=0",
+    "\t\t\tChest VC: Value=-1.5 [m / s] Rating=0",
+    "\t\t\tFemur Compression: Value=-4.9999 [kN] Rating=1"
+  ],
+  "report": "UN_Frontal_50kmh_R137",
+  "results": {
+    "un_frontal_50kmh_r137-0": {
+      "Overall": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_chest_deflection": {
+        "color": "red",
+        "rating": false,
+        "status": "OK",
+        "value": -59.999514038351805
+      },
+      "criterion_driver/criterion_chest_vc": {
+        "color": "red",
+        "rating": false,
+        "status": "OK",
+        "value": -1.499986115381481
+      },
+      "criterion_driver/criterion_femur_compression": {
+        "color": "green",
+        "rating": true,
+        "status": "OK",
+        "value": -4.9999310020182826
+      },
+      "criterion_driver/criterion_head_a3ms": {
+        "color": "red",
+        "rating": false,
+        "status": "OK",
+        "value": 35.69006745422749
+      },
+      "criterion_driver/criterion_hpc36": {
+        "color": "green",
+        "rating": true,
+        "status": "OK",
+        "value": 600.0
+      },
+      "criterion_driver/criterion_neck_fx_shear": {
+        "color": "red",
+        "rating": 0.0,
+        "status": "OK",
+        "value": 4.9999310020182826
+      },
+      "criterion_driver/criterion_neck_fz_tension": {
+        "color": "red",
+        "rating": 0.0,
+        "status": "OK",
+        "value": 4.9999310020182826
+      },
+      "criterion_driver/criterion_neck_my_extension": {
+        "color": "red",
+        "rating": 0.0,
+        "status": "OK",
+        "value": -79.99889603229252
+      },
+      "criterion_passenger": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_passenger/criterion_chest_deflection": {
+        "color": "red",
+        "rating": false,
+        "status": "OK",
+        "value": -59.999514038351805
+      },
+      "criterion_passenger/criterion_chest_vc": {
+        "color": "red",
+        "rating": false,
+        "status": "OK",
+        "value": -1.499986115381481
+      },
+      "criterion_passenger/criterion_femur_compression": {
+        "color": "green",
+        "rating": true,
+        "status": "OK",
+        "value": -4.9999310020182826
+      },
+      "criterion_passenger/criterion_head_a3ms": {
+        "color": "red",
+        "rating": false,
+        "status": "OK",
+        "value": 35.69006745422749
+      },
+      "criterion_passenger/criterion_hpc36": {
+        "color": "green",
+        "rating": true,
+        "status": "OK",
+        "value": 600.0
+      },
+      "criterion_passenger/criterion_neck_fx_shear": {
+        "color": "red",
+        "rating": false,
+        "status": "OK",
+        "value": 4.9999310020182826
+      },
+      "criterion_passenger/criterion_neck_fz_tension": {
+        "color": "red",
+        "rating": false,
+        "status": "OK",
+        "value": 4.9999310020182826
+      },
+      "criterion_passenger/criterion_neck_my_extension": {
+        "color": "red",
+        "rating": 0.0,
+        "status": "OK",
+        "value": -79.99889603229252
+      }
+    }
+  }
+}

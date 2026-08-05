@@ -1,3683 +1,164 @@
 {
-  "definition": {
-    "criteria": {
-      "Overall": {
-        "class": "Overall",
-        "limits": [],
-        "name": "Overall"
-      },
-      "criterion_compatibility_modifier": {
-        "class": "Criterion_Compatibility_Modifier",
-        "limits": [],
-        "name": "Compatibility Modifier"
-      },
-      "criterion_compatibility_modifier/criterion_olc_modifier": {
-        "class": "Criterion_OLC_Modifier",
-        "limits": [
-          {
-            "code_patterns": [
-              "M?MBAR0OLC??VEX?"
-            ],
-            "color": "black",
-            "func_samples": [
-              25,
-              25,
-              25,
-              25,
-              25,
-              25,
-              25
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "0 pt. Modifier",
-            "rating": 0,
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "g0"
-          },
-          {
-            "code_patterns": [
-              "M?MBAR0OLC??VEX?"
-            ],
-            "color": "black",
-            "func_samples": [
-              25,
-              25,
-              25,
-              25,
-              25,
-              25,
-              25
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "-2..0 pt. Modifier",
-            "rating": 0,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "g0"
-          },
-          {
-            "code_patterns": [
-              "M?MBAR0OLC??VEX?"
-            ],
-            "color": "black",
-            "func_samples": [
-              40,
-              40,
-              40,
-              40,
-              40,
-              40,
-              40
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "-2 pt. Modifier",
-            "rating": -2,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "g0"
-          }
-        ],
-        "name": "Occupant Load Criterion (OLC) Modifier"
-      },
-      "criterion_door_opening_during_impact": {
-        "class": "Criterion_DoorOpeningDuringImpact",
-        "limits": [],
-        "name": "Door Opening During Impact"
-      },
-      "criterion_driver": {
-        "class": "Criterion_Driver",
-        "limits": [],
-        "name": "Driver"
-      },
-      "criterion_driver/criterion_chest_abdomen": {
-        "class": "Criterion_Chest_Abdomen",
-        "limits": [],
-        "name": "Chest and Abdomen"
-      },
-      "criterion_driver/criterion_chest_abdomen/criterion_abdomen": {
-        "class": "Criterion_Abdomen",
-        "limits": [],
-        "name": "Abdomen"
-      },
-      "criterion_driver/criterion_chest_abdomen/criterion_abdomen/criterion_abdomen_compression": {
-        "class": "Criterion_Abdomen_Compression",
-        "limits": [
-          {
-            "code_patterns": [
-              "?1ABDO??????DSX?"
-            ],
-            "color": "red",
-            "func_samples": [
-              -88,
-              -88,
-              -88,
-              -88,
-              -88,
-              -88,
-              -88
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Poor",
-            "rating": 0,
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "mm"
-          },
-          {
-            "code_patterns": [
-              "?1ABDO??????DSX?"
-            ],
-            "color": "green",
-            "func_samples": [
-              -88,
-              -88,
-              -88,
-              -88,
-              -88,
-              -88,
-              -88
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Good",
-            "rating": 4,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "mm"
-          }
-        ],
-        "name": "Abdomen Compression"
-      },
-      "criterion_driver/criterion_chest_abdomen/criterion_chest": {
-        "class": "Criterion_Chest",
-        "limits": [],
-        "name": "Chest"
-      },
-      "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_CompartmentIntegrity": {
-        "class": "Criterion_CompartmentIntegrity",
-        "limits": [],
-        "name": "Modifier for Integrity of the Passenger Compartment"
-      },
-      "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_DisplacementAPillar": {
-        "class": "Criterion_DisplacementAPillar",
-        "limits": [],
-        "name": "Modifier for Displacement of the A Pillar"
-      },
-      "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_SteeringWheelContact": {
-        "class": "Criterion_SteeringWheelContact",
-        "limits": [],
-        "name": "Modifier Chest Steering Wheel Contact"
-      },
-      "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_chest_compression": {
-        "class": "Criterion_Chest_Compression",
-        "limits": [
-          {
-            "code_patterns": [
-              "?1CHST??????DSX?"
-            ],
-            "color": "gray",
-            "func_samples": [
-              -60.0,
-              -60.0,
-              -60.0,
-              -60.0,
-              -60.0,
-              -60.0,
-              -60.0
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Capping",
-            "rating": "-inf",
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "mm"
-          },
-          {
-            "code_patterns": [
-              "?1CHST??????DSX?"
-            ],
-            "color": "red",
-            "func_samples": [
-              -60.0,
-              -60.0,
-              -60.0,
-              -60.0,
-              -60.0,
-              -60.0,
-              -60.0
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Poor",
-            "rating": 0,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "mm"
-          },
-          {
-            "code_patterns": [
-              "?1CHST??????DSX?"
-            ],
-            "color": "brown",
-            "func_samples": [
-              -51.667,
-              -51.667,
-              -51.667,
-              -51.667,
-              -51.667,
-              -51.667,
-              -51.667
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Weak",
-            "rating": 1.329,
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "mm"
-          },
-          {
-            "code_patterns": [
-              "?1CHST??????DSX?"
-            ],
-            "color": "orange",
-            "func_samples": [
-              -43.333,
-              -43.333,
-              -43.333,
-              -43.333,
-              -43.333,
-              -43.333,
-              -43.333
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Marginal",
-            "rating": 2.669,
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "mm"
-          },
-          {
-            "code_patterns": [
-              "?1CHST??????DSX?"
-            ],
-            "color": "yellow",
-            "func_samples": [
-              -35.0,
-              -35.0,
-              -35.0,
-              -35.0,
-              -35.0,
-              -35.0,
-              -35.0
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Adequate",
-            "rating": 4,
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "mm"
-          },
-          {
-            "code_patterns": [
-              "?1CHST??????DSX?"
-            ],
-            "color": "green",
-            "func_samples": [
-              -35.0,
-              -35.0,
-              -35.0,
-              -35.0,
-              -35.0,
-              -35.0,
-              -35.0
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Good",
-            "rating": 4,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "mm"
-          }
-        ],
-        "name": "Chest Compression"
-      },
-      "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_shoulder_belt_load": {
-        "class": "Criterion_ShoulderBeltLoad",
-        "limits": [
-          {
-            "code_patterns": [
-              "?1SEBE????B3FO[X0]?"
-            ],
-            "color": "green",
-            "func_samples": [
-              6.0,
-              6.0,
-              6.0,
-              6.0,
-              6.0,
-              6.0,
-              6.0
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "0 pt. Modifier",
-            "rating": 0,
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?1SEBE????B3FO[X0]?"
-            ],
-            "color": "red",
-            "func_samples": [
-              6.0,
-              6.0,
-              6.0,
-              6.0,
-              6.0,
-              6.0,
-              6.0
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "-2 pt. Modifier",
-            "rating": -2,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "kN"
-          }
-        ],
-        "name": "Modifier Shoulder Belt Load"
-      },
-      "criterion_driver/criterion_head_neck": {
-        "class": "Criterion_Head_Neck",
-        "limits": [],
-        "name": "Head & Neck"
-      },
-      "criterion_driver/criterion_head_neck/criterion_head": {
-        "class": "Criterion_Head",
-        "limits": [],
-        "name": "Head"
-      },
-      "criterion_driver/criterion_head_neck/criterion_head/criterion_DisplacementSteeringColumn": {
-        "class": "Criterion_DisplacementSteeringColumn",
-        "limits": [],
-        "name": "Modifier for Displacement of Steering Column"
-      },
-      "criterion_driver/criterion_head_neck/criterion_head/criterion_HazardousAirbagDeployment": {
-        "class": "Criterion_HazardousAirbagDeployment",
-        "limits": [],
-        "name": "Modifier for Hazardous Airbag Deployment"
-      },
-      "criterion_driver/criterion_head_neck/criterion_head/criterion_IncorrectAirbagDeployment": {
-        "class": "Criterion_IncorrectAirbagDeployment",
-        "limits": [],
-        "name": "Modifier for Incorrect Airbag Deployment"
-      },
-      "criterion_driver/criterion_head_neck/criterion_head/criterion_UnstableAirbagContact": {
-        "class": "Criterion_UnstableAirbagContact",
-        "limits": [],
-        "name": "Modifier for Unstable Airbag Contact"
-      },
-      "criterion_driver/criterion_head_neck/criterion_head/criterion_damage": {
-        "class": "Criterion_DAMAGE",
-        "limits": [
-          {
-            "code_patterns": [
-              "?1HEADDAMA??AAR?"
-            ],
-            "color": "green",
-            "func_samples": [
-              0.42,
-              0.42,
-              0.42,
-              0.42,
-              0.42,
-              0.42,
-              0.42
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "0 pt. Modifier",
-            "rating": 0.0,
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "rad/s^2"
-          },
-          {
-            "code_patterns": [
-              "?1HEADDAMA??AAR?"
-            ],
-            "color": "orange",
-            "func_samples": [
-              0.42,
-              0.42,
-              0.42,
-              0.42,
-              0.42,
-              0.42,
-              0.42
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "-1 pt. Modifier",
-            "rating": -1.0,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "rad/s^2"
-          },
-          {
-            "code_patterns": [
-              "?1HEADDAMA??AAR?"
-            ],
-            "color": "red",
-            "func_samples": [
-              0.47,
-              0.47,
-              0.47,
-              0.47,
-              0.47,
-              0.47,
-              0.47
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "-2 pt. Modifier",
-            "rating": -2.0,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "rad/s^2"
-          }
-        ],
-        "name": "Modifier for Brain Injury - DAMAGE"
-      },
-      "criterion_driver/criterion_head_neck/criterion_head/criterion_head_a3ms": {
-        "class": "Criterion_Head_a3ms",
-        "limits": [
-          {
-            "code_patterns": [
-              "?1HEAD003C??ACR?",
-              "?1HEADCG3C??ACR?"
-            ],
-            "color": "green",
-            "func_samples": [
-              72.0,
-              72.0,
-              72.0,
-              72.0,
-              72.0,
-              72.0,
-              72.0
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Good",
-            "rating": 4,
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "g0"
-          },
-          {
-            "code_patterns": [
-              "?1HEAD003C??ACR?",
-              "?1HEADCG3C??ACR?"
-            ],
-            "color": "yellow",
-            "func_samples": [
-              72.0,
-              72.0,
-              72.0,
-              72.0,
-              72.0,
-              72.0,
-              72.0
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Adequate",
-            "rating": 4,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "g0"
-          },
-          {
-            "code_patterns": [
-              "?1HEAD003C??ACR?",
-              "?1HEADCG3C??ACR?"
-            ],
-            "color": "orange",
-            "func_samples": [
-              74.667,
-              74.667,
-              74.667,
-              74.667,
-              74.667,
-              74.667,
-              74.667
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Marginal",
-            "rating": 2.669,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "g0"
-          },
-          {
-            "code_patterns": [
-              "?1HEAD003C??ACR?",
-              "?1HEADCG3C??ACR?"
-            ],
-            "color": "brown",
-            "func_samples": [
-              77.333,
-              77.333,
-              77.333,
-              77.333,
-              77.333,
-              77.333,
-              77.333
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Weak",
-            "rating": 1.329,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "g0"
-          },
-          {
-            "code_patterns": [
-              "?1HEAD003C??ACR?",
-              "?1HEADCG3C??ACR?"
-            ],
-            "color": "red",
-            "func_samples": [
-              80.0,
-              80.0,
-              80.0,
-              80.0,
-              80.0,
-              80.0,
-              80.0
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Poor",
-            "rating": 0,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "g0"
-          },
-          {
-            "code_patterns": [
-              "?1HEAD003C??ACR?",
-              "?1HEADCG3C??ACR?"
-            ],
-            "color": "gray",
-            "func_samples": [
-              80.0,
-              80.0,
-              80.0,
-              80.0,
-              80.0,
-              80.0,
-              80.0
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Capping",
-            "rating": "-inf",
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "g0"
-          }
-        ],
-        "name": "Head a3ms"
-      },
-      "criterion_driver/criterion_head_neck/criterion_head/criterion_hic_15": {
-        "class": "Criterion_HIC_15",
-        "limits": [
-          {
-            "code_patterns": [
-              "?1HICR0015??00RX",
-              "?1HICRCG15??00RX"
-            ],
-            "color": "green",
-            "func_samples": [
-              500.0,
-              500.0,
-              500.0,
-              500.0,
-              500.0,
-              500.0,
-              500.0
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Good",
-            "rating": 4,
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "1"
-          },
-          {
-            "code_patterns": [
-              "?1HICR0015??00RX",
-              "?1HICRCG15??00RX"
-            ],
-            "color": "yellow",
-            "func_samples": [
-              500.0,
-              500.0,
-              500.0,
-              500.0,
-              500.0,
-              500.0,
-              500.0
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Adequate",
-            "rating": 4,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "1"
-          },
-          {
-            "code_patterns": [
-              "?1HICR0015??00RX",
-              "?1HICRCG15??00RX"
-            ],
-            "color": "orange",
-            "func_samples": [
-              566.667,
-              566.667,
-              566.667,
-              566.667,
-              566.667,
-              566.667,
-              566.667
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Marginal",
-            "rating": 2.669,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "1"
-          },
-          {
-            "code_patterns": [
-              "?1HICR0015??00RX",
-              "?1HICRCG15??00RX"
-            ],
-            "color": "brown",
-            "func_samples": [
-              633.333,
-              633.333,
-              633.333,
-              633.333,
-              633.333,
-              633.333,
-              633.333
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Weak",
-            "rating": 1.329,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "1"
-          },
-          {
-            "code_patterns": [
-              "?1HICR0015??00RX",
-              "?1HICRCG15??00RX"
-            ],
-            "color": "red",
-            "func_samples": [
-              700.0,
-              700.0,
-              700.0,
-              700.0,
-              700.0,
-              700.0,
-              700.0
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Poor",
-            "rating": 0,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "1"
-          },
-          {
-            "code_patterns": [
-              "?1HICR0015??00RX",
-              "?1HICRCG15??00RX"
-            ],
-            "color": "gray",
-            "func_samples": [
-              700.0,
-              700.0,
-              700.0,
-              700.0,
-              700.0,
-              700.0,
-              700.0
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Capping",
-            "rating": "-inf",
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "1"
-          }
-        ],
-        "name": "HIC 15"
-      },
-      "criterion_driver/criterion_head_neck/criterion_neck": {
-        "class": "Criterion_Neck",
-        "limits": [],
-        "name": "Neck"
-      },
-      "criterion_driver/criterion_head_neck/criterion_neck/criterion_fx_shear": {
-        "class": "Criterion_Fx_Shear",
-        "limits": [
-          {
-            "code_patterns": [
-              "?1NECKUP00??FOX?"
-            ],
-            "color": "green",
-            "func_samples": [
-              1.9,
-              1.9,
-              1.9,
-              1.9,
-              1.9,
-              1.9,
-              1.9
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Good",
-            "rating": 4,
-            "upper": true,
-            "x_unit": "ms",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?1NECKUP00??FOX?"
-            ],
-            "color": "yellow",
-            "func_samples": [
-              1.9,
-              1.9,
-              1.9,
-              1.9,
-              1.9,
-              1.9,
-              1.9
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Adequate",
-            "rating": 4,
-            "upper": null,
-            "x_unit": "ms",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?1NECKUP00??FOX?"
-            ],
-            "color": "orange",
-            "func_samples": [
-              2.3,
-              2.3,
-              2.3,
-              2.3,
-              2.3,
-              2.3,
-              2.3
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Marginal",
-            "rating": 2.669,
-            "upper": null,
-            "x_unit": "ms",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?1NECKUP00??FOX?"
-            ],
-            "color": "brown",
-            "func_samples": [
-              2.7,
-              2.7,
-              2.7,
-              2.7,
-              2.7,
-              2.7,
-              2.7
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Weak",
-            "rating": 1.329,
-            "upper": null,
-            "x_unit": "ms",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?1NECKUP00??FOX?"
-            ],
-            "color": "red",
-            "func_samples": [
-              3.1,
-              3.1,
-              3.1,
-              3.1,
-              3.1,
-              3.1,
-              3.1
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Poor",
-            "rating": 0,
-            "upper": null,
-            "x_unit": "ms",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?1NECKUP00??FOX?"
-            ],
-            "color": "gray",
-            "func_samples": [
-              3.1,
-              3.1,
-              3.1,
-              3.1,
-              3.1,
-              3.1,
-              3.1
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Capping",
-            "rating": "-inf",
-            "upper": null,
-            "x_unit": "ms",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?1NECKUP00??FOX?"
-            ],
-            "color": "green",
-            "func_samples": [
-              -1.9,
-              -1.9,
-              -1.9,
-              -1.9,
-              -1.9,
-              -1.9,
-              -1.9
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Good",
-            "rating": 4,
-            "upper": null,
-            "x_unit": "ms",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?1NECKUP00??FOX?"
-            ],
-            "color": "yellow",
-            "func_samples": [
-              -1.9,
-              -1.9,
-              -1.9,
-              -1.9,
-              -1.9,
-              -1.9,
-              -1.9
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Adequate",
-            "rating": 4,
-            "upper": true,
-            "x_unit": "ms",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?1NECKUP00??FOX?"
-            ],
-            "color": "orange",
-            "func_samples": [
-              -2.3,
-              -2.3,
-              -2.3,
-              -2.3,
-              -2.3,
-              -2.3,
-              -2.3
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Marginal",
-            "rating": 2.669,
-            "upper": true,
-            "x_unit": "ms",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?1NECKUP00??FOX?"
-            ],
-            "color": "brown",
-            "func_samples": [
-              -2.7,
-              -2.7,
-              -2.7,
-              -2.7,
-              -2.7,
-              -2.7,
-              -2.7
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Weak",
-            "rating": 1.329,
-            "upper": true,
-            "x_unit": "ms",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?1NECKUP00??FOX?"
-            ],
-            "color": "red",
-            "func_samples": [
-              -3.1,
-              -3.1,
-              -3.1,
-              -3.1,
-              -3.1,
-              -3.1,
-              -3.1
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Poor",
-            "rating": 0,
-            "upper": null,
-            "x_unit": "ms",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?1NECKUP00??FOX?"
-            ],
-            "color": "gray",
-            "func_samples": [
-              -3.1,
-              -3.1,
-              -3.1,
-              -3.1,
-              -3.1,
-              -3.1,
-              -3.1
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Capping",
-            "rating": "-inf",
-            "upper": true,
-            "x_unit": "ms",
-            "y_unit": "kN"
-          }
-        ],
-        "name": "Neck Fx shear"
-      },
-      "criterion_driver/criterion_head_neck/criterion_neck/criterion_fz_tension": {
-        "class": "Criterion_Fz_Tension",
-        "limits": [
-          {
-            "code_patterns": [
-              "?1NECKUP00??FOZ?"
-            ],
-            "color": "green",
-            "func_samples": [
-              2.7,
-              2.7,
-              2.7,
-              2.7,
-              2.7,
-              2.7,
-              2.7
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Good",
-            "rating": 4,
-            "upper": true,
-            "x_unit": "ms",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?1NECKUP00??FOZ?"
-            ],
-            "color": "yellow",
-            "func_samples": [
-              2.7,
-              2.7,
-              2.7,
-              2.7,
-              2.7,
-              2.7,
-              2.7
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Adequate",
-            "rating": 4,
-            "upper": null,
-            "x_unit": "ms",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?1NECKUP00??FOZ?"
-            ],
-            "color": "orange",
-            "func_samples": [
-              2.9,
-              2.9,
-              2.9,
-              2.9,
-              2.9,
-              2.9,
-              2.9
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Marginal",
-            "rating": 2.669,
-            "upper": null,
-            "x_unit": "ms",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?1NECKUP00??FOZ?"
-            ],
-            "color": "brown",
-            "func_samples": [
-              3.1,
-              3.1,
-              3.1,
-              3.1,
-              3.1,
-              3.1,
-              3.1
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Weak",
-            "rating": 1.329,
-            "upper": null,
-            "x_unit": "ms",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?1NECKUP00??FOZ?"
-            ],
-            "color": "red",
-            "func_samples": [
-              3.3,
-              3.3,
-              3.3,
-              3.3,
-              3.3,
-              3.3,
-              3.3
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Poor",
-            "rating": 0,
-            "upper": null,
-            "x_unit": "ms",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?1NECKUP00??FOZ?"
-            ],
-            "color": "gray",
-            "func_samples": [
-              3.3,
-              3.3,
-              3.3,
-              3.3,
-              3.3,
-              3.3,
-              3.3
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Capping",
-            "rating": "-inf",
-            "upper": null,
-            "x_unit": "ms",
-            "y_unit": "kN"
-          }
-        ],
-        "name": "Neck Fz tension"
-      },
-      "criterion_driver/criterion_head_neck/criterion_neck/criterion_my_extension": {
-        "class": "Criterion_My_Extension",
-        "limits": [
-          {
-            "code_patterns": [
-              "?1NECKUP00??MOY?"
-            ],
-            "color": "green",
-            "func_samples": [
-              -42,
-              -42,
-              -42,
-              -42,
-              -42,
-              -42,
-              -42
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Good",
-            "rating": 4,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "Nm"
-          },
-          {
-            "code_patterns": [
-              "?1NECKUP00??MOY?"
-            ],
-            "color": "yellow",
-            "func_samples": [
-              -42,
-              -42,
-              -42,
-              -42,
-              -42,
-              -42,
-              -42
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Adequate",
-            "rating": 4,
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "Nm"
-          },
-          {
-            "code_patterns": [
-              "?1NECKUP00??MOY?"
-            ],
-            "color": "orange",
-            "func_samples": [
-              -47,
-              -47,
-              -47,
-              -47,
-              -47,
-              -47,
-              -47
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Marginal",
-            "rating": 2.669,
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "Nm"
-          },
-          {
-            "code_patterns": [
-              "?1NECKUP00??MOY?"
-            ],
-            "color": "brown",
-            "func_samples": [
-              -52,
-              -52,
-              -52,
-              -52,
-              -52,
-              -52,
-              -52
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Weak",
-            "rating": 1.329,
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "Nm"
-          },
-          {
-            "code_patterns": [
-              "?1NECKUP00??MOY?"
-            ],
-            "color": "red",
-            "func_samples": [
-              -57,
-              -57,
-              -57,
-              -57,
-              -57,
-              -57,
-              -57
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Poor",
-            "rating": 0,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "Nm"
-          },
-          {
-            "code_patterns": [
-              "?1NECKUP00??MOY?"
-            ],
-            "color": "gray",
-            "func_samples": [
-              -57,
-              -57,
-              -57,
-              -57,
-              -57,
-              -57,
-              -57
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Capping",
-            "rating": "-inf",
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "Nm"
-          }
-        ],
-        "name": "Neck My extension"
-      },
-      "criterion_driver/criterion_knee_femur_pelvis": {
-        "class": "Criterion_Knee_Femur_Pelvis",
-        "limits": [],
-        "name": "Knee, Femur and Pelvis"
-      },
-      "criterion_driver/criterion_knee_femur_pelvis/criterion_ConcentratedLoading": {
-        "class": "Criterion_ConcentratedLoading",
-        "limits": [],
-        "name": "Modifier for Concentrated Loading"
-      },
-      "criterion_driver/criterion_knee_femur_pelvis/criterion_VariableContact": {
-        "class": "Criterion_VariableContact",
-        "limits": [],
-        "name": "Modifier for Variable Contact"
-      },
-      "criterion_driver/criterion_knee_femur_pelvis/criterion_femur": {
-        "class": "Criterion_Femur",
-        "limits": [],
-        "name": "Femur"
-      },
-      "criterion_driver/criterion_knee_femur_pelvis/criterion_femur/criterion_femur_compression": {
-        "class": "Criterion_Femur_Compression",
-        "limits": [
-          {
-            "code_patterns": [
-              "?1FEMR??00??FOZ?"
-            ],
-            "color": "green",
-            "func_samples": [
-              -3.8,
-              -3.8,
-              -3.8,
-              -3.8,
-              -3.8,
-              -3.8,
-              -3.8
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Good",
-            "rating": 4,
-            "upper": null,
-            "x_unit": "ms",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?1FEMR??00??FOZ?"
-            ],
-            "color": "yellow",
-            "func_samples": [
-              -3.8,
-              -3.8,
-              -3.8,
-              -3.8,
-              -3.8,
-              -3.8,
-              -3.8
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Adequate",
-            "rating": 4,
-            "upper": true,
-            "x_unit": "ms",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?1FEMR??00??FOZ?"
-            ],
-            "color": "orange",
-            "func_samples": [
-              -5.557,
-              -5.5569496,
-              -5.556496,
-              -5.554480000000001,
-              -5.55196,
-              -5.5318000000000005,
-              -5.506600000000001
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Marginal",
-            "rating": 2.669,
-            "upper": true,
-            "x_unit": "ms",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?1FEMR??00??FOZ?"
-            ],
-            "color": "brown",
-            "func_samples": [
-              -7.313,
-              -7.3128994,
-              -7.311993999999999,
-              -7.30797,
-              -7.3029399999999995,
-              -7.2627,
-              -7.2124
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Weak",
-            "rating": 1.329,
-            "upper": true,
-            "x_unit": "ms",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?1FEMR??00??FOZ?"
-            ],
-            "color": "red",
-            "func_samples": [
-              -9.07,
-              -9.069849,
-              -9.06849,
-              -9.06245,
-              -9.0549,
-              -8.9945,
-              -8.919
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Poor",
-            "rating": 0,
-            "upper": true,
-            "x_unit": "ms",
-            "y_unit": "kN"
-          }
-        ],
-        "name": "Femur Compression"
-      },
-      "criterion_driver/criterion_knee_femur_pelvis/criterion_knee": {
-        "class": "Criterion_Knee",
-        "limits": [],
-        "name": "Knee"
-      },
-      "criterion_driver/criterion_knee_femur_pelvis/criterion_knee/criterion_knee_slider_compression": {
-        "class": "Criterion_Knee_Slider_Compression",
-        "limits": [
-          {
-            "code_patterns": [
-              "?1KNSL??00??DSX?"
-            ],
-            "color": "red",
-            "func_samples": [
-              -15.0,
-              -15.0,
-              -15.0,
-              -15.0,
-              -15.0,
-              -15.0,
-              -15.0
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Poor",
-            "rating": 0,
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "mm"
-          },
-          {
-            "code_patterns": [
-              "?1KNSL??00??DSX?"
-            ],
-            "color": "brown",
-            "func_samples": [
-              -12.0,
-              -12.0,
-              -12.0,
-              -12.0,
-              -12.0,
-              -12.0,
-              -12.0
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Weak",
-            "rating": 1.329,
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "mm"
-          },
-          {
-            "code_patterns": [
-              "?1KNSL??00??DSX?"
-            ],
-            "color": "orange",
-            "func_samples": [
-              -9.0,
-              -9.0,
-              -9.0,
-              -9.0,
-              -9.0,
-              -9.0,
-              -9.0
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Marginal",
-            "rating": 2.669,
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "mm"
-          },
-          {
-            "code_patterns": [
-              "?1KNSL??00??DSX?"
-            ],
-            "color": "yellow",
-            "func_samples": [
-              -6.0,
-              -6.0,
-              -6.0,
-              -6.0,
-              -6.0,
-              -6.0,
-              -6.0
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Adequate",
-            "rating": 4,
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "mm"
-          },
-          {
-            "code_patterns": [
-              "?1KNSL??00??DSX?"
-            ],
-            "color": "green",
-            "func_samples": [
-              -6.0,
-              -6.0,
-              -6.0,
-              -6.0,
-              -6.0,
-              -6.0,
-              -6.0
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Good",
-            "rating": 4,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "mm"
-          }
-        ],
-        "name": "Knee Slider Compression"
-      },
-      "criterion_driver/criterion_knee_femur_pelvis/criterion_pelvis": {
-        "class": "Criterion_Pelvis",
-        "limits": [],
-        "name": "Pelvis"
-      },
-      "criterion_driver/criterion_knee_femur_pelvis/criterion_pelvis/criterion_acetabulum_force": {
-        "class": "Criterion_Acetabulum_Force",
-        "limits": [
-          {
-            "code_patterns": [
-              "?1ACTB??00??FOR?"
-            ],
-            "color": "red",
-            "func_samples": [
-              -4.1,
-              -4.1,
-              -4.1,
-              -4.1,
-              -4.1,
-              -4.1,
-              -4.1
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Poor",
-            "rating": 0,
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?1ACTB??00??FOR?"
-            ],
-            "color": "brown",
-            "func_samples": [
-              -3.827,
-              -3.827,
-              -3.827,
-              -3.827,
-              -3.827,
-              -3.827,
-              -3.827
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Weak",
-            "rating": 1.329,
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?1ACTB??00??FOR?"
-            ],
-            "color": "orange",
-            "func_samples": [
-              -3.553,
-              -3.553,
-              -3.553,
-              -3.553,
-              -3.553,
-              -3.553,
-              -3.553
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Marginal",
-            "rating": 2.669,
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?1ACTB??00??FOR?"
-            ],
-            "color": "yellow",
-            "func_samples": [
-              -3.28,
-              -3.28,
-              -3.28,
-              -3.28,
-              -3.28,
-              -3.28,
-              -3.28
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Adequate",
-            "rating": 4,
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?1ACTB??00??FOR?"
-            ],
-            "color": "green",
-            "func_samples": [
-              -3.28,
-              -3.28,
-              -3.28,
-              -3.28,
-              -3.28,
-              -3.28,
-              -3.28
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Good",
-            "rating": 4,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "kN"
-          }
-        ],
-        "name": "Acetabulum Force"
-      },
-      "criterion_driver/criterion_knee_femur_pelvis/criterion_submarining": {
-        "class": "Criterion_Submarining",
-        "limits": [],
-        "name": "Submarining"
-      },
-      "criterion_driver/criterion_lowerleg_foot_ankle": {
-        "class": "Criterion_LowerLeg_Foot_Ankle",
-        "limits": [],
-        "name": "Lower Leg, Foot and Ankle"
-      },
-      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_FootwellRupture": {
-        "class": "Criterion_FootwellRupture",
-        "limits": [],
-        "name": "Modifier for Footwell Rupture"
-      },
-      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_PedalBlocking": {
-        "class": "Criterion_PedalBlocking",
-        "limits": [],
-        "name": "Modifier for Pedal Blocking"
-      },
-      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_PedalUpwardDisplacement": {
-        "class": "Criterion_PedalUpwardDisplacement",
-        "limits": [],
-        "name": "Modifier for Upward Displacement of the Worst Performing Pedal"
-      },
-      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_pedal_rearward_displacement": {
-        "class": "Criterion_Pedal_Rearward_Displacement",
-        "limits": [],
-        "name": "Pedal Rearward Displacement"
-      },
-      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_tibia_compression": {
-        "class": "Criterion_Tibia_Compression",
-        "limits": [
-          {
-            "code_patterns": [
-              "?1TIBI??????FOZ?"
-            ],
-            "color": "red",
-            "func_samples": [
-              -8,
-              -8,
-              -8,
-              -8,
-              -8,
-              -8,
-              -8
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Poor",
-            "rating": 0,
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?1TIBI??????FOZ?"
-            ],
-            "color": "brown",
-            "func_samples": [
-              -6,
-              -6,
-              -6,
-              -6,
-              -6,
-              -6,
-              -6
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Weak",
-            "rating": 1.329,
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?1TIBI??????FOZ?"
-            ],
-            "color": "orange",
-            "func_samples": [
-              -4,
-              -4,
-              -4,
-              -4,
-              -4,
-              -4,
-              -4
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Marginal",
-            "rating": 2.669,
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?1TIBI??????FOZ?"
-            ],
-            "color": "yellow",
-            "func_samples": [
-              -2,
-              -2,
-              -2,
-              -2,
-              -2,
-              -2,
-              -2
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Adequate",
-            "rating": 4,
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?1TIBI??????FOZ?"
-            ],
-            "color": "green",
-            "func_samples": [
-              -2,
-              -2,
-              -2,
-              -2,
-              -2,
-              -2,
-              -2
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Good",
-            "rating": 4,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "kN"
-          }
-        ],
-        "name": "Tibia Compression"
-      },
-      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_tibia_index": {
-        "class": "Criterion_Tibia_Index",
-        "limits": [
-          {
-            "code_patterns": [
-              "?1TIIN??00??000?"
-            ],
-            "color": "green",
-            "func_samples": [
-              0.4,
-              0.4,
-              0.4,
-              0.4,
-              0.4,
-              0.4,
-              0.4
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Good",
-            "rating": 4,
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "1"
-          },
-          {
-            "code_patterns": [
-              "?1TIIN??00??000?"
-            ],
-            "color": "yellow",
-            "func_samples": [
-              0.4,
-              0.4,
-              0.4,
-              0.4,
-              0.4,
-              0.4,
-              0.4
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Adequate",
-            "rating": 4,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "1"
-          },
-          {
-            "code_patterns": [
-              "?1TIIN??00??000?"
-            ],
-            "color": "orange",
-            "func_samples": [
-              0.7,
-              0.7,
-              0.7,
-              0.7,
-              0.7,
-              0.7,
-              0.7
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Marginal",
-            "rating": 2.669,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "1"
-          },
-          {
-            "code_patterns": [
-              "?1TIIN??00??000?"
-            ],
-            "color": "brown",
-            "func_samples": [
-              1.0,
-              1.0,
-              1.0,
-              1.0,
-              1.0,
-              1.0,
-              1.0
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Weak",
-            "rating": 1.329,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "1"
-          },
-          {
-            "code_patterns": [
-              "?1TIIN??00??000?"
-            ],
-            "color": "red",
-            "func_samples": [
-              1.3,
-              1.3,
-              1.3,
-              1.3,
-              1.3,
-              1.3,
-              1.3
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Poor",
-            "rating": 0,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "1"
-          }
-        ],
-        "name": "Tibia Index"
-      },
-      "criterion_passenger": {
-        "class": "Criterion_Passenger",
-        "limits": [],
-        "name": "Passenger"
-      },
-      "criterion_passenger/criterion_chest": {
-        "class": "Criterion_Chest",
-        "limits": [],
-        "name": "Chest"
-      },
-      "criterion_passenger/criterion_chest/criterion_chest_compression": {
-        "class": "Criterion_Chest_Compression",
-        "limits": [
-          {
-            "code_patterns": [
-              "?3CHST000[03]??DSX?"
-            ],
-            "color": "gray",
-            "func_samples": [
-              -42.0,
-              -42.0,
-              -42.0,
-              -42.0,
-              -42.0,
-              -42.0,
-              -42.0
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Capping",
-            "rating": "-inf",
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "mm"
-          },
-          {
-            "code_patterns": [
-              "?3CHST000[03]??DSX?"
-            ],
-            "color": "red",
-            "func_samples": [
-              -42.0,
-              -42.0,
-              -42.0,
-              -42.0,
-              -42.0,
-              -42.0,
-              -42.0
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Poor",
-            "rating": 0,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "mm"
-          },
-          {
-            "code_patterns": [
-              "?3CHST000[03]??DSX?"
-            ],
-            "color": "brown",
-            "func_samples": [
-              -35.333,
-              -35.333,
-              -35.333,
-              -35.333,
-              -35.333,
-              -35.333,
-              -35.333
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Weak",
-            "rating": 1.329,
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "mm"
-          },
-          {
-            "code_patterns": [
-              "?3CHST000[03]??DSX?"
-            ],
-            "color": "orange",
-            "func_samples": [
-              -28.667,
-              -28.667,
-              -28.667,
-              -28.667,
-              -28.667,
-              -28.667,
-              -28.667
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Marginal",
-            "rating": 2.669,
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "mm"
-          },
-          {
-            "code_patterns": [
-              "?3CHST000[03]??DSX?"
-            ],
-            "color": "yellow",
-            "func_samples": [
-              -22.0,
-              -22.0,
-              -22.0,
-              -22.0,
-              -22.0,
-              -22.0,
-              -22.0
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Adequate",
-            "rating": 4,
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "mm"
-          },
-          {
-            "code_patterns": [
-              "?3CHST000[03]??DSX?"
-            ],
-            "color": "green",
-            "func_samples": [
-              -22.0,
-              -22.0,
-              -22.0,
-              -22.0,
-              -22.0,
-              -22.0,
-              -22.0
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Good",
-            "rating": 4,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "mm"
-          }
-        ],
-        "name": "Chest Compression"
-      },
-      "criterion_passenger/criterion_chest/criterion_chest_vc": {
-        "class": "Criterion_Chest_VC",
-        "limits": [
-          {
-            "code_patterns": [
-              "?3VCCR000[03]??VEX?"
-            ],
-            "color": "green",
-            "func_samples": [
-              0.5,
-              0.5,
-              0.5,
-              0.5,
-              0.5,
-              0.5,
-              0.5
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Good",
-            "rating": 4,
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "m/s"
-          },
-          {
-            "code_patterns": [
-              "?3VCCR000[03]??VEX?"
-            ],
-            "color": "yellow",
-            "func_samples": [
-              0.5,
-              0.5,
-              0.5,
-              0.5,
-              0.5,
-              0.5,
-              0.5
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Adequate",
-            "rating": 4,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "m/s"
-          },
-          {
-            "code_patterns": [
-              "?3VCCR000[03]??VEX?"
-            ],
-            "color": "orange",
-            "func_samples": [
-              0.667,
-              0.667,
-              0.667,
-              0.667,
-              0.667,
-              0.667,
-              0.667
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Marginal",
-            "rating": 2.669,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "m/s"
-          },
-          {
-            "code_patterns": [
-              "?3VCCR000[03]??VEX?"
-            ],
-            "color": "brown",
-            "func_samples": [
-              0.833,
-              0.833,
-              0.833,
-              0.833,
-              0.833,
-              0.833,
-              0.833
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Weak",
-            "rating": 1.329,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "m/s"
-          },
-          {
-            "code_patterns": [
-              "?3VCCR000[03]??VEX?"
-            ],
-            "color": "red",
-            "func_samples": [
-              1.0,
-              1.0,
-              1.0,
-              1.0,
-              1.0,
-              1.0,
-              1.0
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Poor",
-            "rating": 0,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "m/s"
-          },
-          {
-            "code_patterns": [
-              "?3VCCR000[03]??VEX?"
-            ],
-            "color": "gray",
-            "func_samples": [
-              1.0,
-              1.0,
-              1.0,
-              1.0,
-              1.0,
-              1.0,
-              1.0
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Capping",
-            "rating": "-inf",
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "m/s"
-          }
-        ],
-        "name": "Chest VC"
-      },
-      "criterion_passenger/criterion_chest/criterion_shoulder_belt_load": {
-        "class": "Criterion_ShoulderBeltLoad",
-        "limits": [
-          {
-            "code_patterns": [
-              "?3SEBE????B3FO[X0]?"
-            ],
-            "color": "green",
-            "func_samples": [
-              6.0,
-              6.0,
-              6.0,
-              6.0,
-              6.0,
-              6.0,
-              6.0
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "0 pt. Modifier",
-            "rating": 0,
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?3SEBE????B3FO[X0]?"
-            ],
-            "color": "red",
-            "func_samples": [
-              6.0,
-              6.0,
-              6.0,
-              6.0,
-              6.0,
-              6.0,
-              6.0
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "-2 pt. Modifier",
-            "rating": -2,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "kN"
-          }
-        ],
-        "name": "Modifier Shoulder Belt Load"
-      },
-      "criterion_passenger/criterion_head_neck": {
-        "class": "Criterion_Head_Neck",
-        "limits": [],
-        "name": "Head and Neck"
-      },
-      "criterion_passenger/criterion_head_neck/criterion_head": {
-        "class": "Criterion_Head",
-        "limits": [],
-        "name": "Head"
-      },
-      "criterion_passenger/criterion_head_neck/criterion_head/criterion_HazardousAirbagDeployment": {
-        "class": "Criterion_HazardousAirbagDeployment",
-        "limits": [],
-        "name": "Modifier for Hazardous Airbag Deployment"
-      },
-      "criterion_passenger/criterion_head_neck/criterion_head/criterion_IncorrectAirbagDeployment": {
-        "class": "Criterion_IncorrectAirbagDeployment",
-        "limits": [],
-        "name": "Modifier for Incorrect Airbag Deployment"
-      },
-      "criterion_passenger/criterion_head_neck/criterion_head/criterion_UnstableAirbagContact": {
-        "class": "Criterion_UnstableAirbagContact",
-        "limits": [],
-        "name": "Modifier for Unstable Airbag Contact"
-      },
-      "criterion_passenger/criterion_head_neck/criterion_head/criterion_head_a3ms": {
-        "class": "Criterion_Head_a3ms",
-        "limits": [
-          {
-            "code_patterns": [
-              "?3HEAD003C??ACR?",
-              "?3HEADCG3C??ACR?"
-            ],
-            "color": "green",
-            "func_samples": [
-              72.0,
-              72.0,
-              72.0,
-              72.0,
-              72.0,
-              72.0,
-              72.0
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Good",
-            "rating": 4,
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "g0"
-          },
-          {
-            "code_patterns": [
-              "?3HEAD003C??ACR?",
-              "?3HEADCG3C??ACR?"
-            ],
-            "color": "yellow",
-            "func_samples": [
-              72.0,
-              72.0,
-              72.0,
-              72.0,
-              72.0,
-              72.0,
-              72.0
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Adequate",
-            "rating": 4,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "g0"
-          },
-          {
-            "code_patterns": [
-              "?3HEAD003C??ACR?",
-              "?3HEADCG3C??ACR?"
-            ],
-            "color": "orange",
-            "func_samples": [
-              74.667,
-              74.667,
-              74.667,
-              74.667,
-              74.667,
-              74.667,
-              74.667
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Marginal",
-            "rating": 2.669,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "g0"
-          },
-          {
-            "code_patterns": [
-              "?3HEAD003C??ACR?",
-              "?3HEADCG3C??ACR?"
-            ],
-            "color": "brown",
-            "func_samples": [
-              77.333,
-              77.333,
-              77.333,
-              77.333,
-              77.333,
-              77.333,
-              77.333
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Weak",
-            "rating": 1.329,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "g0"
-          },
-          {
-            "code_patterns": [
-              "?3HEAD003C??ACR?",
-              "?3HEADCG3C??ACR?"
-            ],
-            "color": "red",
-            "func_samples": [
-              80.0,
-              80.0,
-              80.0,
-              80.0,
-              80.0,
-              80.0,
-              80.0
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Poor",
-            "rating": 0,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "g0"
-          },
-          {
-            "code_patterns": [
-              "?3HEAD003C??ACR?",
-              "?3HEADCG3C??ACR?"
-            ],
-            "color": "gray",
-            "func_samples": [
-              80.0,
-              80.0,
-              80.0,
-              80.0,
-              80.0,
-              80.0,
-              80.0
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Capping",
-            "rating": "-inf",
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "g0"
-          }
-        ],
-        "name": "Head a3ms"
-      },
-      "criterion_passenger/criterion_head_neck/criterion_head/criterion_hic_15": {
-        "class": "Criterion_HIC_15",
-        "limits": [
-          {
-            "code_patterns": [
-              "?3HICR0015??00RX",
-              "?3HICRCG15??00RX"
-            ],
-            "color": "green",
-            "func_samples": [
-              500.0,
-              500.0,
-              500.0,
-              500.0,
-              500.0,
-              500.0,
-              500.0
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Good",
-            "rating": 4,
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "1"
-          },
-          {
-            "code_patterns": [
-              "?3HICR0015??00RX",
-              "?3HICRCG15??00RX"
-            ],
-            "color": "yellow",
-            "func_samples": [
-              500.0,
-              500.0,
-              500.0,
-              500.0,
-              500.0,
-              500.0,
-              500.0
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Adequate",
-            "rating": 4,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "1"
-          },
-          {
-            "code_patterns": [
-              "?3HICR0015??00RX",
-              "?3HICRCG15??00RX"
-            ],
-            "color": "orange",
-            "func_samples": [
-              566.667,
-              566.667,
-              566.667,
-              566.667,
-              566.667,
-              566.667,
-              566.667
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Marginal",
-            "rating": 2.669,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "1"
-          },
-          {
-            "code_patterns": [
-              "?3HICR0015??00RX",
-              "?3HICRCG15??00RX"
-            ],
-            "color": "brown",
-            "func_samples": [
-              633.333,
-              633.333,
-              633.333,
-              633.333,
-              633.333,
-              633.333,
-              633.333
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Weak",
-            "rating": 1.329,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "1"
-          },
-          {
-            "code_patterns": [
-              "?3HICR0015??00RX",
-              "?3HICRCG15??00RX"
-            ],
-            "color": "red",
-            "func_samples": [
-              700.0,
-              700.0,
-              700.0,
-              700.0,
-              700.0,
-              700.0,
-              700.0
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Poor",
-            "rating": 0,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "1"
-          },
-          {
-            "code_patterns": [
-              "?3HICR0015??00RX",
-              "?3HICRCG15??00RX"
-            ],
-            "color": "gray",
-            "func_samples": [
-              700.0,
-              700.0,
-              700.0,
-              700.0,
-              700.0,
-              700.0,
-              700.0
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Capping",
-            "rating": "-inf",
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "1"
-          }
-        ],
-        "name": "HIC 15"
-      },
-      "criterion_passenger/criterion_head_neck/criterion_neck": {
-        "class": "Criterion_Neck",
-        "limits": [],
-        "name": "Neck"
-      },
-      "criterion_passenger/criterion_head_neck/criterion_neck/criterion_fx_shear": {
-        "class": "Criterion_Fx_Shear",
-        "limits": [
-          {
-            "code_patterns": [
-              "?3NECKUP00??FOX?"
-            ],
-            "color": "green",
-            "func_samples": [
-              1.9,
-              1.899972,
-              1.8997199999999999,
-              1.8985999999999998,
-              1.8972,
-              1.886,
-              1.8719999999999999
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Good",
-            "rating": 4,
-            "upper": true,
-            "x_unit": "ms",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?3NECKUP00??FOX?"
-            ],
-            "color": "yellow",
-            "func_samples": [
-              1.9,
-              1.899972,
-              1.8997199999999999,
-              1.8985999999999998,
-              1.8972,
-              1.886,
-              1.8719999999999999
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Adequate",
-            "rating": 4,
-            "upper": null,
-            "x_unit": "ms",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?3NECKUP00??FOX?"
-            ],
-            "color": "orange",
-            "func_samples": [
-              2.3,
-              2.29996,
-              2.2996,
-              2.298,
-              2.296,
-              2.28,
-              2.26
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Marginal",
-            "rating": 2.669,
-            "upper": null,
-            "x_unit": "ms",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?3NECKUP00??FOX?"
-            ],
-            "color": "brown",
-            "func_samples": [
-              2.7,
-              2.699948,
-              2.6994800000000003,
-              2.6974,
-              2.6948000000000003,
-              2.6740000000000004,
-              2.648
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Weak",
-            "rating": 1.329,
-            "upper": null,
-            "x_unit": "ms",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?3NECKUP00??FOX?"
-            ],
-            "color": "red",
-            "func_samples": [
-              3.1,
-              3.099936,
-              3.09936,
-              3.0968,
-              3.0936,
-              3.068,
-              3.036
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Poor",
-            "rating": 0,
-            "upper": null,
-            "x_unit": "ms",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?3NECKUP00??FOX?"
-            ],
-            "color": "gray",
-            "func_samples": [
-              3.1,
-              3.099936,
-              3.09936,
-              3.0968,
-              3.0936,
-              3.068,
-              3.036
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Capping",
-            "rating": "-inf",
-            "upper": null,
-            "x_unit": "ms",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?3NECKUP00??FOX?"
-            ],
-            "color": "green",
-            "func_samples": [
-              -1.9,
-              -1.899972,
-              -1.8997199999999999,
-              -1.8985999999999998,
-              -1.8972,
-              -1.886,
-              -1.8719999999999999
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Good",
-            "rating": 4,
-            "upper": null,
-            "x_unit": "ms",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?3NECKUP00??FOX?"
-            ],
-            "color": "yellow",
-            "func_samples": [
-              -1.9,
-              -1.899972,
-              -1.8997199999999999,
-              -1.8985999999999998,
-              -1.8972,
-              -1.886,
-              -1.8719999999999999
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Adequate",
-            "rating": 4,
-            "upper": true,
-            "x_unit": "ms",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?3NECKUP00??FOX?"
-            ],
-            "color": "orange",
-            "func_samples": [
-              -2.3,
-              -2.29996,
-              -2.2996,
-              -2.298,
-              -2.296,
-              -2.28,
-              -2.26
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Marginal",
-            "rating": 2.669,
-            "upper": true,
-            "x_unit": "ms",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?3NECKUP00??FOX?"
-            ],
-            "color": "brown",
-            "func_samples": [
-              -2.7,
-              -2.699948,
-              -2.6994800000000003,
-              -2.6974,
-              -2.6948000000000003,
-              -2.6740000000000004,
-              -2.648
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Weak",
-            "rating": 1.329,
-            "upper": true,
-            "x_unit": "ms",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?3NECKUP00??FOX?"
-            ],
-            "color": "red",
-            "func_samples": [
-              -3.1,
-              -3.099936,
-              -3.09936,
-              -3.0968,
-              -3.0936,
-              -3.068,
-              -3.036
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Poor",
-            "rating": 0,
-            "upper": null,
-            "x_unit": "ms",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?3NECKUP00??FOX?"
-            ],
-            "color": "gray",
-            "func_samples": [
-              -3.1,
-              -3.099936,
-              -3.09936,
-              -3.0968,
-              -3.0936,
-              -3.068,
-              -3.036
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Capping",
-            "rating": "-inf",
-            "upper": true,
-            "x_unit": "ms",
-            "y_unit": "kN"
-          }
-        ],
-        "name": "Neck Fx shear"
-      },
-      "criterion_passenger/criterion_head_neck/criterion_neck/criterion_fz_tension": {
-        "class": "Criterion_Fz_Tension",
-        "limits": [
-          {
-            "code_patterns": [
-              "?3NECKUP00??FOZ?"
-            ],
-            "color": "green",
-            "func_samples": [
-              2.7,
-              2.6999885714285714,
-              2.6998857142857147,
-              2.6994285714285717,
-              2.698857142857143,
-              2.6942857142857144,
-              2.6885714285714286
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Good",
-            "rating": 4,
-            "upper": true,
-            "x_unit": "ms",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?3NECKUP00??FOZ?"
-            ],
-            "color": "yellow",
-            "func_samples": [
-              2.7,
-              2.6999885714285714,
-              2.6998857142857147,
-              2.6994285714285717,
-              2.698857142857143,
-              2.6942857142857144,
-              2.6885714285714286
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Adequate",
-            "rating": 4,
-            "upper": null,
-            "x_unit": "ms",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?3NECKUP00??FOZ?"
-            ],
-            "color": "orange",
-            "func_samples": [
-              2.9,
-              2.899988571428571,
-              2.8998857142857144,
-              2.8994285714285715,
-              2.8988571428571426,
-              2.894285714285714,
-              2.8885714285714283
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Marginal",
-            "rating": 2.669,
-            "upper": null,
-            "x_unit": "ms",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?3NECKUP00??FOZ?"
-            ],
-            "color": "brown",
-            "func_samples": [
-              3.1,
-              3.0999885714285713,
-              3.0998857142857146,
-              3.0994285714285716,
-              3.0988571428571428,
-              3.0942857142857143,
-              3.0885714285714285
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Weak",
-            "rating": 1.329,
-            "upper": null,
-            "x_unit": "ms",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?3NECKUP00??FOZ?"
-            ],
-            "color": "red",
-            "func_samples": [
-              3.3,
-              3.299988571428571,
-              3.2998857142857143,
-              3.2994285714285714,
-              3.2988571428571425,
-              3.294285714285714,
-              3.2885714285714283
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Poor",
-            "rating": 0,
-            "upper": null,
-            "x_unit": "ms",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?3NECKUP00??FOZ?"
-            ],
-            "color": "gray",
-            "func_samples": [
-              3.3,
-              3.299988571428571,
-              3.2998857142857143,
-              3.2994285714285714,
-              3.2988571428571425,
-              3.294285714285714,
-              3.2885714285714283
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Capping",
-            "rating": "-inf",
-            "upper": null,
-            "x_unit": "ms",
-            "y_unit": "kN"
-          }
-        ],
-        "name": "Fz Tension"
-      },
-      "criterion_passenger/criterion_head_neck/criterion_neck/criterion_my_extension": {
-        "class": "Criterion_My_Extension",
-        "limits": [
-          {
-            "code_patterns": [
-              "?3NECKUP00??MOY?"
-            ],
-            "color": "green",
-            "func_samples": [
-              -42,
-              -42,
-              -42,
-              -42,
-              -42,
-              -42,
-              -42
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Good",
-            "rating": 4,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "Nm"
-          },
-          {
-            "code_patterns": [
-              "?3NECKUP00??MOY?"
-            ],
-            "color": "yellow",
-            "func_samples": [
-              -42,
-              -42,
-              -42,
-              -42,
-              -42,
-              -42,
-              -42
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Adequate",
-            "rating": 4,
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "Nm"
-          },
-          {
-            "code_patterns": [
-              "?3NECKUP00??MOY?"
-            ],
-            "color": "orange",
-            "func_samples": [
-              -47,
-              -47,
-              -47,
-              -47,
-              -47,
-              -47,
-              -47
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Marginal",
-            "rating": 2.669,
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "Nm"
-          },
-          {
-            "code_patterns": [
-              "?3NECKUP00??MOY?"
-            ],
-            "color": "brown",
-            "func_samples": [
-              -52,
-              -52,
-              -52,
-              -52,
-              -52,
-              -52,
-              -52
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Weak",
-            "rating": 1.329,
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "Nm"
-          },
-          {
-            "code_patterns": [
-              "?3NECKUP00??MOY?"
-            ],
-            "color": "red",
-            "func_samples": [
-              -57,
-              -57,
-              -57,
-              -57,
-              -57,
-              -57,
-              -57
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Poor",
-            "rating": 0,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "Nm"
-          },
-          {
-            "code_patterns": [
-              "?3NECKUP00??MOY?"
-            ],
-            "color": "gray",
-            "func_samples": [
-              -57,
-              -57,
-              -57,
-              -57,
-              -57,
-              -57,
-              -57
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Capping",
-            "rating": "-inf",
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "Nm"
-          }
-        ],
-        "name": "My Extension"
-      },
-      "criterion_passenger/criterion_knee_femur_pelvis": {
-        "class": "Criterion_Knee_Femur_Pelvis",
-        "limits": [],
-        "name": "Knee, Femur and Pelvis"
-      },
-      "criterion_passenger/criterion_knee_femur_pelvis/criterion_ConcentratedLoading": {
-        "class": "Criterion_ConcentratedLoading",
-        "limits": [],
-        "name": "Modifier for Concentrated Loading"
-      },
-      "criterion_passenger/criterion_knee_femur_pelvis/criterion_VariableContact": {
-        "class": "Criterion_VariableContact",
-        "limits": [],
-        "name": "Modifier for Variable Contact"
-      },
-      "criterion_passenger/criterion_knee_femur_pelvis/criterion_femur_compression": {
-        "class": "Criterion_Femur_Compression",
-        "limits": [
-          {
-            "code_patterns": [
-              "?3FEMR??00??FOZ?"
-            ],
-            "color": "green",
-            "func_samples": [
-              -3.8,
-              -3.8,
-              -3.8,
-              -3.8,
-              -3.8,
-              -3.8,
-              -3.8
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Good",
-            "rating": 4,
-            "upper": null,
-            "x_unit": "ms",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?3FEMR??00??FOZ?"
-            ],
-            "color": "yellow",
-            "func_samples": [
-              -3.8,
-              -3.8,
-              -3.8,
-              -3.8,
-              -3.8,
-              -3.8,
-              -3.8
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Adequate",
-            "rating": 4,
-            "upper": true,
-            "x_unit": "ms",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?3FEMR??00??FOZ?"
-            ],
-            "color": "orange",
-            "func_samples": [
-              -5.557,
-              -5.5569496,
-              -5.556496,
-              -5.554480000000001,
-              -5.55196,
-              -5.5318000000000005,
-              -5.506600000000001
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Marginal",
-            "rating": 2.669,
-            "upper": true,
-            "x_unit": "ms",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?3FEMR??00??FOZ?"
-            ],
-            "color": "brown",
-            "func_samples": [
-              -7.313,
-              -7.3128994,
-              -7.311993999999999,
-              -7.30797,
-              -7.3029399999999995,
-              -7.2627,
-              -7.2124
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Weak",
-            "rating": 1.329,
-            "upper": true,
-            "x_unit": "ms",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?3FEMR??00??FOZ?"
-            ],
-            "color": "red",
-            "func_samples": [
-              -9.07,
-              -9.069849,
-              -9.06849,
-              -9.06245,
-              -9.0549,
-              -8.9945,
-              -8.919
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Poor",
-            "rating": 0,
-            "upper": true,
-            "x_unit": "ms",
-            "y_unit": "kN"
-          }
-        ],
-        "name": "Femur Compression"
-      },
-      "criterion_passenger/criterion_knee_femur_pelvis/criterion_knee_slider_compression": {
-        "class": "Criterion_Knee_Slider_Compression",
-        "limits": [
-          {
-            "code_patterns": [
-              "?3KNSL??00??DSX?"
-            ],
-            "color": "red",
-            "func_samples": [
-              -15.0,
-              -15.0,
-              -15.0,
-              -15.0,
-              -15.0,
-              -15.0,
-              -15.0
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Poor",
-            "rating": 0,
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "mm"
-          },
-          {
-            "code_patterns": [
-              "?3KNSL??00??DSX?"
-            ],
-            "color": "brown",
-            "func_samples": [
-              -12.0,
-              -12.0,
-              -12.0,
-              -12.0,
-              -12.0,
-              -12.0,
-              -12.0
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Weak",
-            "rating": 1.329,
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "mm"
-          },
-          {
-            "code_patterns": [
-              "?3KNSL??00??DSX?"
-            ],
-            "color": "orange",
-            "func_samples": [
-              -9.0,
-              -9.0,
-              -9.0,
-              -9.0,
-              -9.0,
-              -9.0,
-              -9.0
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Marginal",
-            "rating": 2.669,
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "mm"
-          },
-          {
-            "code_patterns": [
-              "?3KNSL??00??DSX?"
-            ],
-            "color": "yellow",
-            "func_samples": [
-              -6.0,
-              -6.0,
-              -6.0,
-              -6.0,
-              -6.0,
-              -6.0,
-              -6.0
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Adequate",
-            "rating": 4,
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "mm"
-          },
-          {
-            "code_patterns": [
-              "?3KNSL??00??DSX?"
-            ],
-            "color": "green",
-            "func_samples": [
-              -6.0,
-              -6.0,
-              -6.0,
-              -6.0,
-              -6.0,
-              -6.0,
-              -6.0
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Good",
-            "rating": 4,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "mm"
-          }
-        ],
-        "name": "Knee Slider Compression"
-      },
-      "criterion_passenger/criterion_lowerleg": {
-        "class": "Criterion_LowerLeg",
-        "limits": [],
-        "name": "Lower Leg"
-      },
-      "criterion_passenger/criterion_lowerleg/criterion_tibia_compression": {
-        "class": "Criterion_Tibia_Compression",
-        "limits": [
-          {
-            "code_patterns": [
-              "?3TIBI??????FOZ?"
-            ],
-            "color": "red",
-            "func_samples": [
-              -8,
-              -8,
-              -8,
-              -8,
-              -8,
-              -8,
-              -8
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Poor",
-            "rating": 0,
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?3TIBI??????FOZ?"
-            ],
-            "color": "brown",
-            "func_samples": [
-              -6,
-              -6,
-              -6,
-              -6,
-              -6,
-              -6,
-              -6
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Weak",
-            "rating": 1.329,
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?3TIBI??????FOZ?"
-            ],
-            "color": "orange",
-            "func_samples": [
-              -4,
-              -4,
-              -4,
-              -4,
-              -4,
-              -4,
-              -4
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Marginal",
-            "rating": 2.669,
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?3TIBI??????FOZ?"
-            ],
-            "color": "yellow",
-            "func_samples": [
-              -2,
-              -2,
-              -2,
-              -2,
-              -2,
-              -2,
-              -2
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Adequate",
-            "rating": 4,
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "kN"
-          },
-          {
-            "code_patterns": [
-              "?3TIBI??????FOZ?"
-            ],
-            "color": "green",
-            "func_samples": [
-              -2,
-              -2,
-              -2,
-              -2,
-              -2,
-              -2,
-              -2
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Good",
-            "rating": 4,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "kN"
-          }
-        ],
-        "name": "Tibia Compression"
-      },
-      "criterion_passenger/criterion_lowerleg/criterion_tibia_index": {
-        "class": "Criterion_Tibia_Index",
-        "limits": [
-          {
-            "code_patterns": [
-              "?3TIIN??00??000?"
-            ],
-            "color": "green",
-            "func_samples": [
-              0.4,
-              0.4,
-              0.4,
-              0.4,
-              0.4,
-              0.4,
-              0.4
-            ],
-            "linestyle": "-",
-            "lower": null,
-            "name": "Good",
-            "rating": 4,
-            "upper": true,
-            "x_unit": "s",
-            "y_unit": "1"
-          },
-          {
-            "code_patterns": [
-              "?3TIIN??00??000?"
-            ],
-            "color": "yellow",
-            "func_samples": [
-              0.4,
-              0.4,
-              0.4,
-              0.4,
-              0.4,
-              0.4,
-              0.4
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Adequate",
-            "rating": 4,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "1"
-          },
-          {
-            "code_patterns": [
-              "?3TIIN??00??000?"
-            ],
-            "color": "orange",
-            "func_samples": [
-              0.7,
-              0.7,
-              0.7,
-              0.7,
-              0.7,
-              0.7,
-              0.7
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Marginal",
-            "rating": 2.669,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "1"
-          },
-          {
-            "code_patterns": [
-              "?3TIIN??00??000?"
-            ],
-            "color": "brown",
-            "func_samples": [
-              1.0,
-              1.0,
-              1.0,
-              1.0,
-              1.0,
-              1.0,
-              1.0
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Weak",
-            "rating": 1.329,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "1"
-          },
-          {
-            "code_patterns": [
-              "?3TIIN??00??000?"
-            ],
-            "color": "red",
-            "func_samples": [
-              1.3,
-              1.3,
-              1.3,
-              1.3,
-              1.3,
-              1.3,
-              1.3
-            ],
-            "linestyle": "-",
-            "lower": true,
-            "name": "Poor",
-            "rating": 0,
-            "upper": null,
-            "x_unit": "s",
-            "y_unit": "1"
-          }
-        ],
-        "name": "Tibia Index"
-      }
-    },
-    "pages": [
-      "Page_Cover",
-      "Page_Rating_Table",
-      "Page_Driver_Result_Values_Chart",
-      "Page_Driver_Rating_Table",
-      "Page_Driver_Values_Table",
-      "Page_Driver_Belt",
-      "Page_Driver_Head_Acceleration",
-      "Page_Driver_Head_Damage",
-      "Page_Driver_Neck_Load",
-      "Page_Driver_Chest_Compression",
-      "Page_Driver_Abdomen_Compression",
-      "Page_Driver_Femur_Axial_Force",
-      "Page_Driver_Knee_Slider_Compression",
-      "Page_Driver_Tibia_Compression",
-      "Page_Driver_Tibia_Index",
-      "Page_Passenger_Result_Values_Chart",
-      "Page_Passenger_Rating_Table",
-      "Page_Passenger_Values_Table",
-      "Page_Passenger_Belt",
-      "Page_Passenger_Head_Acceleration",
-      "Page_Passenger_Neck_Load",
-      "Page_Passenger_Chest_Deflection",
-      "Page_Passenger_Femur_Axial_Force",
-      "Page_Passenger_Knee_Slider_Compression",
-      "Page_Passenger_Tibia_Compression",
-      "Page_Passenger_Tibia_Index",
-      "Page_OLC",
-      "Page_OLC_Trolley"
-    ]
-  },
+  "print_results": [
+    "euro_ncap_frontal_mpdb-0",
+    "\tOverall: Value=nan [] Rating=0",
+    "\t\tDriver: Value=nan [] Rating=-inf",
+    "\t\t\tHead & Neck: Value=nan [] Rating=-inf",
+    "\t\t\t\tHead: Value=nan [] Rating=-inf",
+    "\t\t\t\t\tHIC 15: Value=600 [] Rating=-inf",
+    "\t\t\t\t\tHead a3ms: Value=35.69 [m / s2] Rating=-inf",
+    "\t\t\t\t\tModifier for Brain Injury - DAMAGE: Value=99.999 [rad / s2] Rating=-1",
+    "\t\t\t\t\tModifier for Unstable Airbag Contact: Value=0 [] Rating=0",
+    "\t\t\t\t\tModifier for Hazardous Airbag Deployment: Value=0 [] Rating=0",
+    "\t\t\t\t\tModifier for Incorrect Airbag Deployment: Value=0 [] Rating=0",
+    "\t\t\t\t\tModifier for Displacement of Steering Column: Value=0 [] Rating=0",
+    "\t\t\t\tNeck: Value=nan [] Rating=-inf",
+    "\t\t\t\t\tNeck My extension: Value=-79.999 [N m] Rating=-inf",
+    "\t\t\t\t\tNeck Fz tension: Value=4.9999 [kN] Rating=-inf",
+    "\t\t\t\t\tNeck Fx shear: Value=4.9999 [kN] Rating=-inf",
+    "\t\t\tChest and Abdomen: Value=nan [] Rating=7.7504e-05",
+    "\t\t\t\tChest: Value=nan [] Rating=7.7504e-05",
+    "\t\t\t\t\tChest Compression: Value=-60 [mm] Rating=7.7504e-05",
+    "\t\t\t\t\tModifier Shoulder Belt Load: Value=4.9999 [N] Rating=0",
+    "\t\t\t\t\tModifier Chest Steering Wheel Contact: Value=nan [] Rating=0",
+    "\t\t\t\t\tModifier for Displacement of the A Pillar: Value=0 [] Rating=0",
+    "\t\t\t\t\tModifier for Integrity of the Passenger Compartment: Value=0 [] Rating=0",
+    "\t\t\t\tAbdomen: Value=nan [] Rating=4",
+    "\t\t\t\t\tAbdomen Compression: Value=-60 [mm] Rating=4",
+    "\t\t\tKnee, Femur and Pelvis: Value=nan [] Rating=0",
+    "\t\t\t\tPelvis: Value=nan [] Rating=0",
+    "\t\t\t\t\tAcetabulum Force: Value=-4.9999 [kN] Rating=0",
+    "\t\t\t\tFemur: Value=nan [] Rating=2.7254",
+    "\t\t\t\t\tFemur Compression: Value=-4.9999 [kN] Rating=2.7254",
+    "\t\t\t\tKnee: Value=nan [] Rating=0",
+    "\t\t\t\t\tKnee Slider Compression: Value=-60 [mm] Rating=0",
+    "\t\t\t\tSubmarining: Value=0 [] Rating=0",
+    "\t\t\t\tModifier for Variable Contact: Value=0 [] Rating=-0",
+    "\t\t\t\tModifier for Concentrated Loading: Value=0 [] Rating=-0",
+    "\t\t\tLower Leg, Foot and Ankle: Value=nan [] Rating=0.88603",
+    "\t\t\t\tTibia Index: Value=1.1 [] Rating=0.88603",
+    "\t\t\t\tTibia Compression: Value=-4.9999 [kN] Rating=1.999",
+    "\t\t\t\tPedal Rearward Displacement: Value=0 [] Rating=4",
+    "\t\t\t\tModifier for Upward Displacement of the Worst Performing Pedal: Value=0 [] Rating=0",
+    "\t\t\t\tModifier for Footwell Rupture: Value=0 [] Rating=0",
+    "\t\t\t\tModifier for Pedal Blocking: Value=0 [] Rating=0",
+    "\t\tPassenger: Value=nan [] Rating=-inf",
+    "\t\t\tHead and Neck: Value=-inf [] Rating=-inf",
+    "\t\t\t\tHead: Value=-inf [] Rating=-inf",
+    "\t\t\t\t\tHIC 15: Value=600 [] Rating=-inf",
+    "\t\t\t\t\tHead a3ms: Value=35.69 [m / s2] Rating=-inf",
+    "\t\t\t\t\tModifier for Unstable Airbag Contact: Value=0 [] Rating=0",
+    "\t\t\t\t\tModifier for Hazardous Airbag Deployment: Value=0 [] Rating=0",
+    "\t\t\t\t\tModifier for Incorrect Airbag Deployment: Value=0 [] Rating=0",
+    "\t\t\t\tNeck: Value=-inf [] Rating=-inf",
+    "\t\t\t\t\tNeck Fx shear: Value=-4.9999 [kN] Rating=-inf",
+    "\t\t\t\t\tFz Tension: Value=4.9944 [kN] Rating=-inf",
+    "\t\t\t\t\tMy Extension: Value=-79.999 [N m] Rating=-inf",
+    "\t\t\tChest: Value=-inf [] Rating=-inf",
+    "\t\t\t\tChest Compression: Value=-60 [mm] Rating=-inf",
+    "\t\t\t\tChest VC: Value=-1.5 [m / s] Rating=4",
+    "\t\t\t\tModifier Shoulder Belt Load: Value=4.9999 [N] Rating=0",
+    "\t\t\tKnee, Femur and Pelvis: Value=0 [] Rating=0",
+    "\t\t\t\tFemur Compression: Value=-4.9999 [kN] Rating=2.7254",
+    "\t\t\t\tKnee Slider Compression: Value=-60 [mm] Rating=0",
+    "\t\t\t\tModifier for Variable Contact: Value=0 [] Rating=-0",
+    "\t\t\t\tModifier for Concentrated Loading: Value=0 [] Rating=-0",
+    "\t\t\tLower Leg: Value=nan [] Rating=0.88603",
+    "\t\t\t\tTibia Index: Value=1.1 [] Rating=0.88603",
+    "\t\t\t\tTibia Compression: Value=-4.9999 [kN] Rating=1.999",
+    "\t\tDoor Opening During Impact: Value=0 [] Rating=0",
+    "\t\tCompatibility Modifier: Value=0 [] Rating=0",
+    "\t\t\tOccupant Load Criterion (OLC) Modifier: Value=0.66412 [g0] Rating=0",
+    "euro_ncap_frontal_mpdb-1",
+    "\tOverall: Value=nan [] Rating=0",
+    "\t\tDriver: Value=nan [] Rating=-inf",
+    "\t\t\tHead & Neck: Value=nan [] Rating=-inf",
+    "\t\t\t\tHead: Value=nan [] Rating=-inf",
+    "\t\t\t\t\tHIC 15: Value=576 [] Rating=-inf",
+    "\t\t\t\t\tHead a3ms: Value=34.262 [m / s2] Rating=0.84036",
+    "\t\t\t\t\tModifier for Brain Injury - DAMAGE: Value=95.999 [rad / s2] Rating=-1",
+    "\t\t\t\t\tModifier for Unstable Airbag Contact: Value=0 [] Rating=0",
+    "\t\t\t\t\tModifier for Hazardous Airbag Deployment: Value=0 [] Rating=0",
+    "\t\t\t\t\tModifier for Incorrect Airbag Deployment: Value=0 [] Rating=0",
+    "\t\t\t\t\tModifier for Displacement of Steering Column: Value=0 [] Rating=0",
+    "\t\t\t\tNeck: Value=nan [] Rating=-inf",
+    "\t\t\t\t\tNeck My extension: Value=-76.799 [N m] Rating=-inf",
+    "\t\t\t\t\tNeck Fz tension: Value=4.7999 [kN] Rating=-inf",
+    "\t\t\t\t\tNeck Fx shear: Value=4.7999 [kN] Rating=-inf",
+    "\t\t\tChest and Abdomen: Value=nan [] Rating=0.38284",
+    "\t\t\t\tChest: Value=nan [] Rating=0.38284",
+    "\t\t\t\t\tChest Compression: Value=-57.6 [mm] Rating=0.38284",
+    "\t\t\t\t\tModifier Shoulder Belt Load: Value=4.7999 [N] Rating=0",
+    "\t\t\t\t\tModifier Chest Steering Wheel Contact: Value=nan [] Rating=0",
+    "\t\t\t\t\tModifier for Displacement of the A Pillar: Value=0 [] Rating=0",
+    "\t\t\t\t\tModifier for Integrity of the Passenger Compartment: Value=0 [] Rating=0",
+    "\t\t\t\tAbdomen: Value=nan [] Rating=4",
+    "\t\t\t\t\tAbdomen Compression: Value=-57.6 [mm] Rating=4",
+    "\t\t\tKnee, Femur and Pelvis: Value=nan [] Rating=0",
+    "\t\t\t\tPelvis: Value=nan [] Rating=0",
+    "\t\t\t\t\tAcetabulum Force: Value=-4.7999 [kN] Rating=0",
+    "\t\t\t\tFemur: Value=nan [] Rating=2.9378",
+    "\t\t\t\t\tFemur Compression: Value=-4.7999 [kN] Rating=2.9378",
+    "\t\t\t\tKnee: Value=nan [] Rating=0",
+    "\t\t\t\t\tKnee Slider Compression: Value=-57.6 [mm] Rating=0",
+    "\t\t\t\tSubmarining: Value=0 [] Rating=0",
+    "\t\t\t\tModifier for Variable Contact: Value=0 [] Rating=-0",
+    "\t\t\t\tModifier for Concentrated Loading: Value=0 [] Rating=-0",
+    "\t\t\tLower Leg, Foot and Ankle: Value=nan [] Rating=1.0809",
+    "\t\t\t\tTibia Index: Value=1.056 [] Rating=1.0809",
+    "\t\t\t\tTibia Compression: Value=-4.7999 [kN] Rating=2.133",
+    "\t\t\t\tPedal Rearward Displacement: Value=0 [] Rating=4",
+    "\t\t\t\tModifier for Upward Displacement of the Worst Performing Pedal: Value=0 [] Rating=0",
+    "\t\t\t\tModifier for Footwell Rupture: Value=0 [] Rating=0",
+    "\t\t\t\tModifier for Pedal Blocking: Value=0 [] Rating=0",
+    "\t\tPassenger: Value=nan [] Rating=-inf",
+    "\t\t\tHead and Neck: Value=-inf [] Rating=-inf",
+    "\t\t\t\tHead: Value=-inf [] Rating=-inf",
+    "\t\t\t\t\tHIC 15: Value=576 [] Rating=-inf",
+    "\t\t\t\t\tHead a3ms: Value=34.262 [m / s2] Rating=0.84036",
+    "\t\t\t\t\tModifier for Unstable Airbag Contact: Value=0 [] Rating=0",
+    "\t\t\t\t\tModifier for Hazardous Airbag Deployment: Value=0 [] Rating=0",
+    "\t\t\t\t\tModifier for Incorrect Airbag Deployment: Value=0 [] Rating=0",
+    "\t\t\t\tNeck: Value=-inf [] Rating=-inf",
+    "\t\t\t\t\tNeck Fx shear: Value=-4.7999 [kN] Rating=-inf",
+    "\t\t\t\t\tFz Tension: Value=4.7946 [kN] Rating=-inf",
+    "\t\t\t\t\tMy Extension: Value=-76.799 [N m] Rating=-inf",
+    "\t\t\tChest: Value=-inf [] Rating=-inf",
+    "\t\t\t\tChest Compression: Value=-57.6 [mm] Rating=-inf",
+    "\t\t\t\tChest VC: Value=-1.44 [m / s] Rating=4",
+    "\t\t\t\tModifier Shoulder Belt Load: Value=4.7999 [N] Rating=0",
+    "\t\t\tKnee, Femur and Pelvis: Value=0 [] Rating=0",
+    "\t\t\t\tFemur Compression: Value=-4.7999 [kN] Rating=2.9378",
+    "\t\t\t\tKnee Slider Compression: Value=-57.6 [mm] Rating=0",
+    "\t\t\t\tModifier for Variable Contact: Value=0 [] Rating=-0",
+    "\t\t\t\tModifier for Concentrated Loading: Value=0 [] Rating=-0",
+    "\t\t\tLower Leg: Value=nan [] Rating=1.0809",
+    "\t\t\t\tTibia Index: Value=1.056 [] Rating=1.0809",
+    "\t\t\t\tTibia Compression: Value=-4.7999 [kN] Rating=2.133",
+    "\t\tDoor Opening During Impact: Value=0 [] Rating=0",
+    "\t\tCompatibility Modifier: Value=0 [] Rating=0",
+    "\t\t\tOccupant Load Criterion (OLC) Modifier: Value=0.63755 [g0] Rating=0"
+  ],
   "report": "EuroNCAP_Frontal_MPDB",
   "results": {
-    "09203": {
+    "euro_ncap_frontal_mpdb-0": {
       "Overall": {
         "color": null,
-        "rating": "nan",
+        "rating": 0.0,
         "status": "OK",
         "value": "nan"
       },
       "criterion_compatibility_modifier": {
         "color": null,
-        "rating": "nan",
+        "rating": 0.0,
         "status": "OK",
-        "value": "nan"
+        "value": 0.0
       },
       "criterion_compatibility_modifier/criterion_olc_modifier": {
         "color": null,
-        "rating": "nan",
-        "status": "NA",
-        "value": "nan"
+        "rating": 0.0,
+        "status": "OK",
+        "value": 0.6641151358942359
       },
       "criterion_door_opening_during_impact": {
         "color": null,
@@ -3687,31 +168,31 @@
       },
       "criterion_driver": {
         "color": null,
-        "rating": "nan",
+        "rating": "-inf",
         "status": "OK",
         "value": "nan"
       },
       "criterion_driver/criterion_chest_abdomen": {
         "color": null,
-        "rating": "nan",
+        "rating": 7.750426382471448e-05,
         "status": "OK",
         "value": "nan"
       },
       "criterion_driver/criterion_chest_abdomen/criterion_abdomen": {
         "color": null,
-        "rating": "nan",
+        "rating": 4,
         "status": "OK",
         "value": "nan"
       },
       "criterion_driver/criterion_chest_abdomen/criterion_abdomen/criterion_abdomen_compression": {
-        "color": null,
-        "rating": "nan",
-        "status": "NA",
-        "value": "nan"
+        "color": "green",
+        "rating": 4,
+        "status": "OK",
+        "value": -59.999514038351805
       },
       "criterion_driver/criterion_chest_abdomen/criterion_chest": {
         "color": null,
-        "rating": "nan",
+        "rating": 7.750426382471448e-05,
         "status": "OK",
         "value": "nan"
       },
@@ -3734,436 +215,26 @@
         "value": "nan"
       },
       "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_chest_compression": {
-        "color": "green",
-        "rating": 4.0,
+        "color": "brown",
+        "rating": 7.750426382471448e-05,
         "status": "OK",
-        "value": -20.244650233544263
+        "value": -59.999514038351805
       },
       "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_shoulder_belt_load": {
-        "color": null,
-        "rating": "nan",
-        "status": "NA",
-        "value": "nan"
+        "color": "green",
+        "rating": 0.0,
+        "status": "OK",
+        "value": 4.999880052753026
       },
       "criterion_driver/criterion_head_neck": {
         "color": null,
-        "rating": "nan",
+        "rating": "-inf",
         "status": "OK",
         "value": "nan"
       },
       "criterion_driver/criterion_head_neck/criterion_head": {
         "color": null,
-        "rating": "nan",
-        "status": "OK",
-        "value": "nan"
-      },
-      "criterion_driver/criterion_head_neck/criterion_head/criterion_DisplacementSteeringColumn": {
-        "color": null,
-        "rating": 0.0,
-        "status": "OK",
-        "value": 0.0
-      },
-      "criterion_driver/criterion_head_neck/criterion_head/criterion_HazardousAirbagDeployment": {
-        "color": null,
-        "rating": 0,
-        "status": "OK",
-        "value": false
-      },
-      "criterion_driver/criterion_head_neck/criterion_head/criterion_IncorrectAirbagDeployment": {
-        "color": null,
-        "rating": 0,
-        "status": "OK",
-        "value": false
-      },
-      "criterion_driver/criterion_head_neck/criterion_head/criterion_UnstableAirbagContact": {
-        "color": null,
-        "rating": 0,
-        "status": "OK",
-        "value": false
-      },
-      "criterion_driver/criterion_head_neck/criterion_head/criterion_damage": {
-        "color": null,
-        "rating": "nan",
-        "status": "NA",
-        "value": "nan"
-      },
-      "criterion_driver/criterion_head_neck/criterion_head/criterion_head_a3ms": {
-        "color": "gray",
         "rating": "-inf",
-        "status": "OK",
-        "value": 124.483568219652
-      },
-      "criterion_driver/criterion_head_neck/criterion_head/criterion_hic_15": {
-        "color": "gray",
-        "rating": "-inf",
-        "status": "OK",
-        "value": 1060.595254245318
-      },
-      "criterion_driver/criterion_head_neck/criterion_neck": {
-        "color": null,
-        "rating": 4.0,
-        "status": "OK",
-        "value": "nan"
-      },
-      "criterion_driver/criterion_head_neck/criterion_neck/criterion_fx_shear": {
-        "color": "green",
-        "rating": 4.0,
-        "status": "OK",
-        "value": 0.35989067204431846
-      },
-      "criterion_driver/criterion_head_neck/criterion_neck/criterion_fz_tension": {
-        "color": "green",
-        "rating": 4.0,
-        "status": "OK",
-        "value": 1.8053699774279068
-      },
-      "criterion_driver/criterion_head_neck/criterion_neck/criterion_my_extension": {
-        "color": "green",
-        "rating": 4.0,
-        "status": "OK",
-        "value": -11.708611152288245
-      },
-      "criterion_driver/criterion_knee_femur_pelvis": {
-        "color": null,
-        "rating": "nan",
-        "status": "OK",
-        "value": "nan"
-      },
-      "criterion_driver/criterion_knee_femur_pelvis/criterion_ConcentratedLoading": {
-        "color": null,
-        "rating": -0.0,
-        "status": "OK",
-        "value": 0
-      },
-      "criterion_driver/criterion_knee_femur_pelvis/criterion_VariableContact": {
-        "color": null,
-        "rating": -0.0,
-        "status": "OK",
-        "value": 0
-      },
-      "criterion_driver/criterion_knee_femur_pelvis/criterion_femur": {
-        "color": null,
-        "rating": 0.0,
-        "status": "OK",
-        "value": "nan"
-      },
-      "criterion_driver/criterion_knee_femur_pelvis/criterion_femur/criterion_femur_compression": {
-        "color": "red",
-        "rating": 0.0,
-        "status": "OK",
-        "value": -10.04032813005745
-      },
-      "criterion_driver/criterion_knee_femur_pelvis/criterion_knee": {
-        "color": null,
-        "rating": "nan",
-        "status": "OK",
-        "value": "nan"
-      },
-      "criterion_driver/criterion_knee_femur_pelvis/criterion_knee/criterion_knee_slider_compression": {
-        "color": null,
-        "rating": "nan",
-        "status": "NA",
-        "value": "nan"
-      },
-      "criterion_driver/criterion_knee_femur_pelvis/criterion_pelvis": {
-        "color": null,
-        "rating": "nan",
-        "status": "OK",
-        "value": "nan"
-      },
-      "criterion_driver/criterion_knee_femur_pelvis/criterion_pelvis/criterion_acetabulum_force": {
-        "color": null,
-        "rating": "nan",
-        "status": "NA",
-        "value": "nan"
-      },
-      "criterion_driver/criterion_knee_femur_pelvis/criterion_submarining": {
-        "color": null,
-        "rating": 0,
-        "status": "OK",
-        "value": false
-      },
-      "criterion_driver/criterion_lowerleg_foot_ankle": {
-        "color": null,
-        "rating": 2.215290228348533,
-        "status": "OK",
-        "value": "nan"
-      },
-      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_FootwellRupture": {
-        "color": null,
-        "rating": 0,
-        "status": "OK",
-        "value": false
-      },
-      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_PedalBlocking": {
-        "color": null,
-        "rating": 0.0,
-        "status": "OK",
-        "value": 0.0
-      },
-      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_PedalUpwardDisplacement": {
-        "color": null,
-        "rating": 0.0,
-        "status": "OK",
-        "value": 0.0
-      },
-      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_pedal_rearward_displacement": {
-        "color": null,
-        "rating": 4.0,
-        "status": "OK",
-        "value": 0
-      },
-      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_tibia_compression": {
-        "color": "green",
-        "rating": 4.0,
-        "status": "OK",
-        "value": -1.783137346540146
-      },
-      "criterion_driver/criterion_lowerleg_foot_ankle/criterion_tibia_index": {
-        "color": "orange",
-        "rating": 2.215290228348533,
-        "status": "OK",
-        "value": 0.8015768145488359
-      },
-      "criterion_passenger": {
-        "color": null,
-        "rating": "nan",
-        "status": "OK",
-        "value": "nan"
-      },
-      "criterion_passenger/criterion_chest": {
-        "color": null,
-        "rating": "nan",
-        "status": "OK",
-        "value": "nan"
-      },
-      "criterion_passenger/criterion_chest/criterion_chest_compression": {
-        "color": null,
-        "rating": "nan",
-        "status": "NA",
-        "value": "nan"
-      },
-      "criterion_passenger/criterion_chest/criterion_chest_vc": {
-        "color": null,
-        "rating": "nan",
-        "status": "NA",
-        "value": "nan"
-      },
-      "criterion_passenger/criterion_chest/criterion_shoulder_belt_load": {
-        "color": null,
-        "rating": "nan",
-        "status": "NA",
-        "value": "nan"
-      },
-      "criterion_passenger/criterion_head_neck": {
-        "color": null,
-        "rating": "nan",
-        "status": "OK",
-        "value": "nan"
-      },
-      "criterion_passenger/criterion_head_neck/criterion_head": {
-        "color": null,
-        "rating": "nan",
-        "status": "OK",
-        "value": "nan"
-      },
-      "criterion_passenger/criterion_head_neck/criterion_head/criterion_HazardousAirbagDeployment": {
-        "color": null,
-        "rating": 0,
-        "status": "OK",
-        "value": false
-      },
-      "criterion_passenger/criterion_head_neck/criterion_head/criterion_IncorrectAirbagDeployment": {
-        "color": null,
-        "rating": 0,
-        "status": "OK",
-        "value": false
-      },
-      "criterion_passenger/criterion_head_neck/criterion_head/criterion_UnstableAirbagContact": {
-        "color": null,
-        "rating": 0,
-        "status": "OK",
-        "value": false
-      },
-      "criterion_passenger/criterion_head_neck/criterion_head/criterion_head_a3ms": {
-        "color": null,
-        "rating": "nan",
-        "status": "NA",
-        "value": "nan"
-      },
-      "criterion_passenger/criterion_head_neck/criterion_head/criterion_hic_15": {
-        "color": null,
-        "rating": "nan",
-        "status": "NA",
-        "value": "nan"
-      },
-      "criterion_passenger/criterion_head_neck/criterion_neck": {
-        "color": null,
-        "rating": "nan",
-        "status": "OK",
-        "value": "nan"
-      },
-      "criterion_passenger/criterion_head_neck/criterion_neck/criterion_fx_shear": {
-        "color": null,
-        "rating": "nan",
-        "status": "NA",
-        "value": "nan"
-      },
-      "criterion_passenger/criterion_head_neck/criterion_neck/criterion_fz_tension": {
-        "color": null,
-        "rating": "nan",
-        "status": "NA",
-        "value": "nan"
-      },
-      "criterion_passenger/criterion_head_neck/criterion_neck/criterion_my_extension": {
-        "color": null,
-        "rating": "nan",
-        "status": "NA",
-        "value": "nan"
-      },
-      "criterion_passenger/criterion_knee_femur_pelvis": {
-        "color": null,
-        "rating": "nan",
-        "status": "OK",
-        "value": "nan"
-      },
-      "criterion_passenger/criterion_knee_femur_pelvis/criterion_ConcentratedLoading": {
-        "color": null,
-        "rating": -0.0,
-        "status": "OK",
-        "value": 0
-      },
-      "criterion_passenger/criterion_knee_femur_pelvis/criterion_VariableContact": {
-        "color": null,
-        "rating": -0.0,
-        "status": "OK",
-        "value": 0
-      },
-      "criterion_passenger/criterion_knee_femur_pelvis/criterion_femur_compression": {
-        "color": null,
-        "rating": "nan",
-        "status": "NA",
-        "value": "nan"
-      },
-      "criterion_passenger/criterion_knee_femur_pelvis/criterion_knee_slider_compression": {
-        "color": null,
-        "rating": "nan",
-        "status": "NA",
-        "value": "nan"
-      },
-      "criterion_passenger/criterion_lowerleg": {
-        "color": null,
-        "rating": "nan",
-        "status": "OK",
-        "value": "nan"
-      },
-      "criterion_passenger/criterion_lowerleg/criterion_tibia_compression": {
-        "color": null,
-        "rating": "nan",
-        "status": "NA",
-        "value": "nan"
-      },
-      "criterion_passenger/criterion_lowerleg/criterion_tibia_index": {
-        "color": null,
-        "rating": "nan",
-        "status": "NA",
-        "value": "nan"
-      }
-    },
-    "14084": {
-      "Overall": {
-        "color": null,
-        "rating": "nan",
-        "status": "OK",
-        "value": "nan"
-      },
-      "criterion_compatibility_modifier": {
-        "color": null,
-        "rating": "nan",
-        "status": "OK",
-        "value": "nan"
-      },
-      "criterion_compatibility_modifier/criterion_olc_modifier": {
-        "color": null,
-        "rating": "nan",
-        "status": "NA",
-        "value": "nan"
-      },
-      "criterion_door_opening_during_impact": {
-        "color": null,
-        "rating": 0,
-        "status": "OK",
-        "value": 0
-      },
-      "criterion_driver": {
-        "color": null,
-        "rating": "nan",
-        "status": "OK",
-        "value": "nan"
-      },
-      "criterion_driver/criterion_chest_abdomen": {
-        "color": null,
-        "rating": "nan",
-        "status": "OK",
-        "value": "nan"
-      },
-      "criterion_driver/criterion_chest_abdomen/criterion_abdomen": {
-        "color": null,
-        "rating": "nan",
-        "status": "OK",
-        "value": "nan"
-      },
-      "criterion_driver/criterion_chest_abdomen/criterion_abdomen/criterion_abdomen_compression": {
-        "color": null,
-        "rating": "nan",
-        "status": "NA",
-        "value": "nan"
-      },
-      "criterion_driver/criterion_chest_abdomen/criterion_chest": {
-        "color": null,
-        "rating": "nan",
-        "status": "OK",
-        "value": "nan"
-      },
-      "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_CompartmentIntegrity": {
-        "color": null,
-        "rating": 0,
-        "status": "OK",
-        "value": false
-      },
-      "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_DisplacementAPillar": {
-        "color": null,
-        "rating": 0.0,
-        "status": "OK",
-        "value": 0.0
-      },
-      "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_SteeringWheelContact": {
-        "color": null,
-        "rating": 0,
-        "status": "OK",
-        "value": "nan"
-      },
-      "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_chest_compression": {
-        "color": "green",
-        "rating": 4.0,
-        "status": "OK",
-        "value": -31.11494668088617
-      },
-      "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_shoulder_belt_load": {
-        "color": null,
-        "rating": "nan",
-        "status": "NA",
-        "value": "nan"
-      },
-      "criterion_driver/criterion_head_neck": {
-        "color": null,
-        "rating": 3.0,
-        "status": "OK",
-        "value": "nan"
-      },
-      "criterion_driver/criterion_head_neck/criterion_head": {
-        "color": null,
-        "rating": 3.0,
         "status": "OK",
         "value": "nan"
       },
@@ -4195,47 +266,47 @@
         "color": "red",
         "rating": -1.0,
         "status": "OK",
-        "value": 13.069038613300279
+        "value": 99.99862004036565
       },
       "criterion_driver/criterion_head_neck/criterion_head/criterion_head_a3ms": {
-        "color": "green",
-        "rating": 4.0,
+        "color": "gray",
+        "rating": "-inf",
         "status": "OK",
-        "value": 54.77641041133814
+        "value": 35.69006745422749
       },
       "criterion_driver/criterion_head_neck/criterion_head/criterion_hic_15": {
-        "color": "green",
-        "rating": 4.0,
+        "color": "gray",
+        "rating": "-inf",
         "status": "OK",
-        "value": 277.7450732639399
+        "value": 600.0
       },
       "criterion_driver/criterion_head_neck/criterion_neck": {
         "color": null,
-        "rating": 4.0,
+        "rating": "-inf",
         "status": "OK",
         "value": "nan"
       },
       "criterion_driver/criterion_head_neck/criterion_neck/criterion_fx_shear": {
-        "color": "green",
-        "rating": 4.0,
+        "color": "gray",
+        "rating": "-inf",
         "status": "OK",
-        "value": 1.1999359579530409
+        "value": 4.9999310020182826
       },
       "criterion_driver/criterion_head_neck/criterion_neck/criterion_fz_tension": {
-        "color": "green",
-        "rating": 4.0,
+        "color": "gray",
+        "rating": "-inf",
         "status": "OK",
-        "value": 1.20872196218147
+        "value": 4.9999310020182826
       },
       "criterion_driver/criterion_head_neck/criterion_neck/criterion_my_extension": {
-        "color": "green",
-        "rating": 4.0,
+        "color": "gray",
+        "rating": "-inf",
         "status": "OK",
-        "value": -13.283149944531232
+        "value": -79.99889603229252
       },
       "criterion_driver/criterion_knee_femur_pelvis": {
         "color": null,
-        "rating": "nan",
+        "rating": 0.0,
         "status": "OK",
         "value": "nan"
       },
@@ -4253,39 +324,39 @@
       },
       "criterion_driver/criterion_knee_femur_pelvis/criterion_femur": {
         "color": null,
-        "rating": 4.0,
+        "rating": 2.725372574871242,
         "status": "OK",
         "value": "nan"
       },
       "criterion_driver/criterion_knee_femur_pelvis/criterion_femur/criterion_femur_compression": {
-        "color": "green",
-        "rating": 4.0,
+        "color": "yellow",
+        "rating": 2.725372574871242,
         "status": "OK",
-        "value": -0.5268480544522959
+        "value": -4.9999310020182826
       },
       "criterion_driver/criterion_knee_femur_pelvis/criterion_knee": {
         "color": null,
-        "rating": "nan",
+        "rating": 0.0,
         "status": "OK",
         "value": "nan"
       },
       "criterion_driver/criterion_knee_femur_pelvis/criterion_knee/criterion_knee_slider_compression": {
-        "color": null,
-        "rating": "nan",
-        "status": "NA",
-        "value": "nan"
+        "color": "red",
+        "rating": 0.0,
+        "status": "OK",
+        "value": -59.999514038351805
       },
       "criterion_driver/criterion_knee_femur_pelvis/criterion_pelvis": {
         "color": null,
-        "rating": "nan",
+        "rating": 0.0,
         "status": "OK",
         "value": "nan"
       },
       "criterion_driver/criterion_knee_femur_pelvis/criterion_pelvis/criterion_acetabulum_force": {
-        "color": null,
-        "rating": "nan",
-        "status": "NA",
-        "value": "nan"
+        "color": "red",
+        "rating": 0.0,
+        "status": "OK",
+        "value": -4.9999310020182826
       },
       "criterion_driver/criterion_knee_femur_pelvis/criterion_submarining": {
         "color": null,
@@ -4295,7 +366,7 @@
       },
       "criterion_driver/criterion_lowerleg_foot_ankle": {
         "color": null,
-        "rating": 2.9249033824023214,
+        "rating": 0.8860275094953107,
         "status": "OK",
         "value": "nan"
       },
@@ -4324,58 +395,58 @@
         "value": 0
       },
       "criterion_driver/criterion_lowerleg_foot_ankle/criterion_tibia_compression": {
-        "color": "yellow",
-        "rating": 3.352749971121848,
+        "color": "orange",
+        "rating": 1.9990462286477508,
         "status": "OK",
-        "value": -2.972577053160258
+        "value": -4.9999310020182826
       },
       "criterion_driver/criterion_lowerleg_foot_ankle/criterion_tibia_index": {
-        "color": "yellow",
-        "rating": 2.9249033824023214,
+        "color": "brown",
+        "rating": 0.8860275094953107,
         "status": "OK",
-        "value": 0.6423208003601079
+        "value": 1.0999937901816454
       },
       "criterion_passenger": {
         "color": null,
-        "rating": "nan",
+        "rating": "-inf",
         "status": "OK",
         "value": "nan"
       },
       "criterion_passenger/criterion_chest": {
         "color": null,
-        "rating": "nan",
+        "rating": "-inf",
         "status": "OK",
-        "value": 4.0
+        "value": "-inf"
       },
       "criterion_passenger/criterion_chest/criterion_chest_compression": {
-        "color": "green",
-        "rating": 4.0,
+        "color": "gray",
+        "rating": "-inf",
         "status": "OK",
-        "value": -17.701969448460297
+        "value": -59.999514038351805
       },
       "criterion_passenger/criterion_chest/criterion_chest_vc": {
         "color": "green",
         "rating": 4.0,
         "status": "OK",
-        "value": -0.10722683291437828
+        "value": -1.499986115381481
       },
       "criterion_passenger/criterion_chest/criterion_shoulder_belt_load": {
-        "color": null,
-        "rating": "nan",
-        "status": "NA",
-        "value": "nan"
+        "color": "green",
+        "rating": 0.0,
+        "status": "OK",
+        "value": 4.999880052753026
       },
       "criterion_passenger/criterion_head_neck": {
         "color": null,
-        "rating": 4.0,
+        "rating": "-inf",
         "status": "OK",
-        "value": 4.0
+        "value": "-inf"
       },
       "criterion_passenger/criterion_head_neck/criterion_head": {
         "color": null,
-        "rating": 4.0,
+        "rating": "-inf",
         "status": "OK",
-        "value": 4.0
+        "value": "-inf"
       },
       "criterion_passenger/criterion_head_neck/criterion_head/criterion_HazardousAirbagDeployment": {
         "color": null,
@@ -4396,46 +467,46 @@
         "value": false
       },
       "criterion_passenger/criterion_head_neck/criterion_head/criterion_head_a3ms": {
-        "color": "green",
-        "rating": 4.0,
+        "color": "gray",
+        "rating": "-inf",
         "status": "OK",
-        "value": 49.44789731765516
+        "value": 35.69006745422749
       },
       "criterion_passenger/criterion_head_neck/criterion_head/criterion_hic_15": {
-        "color": "green",
-        "rating": 4.0,
+        "color": "gray",
+        "rating": "-inf",
         "status": "OK",
-        "value": 230.96161113232725
+        "value": 600.0
       },
       "criterion_passenger/criterion_head_neck/criterion_neck": {
         "color": null,
-        "rating": 4.0,
+        "rating": "-inf",
         "status": "OK",
-        "value": 4.0
+        "value": "-inf"
       },
       "criterion_passenger/criterion_head_neck/criterion_neck/criterion_fx_shear": {
-        "color": "green",
-        "rating": 4.0,
+        "color": "gray",
+        "rating": "-inf",
         "status": "OK",
-        "value": 0.5280437189506695
+        "value": -4.9999310020182826
       },
       "criterion_passenger/criterion_head_neck/criterion_neck/criterion_fz_tension": {
-        "color": "green",
-        "rating": 4.0,
+        "color": "gray",
+        "rating": "-inf",
         "status": "OK",
-        "value": 0.589491259926559
+        "value": 4.994412191723887
       },
       "criterion_passenger/criterion_head_neck/criterion_neck/criterion_my_extension": {
-        "color": "green",
-        "rating": 4.0,
+        "color": "gray",
+        "rating": "-inf",
         "status": "OK",
-        "value": -25.165458657041263
+        "value": -79.99889603229252
       },
       "criterion_passenger/criterion_knee_femur_pelvis": {
         "color": null,
-        "rating": "nan",
+        "rating": 0.0,
         "status": "OK",
-        "value": "nan"
+        "value": 0.0
       },
       "criterion_passenger/criterion_knee_femur_pelvis/criterion_ConcentratedLoading": {
         "color": null,
@@ -4450,54 +521,54 @@
         "value": 0
       },
       "criterion_passenger/criterion_knee_femur_pelvis/criterion_femur_compression": {
-        "color": "green",
-        "rating": 4.0,
+        "color": "yellow",
+        "rating": 2.725372574871242,
         "status": "OK",
-        "value": -1.9141633467514438
+        "value": -4.9999310020182826
       },
       "criterion_passenger/criterion_knee_femur_pelvis/criterion_knee_slider_compression": {
-        "color": null,
-        "rating": "nan",
-        "status": "NA",
-        "value": "nan"
+        "color": "red",
+        "rating": 0.0,
+        "status": "OK",
+        "value": -59.999514038351805
       },
       "criterion_passenger/criterion_lowerleg": {
         "color": null,
-        "rating": 3.1406067853721895,
+        "rating": 0.8860275094953107,
         "status": "OK",
         "value": "nan"
       },
       "criterion_passenger/criterion_lowerleg/criterion_tibia_compression": {
-        "color": "green",
-        "rating": 4.0,
+        "color": "orange",
+        "rating": 1.9990462286477508,
         "status": "OK",
-        "value": -1.412325091847133
+        "value": -4.9999310020182826
       },
       "criterion_passenger/criterion_lowerleg/criterion_tibia_index": {
-        "color": "yellow",
-        "rating": 3.1406067853721895,
+        "color": "brown",
+        "rating": 0.8860275094953107,
         "status": "OK",
-        "value": 0.5937024525832781
+        "value": 1.0999937901816454
       }
     },
-    "AK3T02FO": {
+    "euro_ncap_frontal_mpdb-1": {
       "Overall": {
         "color": null,
-        "rating": "nan",
+        "rating": 0.0,
         "status": "OK",
         "value": "nan"
       },
       "criterion_compatibility_modifier": {
         "color": null,
-        "rating": "nan",
+        "rating": 0.0,
         "status": "OK",
-        "value": "nan"
+        "value": 0.0
       },
       "criterion_compatibility_modifier/criterion_olc_modifier": {
         "color": null,
-        "rating": "nan",
-        "status": "NA",
-        "value": "nan"
+        "rating": 0.0,
+        "status": "OK",
+        "value": 0.6375505304584662
       },
       "criterion_door_opening_during_impact": {
         "color": null,
@@ -4507,31 +578,31 @@
       },
       "criterion_driver": {
         "color": null,
-        "rating": "nan",
+        "rating": "-inf",
         "status": "OK",
         "value": "nan"
       },
       "criterion_driver/criterion_chest_abdomen": {
         "color": null,
-        "rating": "nan",
+        "rating": 0.3828417147856949,
         "status": "OK",
         "value": "nan"
       },
       "criterion_driver/criterion_chest_abdomen/criterion_abdomen": {
         "color": null,
-        "rating": "nan",
+        "rating": 4,
         "status": "OK",
         "value": "nan"
       },
       "criterion_driver/criterion_chest_abdomen/criterion_abdomen/criterion_abdomen_compression": {
-        "color": null,
-        "rating": "nan",
-        "status": "NA",
-        "value": "nan"
+        "color": "green",
+        "rating": 4,
+        "status": "OK",
+        "value": -57.59953347681776
       },
       "criterion_driver/criterion_chest_abdomen/criterion_chest": {
         "color": null,
-        "rating": 4.0,
+        "rating": 0.3828417147856949,
         "status": "OK",
         "value": "nan"
       },
@@ -4554,26 +625,26 @@
         "value": "nan"
       },
       "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_chest_compression": {
-        "color": "green",
-        "rating": 4.0,
+        "color": "brown",
+        "rating": 0.3828417147856949,
         "status": "OK",
-        "value": -27.640424739525812
+        "value": -57.59953347681776
       },
       "criterion_driver/criterion_chest_abdomen/criterion_chest/criterion_shoulder_belt_load": {
         "color": "green",
         "rating": 0.0,
         "status": "OK",
-        "value": 5.197280279550186
+        "value": 4.799884850642904
       },
       "criterion_driver/criterion_head_neck": {
         "color": null,
-        "rating": "nan",
+        "rating": "-inf",
         "status": "OK",
         "value": "nan"
       },
       "criterion_driver/criterion_head_neck/criterion_head": {
         "color": null,
-        "rating": "nan",
+        "rating": "-inf",
         "status": "OK",
         "value": "nan"
       },
@@ -4602,50 +673,50 @@
         "value": false
       },
       "criterion_driver/criterion_head_neck/criterion_head/criterion_damage": {
-        "color": null,
-        "rating": "nan",
-        "status": "NA",
-        "value": "nan"
+        "color": "red",
+        "rating": -1.0,
+        "status": "OK",
+        "value": 95.99867523875102
       },
       "criterion_driver/criterion_head_neck/criterion_head/criterion_head_a3ms": {
-        "color": "green",
-        "rating": 4.0,
+        "color": "brown",
+        "rating": 0.8403559208235889,
         "status": "OK",
-        "value": 47.71624564564192
+        "value": 34.26246475605839
       },
       "criterion_driver/criterion_head_neck/criterion_head/criterion_hic_15": {
-        "color": "green",
-        "rating": 4.0,
+        "color": "gray",
+        "rating": "-inf",
         "status": "OK",
-        "value": 224.27072720427321
+        "value": 576.0
       },
       "criterion_driver/criterion_head_neck/criterion_neck": {
         "color": null,
-        "rating": 4.0,
+        "rating": "-inf",
         "status": "OK",
         "value": "nan"
       },
       "criterion_driver/criterion_head_neck/criterion_neck/criterion_fx_shear": {
-        "color": "green",
-        "rating": 4.0,
+        "color": "gray",
+        "rating": "-inf",
         "status": "OK",
-        "value": 0.43631136515223173
+        "value": 4.7999337619375515
       },
       "criterion_driver/criterion_head_neck/criterion_neck/criterion_fz_tension": {
-        "color": "green",
-        "rating": 4.0,
+        "color": "gray",
+        "rating": "-inf",
         "status": "OK",
-        "value": 1.1912899817859819
+        "value": 4.7999337619375515
       },
       "criterion_driver/criterion_head_neck/criterion_neck/criterion_my_extension": {
-        "color": "green",
-        "rating": 4.0,
+        "color": "gray",
+        "rating": "-inf",
         "status": "OK",
-        "value": -15.37400417844821
+        "value": -76.79894019100081
       },
       "criterion_driver/criterion_knee_femur_pelvis": {
         "color": null,
-        "rating": "nan",
+        "rating": 0.0,
         "status": "OK",
         "value": "nan"
       },
@@ -4663,39 +734,39 @@
       },
       "criterion_driver/criterion_knee_femur_pelvis/criterion_femur": {
         "color": null,
-        "rating": 4.0,
+        "rating": 2.9378197628580356,
         "status": "OK",
         "value": "nan"
       },
       "criterion_driver/criterion_knee_femur_pelvis/criterion_femur/criterion_femur_compression": {
-        "color": "green",
-        "rating": 4.0,
+        "color": "yellow",
+        "rating": 2.9378197628580356,
         "status": "OK",
-        "value": -0.9427166999719382
+        "value": -4.7999337619375515
       },
       "criterion_driver/criterion_knee_femur_pelvis/criterion_knee": {
         "color": null,
-        "rating": 4.0,
+        "rating": 0.0,
         "status": "OK",
         "value": "nan"
       },
       "criterion_driver/criterion_knee_femur_pelvis/criterion_knee/criterion_knee_slider_compression": {
-        "color": "green",
-        "rating": 4.0,
+        "color": "red",
+        "rating": 0.0,
         "status": "OK",
-        "value": -0.7088665584335185
+        "value": -57.59953347681776
       },
       "criterion_driver/criterion_knee_femur_pelvis/criterion_pelvis": {
         "color": null,
-        "rating": "nan",
+        "rating": 0.0,
         "status": "OK",
         "value": "nan"
       },
       "criterion_driver/criterion_knee_femur_pelvis/criterion_pelvis/criterion_acetabulum_force": {
-        "color": null,
-        "rating": "nan",
-        "status": "NA",
-        "value": "nan"
+        "color": "red",
+        "rating": 0.0,
+        "status": "OK",
+        "value": -4.7999337619375515
       },
       "criterion_driver/criterion_knee_femur_pelvis/criterion_submarining": {
         "color": null,
@@ -4705,7 +776,7 @@
       },
       "criterion_driver/criterion_lowerleg_foot_ankle": {
         "color": null,
-        "rating": 1.575547448597835,
+        "rating": 1.0809464091154974,
         "status": "OK",
         "value": "nan"
       },
@@ -4734,58 +805,58 @@
         "value": 0
       },
       "criterion_driver/criterion_lowerleg_foot_ankle/criterion_tibia_compression": {
-        "color": "green",
-        "rating": 4.0,
+        "color": "orange",
+        "rating": 2.1330443795018406,
         "status": "OK",
-        "value": -1.814815787828405
+        "value": -4.7999337619375515
       },
       "criterion_driver/criterion_lowerleg_foot_ankle/criterion_tibia_index": {
-        "color": "orange",
-        "rating": 1.575547448597835,
+        "color": "brown",
+        "rating": 1.0809464091154974,
         "status": "OK",
-        "value": 0.9448028100154101
+        "value": 1.0559940385743798
       },
       "criterion_passenger": {
         "color": null,
-        "rating": 14.25087181176993,
+        "rating": "-inf",
         "status": "OK",
         "value": "nan"
       },
       "criterion_passenger/criterion_chest": {
         "color": null,
-        "rating": 2.348958043573917,
+        "rating": "-inf",
         "status": "OK",
-        "value": 2.348958043573917
+        "value": "-inf"
       },
       "criterion_passenger/criterion_chest/criterion_chest_compression": {
-        "color": "orange",
-        "rating": 2.348958043573917,
+        "color": "gray",
+        "rating": "-inf",
         "status": "OK",
-        "value": -30.259089314579306
+        "value": -57.59953347681776
       },
       "criterion_passenger/criterion_chest/criterion_chest_vc": {
         "color": "green",
         "rating": 4.0,
         "status": "OK",
-        "value": 0.10817830301035382
+        "value": -1.4399866707662214
       },
       "criterion_passenger/criterion_chest/criterion_shoulder_belt_load": {
         "color": "green",
         "rating": 0.0,
         "status": "OK",
-        "value": 4.879160695571058
+        "value": 4.799884850642904
       },
       "criterion_passenger/criterion_head_neck": {
         "color": null,
-        "rating": 4.0,
+        "rating": "-inf",
         "status": "OK",
-        "value": 4.0
+        "value": "-inf"
       },
       "criterion_passenger/criterion_head_neck/criterion_head": {
         "color": null,
-        "rating": 4.0,
+        "rating": "-inf",
         "status": "OK",
-        "value": 4.0
+        "value": "-inf"
       },
       "criterion_passenger/criterion_head_neck/criterion_head/criterion_HazardousAirbagDeployment": {
         "color": null,
@@ -4806,46 +877,46 @@
         "value": false
       },
       "criterion_passenger/criterion_head_neck/criterion_head/criterion_head_a3ms": {
-        "color": "green",
-        "rating": 4.0,
+        "color": "brown",
+        "rating": 0.8403559208235889,
         "status": "OK",
-        "value": 40.03967248143437
+        "value": 34.26246475605839
       },
       "criterion_passenger/criterion_head_neck/criterion_head/criterion_hic_15": {
-        "color": "green",
-        "rating": 4.0,
+        "color": "gray",
+        "rating": "-inf",
         "status": "OK",
-        "value": 133.14187375538322
+        "value": 576.0
       },
       "criterion_passenger/criterion_head_neck/criterion_neck": {
         "color": null,
-        "rating": 4.0,
+        "rating": "-inf",
         "status": "OK",
-        "value": 4.0
+        "value": "-inf"
       },
       "criterion_passenger/criterion_head_neck/criterion_neck/criterion_fx_shear": {
-        "color": "green",
-        "rating": 4.0,
+        "color": "gray",
+        "rating": "-inf",
         "status": "OK",
-        "value": 0.70054120640255
+        "value": -4.7999337619375515
       },
       "criterion_passenger/criterion_head_neck/criterion_neck/criterion_fz_tension": {
-        "color": "green",
-        "rating": 4.0,
+        "color": "gray",
+        "rating": "-inf",
         "status": "OK",
-        "value": 0.9151664125934598
+        "value": 4.794635704054932
       },
       "criterion_passenger/criterion_head_neck/criterion_neck/criterion_my_extension": {
-        "color": "green",
-        "rating": 4.0,
+        "color": "gray",
+        "rating": "-inf",
         "status": "OK",
-        "value": -12.281220427297281
+        "value": -76.79894019100081
       },
       "criterion_passenger/criterion_knee_femur_pelvis": {
         "color": null,
-        "rating": 4.0,
+        "rating": 0.0,
         "status": "OK",
-        "value": 4.0
+        "value": 0.0
       },
       "criterion_passenger/criterion_knee_femur_pelvis/criterion_ConcentratedLoading": {
         "color": null,
@@ -4860,34 +931,34 @@
         "value": 0
       },
       "criterion_passenger/criterion_knee_femur_pelvis/criterion_femur_compression": {
-        "color": "green",
-        "rating": 4.0,
+        "color": "yellow",
+        "rating": 2.9378197628580356,
         "status": "OK",
-        "value": -1.3412993510041369
+        "value": -4.7999337619375515
       },
       "criterion_passenger/criterion_knee_femur_pelvis/criterion_knee_slider_compression": {
-        "color": "green",
-        "rating": 4.0,
+        "color": "red",
+        "rating": 0.0,
         "status": "OK",
-        "value": -4.9664660763397865
+        "value": -57.59953347681776
       },
       "criterion_passenger/criterion_lowerleg": {
         "color": null,
-        "rating": 3.901913768196011,
+        "rating": 1.0809464091154974,
         "status": "OK",
         "value": "nan"
       },
       "criterion_passenger/criterion_lowerleg/criterion_tibia_compression": {
-        "color": "green",
-        "rating": 4.0,
+        "color": "orange",
+        "rating": 2.1330443795018406,
         "status": "OK",
-        "value": -1.8982998728452054
+        "value": -4.7999337619375515
       },
       "criterion_passenger/criterion_lowerleg/criterion_tibia_index": {
-        "color": "yellow",
-        "rating": 3.901913768196011,
+        "color": "brown",
+        "rating": 1.0809464091154974,
         "status": "OK",
-        "value": 0.4221080913157
+        "value": 1.0559940385743798
       }
     }
   }

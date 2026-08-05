@@ -1,0 +1,59 @@
+{
+  "print_results": [
+    "un_side_barrier_r95-0",
+    "\tOverall: Value=nan [] Rating=0",
+    "\t\tDummy: Value=nan [] Rating=0",
+    "\t\t\tHead Performance Criterion (HPC 36): Value=600 [] Rating=1",
+    "\t\t\tChest Lateral Deflection: Value=-60 [mm] Rating=0",
+    "\t\t\tChest Lateral VC: Value=-1.5 [m / s] Rating=0",
+    "\t\t\tPubic Symphysis Force: Value=4.9999 [kN] Rating=0",
+    "\t\t\tAbdomen Peak Force: Value=-4.9999 [kN] Rating=0"
+  ],
+  "report": "UN_Side_Barrier_R95",
+  "results": {
+    "un_side_barrier_r95-0": {
+      "Overall": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_dummy": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_dummy/criterion_abdomen_force": {
+        "color": "red",
+        "rating": false,
+        "status": "OK",
+        "value": -4.9999310020182826
+      },
+      "criterion_dummy/criterion_chest_lateral_deflection": {
+        "color": "red",
+        "rating": false,
+        "status": "OK",
+        "value": -59.99951701412797
+      },
+      "criterion_dummy/criterion_chest_lateral_vc": {
+        "color": "red",
+        "rating": false,
+        "status": "OK",
+        "value": -1.499986115381481
+      },
+      "criterion_dummy/criterion_hpc36": {
+        "color": "green",
+        "rating": true,
+        "status": "OK",
+        "value": 600.0
+      },
+      "criterion_dummy/criterion_pubic_symphysis_force": {
+        "color": "red",
+        "rating": 0.0,
+        "status": "OK",
+        "value": 4.9999310020182826
+      }
+    }
+  }
+}

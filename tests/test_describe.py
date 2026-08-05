@@ -6,13 +6,14 @@ import sys
 import unittest
 
 from pyisomme.report.describe import NONE, resolve_sources
+from tests.report_registry import REPORTS, uncovered_report_modules
 from tests.test_validate import GOLDEN_DIR, attach, build, leaf
 
 
 logging.basicConfig(level=logging.ERROR)
 
 DESCRIBE_DIR = os.path.join(GOLDEN_DIR, "describe")
-DESCRIBED = ("EuroNCAP_Frontal_50kmh", "EuroNCAP_Frontal_MPDB")
+DESCRIBED = tuple(spec.class_name for spec in REPORTS)
 
 
 def describe_path(name: str) -> str:
@@ -56,10 +57,15 @@ class TestDescribe(unittest.TestCase):
         self.assertEqual(set(resolve_sources(root).values()), {NONE})
 
     def test_covers_every_criterion(self) -> None:
-        report = build("EuroNCAP_Frontal_50kmh")
-        text = report.describe()
-        for path, _ in report.overall(report.isomme_list[0]).walk():
-            self.assertIn(f"`{path or 'Overall'}`", text)
+        for name in DESCRIBED:
+            with self.subTest(report=name):
+                report = build(name)
+                text = report.describe()
+                for path, _ in report.overall(report.isomme_list[0]).walk():
+                    self.assertIn(f"`{path or 'Overall'}`", text)
+
+    def test_every_report_module_is_registered(self) -> None:
+        self.assertEqual([], uncovered_report_modules())
 
 
 # --------------------------------------------------------------------------- #

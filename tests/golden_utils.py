@@ -1,38 +1,38 @@
 """
 Shared machinery for the golden-file safety net (refactor plan, Step 1).
 
-The net has two layers, because the available fixtures only populate part of any
-report:
+This is the calculated-results layer: per-``Isomme`` ``value`` / ``rating`` /
+``color`` / ``status`` plus the public ``print_results()`` rendering. Values are
+compared with **no-regression** semantics: whatever is known today must stay
+identical, but a criterion that is ``nan`` today may start producing a number.
 
-* **definition** — criterion paths, names and every attached ``Limit``. Entirely
-  independent of measurement data, so it stays fully populated even where every
-  value is ``nan``. Compared *exactly*: a moved threshold or a dropped criterion
-  is a failure that must be re-baselined deliberately.
-* **results** — per-``Isomme`` ``value`` / ``rating`` / ``color`` / ``status``.
-  Compared with **no-regression** semantics: whatever is known today must stay
-  identical, but a criterion that is ``nan`` today may start producing a number
-  (that is an improvement, not a failure). See :func:`compare`.
+The fixture-free, engineer-readable definition contract lives separately in
+``tests/test_describe.py``. Keeping those concerns separate avoids storing the
+same criterion/Limit definition in Markdown and JSON.
 
 Regenerate with ``.venv/Scripts/python.exe -m tests.golden_regen``.
 """
 from __future__ import annotations
 
+from contextlib import redirect_stdout
+from io import StringIO
 import json
 import math
 import os
-from typing import Any, Callable
+import subprocess
+import sys
+from typing import Any
 
 import numpy as np
 
-import pyisomme
 from pyisomme.limit import Limit
 from pyisomme.report.criterion import Criterion
+from pyisomme.report.meta_report import MetaReport
 from pyisomme.report.report import Report
+from tests.report_registry import BY_STEM, build_euro_ncap_synthetic, build_synthetic
 
 
 GOLDEN_DIR = os.path.join(os.path.dirname(__file__), "golden")
-DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
-
 #: x positions at which every ``Limit.func`` is sampled to make it comparable.
 LIMIT_SAMPLE_X = (0.0, 0.001, 0.01, 0.05, 0.1, 0.5, 1.0)
 
@@ -134,10 +134,10 @@ def serialise_limit(limit: Limit) -> dict:
     }
 
 
-def serialise(report: Report) -> dict:
-    """Serialise a *calculated* report into its golden representation."""
+def serialise_definition(report: Report) -> dict:
+    """The exact, measurement-independent report definition."""
     first = report.isomme_list[0]
-    definition = {
+    return {
         "pages": [type(page).__name__ for page in report.pages],
         "criteria": {
             path: {
@@ -149,9 +149,10 @@ def serialise(report: Report) -> dict:
         },
     }
 
-    results = {}
-    for isomme in report.isomme_list:
-        results[str(isomme.test_number)] = {
+
+def _tree_results(report: Report) -> dict:
+    return {
+        str(isomme.test_number): {
             path: {
                 "value": encode(criterion.value),
                 "rating": encode(criterion.rating),
@@ -160,12 +161,41 @@ def serialise(report: Report) -> dict:
             }
             for path, criterion in walk(report.criterion_overall[isomme])
         }
-
-    return {
-        "report": type(report).__name__,
-        "definition": definition,
-        "results": results,
+        for isomme in report.isomme_list
     }
+
+
+def serialise_results(report: Report) -> dict:
+    """Full-precision calculated results plus the public text rendering."""
+    if isinstance(report, MetaReport):
+        results = {
+            f"{type(subreport).__name__}:{test}": tree
+            for subreport in report.reports
+            for test, tree in _tree_results(subreport).items()
+        }
+        results[type(report).__name__] = {
+            "Overall": {"value": encode(report.rating), "rating": encode(report.rating),
+                        "color": None, "status": "OK"},
+            **{
+                f"ratings/{label}": {"value": encode(points), "rating": encode(points),
+                                      "color": None, "status": "OK"}
+                for label, points in report.ratings.items()
+            },
+        }
+    else:
+        results = _tree_results(report)
+
+    output = StringIO()
+    with redirect_stdout(output):
+        report.print_results()
+    return {"report": type(report).__name__,
+            "results": results,
+            "print_results": output.getvalue().splitlines()}
+
+
+def serialise(report: Report) -> dict:
+    """Combined representation retained for definition-oriented test helpers."""
+    return {**serialise_results(report), "definition": serialise_definition(report)}
 
 
 # --------------------------------------------------------------------------- #
@@ -178,42 +208,16 @@ def compare(golden: dict, current: dict) -> tuple[list[str], list[str]]:
 
     Returns ``(regressions, improvements)``. Only *regressions* fail a test:
 
-    * definition — any difference at all (thresholds and structure must be
-      re-baselined on purpose);
     * results — a known value/rating/color changing, disappearing, or a status
       moving down :data:`STATUS_RANK`;
+    * ``print_results`` — any output change, because ordering and formatting are
+      part of the public rendering contract;
 
     while a ``nan`` becoming a number, or an ``ERROR`` becoming ``NA``/``OK``,
     counts as an improvement and is reported but tolerated.
     """
     regressions: list[str] = []
     improvements: list[str] = []
-
-    # -- definition: exact ------------------------------------------------- #
-    gold_def, cur_def = golden["definition"], current["definition"]
-    if gold_def["pages"] != cur_def["pages"]:
-        regressions.append(
-            f"definition/pages changed:\n    golden : {gold_def['pages']}\n    current: {cur_def['pages']}"
-        )
-
-    gold_criteria, cur_criteria = gold_def["criteria"], cur_def["criteria"]
-    for path in sorted(set(gold_criteria) - set(cur_criteria)):
-        regressions.append(f"definition: criterion disappeared: {path}")
-    for path in sorted(set(cur_criteria) - set(gold_criteria)):
-        improvements.append(f"definition: new criterion: {path}")
-    for path in sorted(set(gold_criteria) & set(cur_criteria)):
-        gold_node, cur_node = gold_criteria[path], cur_criteria[path]
-        if gold_node["name"] != cur_node["name"]:
-            regressions.append(
-                f"definition: {path}: name {gold_node['name']!r} -> {cur_node['name']!r}"
-            )
-        if gold_node["limits"] != cur_node["limits"]:
-            regressions.append(
-                f"definition: {path}: limits changed "
-                f"({len(gold_node['limits'])} -> {len(cur_node['limits'])} rows)\n"
-                f"    golden : {json.dumps(gold_node['limits'])[:400]}\n"
-                f"    current: {json.dumps(cur_node['limits'])[:400]}"
-            )
 
     # -- results: no-regression -------------------------------------------- #
     gold_results, cur_results = golden["results"], current["results"]
@@ -252,75 +256,18 @@ def compare(golden: dict, current: dict) -> tuple[list[str], list[str]]:
                     f"results[{test}]: {path}.status: {gold_node['status']} -> {cur_node['status']}"
                 )
 
+    if golden.get("print_results") != current.get("print_results"):
+        regressions.append("print_results output changed")
+
     return regressions, improvements
 
 
 # --------------------------------------------------------------------------- #
-# fixtures and report builders
+# report builders
 # --------------------------------------------------------------------------- #
 
-def _read(*parts: str, pattern: str | None = None) -> pyisomme.Isomme:
-    path = os.path.join(DATA_DIR, *parts)
-    return pyisomme.Isomme().read(path, pattern) if pattern else pyisomme.Isomme().read(path)
-
-
-def build_euro_ncap_frontal_50kmh() -> Report:
-    """Mirrors ``tests.test_report.TestReport.test_EuroNCAP_Frontal_50kmh`` (minus the export)."""
-    v1 = _read("iso-mme-org", "MME 1.6 Testdata short", "AK3T02FO", pattern="[!B][013]*")
-    v2 = _read("nhtsa", "14084", pattern="[!B][013]*")
-    for channel in v1.channels + v2.channels:
-        if channel.code.main_location == "NECK" and channel.code.fine_location_3 in ("00", "??"):
-            channel.set_code(fine_location_3="H3")
-    return pyisomme.report.euro_ncap.frontal_50kmh.EuroNCAP_Frontal_50kmh([v1, v2])
-
-
-def build_euro_ncap_side_barrier() -> Report:
-    """
-    Mirrors ``tests.test_report.TestReport.test_EuroNCAP_Side_Barrier`` (minus the export).
-
-    The synthetic channels come from ``create_sample``, which is deterministic
-    (``linspace``/``sin``, no RNG), so this report is reproducible even though the
-    fixture does not carry the side-impact instrumentation.
-    """
-    v1 = _read("iso-mme-org", "MME 1.6 Testdata short", "AK3T02FO", pattern="[!B][013]*")
-    v1.extend([
-        pyisomme.create_sample("11SHLDLE00WSFOY0", y_range=(-4, 3), unit="kN"),
-        pyisomme.create_sample("11SHLDRI00WSFOY0", y_range=(1, 2), unit="kN"),
-        pyisomme.create_sample("11TRRILE01WSDSYP", y_range=(-30, 0), unit="mm"),
-        pyisomme.create_sample("11TRRILE02WSDSYP", y_range=(-30, 0), unit="mm"),
-        pyisomme.create_sample("11TRRILE03WSDSYP", y_range=(-30, 0), unit="mm"),
-        pyisomme.create_sample("11ABRILE01WSDSYP", y_range=(-30, 0), unit="mm"),
-        pyisomme.create_sample("11ABRILE02WSDSYP", y_range=(-30, 0), unit="mm"),
-        pyisomme.create_sample("11PUBC0000WSFOYB", y_range=(-3., 0), unit="kN"),
-    ])
-    return pyisomme.report.euro_ncap.side_barrier.EuroNCAP_Side_Barrier([v1])
-
-
-def build_euro_ncap_frontal_mpdb() -> Report:
-    """
-    Mirrors ``tests.test_report.TestReport.test_EuroNCAP_Frontal_MPDB`` (minus the export).
-
-    Added in Step 2, once the unguarded ``calculate_olc`` in ``Page_OLC_Trolley``
-    (progress item D1) stopped breaking construction. None of these fixtures carries
-    a trolley (``M?MBAR…VEXA``) channel, so the OLC page is empty here.
-    """
-    v1 = _read("iso-mme-org", "MME 1.6 Testdata short", "AK3T02FO", pattern="[!B][013]*")
-    v2 = _read("nhtsa", "14084", pattern="[!B][013]*")
-    v3 = _read("nhtsa", "09203", pattern="[!B][013]*")
-    for channel in v3.channels:
-        if channel.code.main_location == "TIBI" and channel.code.fine_location_3 in ("00", "??"):
-            channel.set_code(fine_location_3="TH")
-    return pyisomme.report.euro_ncap.frontal_mpdb.EuroNCAP_Frontal_MPDB([v3, v2, v1])
-
-
-#: Golden-file stem -> builder. Deliberately small: covers a frontal tree
-#: (64 criteria, 172 limits), a side tree (13 criteria, 48 limits, 100 % rating
-#: coverage) and the MPDB tree.
-BUILDERS: dict[str, Callable[[], Report]] = {
-    "euro_ncap_frontal_50kmh": build_euro_ncap_frontal_50kmh,
-    "euro_ncap_frontal_mpdb": build_euro_ncap_frontal_mpdb,
-    "euro_ncap_side_barrier": build_euro_ncap_side_barrier,
-}
+BUILDERS = {stem: (lambda spec=spec: build_synthetic(spec)) for stem, spec in BY_STEM.items()}
+BUILDERS["euro_ncap"] = build_euro_ncap_synthetic
 
 
 def golden_path(stem: str) -> str:
@@ -331,7 +278,18 @@ def produce(stem: str) -> dict:
     """Construct, calculate and serialise the report behind ``stem``."""
     report = BUILDERS[stem]()
     report.calculate()
-    return serialise(report)
+    return serialise_results(report)
+
+
+def produce_isolated(stem: str) -> dict:
+    """Produce one golden in a fresh process (avoids the known 13-report stack overflow)."""
+    completed = subprocess.run(
+        [sys.executable, "-m", "tests.golden_case", stem],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return json.loads(completed.stdout)
 
 
 def load(stem: str) -> dict:

@@ -1,0 +1,164 @@
+{
+  "print_results": [
+    "iihs_frontal_small_overlap-0",
+    "\tOverall: Value=nan [] Rating=-2",
+    "\t\tDriver: Value=nan [] Rating=-2",
+    "\t\t\tHead & Neck: Value=nan [] Rating=-2",
+    "\t\t\t\tHIC 15: Value=600 [] Rating=-2",
+    "\t\t\t\tNIJ: Value=1.1 [] Rating=-2",
+    "\t\t\t\tNeck Fz Tension: Value=4.9999 [kN] Rating=-2",
+    "\t\t\t\tNeck Fz Compression: Value=-4.9999 [kN] Rating=-20",
+    "\t\t\t\tNeck Fz Tension Corridor: Value=4.9944 [kN] Rating=-2",
+    "\t\t\t\tNeck Fz Compression Corridor: Value=-4.9999 [kN] Rating=-2",
+    "\t\t\t\tNeck Fx Shear Corridor: Value=-4.9999 [kN] Rating=-2",
+    "\t\t\tChest: Value=nan [] Rating=0",
+    "\t\t\t\tThoracic Spine Acceleration (3ms): Value=35.69 [g0] Rating=-2",
+    "\t\t\t\tSternum Deflection: Value=-60 [mm] Rating=-2",
+    "\t\t\t\tSternum Deflection Rate: Value=-1.5 [m / s] Rating=0",
+    "\t\t\t\tViscous Criterion: Value=-1.5 [m / s] Rating=-20",
+    "\t\t\tTight & Hip: Value=nan [] Rating=nan",
+    "\t\t\t\tKnee Thigh Hip Injury Risk (KTH): Value=nan [] Rating=nan",
+    "\t\t\tLeg & Foot: Value=nan [] Rating=nan",
+    "\t\t\t\tTibia/Femur Displacement: Value=nan [] Rating=nan",
+    "\t\t\t\tTibia Index: Value=1.1 [] Rating=-2.9999",
+    "\t\t\t\tTibia Axial Force: Value=-4.9999 [kN] Rating=-1",
+    "\t\t\t\tFoot Acceleration: Value=81.577 [g0] Rating=0"
+  ],
+  "report": "IIHS_Frontal_Small_Overlap",
+  "results": {
+    "iihs_frontal_small_overlap-0": {
+      "Overall": {
+        "color": null,
+        "rating": -2,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver": {
+        "color": null,
+        "rating": -2,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_chest": {
+        "color": null,
+        "rating": 0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_chest/criterion_acceleration": {
+        "color": "orange",
+        "rating": -2,
+        "status": "OK",
+        "value": 35.69006745422749
+      },
+      "criterion_driver/criterion_chest/criterion_deflection": {
+        "color": "yellow",
+        "rating": -2,
+        "status": "OK",
+        "value": -59.999514038351805
+      },
+      "criterion_driver/criterion_chest/criterion_deflection_rate": {
+        "color": "green",
+        "rating": 0,
+        "status": "OK",
+        "value": -1.499986115381481
+      },
+      "criterion_driver/criterion_chest/criterion_vc": {
+        "color": "red",
+        "rating": -20,
+        "status": "OK",
+        "value": -1.499986115381481
+      },
+      "criterion_driver/criterion_head_neck": {
+        "color": null,
+        "rating": -2,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_head_neck/criterion_fx_shear_corridor": {
+        "color": "yellow",
+        "rating": -2,
+        "status": "OK",
+        "value": -4.9999310020182826
+      },
+      "criterion_driver/criterion_head_neck/criterion_fz_compression": {
+        "color": "red",
+        "rating": -20,
+        "status": "OK",
+        "value": -4.9999310020182826
+      },
+      "criterion_driver/criterion_head_neck/criterion_fz_compression_corridor": {
+        "color": "yellow",
+        "rating": -2,
+        "status": "OK",
+        "value": -4.9999310020182826
+      },
+      "criterion_driver/criterion_head_neck/criterion_fz_tension": {
+        "color": "red",
+        "rating": -2,
+        "status": "OK",
+        "value": 4.9999310020182826
+      },
+      "criterion_driver/criterion_head_neck/criterion_fz_tension_corridor": {
+        "color": "yellow",
+        "rating": -2,
+        "status": "OK",
+        "value": 4.994412191723887
+      },
+      "criterion_driver/criterion_head_neck/criterion_hic_15": {
+        "color": "orange",
+        "rating": -2,
+        "status": "OK",
+        "value": 600.0
+      },
+      "criterion_driver/criterion_head_neck/criterion_nij": {
+        "color": "orange",
+        "rating": -2,
+        "status": "OK",
+        "value": 1.0999937901816454
+      },
+      "criterion_driver/criterion_leg_foot": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_leg_foot/criterion_foot_acceleration": {
+        "color": "green",
+        "rating": 0,
+        "status": "OK",
+        "value": 81.57666381298868
+      },
+      "criterion_driver/criterion_leg_foot/criterion_tibia_axial_force": {
+        "color": "yellow",
+        "rating": -1,
+        "status": "OK",
+        "value": -4.9999310020182826
+      },
+      "criterion_driver/criterion_leg_foot/criterion_tibia_femur_displacement": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_leg_foot/criterion_tibia_index": {
+        "color": "orange",
+        "rating": -2.9999379018164545,
+        "status": "OK",
+        "value": 1.0999937901816454
+      },
+      "criterion_driver/criterion_thigh_hip": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_driver/criterion_thigh_hip/criterion_kth": {
+        "color": null,
+        "rating": "nan",
+        "status": "OK",
+        "value": "nan"
+      }
+    }
+  }
+}

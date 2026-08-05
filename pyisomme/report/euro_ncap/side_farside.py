@@ -380,8 +380,8 @@ class Overall(Criterion):
 
 
             def calculation(self) -> None:
-                self.channel = self.require_channel(self.ctx.code("?{p}LUSP0000??MOXB")).convert_unit("kN")
-                self.value = self.limits.get_limit_min_y(self.channel, unit="kN")
+                self.channel = self.require_channel(self.ctx.code("?{p}LUSP0000??MOXB")).convert_unit("Nm")
+                self.value = self.limits.get_limit_min_y(self.channel, unit="Nm")
                 self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
                 self.color = self.limits.get_limit_min_color(self.channel)
 

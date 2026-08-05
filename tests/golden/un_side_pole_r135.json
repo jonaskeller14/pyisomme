@@ -1,0 +1,66 @@
+{
+  "print_results": [
+    "un_side_pole_r135-0",
+    "\tOverall: Value=nan [] Rating=0",
+    "\t\tDummy: Value=nan [] Rating=0",
+    "\t\t\tHIC 36: Value=600 [] Rating=1",
+    "\t\t\tShoulder Lateral Force: Value=4.9999 [kN] Rating=0",
+    "\t\t\tChest Resultant Compression: Value=-60 [mm] Rating=0",
+    "\t\t\tAbdomen Resultant Compression: Value=-60 [mm] Rating=1",
+    "\t\t\tSpine T12 Acceleration a3ms: Value=81.577 [g0] Rating=0",
+    "\t\t\tPubic Symphysis Force: Value=4.9999 [kN] Rating=0"
+  ],
+  "report": "UN_Side_Pole_R135",
+  "results": {
+    "un_side_pole_r135-0": {
+      "Overall": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_dummy": {
+        "color": null,
+        "rating": 0.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_dummy/criterion_abdomen_resultant_compression": {
+        "color": "green",
+        "rating": true,
+        "status": "OK",
+        "value": -59.99951701412797
+      },
+      "criterion_dummy/criterion_chest_resultant_compression": {
+        "color": "red",
+        "rating": false,
+        "status": "OK",
+        "value": -59.99951701412797
+      },
+      "criterion_dummy/criterion_hic_36": {
+        "color": "green",
+        "rating": true,
+        "status": "OK",
+        "value": 600.0
+      },
+      "criterion_dummy/criterion_pubic_symphysis_force": {
+        "color": "red",
+        "rating": 0.0,
+        "status": "OK",
+        "value": 4.9999310020182826
+      },
+      "criterion_dummy/criterion_shoulder_lateral_force": {
+        "color": "red",
+        "rating": false,
+        "status": "OK",
+        "value": 4.9999310020182826
+      },
+      "criterion_dummy/criterion_spine_t12_a3ms": {
+        "color": "red",
+        "rating": false,
+        "status": "OK",
+        "value": 81.57666381298868
+      }
+    }
+  }
+}

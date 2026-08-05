@@ -16,7 +16,6 @@ from tests import golden_utils
 
 logging.basicConfig(level=logging.ERROR)
 
-
 class TestGolden(unittest.TestCase):
     """One test per covered report; each builds the report from scratch."""
 
@@ -27,7 +26,7 @@ class TestGolden(unittest.TestCase):
                 f"create it with `python -m tests.golden_regen {stem}`"
             )
 
-        current = golden_utils.produce(stem)
+        current = golden_utils.produce_isolated(stem)
         golden = golden_utils.load(stem)
         regressions, improvements = golden_utils.compare(golden, current)
 
@@ -42,14 +41,10 @@ class TestGolden(unittest.TestCase):
                 f"`python -m tests.golden_regen {stem}` and explain the diff in the progress log."
             )
 
-    def test_euro_ncap_frontal_50kmh(self):
-        self._check("euro_ncap_frontal_50kmh")
-
-    def test_euro_ncap_frontal_mpdb(self):
-        self._check("euro_ncap_frontal_mpdb")
-
-    def test_euro_ncap_side_barrier(self):
-        self._check("euro_ncap_side_barrier")
+    def test_all_reports(self):
+        for stem in golden_utils.BUILDERS:
+            with self.subTest(report=stem):
+                self._check(stem)
 
 
 class TestGoldenCoverage(unittest.TestCase):
@@ -65,11 +60,24 @@ class TestGoldenCoverage(unittest.TestCase):
     def test_goldens_are_not_empty(self):
         for stem in golden_utils.BUILDERS:
             golden = golden_utils.load(stem)
-            criteria = golden["definition"]["criteria"]
-            limits = sum(len(node["limits"]) for node in criteria.values())
-            self.assertGreater(len(criteria), 0, f"{stem}: no criteria captured")
-            self.assertGreater(limits, 0, f"{stem}: no limit rows captured")
             self.assertGreater(len(golden["results"]), 0, f"{stem}: no test results captured")
+            self.assertGreater(len(golden["print_results"]), 0, f"{stem}: no printed results captured")
+
+    def test_synthetic_data_has_no_missing_channels(self):
+        """NA means the shared synthetic fixture failed to supply a report input."""
+        for stem in golden_utils.BUILDERS:
+            golden = golden_utils.load(stem)
+            missing = [f"{test}:{path}" for test, tree in golden["results"].items()
+                       for path, node in tree.items() if node["status"] == "NA"]
+            self.assertEqual([], missing, f"{stem}: incomplete synthetic data")
+
+    def test_calculations_have_no_errors(self):
+        """A re-baseline must not normalize a swallowed calculation exception."""
+        for stem in golden_utils.BUILDERS:
+            golden = golden_utils.load(stem)
+            errors = {path for tree in golden["results"].values()
+                      for path, node in tree.items() if node["status"] == "ERROR"}
+            self.assertEqual(set(), errors, stem)
 
 
 class TestComparisonSemantics(unittest.TestCase):
@@ -84,8 +92,8 @@ class TestComparisonSemantics(unittest.TestCase):
         node.update(result_overrides)
         return {
             "report": "Fake",
-            "definition": {"pages": ["P"], "criteria": {"a": {"name": "A", "class": "C", "limits": []}}},
             "results": {"t1": {"a": node}},
+            "print_results": ["A: Value=1 Rating=4"],
         }
 
     def test_identical_is_clean(self):
@@ -121,6 +129,12 @@ class TestComparisonSemantics(unittest.TestCase):
         regressions, _ = golden_utils.compare(self._golden(), self._golden(status="ERROR"))
         self.assertEqual(1, len(regressions))
 
+    def test_print_results_change_is_a_regression(self):
+        current = self._golden()
+        current["print_results"] = ["changed"]
+        regressions, _ = golden_utils.compare(self._golden(), current)
+        self.assertEqual(["print_results output changed"], regressions)
+
     def test_error_becoming_na_is_an_improvement(self):
         # This is exactly what Step 3's `require_channel` is expected to do.
         regressions, improvements = golden_utils.compare(
@@ -132,21 +146,8 @@ class TestComparisonSemantics(unittest.TestCase):
     def test_disappearing_criterion_is_a_regression(self):
         current = self._golden()
         current["results"]["t1"] = {}
-        current["definition"]["criteria"] = {}
         regressions, _ = golden_utils.compare(self._golden(), current)
         self.assertTrue(any("disappeared" in r for r in regressions))
-
-    def test_changed_limit_is_a_regression(self):
-        current = self._golden()
-        current["definition"]["criteria"]["a"]["limits"] = [{"name": "L", "func_samples": [700]}]
-        regressions, _ = golden_utils.compare(self._golden(), current)
-        self.assertTrue(any("limits changed" in r for r in regressions))
-
-    def test_renamed_criterion_is_a_regression(self):
-        current = self._golden()
-        current["definition"]["criteria"]["a"]["name"] = "B"
-        regressions, _ = golden_utils.compare(self._golden(), current)
-        self.assertTrue(any("name" in r for r in regressions))
 
     def test_bool_and_float_are_not_conflated(self):
         # `submarining` and friends store bools; False must not equal 0.0.
