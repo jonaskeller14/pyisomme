@@ -14,7 +14,7 @@ logging.basicConfig(format='%(module)-12s %(levelname)-8s %(message)s',
 class TestCode(unittest.TestCase):
     def test_init(self):
         Code("11HEAD0000H3ACXA")
-        
+
         self.assertEqual(Code("11HEAD0000H3ACXA"), Code("11HEAD0000H3ACXA"))
         self.assertNotEqual(Code("11HEAD0000H3ACXA"), Code("11HEAD0000H3ACXB"))
         self.assertNotEqual(Code("11HEAD0000H3ACXA"), Code("11HEAD0000H3ACX?"))

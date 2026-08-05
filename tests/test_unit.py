@@ -20,8 +20,8 @@ class TestUnitClassIdentity(unittest.TestCase):
     def test_isinstance_check(self):
         unit_obj = Unit("m")
         self.assertIsInstance(
-            unit_obj, 
-            Unit, 
+            unit_obj,
+            Unit,
             msg="Unit('m') should be an instance of the custom Unit class, not u.UnitBase"
         )
 

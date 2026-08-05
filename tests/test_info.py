@@ -1,6 +1,5 @@
 import io
 import unittest
-from typing import Any
 
 from pyisomme import Info
 
@@ -58,7 +57,7 @@ class TestGet(BaseInfoTestCase):
 class TestUpdate(BaseInfoTestCase):
     def test_update_from_dict_replaces_first_occurrence(self) -> None:
         self.populated_info.update({"name": "Charlie", "city": "Berlin"})
-        
+
         # First 'name' updated, second 'name' preserved, 'city' appended
         expected = [
             ("name", "Charlie"),
@@ -81,7 +80,7 @@ class TestUpdate(BaseInfoTestCase):
 class TestAdd(BaseInfoTestCase):
     def test_add_from_dict_always_appends(self) -> None:
         self.populated_info.add({"name": "David"})
-        
+
         # Should now have 3 'name' keys
         self.assertEqual(len(self.populated_info), 4)
         self.assertEqual(self.populated_info[3], ("name", "David"))
@@ -122,12 +121,12 @@ class TestWrite(unittest.TestCase):
     def test_write_formats_output_correctly(self) -> None:
         info = Info([("title", "Project"), ("empty_val", None)])
         buffer = io.StringIO()
-        
+
         returned_buffer = info.write(buffer)
-        
+
         self.assertIs(returned_buffer, buffer)
         output = buffer.getvalue()
-        
+
         lines = output.strip().split("\n")
         self.assertEqual(len(lines), 2)
         # Verify 28-character left alignment and NOVALUE handling

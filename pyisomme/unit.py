@@ -22,7 +22,7 @@ class Unit:
     and supports standard earth gravity (g0) as a valid unit representation.
     """
 
-    def __init__(self, unit_input):
+    def __init__(self, unit_input) -> None:
         # 1. Handle pass-through if already an instance of our custom Unit class
         if isinstance(unit_input, Unit):
             self._astropy_unit = unit_input._astropy_unit
