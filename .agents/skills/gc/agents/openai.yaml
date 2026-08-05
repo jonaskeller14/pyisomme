@@ -1,0 +1,4 @@
+interface:
+  display_name: "GC"
+  short_description: "Commit staged changes with a low-cost agent"
+  default_prompt: "Use $gc to review and commit the currently staged changes."
