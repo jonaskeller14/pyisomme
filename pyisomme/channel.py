@@ -10,6 +10,7 @@ import numpy as np
 import logging
 import warnings
 from fnmatch import fnmatch
+from matplotlib import pyplot as plt
 from scipy.integrate import cumulative_trapezoid
 from scipy import interpolate as scipy_interpolate
 import copy
@@ -441,7 +442,8 @@ class Channel:
         return self
 
     def plot(self, *args, **kwargs) -> None:
-        self.data.plot(*args, **kwargs).get_figure().show()
+        self.data.plot(*args, **kwargs)
+        plt.show()
 
     def scale_y(self, factor: float) -> Channel:
         self.data *= factor
@@ -620,33 +622,77 @@ class Channel:
 
 
 def create_sample(code: str = "SAMPLE??????????",
-                  t_range: tuple = (0, 0.1, 1000),
-                  y_range: tuple = (0, 10),
-                  mode: str = "sin",
-                  unit: str | Unit = "1") -> Channel:
-    """
-    Create a sample Channel object for testing purposes.
-    :param code: channel code (str)
-    :param t_range: Time range (min, max, num)
-    :param y_range: y-Range (min, max)
-    :param mode: function type
-    :param unit:
-    :return: Channel
-    """
-    time_array = np.linspace(*t_range)
-    n = len(time_array)
+                  t_range: tuple[float, float, int] = (0, 0.1, 1000),
+                  y_range: tuple[float, float] = (0, 10),
+                  mode: Literal["linear", "sin", "pulse"] = "sin",
+                  unit: str | Unit = "1",
+                  frequency: float | None = None,
+                  noise: float = 0.,
+                  seed: int | None = 0) -> Channel:
+    """Create a deterministic sample channel for examples and tests.
 
-    # y-data
+    ``linear`` and ``sin`` span the two values in ``y_range``. ``pulse`` treats
+    them as ``(baseline, peak)`` and creates a smooth, crash-like event that
+    starts and finishes at the baseline. An optional frequency adds modest
+    low-frequency structure to a pulse, or controls the frequency of a sine.
+    ``noise`` is the standard deviation of Gaussian noise in the channel unit;
+    use ``seed=None`` only when deliberately non-reproducible data is wanted.
+
+    :param code: 16-character ISO-MME channel code.
+    :param t_range: Start time, end time and number of samples.
+    :param y_range: Minimum/maximum for linear and sine modes, or
+        baseline/peak for pulse mode.
+    :param mode: Base signal shape.
+    :param unit: Channel unit.
+    :param frequency: Frequency in Hz. A sine defaults to one cycle over the
+        time range; a pulse has no modulation unless a frequency is supplied.
+    :param noise: Standard deviation of additive Gaussian noise.
+    :param seed: Random seed used for noise. The default is reproducible.
+    :return: Sample channel.
+    """
+    t_start, t_end, sample_count = t_range
+    if sample_count < 2:
+        raise ValueError("t_range must request at least two samples")
+    if t_end <= t_start:
+        raise ValueError("t_range end must be greater than its start")
+    if frequency is not None and frequency <= 0:
+        raise ValueError("frequency must be greater than zero")
+    if noise < 0:
+        raise ValueError("noise must not be negative")
+
+    time_array = np.linspace(t_start, t_end, sample_count)
+    baseline, peak = y_range
+    duration = t_end - t_start
+
     if mode == "linear":
-        value_array = np.linspace(y_range[0], y_range[1], n)
+        value_array = np.linspace(baseline, peak, sample_count)
     elif mode == "sin":
-        x = np.linspace(0, 2*np.pi, n)
-        value_array = abs(y_range[1] - y_range[0])/2 * np.sin(x) + sum(y_range)/2
+        sine_frequency = 1 / duration if frequency is None else frequency
+        phase = 2 * np.pi * sine_frequency * (time_array - t_start)
+        value_array = abs(peak - baseline) / 2 * np.sin(phase) + sum(y_range) / 2
+    elif mode == "pulse":
+        # A raised-cosine pulse occupies the middle 40 % of the sample. It is
+        # smooth at both ends, so filtering and differentiation do not see
+        # artificial steps. Optional modulation adds real-signal-like low
+        # frequency content without changing the baseline outside the event.
+        relative_time = (time_array - t_start) / duration
+        pulse_phase = (relative_time - 0.3) / 0.4
+        active = (pulse_phase >= 0) & (pulse_phase <= 1)
+        shape = np.zeros(sample_count)
+        shape[active] = np.sin(np.pi * pulse_phase[active]) ** 2
+        if frequency is not None:
+            centre_time = t_start + duration / 2
+            modulation = 0.9 + 0.1 * np.cos(2 * np.pi * frequency * (time_array - centre_time))
+            shape *= modulation
+        value_array = baseline + (peak - baseline) * shape
     else:
         raise ValueError(f"mode={mode} does not exist.")
 
+    if noise:
+        value_array = value_array + np.random.default_rng(seed).normal(0., noise, sample_count)
+
     data = pd.DataFrame({"Time": time_array, "SAMPLE": value_array}).set_index("Time")
-    return Channel(code, data, unit, info=[("Sampling interval", np.diff(time_array)[0])])
+    return Channel(code, data, unit, info=[("Sampling interval", time_array[1] - time_array[0])])
 
 
 def time_intersect(*channels: Channel, interpolate: bool = False) -> np.ndarray:

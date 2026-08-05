@@ -26,6 +26,46 @@ class TestChannel(unittest.TestCase):
         # invalid chars
         Channel(code="TOTAL_ENERGY", data=pd.DataFrame([]))
 
+    def test_create_sample_pulse_has_baseline_peak_and_frequency_content(self):
+        channel = create_sample(
+            code="11FEMRLE0000FOZP",
+            t_range=(0., 1., 101),
+            y_range=(2., -12.),
+            mode="pulse",
+            unit="N",
+            frequency=4.,
+        )
+
+        values = channel.get_data()
+        self.assertEqual(values[0], 2.)
+        self.assertEqual(values[-1], 2.)
+        self.assertAlmostEqual(np.min(values), -12.)
+        self.assertGreater(len(np.unique(values)), 20)
+
+    def test_create_sample_noise_is_seeded_and_optional(self):
+        kwargs = {
+            "t_range": (0., 0.1, 100),
+            "y_range": (0., 10.),
+            "mode": "pulse",
+            "noise": 0.1,
+        }
+        first = create_sample(seed=42, **kwargs)
+        repeated = create_sample(seed=42, **kwargs)
+        different = create_sample(seed=43, **kwargs)
+
+        np.testing.assert_array_equal(first.get_data(), repeated.get_data())
+        self.assertFalse(np.array_equal(first.get_data(), different.get_data()))
+
+    def test_create_sample_rejects_invalid_signal_parameters(self):
+        with self.assertRaisesRegex(ValueError, "at least two samples"):
+            create_sample(t_range=(0., 1., 1))
+        with self.assertRaisesRegex(ValueError, "greater than its start"):
+            create_sample(t_range=(1., 1., 10))
+        with self.assertRaisesRegex(ValueError, "frequency"):
+            create_sample(frequency=0.)
+        with self.assertRaisesRegex(ValueError, "noise"):
+            create_sample(noise=-0.1)
+
     def test_get_info(self):
         channel = Channel(code="11HEAD0000H3ACXP",
                                    data=pd.DataFrame([]),

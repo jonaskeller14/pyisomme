@@ -1,7 +1,6 @@
 import pyisomme
 
 import unittest
-import os
 import logging
 import numpy as np
 import pandas as pd
@@ -12,9 +11,62 @@ logging.basicConfig(format='%(module)-12s %(levelname)-8s %(message)s',
                     datefmt='%m/%d/%Y %I:%M:%S', level=logging.WARNING)
 
 
-class TestCalculate(unittest.TestCase):
-    v1 = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "11391"), "??TIBI*", "??FEMR*")
+CRASH_TIME_RANGE = (-0.05, 0.3, 7001)
 
+
+def add_crash_channel(isomme, code, unit, peak, noise, frequency, seed):
+    """Add a deterministic pulse modelled on the corresponding NHTSA 11391 signal."""
+    isomme.add_sample_channel(
+        code=code,
+        t_range=CRASH_TIME_RANGE,
+        y_range=(0., peak),
+        mode="pulse",
+        unit=unit,
+        frequency=frequency,
+        noise=noise,
+        seed=seed,
+    )
+
+
+def build_neck_isomme():
+    isomme = pyisomme.Isomme(test_number="SYNTHETIC-NECK")
+    # 11391 neck channels peak at roughly 1.05 kN / 90 N and 8 / 20 N*m.
+    # Their dominant spectral components lie between about 3 and 14 Hz.
+    add_crash_channel(isomme, "11NECKUP00WSFOXP", "N", 1050., 1.4, 8., 1)
+    add_crash_channel(isomme, "11NECKUP00WSFOYP", "N", 92., 2.8, 6., 2)
+    add_crash_channel(isomme, "11NECKUP00WSMOXP", "N*m", -8.3, 0.09, 6., 3)
+    add_crash_channel(isomme, "11NECKUP00WSMOYP", "N*m", -20., 0.05, 3., 4)
+    return isomme
+
+
+def build_leg_isomme():
+    isomme = pyisomme.Isomme(test_number="SYNTHETIC-LEGS")
+    # Corrected H3 codes and approximate peaks from 11391. Four locations are
+    # required to exercise the individual and aggregate tibia-index providers.
+    tibia_peaks = {
+        ("11", "LE", "UP"): (-37., -31., -2260.),
+        ("11", "LE", "LO"): (23., -77., -1850.),
+        ("11", "RI", "UP"): (-49., -65., -2330.),
+        ("11", "RI", "LO"): (35., 39., -2970.),
+        ("13", "RI", "LO"): (-7.5, -35.5, -2320.),
+    }
+    seed = 10
+    for occupant, side, level in tibia_peaks:
+        peak_mx, peak_my, peak_fz = tibia_peaks[(occupant, side, level)]
+        prefix = f"{occupant}TIBI{side}{level}H3"
+        add_crash_channel(isomme, prefix + "MOXP", "N*m", peak_mx, 0.3, 6., seed)
+        add_crash_channel(isomme, prefix + "MOYP", "N*m", peak_my, 0.5, 10., seed + 1)
+        add_crash_channel(isomme, prefix + "FOZP", "N", peak_fz, 4., 5., seed + 2)
+        seed += 3
+
+    # Femur compression in 11391 is predominantly negative, with peaks near
+    # -1.2 kN left and -1.65 kN right and a few newtons of baseline noise.
+    add_crash_channel(isomme, "11FEMRLE0000FOZP", "N", -1160., 3., 3., 30)
+    add_crash_channel(isomme, "11FEMRRI0000FOZP", "N", -1650., 3., 5., 31)
+    return isomme
+
+
+class TestCalculate(unittest.TestCase):
     def test_calculate_damage(self):
         iso = pyisomme.Isomme(test_number="1234")
         iso.add_sample_channel(code="11HEAD0000THAAXP", unit="rad/s^2", y_range=[0, 8e5])
@@ -26,20 +78,32 @@ class TestCalculate(unittest.TestCase):
         assert iso.get_channel("?1HEADDAMA??AAR?") is not None
 
     def test_calculate_neck_MOCx(self):
-        v1 = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "11391"), "??NECK*")
-        for channel in v1:
-            channel.set_code(fine_location_3="WS")
+        isomme = build_neck_isomme()
+        moc = isomme.get_channel("11TMONUP00WSMOXB")
+        moc_peak = isomme.get_channel("11TMONUP00WSMOXX")
+        mx = isomme.get_channel("11NECKUP00WSMOXB")
+        fy = isomme.get_channel("11NECKUP00WSFOYB")
 
-        assert v1.get_channel("??TMONUP????MOXB") is not None
-        assert v1.get_channel("??TMONUP????MOXX") is not None
+        assert moc is not None and moc_peak is not None
+        assert mx is not None and fy is not None
+        expected = mx.get_data(unit="N*m") + fy.get_data(unit="N") * 0.0195
+        np.testing.assert_allclose(moc.get_data(unit="N*m"), expected)
+        self.assertEqual(len(moc_peak.data), 1)
+        self.assertAlmostEqual(abs(moc_peak.get_data()[0]), np.max(np.abs(expected)))
 
     def test_calculate_neck_MOCy(self):
-        v1 = pyisomme.Isomme().read(os.path.join(__file__, "..", "..", "data", "nhtsa", "11391"), "??NECK*")
-        for channel in v1:
-            channel.set_code(fine_location_3="WS")
+        isomme = build_neck_isomme()
+        moc = isomme.get_channel("11TMONUP00WSMOYB")
+        moc_peak = isomme.get_channel("11TMONUP00WSMOYX")
+        my = isomme.get_channel("11NECKUP00WSMOYB")
+        fx = isomme.get_channel("11NECKUP00WSFOXB")
 
-        assert v1.get_channel("??TMONUP????MOYB") is not None
-        assert v1.get_channel("??TMONUP????MOYX") is not None
+        assert moc is not None and moc_peak is not None
+        assert my is not None and fx is not None
+        expected = my.get_data(unit="N*m") - fx.get_data(unit="N") * 0.0195
+        np.testing.assert_allclose(moc.get_data(unit="N*m"), expected)
+        self.assertEqual(len(moc_peak.data), 1)
+        self.assertAlmostEqual(moc_peak.get_data()[0], np.min(expected))
 
     def test_calculate_chest_pc_score(self):
         iso = pyisomme.Isomme(test_number="1234")
@@ -52,37 +116,52 @@ class TestCalculate(unittest.TestCase):
         assert channel.code == "11CHST00PCTHDSRA"
 
     def test_calculate_tibia_index(self):
-        # Repair wring data
-        for channel in self.v1.channels:
-            if channel.code.main_location == "TIBI" and channel.code.fine_location_3 == "00":
-                channel.set_code(fine_location_3="H3")
+        isomme = build_leg_isomme()
+        tibia_index = isomme.get_channel("11TIINLU00H3000B")
+        mx = isomme.get_channel("11TIBILEUPH3MOXB")
+        my = isomme.get_channel("11TIBILEUPH3MOYB")
+        fz = isomme.get_channel("11TIBILEUPH3FOZB")
 
-        assert self.v1.get_channel("?1TIINLU00??000B") is not None
-        assert self.v1.get_channel("?3TIINRL00??000B") is not None
+        assert tibia_index is not None
+        assert mx is not None and my is not None and fz is not None
+        expected = np.hypot(mx.get_data(unit="N*m"), my.get_data(unit="N*m")) / 225.
+        expected += np.abs(fz.get_data(unit="kN")) / 35.9
+        np.testing.assert_allclose(tibia_index.get_data(), expected)
 
-        assert self.v1.get_channel("?1TIINL000??000B") is not None
-        assert self.v1.get_channel("?1TIINR000??000B") is not None
-        assert self.v1.get_channel("?1TIIN0U00??000B") is not None
-        assert self.v1.get_channel("?1TIIN0L00??000B") is not None
-        assert self.v1.get_channel("?1TIIN0000??000B") is not None
-
-        assert self.v1.get_channel("?1TIINLUTO??000B") is not None
-        assert self.v1.get_channel("?3TIINRLTO??000B") is not None
-
-        assert self.v1.get_channel("?1TIINL0TO??000B") is not None
-        assert self.v1.get_channel("?1TIINR0TO??000B") is not None
-        assert self.v1.get_channel("?1TIIN0UTO??000B") is not None
-        assert self.v1.get_channel("?1TIIN0LTO??000B") is not None
-        assert self.v1.get_channel("?1TIIN00TO??000B") is not None
+        for pattern in (
+            "13TIINRL00H3000B",
+            "11TIINL000H3000B",
+            "11TIINR000H3000B",
+            "11TIIN0U00H3000B",
+            "11TIIN0L00H3000B",
+            "11TIIN0000H3000B",
+            "11TIINLUTOH3000B",
+            "13TIINRLTOH3000B",
+            "11TIINL0TOH3000B",
+            "11TIINR0TOH3000B",
+            "11TIIN0UTOH3000B",
+            "11TIIN0LTOH3000B",
+            "11TIIN00TOH3000B",
+        ):
+            self.assertIsNotNone(isomme.get_channel(pattern), pattern)
 
     def test_calculate_femur_impulse(self):
-        channel = self.v1.get_channel("??FEMR??????FOZ?")
-        if channel is None:
-            raise Exception("Channel missing")
-        assert pyisomme.calculate_femur_impulse(channel) is not None
-        assert self.v1.get_channel("??KTHCLE????IMZX") is not None
-        assert self.v1.get_channel("??KTHCRI????IMZX") is not None
-        assert self.v1.get_channel("??KTHC00????IMZX") is not None
+        isomme = build_leg_isomme()
+        source = isomme.get_channel("11FEMRLE0000FOZP")
+        assert source is not None
+
+        direct = pyisomme.calculate_femur_impulse(source)
+        left = isomme.get_channel("11KTHCLE0000IMZX")
+        right = isomme.get_channel("11KTHCRI0000IMZX")
+        minimum = isomme.get_channel("11KTHC000000IMZX")
+
+        assert left is not None and right is not None and minimum is not None
+        self.assertTrue(np.isfinite(direct.get_data()[0]))
+        self.assertLess(direct.get_data()[0], 0.)
+        self.assertEqual(
+            minimum.get_data()[0],
+            min(left.get_data()[0], right.get_data()[0]),
+        )
 
     def test_calculate_bric(self):
         time = [0.0, 0.01]

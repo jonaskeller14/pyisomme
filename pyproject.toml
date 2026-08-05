@@ -39,6 +39,11 @@ dev = [
     "ruff>=0.16.1",
 ]
 
+notebook = [
+    "ipykernel>=6",
+    "ipywidgets>=8",
+]
+
 [project.urls]
 Homepage = "https://github.com/jonaskeller14/pyisomme"
 
