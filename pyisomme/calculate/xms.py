@@ -21,7 +21,8 @@ def calculate_xms(channel: Channel, min_delta_t: float = 3, method: Literal["S",
     :param method: S (for single peak) or C (for cumulative)
     :return:
     """
-    assert 0 < min_delta_t < 10
+    if not 0 < min_delta_t < 10:
+        raise ValueError("min_delta_t must be between 0 and 10 ms")
 
     min_delta_t *= 1e-3  # convert to s
     time_array = channel.data.index

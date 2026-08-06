@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pyisomme.channel import Channel
+from pyisomme.errors import UnsupportedCalculationError
 from pyisomme.unit import Unit
 from pyisomme.utils import debug_logging
 
@@ -34,7 +35,10 @@ def calculate_vc(channel: Channel,
     if scaling_factor is None or defo_constant is None:
         if dummy is None:
             dummy = channel.code.fine_location_3
-        assert dummy in ("BS", "E2", "ER", "H3", "HF", "HM", "S2", "WF", "WS", "Y6", "Y7", "YA"), f"Dummy {dummy} not supported by {calculate_vc.__name__}"
+        if dummy not in ("BS", "E2", "ER", "H3", "HF", "HM", "S2", "WF", "WS", "Y6", "Y7", "YA"):
+            raise UnsupportedCalculationError(
+                f"Dummy {dummy} not supported by {calculate_vc.__name__}"
+            )
 
         if scaling_factor is None:
             scaling_factor = {

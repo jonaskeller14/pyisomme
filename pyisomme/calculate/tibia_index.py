@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pyisomme.calculate.resultant import calculate_resultant
 from pyisomme.channel import Channel, time_intersect
+from pyisomme.errors import UnsupportedCalculationError
 from pyisomme.utils import debug_logging
 
 import logging
@@ -25,10 +26,16 @@ def calculate_tibia_index(channel_MOX: Channel,
     :return:
     """
     dummy = channel_MOX.code.fine_location_3
-    assert dummy in ("H3", "HF", "TH", "T3"), f"Dummy {dummy} not supported by {calculate_tibia_index.__name__}"
-    assert channel_MOX.code.fine_location_3 == channel_MOY.code.fine_location_3 == channel_FOZ.code.fine_location_3, "Channel with different dummy found."
-    assert channel_MOX.code.test_object == channel_MOY.code.test_object == channel_FOZ.code.test_object, "Channel with different test_objects found."
-    assert channel_MOX.code.position == channel_MOY.code.position == channel_FOZ.code.position, "Channel with different positions found."
+    if dummy not in ("H3", "HF", "TH", "T3"):
+        raise UnsupportedCalculationError(
+            f"Dummy {dummy} not supported by {calculate_tibia_index.__name__}"
+        )
+    if not channel_MOX.code.fine_location_3 == channel_MOY.code.fine_location_3 == channel_FOZ.code.fine_location_3:
+        raise ValueError("Channel with different dummy found.")
+    if not channel_MOX.code.test_object == channel_MOY.code.test_object == channel_FOZ.code.test_object:
+        raise ValueError("Channel with different test_objects found.")
+    if not channel_MOX.code.position == channel_MOY.code.position == channel_FOZ.code.position:
+        raise ValueError("Channel with different positions found.")
 
     channel_m_r = calculate_resultant(channel_MOX, channel_MOY)
     m_r_c = 225 if dummy in ("H3", "TH", "T3") else 115  # [Nm]
@@ -67,7 +74,10 @@ def calculate_adjusted_upper_tibia_moment_My(channel_MOY: Channel,
     :return: Adjusted Tibia bending moment
     """
     dummy = channel_MOY.code.fine_location_3
-    assert dummy in ("H3", "T3"), f"Dummy {dummy} not supported by {calculate_adjusted_upper_tibia_moment_My.__name__}"
+    if dummy not in ("H3", "T3"):
+        raise UnsupportedCalculationError(
+            f"Dummy {dummy} not supported by {calculate_adjusted_upper_tibia_moment_My.__name__}"
+        )
 
     return channel_MOY.convert_unit("Nm") - channel_FOZ.convert_unit("N") * 0.02832  # FIXME: Incompatible Units
 
@@ -84,7 +94,10 @@ def calculate_adjusted_lower_tibia_moment_My(channel_MOY: Channel,
     :return: Adjusted Tibia bending moment
     """
     dummy = channel_MOY.code.fine_location_3
-    assert dummy in ("H3", "T3"), f"Dummy {dummy} not supported by {calculate_adjusted_lower_tibia_moment_My.__name__}"
+    if dummy not in ("H3", "T3"):
+        raise UnsupportedCalculationError(
+            f"Dummy {dummy} not supported by {calculate_adjusted_lower_tibia_moment_My.__name__}"
+        )
 
     return channel_MOY.convert_unit("Nm") + channel_FOZ.convert_unit("N") * 0.006398  # FIXME: Incompatible Units
 

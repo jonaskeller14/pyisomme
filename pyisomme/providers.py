@@ -3,11 +3,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Callable, Literal, cast
 from collections.abc import Sequence
 import fnmatch
+import logging
 import numpy as np
 import pandas as pd
 
 from pyisomme.channel import Channel, time_intersect
 from pyisomme.code import Code
+from pyisomme.errors import UnsupportedCalculationError
 from pyisomme.calculate import (
     calculate_adjusted_lower_tibia_moment_My,
     calculate_adjusted_upper_tibia_moment_My,
@@ -31,6 +33,9 @@ from pyisomme.calculate import (
 
 if TYPE_CHECKING:
     from pyisomme.isomme import Isomme
+
+
+logger = logging.getLogger(__name__)
 
 
 def _all_not_none(channels: Sequence[Channel | None]) -> list[Channel] | None:
@@ -71,7 +76,11 @@ class _FnProvider(ChannelProvider):
         return self._match(code)
 
     def build(self, isomme: Isomme, code: Code) -> Channel | None:
-        return self._build(isomme, code)
+        try:
+            return self._build(isomme, code)
+        except UnsupportedCalculationError as error:
+            logger.debug("Provider cannot synthesize %s: %s", code, error)
+            return None
 
 
 class AggregatePairProvider(ChannelProvider):

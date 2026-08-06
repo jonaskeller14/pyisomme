@@ -9,6 +9,7 @@ __all__ = [
     "InvalidCodeError",
     "UnitError",
     "MissingData",
+    "UnsupportedCalculationError",
     "Status",
 ]
 
@@ -58,6 +59,14 @@ class MissingData(PyisommeError):
         else:
             text = "required input data is missing"
         super().__init__(text)
+
+
+class UnsupportedCalculationError(PyisommeError, NotImplementedError):
+    """A derived quantity is not defined for the supplied input configuration.
+
+    Channel providers treat this as an unavailable synthesis path and may try another
+    provider or return no channel. Direct callers still receive an explicit error.
+    """
 
 
 class Status(enum.Enum):

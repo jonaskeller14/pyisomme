@@ -26,7 +26,8 @@ def calculate_hic(channel: Channel, max_delta_t: float) -> Channel:
     :param max_delta_t: in ms
     :return:
     """
-    assert 0 < max_delta_t < 100
+    if not 0 < max_delta_t < 100:
+        raise ValueError("max_delta_t must be between 0 and 100 ms")
 
     channel = channel.convert_unit(Unit(g0))
 

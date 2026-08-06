@@ -442,7 +442,27 @@ class Channel:
         return self
 
     def plot(self, *args, **kwargs) -> None:
-        self.data.plot(*args, **kwargs)
+        data = copy.deepcopy(self.data)
+        data.index *= 1000  # Channel time is stored in seconds; display it in milliseconds.
+
+        dimension = self.get_info("Dimension")
+        if dimension is None:
+            dimension = self.code.get_info().get("Physical Dimension") or self.code.physical_dimension
+
+        kwargs.setdefault("title", str(self.code))
+        kwargs.setdefault("xlabel", "Time [ms]")
+        kwargs.setdefault("ylabel", f"{dimension} [{self.unit}]")
+        label = kwargs.pop("label", str(self.code))
+        if len(data.columns) == 1:
+            data.columns = [label]
+        else:
+            kwargs["label"] = label
+        kwargs.setdefault("legend", False)
+        kwargs.setdefault("grid", True)
+        kwargs.setdefault("figsize", (10, 6))
+
+        data.plot(*args, **kwargs)
+        plt.tight_layout()
         plt.show()
 
     def scale_y(self, factor: float) -> Channel:

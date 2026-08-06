@@ -2,6 +2,9 @@ import unittest
 import logging
 import warnings
 import copy
+from unittest.mock import patch
+
+from matplotlib import pyplot as plt
 import pandas as pd
 import numpy as np
 import astropy.units as u
@@ -194,6 +197,58 @@ class TestChannel(unittest.TestCase):
         # unsupported key type -> explicit TypeError (was a silent None)
         with self.assertRaises(TypeError):
             iso[1.5] # type: ignore
+
+    def test_plot_uses_channel_metadata_defaults(self):
+        channel = Channel(
+            code="11HEAD0000H3ACXP",
+            data=pd.DataFrame({"sample": [0., 1.]}, index=[0., 0.01]),
+            unit="m/s^2",
+            info={"Dimension": "Acceleration"},
+        )
+
+        try:
+            with patch("pyisomme.channel.plt.show") as show:
+                channel.plot()
+
+            ax = plt.gca()
+            self.assertEqual(ax.get_title(), str(channel.code))
+            self.assertEqual(ax.get_xlabel(), "Time [ms]")
+            self.assertEqual(ax.get_ylabel(), f"Acceleration [{channel.unit}]")
+            np.testing.assert_array_equal(ax.lines[0].get_xdata(), [0., 10.])
+            self.assertIsNone(ax.get_legend())
+            self.assertTrue(any(line.get_visible() for line in ax.get_xgridlines()))
+            np.testing.assert_array_equal(ax.figure.get_size_inches(), [10., 6.])
+            show.assert_called_once_with()
+        finally:
+            plt.close("all")
+
+    def test_plot_kwargs_override_metadata_defaults(self):
+        channel = create_sample(code="11HEAD0000H3ACXP", unit="m/s^2")
+
+        try:
+            with patch("pyisomme.channel.plt.show"):
+                channel.plot(
+                    title="Custom title",
+                    xlabel="Custom x",
+                    ylabel="Custom y",
+                    label="Custom series",
+                    legend=True,
+                    grid=False,
+                    figsize=(4, 3),
+                )
+
+            ax = plt.gca()
+            self.assertEqual(ax.get_title(), "Custom title")
+            self.assertEqual(ax.get_xlabel(), "Custom x")
+            self.assertEqual(ax.get_ylabel(), "Custom y")
+            self.assertEqual(
+                [text.get_text() for text in ax.get_legend().get_texts()],
+                ["Custom series"],
+            )
+            self.assertFalse(any(line.get_visible() for line in ax.get_xgridlines()))
+            np.testing.assert_array_equal(ax.figure.get_size_inches(), [4., 3.])
+        finally:
+            plt.close("all")
 
 class TestChannelConvertUnit(unittest.TestCase):
     """Test suite enforcing edge cases for Channel.convert_unit and Unit.to integration."""

@@ -105,6 +105,40 @@ class TestCalculate(unittest.TestCase):
         self.assertEqual(len(moc_peak.data), 1)
         self.assertAlmostEqual(moc_peak.get_data()[0], np.min(expected))
 
+    def test_get_channel_returns_none_for_unsupported_nij_dummy(self):
+        isomme = pyisomme.Isomme(test_number="UNSUPPORTED-NIJ")
+        isomme.add_sample_channel(
+            code="11NECKUP0000FOZB", unit="N", mode="linear", y_range=(-100., 100.)
+        )
+        isomme.add_sample_channel(
+            code="11NECKUP0000MOYB", unit="N*m", mode="linear", y_range=(-10., 10.)
+        )
+
+        self.assertIsNone(isomme.get_channel("11NIJCIPCF0000YB"))
+
+    def test_fn_provider_handles_unsupported_dummy_for_other_calculations(self):
+        isomme = pyisomme.Isomme(test_number="UNSUPPORTED-MOC")
+        isomme.add_sample_channel(
+            code="11NECKUP00H3MOXB", unit="N*m", mode="linear", y_range=(-10., 10.)
+        )
+        isomme.add_sample_channel(
+            code="11NECKUP00H3FOYB", unit="N", mode="linear", y_range=(-100., 100.)
+        )
+
+        self.assertIsNone(isomme.get_channel("11TMONUP00H3MOXB"))
+
+    def test_get_channel_does_not_hide_inconsistent_nij_inputs(self):
+        isomme = pyisomme.Isomme(test_number="INCONSISTENT-NIJ")
+        isomme.add_sample_channel(
+            code="11NECKUP00H3FOZB", unit="N", mode="linear", y_range=(-100., 100.)
+        )
+        isomme.add_sample_channel(
+            code="11NECKUP00HFMOYB", unit="N*m", mode="linear", y_range=(-10., 10.)
+        )
+
+        with self.assertRaisesRegex(ValueError, "Multiple dummy types"):
+            isomme.get_channel("11NIJCIPCF??00YB")
+
     def test_calculate_chest_pc_score(self):
         iso = pyisomme.Isomme(test_number="1234")
         iso.add_sample_channel(code="11CHSTLEUPTHDSRA", unit="mm", y_range=[0, -20])

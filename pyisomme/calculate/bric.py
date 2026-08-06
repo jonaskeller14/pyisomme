@@ -32,7 +32,8 @@ def calculate_bric(c_av_x: Channel,
     :param critical_av_z: unit rad/s
     :return:
     """
-    assert method in ("MPS", "CSDM", "Average of CSDM and MPS")
+    if method not in ("MPS", "CSDM", "Average of CSDM and MPS"):
+        raise ValueError(f"Unknown BrIC method: {method}")
 
     if critical_av_x is None:
         critical_av_x = {

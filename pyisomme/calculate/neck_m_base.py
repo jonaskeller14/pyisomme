@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pyisomme.channel import Channel
+from pyisomme.errors import UnsupportedCalculationError
 from pyisomme.utils import debug_logging
 
 import copy
@@ -25,9 +26,13 @@ def calculate_neck_Mx_base(channel_Mx: Channel, channel_Fy: Channel, dz: float |
     """
     if dz is None:
         dummys = list({channel_Mx.code.fine_location_3, channel_Fy.code.fine_location_3})
-        assert len(dummys) == 1, f"Multiple dummy types found: {dummys}"
+        if len(dummys) != 1:
+            raise ValueError(f"Multiple dummy types found: {dummys}")
         dummy = dummys[0]
-        assert dummy in ("WS",), f"Dummy {dummy} not supported by {calculate_neck_Mx_base.__name__}"
+        if dummy != "WS":
+            raise UnsupportedCalculationError(
+                f"Dummy {dummy} not supported by {calculate_neck_Mx_base.__name__}"
+            )
 
         dz = {"WS": 0.0145}[dummy]  # [m]
 
@@ -72,9 +77,13 @@ def calculate_neck_My_base(channel_My: Channel, channel_Fx: Channel, dz: float |
     """
     if dz is None:
         dummys = list({channel_My.code.fine_location_3, channel_Fx.code.fine_location_3})
-        assert len(dummys) == 1, f"Multiple dummy types found: {dummys}"
+        if len(dummys) != 1:
+            raise ValueError(f"Multiple dummy types found: {dummys}")
         dummy = dummys[0]
-        assert dummy in ("WS",), f"Dummy {dummy} not supported by {calculate_neck_My_base.__name__}"
+        if dummy != "WS":
+            raise UnsupportedCalculationError(
+                f"Dummy {dummy} not supported by {calculate_neck_My_base.__name__}"
+            )
 
         dz = {"WS": 0.0145}[dummy]  # [m]
 

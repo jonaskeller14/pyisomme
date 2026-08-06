@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pyisomme.channel import Channel, time_intersect
+from pyisomme.errors import UnsupportedCalculationError
 from pyisomme.utils import debug_logging
 
 import logging
@@ -34,11 +35,15 @@ def calculate_neck_nij(c_fz: Channel,
     """
     if None in (fz_c_crit, fz_t_crit, mocy_f_crit, mocy_e_crit):
         dummys = list({c_fz.code.fine_location_3, c_mocy.code.fine_location_3})
-        assert len(dummys) == 1, f"Multiple dummy types found: {dummys}"
+        if len(dummys) != 1:
+            raise ValueError(f"Multiple dummy types found: {dummys}")
         dummy = dummys[0]
 
         if oop:
-            assert dummy in ("HF",), f"Dummy {dummy} not supported by {calculate_neck_nij.__name__}"
+            if dummy != "HF":
+                raise UnsupportedCalculationError(
+                    f"Dummy {dummy} not supported by {calculate_neck_nij.__name__}"
+                )
 
             if fz_t_crit is None:
                 fz_t_crit = {
@@ -57,7 +62,10 @@ def calculate_neck_nij(c_fz: Channel,
                     "HF": -61,
                 }[dummy]
         else:
-            assert dummy in ("H3", "HF", "T3", "TH"), f"Dummy {dummy} not supported by {calculate_neck_nij.__name__}"
+            if dummy not in ("H3", "HF", "T3", "TH"):
+                raise UnsupportedCalculationError(
+                    f"Dummy {dummy} not supported by {calculate_neck_nij.__name__}"
+                )
             if fz_t_crit is None:
                 fz_t_crit = {
                     "H3": 6806,

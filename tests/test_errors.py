@@ -6,7 +6,7 @@ import logging
 import numpy as np
 
 from pyisomme.isomme import Isomme
-from pyisomme.errors import PyisommeError, MissingData, Status
+from pyisomme.errors import MissingData, PyisommeError, Status, UnsupportedCalculationError
 from pyisomme.report.criterion import Criterion
 
 
@@ -26,6 +26,10 @@ class TestErrorTaxonomy(unittest.TestCase):
         err = MissingData("11HEAD??00??ACRA", "fallback")
         self.assertEqual(err.what, ("11HEAD??00??ACRA", "fallback"))
         self.assertIn("11HEAD??00??ACRA", str(err))
+
+    def test_unsupported_calculation_is_not_implemented_error(self):
+        self.assertTrue(issubclass(UnsupportedCalculationError, PyisommeError))
+        self.assertTrue(issubclass(UnsupportedCalculationError, NotImplementedError))
 
 
 class TestCriterionOutcomes(unittest.TestCase):
