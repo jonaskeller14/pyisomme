@@ -40,12 +40,14 @@ Directory tree:
     - [VW1FGS15](iso-mme-org/MME%201.6%20Testdata%20short/VW1FGS15)
 - [nhtsa](nhtsa) [[Source](https://www.nhtsa.gov/research-data/research-testing-databases#/vehicle)]
   - [09203](nhtsa/09203) [[Source](https://www.nhtsa.gov/research-data/research-testing-databases/#/vehicle/9203), [Download](https://nrd-static.nhtsa.dot.gov/compress/iso/vehdb/v00000/v09200/v09203ISO.zip)]
-    - Fixed via [fix_channel_metadata.py](nhtsa/09203/fix_channel_metadata.py):
+    - Fixed via [fix_channel_metadata.sh](nhtsa/09203/fix_channel_metadata.sh):
       chest displacement unit corrected from m to μm; dummy field set to TH (THOR, test object 2 / position 1, code 21) and H3 (Hybrid III, position 4, code 24)
   - [11391](nhtsa/11391) [[Source](https://www.nhtsa.gov/research-data/research-testing-databases#/vehicle/11391), [Download](https://nrd-static.nhtsa.dot.gov/compress/iso/vehdb/v10000/v11300/v11391ISO.zip)]
+    - Fixed via [fix_channel_metadata.sh](nhtsa/11391/fix_channel_metadata.sh):
+      chest displacement unit corrected from m to μm; dummy field set to H3 for positions 1 and 3 (codes 11 and 13)
   - [14065](nhtsa/14065) [[Source](https://www.nhtsa.gov/research-data/research-testing-databases#/vehicle/14065), [Download](https://nrd-static.nhtsa.dot.gov/compress/iso/vehdb/v10000/v14000/v14065ISO.zip)]
   - [14084](nhtsa/14084) [[Source](https://www.nhtsa.gov/research-data/research-testing-databases#/vehicle/14084), [Download](https://nrd-static.nhtsa.dot.gov/compress/iso/vehdb/v10000/v14000/v14084ISO.zip)]
-    - Fixed via [fix_channel_metadata.py](nhtsa/14084/fix_channel_metadata.py):
+    - Fixed via [fix_channel_metadata.sh](nhtsa/14084/fix_channel_metadata.sh):
       chest displacement unit corrected from m to μm; dummy field set to H3 (driver, code 11) and HF (passenger, code 13)
 
 

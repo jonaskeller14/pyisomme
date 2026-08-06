@@ -23,7 +23,7 @@ CODE_LENGTH = 16
 
 _CODE_REGEX = re.compile(r"[a-zA-Z0-9?]{16}")
 
-_COMPONENTS: tuple[tuple[str, slice], ...] = (
+CODE_COMPONENTS: tuple[tuple[str, slice], ...] = (
     ("test_object", slice(0, 1)),
     ("position", slice(1, 2)),
     ("main_location", slice(2, 6)),
@@ -174,7 +174,7 @@ class Code(str):
         """
         :return: the nine code components, in code order
         """
-        return tuple(self[component_slice] for _, component_slice in _COMPONENTS)
+        return tuple(self[component_slice] for _, component_slice in CODE_COMPONENTS)
 
     def set(self,
             test_object: str | None = None,
@@ -194,7 +194,7 @@ class Code(str):
                       fine_location_3, physical_dimension, direction, filter_class)
 
         components = []
-        for new_value, current, (name, component_slice) in zip(new_values, self.components, _COMPONENTS):
+        for new_value, current, (name, component_slice) in zip(new_values, self.components, CODE_COMPONENTS):
             if new_value is None:
                 components.append(current)
                 continue

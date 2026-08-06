@@ -7,7 +7,7 @@ data/*
 data/nhtsa/*
 !data/nhtsa/*/
 data/nhtsa/*/*
-!data/nhtsa/*/*.py
+!data/nhtsa/*/*.sh
 
 tests/out
 tests/out_*
