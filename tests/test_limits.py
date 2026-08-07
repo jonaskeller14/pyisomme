@@ -13,9 +13,9 @@ logging.basicConfig(format='%(module)-12s %(levelname)-8s %(message)s',
 
 class TestLimits(unittest.TestCase):
     def test_find_limits(self):
-        limits = pyisomme.Limits(limit_list=[pyisomme.Limit(code_patterns=["11NECKUP????FOX?"], func=lambda x: 500, name="sdfsdf", color="yellow", linestyle="--"),
-                                             pyisomme.Limit(code_patterns=["11NECKUP.*FOX[AB]"], func=lambda x: 500, name="sdfsdf", color="yellow", linestyle="--"),
-                                             pyisomme.Limit(code_patterns=["11NECKUP????FOY?"], func=lambda x: 750 - 7.5*x, name="da", color="red", linestyle="-"), ])
+        limits = pyisomme.Limits(limit_list=[pyisomme.Limit(code_patterns=("11NECKUP????FOX?",), func=lambda x: 500, name="sdfsdf", color="yellow", linestyle="--"),
+                                             pyisomme.Limit(code_patterns=("11NECKUP.*FOX[AB]",), func=lambda x: 500, name="sdfsdf", color="yellow", linestyle="--"),
+                                             pyisomme.Limit(code_patterns=("11NECKUP????FOY?",), func=lambda x: 750 - 7.5*x, name="da", color="red", linestyle="-"), ])
         assert len(limits.find_limits("11NECKUP00H3FOXA")) == 2
 
     def test_get_limit_idx(self):
@@ -25,10 +25,10 @@ class TestLimits(unittest.TestCase):
         c4 = pyisomme.Channel(code="?" * 16, unit="1", data=pd.DataFrame([-4,-7,-7,-7,-6,-7]))
 
         limits = pyisomme.Limits(limit_list=[
-            pyisomme.Limit(["?" * 16], func=lambda x: np.interp(x, [2, 3], [5, 2]), y_unit="1", name="1", rating=1, upper=True, color="green"),
-            pyisomme.Limit(["?" * 16], func=lambda x: np.interp(x, [2, 3], [5, 2]), y_unit="1", name="2", rating=2, lower=True, color="red"),
-            pyisomme.Limit(["?" * 16], func=lambda x: np.interp(x, [2, 3], [-2, -5]), y_unit="1", name="1", rating=1, lower=True, color="green"),
-            pyisomme.Limit(["?" * 16], func=lambda x: np.interp(x, [2, 3], [-2, -5]), y_unit="1", name="2", rating=2, upper=True, color="red")
+            pyisomme.Limit(("?" * 16,), func=lambda x: np.interp(x, [2, 3], [5, 2]), y_unit="1", name="1", rating=1, upper=True, color="green"),
+            pyisomme.Limit(("?" * 16,), func=lambda x: np.interp(x, [2, 3], [5, 2]), y_unit="1", name="2", rating=2, lower=True, color="red"),
+            pyisomme.Limit(("?" * 16,), func=lambda x: np.interp(x, [2, 3], [-2, -5]), y_unit="1", name="1", rating=1, lower=True, color="green"),
+            pyisomme.Limit(("?" * 16,), func=lambda x: np.interp(x, [2, 3], [-2, -5]), y_unit="1", name="2", rating=2, upper=True, color="red")
         ])
 
         # pyisomme.Plot_Line(

@@ -25,6 +25,7 @@ import os
 import sys
 import unittest
 from typing import Any
+from dataclasses import replace
 
 import pyisomme
 from pyisomme.limit import Limit
@@ -89,18 +90,18 @@ def sliding_scale(good: float, marginal: float, weak: float, poor: float,
     bounds_best: dict[str, Any] = {best: True}
     opens_worse: dict[str, Any] = {worse: True}
     rows = [
-        Limit_G([CODE], func=lambda x: good, **bounds_best),
-        Limit_A([CODE], func=lambda x: good, **opens_worse),
-        Limit_M([CODE], func=lambda x: marginal, **opens_worse),
-        Limit_W([CODE], func=lambda x: weak, **opens_worse),
+        Limit_G((CODE,), func=lambda x: good, **bounds_best),
+        Limit_A((CODE,), func=lambda x: good, **opens_worse),
+        Limit_M((CODE,), func=lambda x: marginal, **opens_worse),
+        Limit_W((CODE,), func=lambda x: weak, **opens_worse),
     ]
     if capping is None or capping != poor:
-        rows.append(Limit_P([CODE], func=lambda x: poor, **opens_worse))
+        rows.append(Limit_P((CODE,), func=lambda x: poor, **opens_worse))
     else:
         # `capped_at_poor`: the Poor row drops its flag when Capping sits on it.
-        rows.append(Limit_P([CODE], func=lambda x: poor))
+        rows.append(Limit_P((CODE,), func=lambda x: poor))
     if capping is not None:
-        rows.append(Limit_C([CODE], func=lambda x: capping, **opens_worse))
+        rows.append(Limit_C((CODE,), func=lambda x: capping, **opens_worse))
     return rows
 
 
@@ -138,28 +139,28 @@ class TestChecks(unittest.TestCase):
     def test_poor_row_flagged_at_the_capping_value(self) -> None:
         """The `capped_at_poor` typo: Poor keeps `lower` although Capping sits on it."""
         rows = sliding_scale(500, 566.667, 633.333, 700, capping=700)
-        rows[4].lower = True
+        rows[4] = replace(rows[4], lower=True)
         self.assertIn("limit_capping", checks_of(leaf(rows)))
 
     def test_unsuperseded_row_without_a_flag(self) -> None:
         rows = sliding_scale(500, 566.667, 633.333, 700)
-        rows[4].lower = None
+        rows[4] = replace(rows[4], lower=None)
         self.assertIn("limit_capping", checks_of(leaf(rows)))
 
     def test_worse_row_flagged_the_wrong_way(self) -> None:
         rows = sliding_scale(500, 566.667, 633.333, 700)
-        rows[2].lower, rows[2].upper = None, True
+        rows[2] = replace(rows[2], lower=None, upper=True)
         self.assertIn("limit_flags", checks_of(leaf(rows)))
 
     def test_best_row_is_not_the_extreme(self) -> None:
         rows = sliding_scale(500, 566.667, 633.333, 700)
-        rows[0].upper, rows[0].lower = None, True
-        rows[3].lower, rows[3].upper = None, True
+        rows[0] = replace(rows[0], upper=None, lower=True)
+        rows[3] = replace(rows[3], lower=None, upper=True)
         self.assertIn("limit_flags", checks_of(leaf(rows)))
 
     def test_mixed_units_in_one_block(self) -> None:
         rows = sliding_scale(500, 566.667, 633.333, 700)
-        rows[2].y_unit = "mm"
+        rows[2] = replace(rows[2], y_unit = "mm")
         self.assertIn("limit_unit", checks_of(leaf(rows)))
 
     def test_asymmetric_symmetric_block(self) -> None:
@@ -172,17 +173,17 @@ class TestChecks(unittest.TestCase):
         self.assertEqual(checks_of(leaf(rows)), set())
 
     def test_code_pattern_length(self) -> None:
-        self.assertIn("code_pattern", checks_of(leaf([Limit(["?1HICR0015??00R"], func=lambda x: 1.0)])))
+        self.assertIn("code_pattern", checks_of(leaf([Limit(("?1HICR0015??00R",), func=lambda x: 1.0)])))
 
     def test_code_pattern_character_class_counts_as_one(self) -> None:
         """`fnmatch` reads `[03]` as one code character, so this pattern is fine."""
         self.assertEqual(
-            checks_of(leaf([Limit(["?1CHST000[03]??DSX?"], func=lambda x: 1.0, lower=True)])),
+            checks_of(leaf([Limit(("?1CHST000[03]??DSX?",), func=lambda x: 1.0, lower=True)])),
             set())
 
     def test_code_pattern_with_an_impossible_character(self) -> None:
         self.assertIn("code_pattern",
-                      checks_of(leaf([Limit(["?1CHST0000 ?DSX?"], func=lambda x: 1.0)])))
+                      checks_of(leaf([Limit(("?1CHST0000 ?DSX?",), func=lambda x: 1.0)])))
 
     def test_unused_manual_input(self) -> None:
         class Unused(Criterion):
@@ -240,7 +241,7 @@ class TestOrphans(unittest.TestCase):
     def test_limit_left_behind_by_a_rebuild(self) -> None:
         report = build("EuroNCAP_Frontal_50kmh")
         isomme = report.isomme_list[0]
-        report.limits[isomme].limit_list.append(Limit([CODE], func=lambda x: 1.0))
+        report.limits[isomme].limit_list.append(Limit((CODE,), func=lambda x: 1.0))
         orphans = [issue for issue in report.validate() if issue.check == "orphan"]
         self.assertEqual(len(orphans), 1, orphans)
 

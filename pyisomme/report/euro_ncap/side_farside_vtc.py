@@ -74,8 +74,8 @@ class Overall(Criterion):
 
             def define_limits(self) -> list[Limit]:
                 return [
-                    Limit([], func=lambda x: 0.5, y_unit="1", rating=True, color="green", lower=True),
-                    Limit([], func=lambda x: 0.5, y_unit="1", rating=False, color="red", upper=True),
+                    Limit((), func=lambda x: 0.5, y_unit="1", rating=True, color="green", lower=True),
+                    Limit((), func=lambda x: 0.5, y_unit="1", rating=False, color="red", upper=True),
                 ]
 
             def calculation(self) -> None:
@@ -236,8 +236,8 @@ class Overall(Criterion):
 
             def define_limits(self) -> list[Limit]:
                 return [
-                    Limit([], func=lambda x: 0.5, y_unit="1", rating=True, color="green", lower=True),
-                    Limit([], func=lambda x: 0.5, y_unit="1", rating=False, color="red", upper=True),
+                    Limit((), func=lambda x: 0.5, y_unit="1", rating=True, color="green", lower=True),
+                    Limit((), func=lambda x: 0.5, y_unit="1", rating=False, color="red", upper=True),
                 ]
 
             @property

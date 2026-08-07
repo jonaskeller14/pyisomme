@@ -25,6 +25,7 @@ import io
 import logging
 import unittest
 from contextlib import redirect_stdout
+from dataclasses import replace
 
 import numpy as np
 
@@ -745,7 +746,7 @@ class TestNoOccupant(unittest.TestCase):
 # --------------------------------------------------------------------------- #
 
 def constant(value: float) -> Limit:
-    return Limit(code_patterns=[], func=lambda x: value, name=f"Limit_{value:g}", rating=value)
+    return Limit(code_patterns=(), func=lambda x: value, name=f"Limit_{value:g}", rating=value)
 
 
 class TestLimits(unittest.TestCase):
@@ -755,8 +756,7 @@ class TestLimits(unittest.TestCase):
 
             def define_limits(self) -> list[Limit]:
                 limit = constant(1.)
-                limit.code_patterns = [self.code("?{p}HEAD??00??ACRA")]
-                return [limit]
+                return [replace(limit, code_patterns=(self.code("?{p}HEAD??00??ACRA"),))]
 
             def calculation(self) -> None:
                 pass
@@ -772,7 +772,7 @@ class TestLimits(unittest.TestCase):
         report.overall(v1).p_driver = "2"
         report.calculate()
         self.assertEqual([limit.code_patterns for limit in report.overall(v1).driver.limits.limit_list],
-                         [["?2HEAD??00??ACRA"]])
+                         [("?2HEAD??00??ACRA",)])
 
     def test_recalculating_does_not_duplicate_limits(self) -> None:
         class Overall(Criterion):

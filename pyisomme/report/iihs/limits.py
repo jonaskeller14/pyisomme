@@ -5,27 +5,27 @@ from pyisomme.limit import Limit
 
 @dataclass(frozen=True, eq=False)
 class Limit_G(Limit):
-    name = "Good"
-    color = "green"
+    name: str = "Good"
+    color: str = "green"
     # rating: float  # demerits
 
 
 @dataclass(frozen=True, eq=False)
 class Limit_A(Limit):
-    name = "Acceptable"
-    color = "yellow"
+    name: str = "Acceptable"
+    color: str = "yellow"
     # rating: float  # demerits
 
 
 @dataclass(frozen=True, eq=False)
 class Limit_M(Limit):
-    name = "Marginal"
-    color = "orange"
+    name: str = "Marginal"
+    color: str = "orange"
     # rating: float  # demerits
 
 
 @dataclass(frozen=True, eq=False)
 class Limit_P(Limit):
-    name = "Poor"
-    color = "red"
+    name: str = "Poor"
+    color: str = "red"
     # rating: float  # demerits

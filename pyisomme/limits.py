@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import copy
+from dataclasses import replace
 import fnmatch
 import re
 import logging
@@ -259,10 +259,12 @@ def get_full_limits(limit_list: list[Limit]) -> list[Limit]:
 
         previous_limit = limit_list[idx - 1]
         if previous_limit.upper and limit.upper:
-            tmp_limit = copy.deepcopy(previous_limit)
-            tmp_limit.func = limit_list[idx].func
-            tmp_limit.upper = False
-            tmp_limit.lower = True
+            tmp_limit = replace(
+                previous_limit,
+                func=limit_list[idx].func,
+                upper=False,
+                lower=True,
+            )
 
             full_limit_list.append(tmp_limit)
             full_limit_list.append(limit)
