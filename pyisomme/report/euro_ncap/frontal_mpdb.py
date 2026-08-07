@@ -966,9 +966,9 @@ class Overall(Criterion):
 
             def define_limits(self) -> list[Limit]:
                 return [
-                    Limit(["M?MBAR0OLC??VEX?"], func=lambda x: 25, y_unit=Unit(g0), name="0 pt. Modifier", rating=0, upper=True),
-                    Limit(["M?MBAR0OLC??VEX?"], func=lambda x: 25, y_unit=Unit(g0), name="-2..0 pt. Modifier", rating=0, lower=True),
-                    Limit(["M?MBAR0OLC??VEX?"], func=lambda x: 40, y_unit=Unit(g0), name="-2 pt. Modifier", rating=-2, lower=True),
+                    Limit(("M?MBAR0OLC??VEX?",), func=lambda x: 25, y_unit=Unit(g0), name="0 pt. Modifier", rating=0, upper=True),
+                    Limit(("M?MBAR0OLC??VEX?",), func=lambda x: 25, y_unit=Unit(g0), name="-2..0 pt. Modifier", rating=0, lower=True),
+                    Limit(("M?MBAR0OLC??VEX?",), func=lambda x: 40, y_unit=Unit(g0), name="-2 pt. Modifier", rating=-2, lower=True),
                 ]
 
             def calculation(self) -> None:
