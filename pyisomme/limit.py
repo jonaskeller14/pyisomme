@@ -13,10 +13,6 @@ logger = logging.getLogger(__name__)
 
 class Limit:
     name: str | None = None
-    #: Score this limit awards. ``nan`` means "no rating declared" — legitimate for
-    #: limits that only draw a reference line. Rating-consuming paths reject it
-    #: explicitly (see :meth:`Limits.get_limit_ratings`) instead of failing later
-    #: with an ``AttributeError``.
     rating: float = np.nan
     color: str = "black"
     code_patterns: list[str]

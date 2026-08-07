@@ -41,7 +41,7 @@ class Report(Generic[C]):
     limits: dict[Isomme, Limits]
     criterion_overall: dict[Isomme, C]
     pages: list[Page]
-    protocol: str | None = None
+    protocol: str
     protocols: dict[str, str] = {}
     #: The report's criterion tree. Subclasses rebind it to their own ``Overall``.
     Criterion_Overall: type[Criterion] = Overall

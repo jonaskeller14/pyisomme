@@ -1,424 +1,124 @@
 from __future__ import annotations
 
-from pyisomme.isomme import Isomme
-from pyisomme.limit import Limit
-from pyisomme.report.criterion import Criterion, Role, sub
-from pyisomme.report.ctx import from_input
-from pyisomme.report.manual import Manual, manual
-from pyisomme.report.page import Page_Cover, Page_Criterion_Values_Chart, Page_Criterion_Values_Table, \
-    Page_Criterion_Rating_Table, Page_Plot_nxn
-from pyisomme.report.report import Report
-from pyisomme.report.euro_ncap.frontal_mpdb import EuroNCAP_Frontal_MPDB
-from pyisomme.unit import Unit, g0
-from pyisomme.report.iihs.limits import Limit_G, Limit_A, Limit_M, Limit_P
-
-import logging
-import numpy as np
 from typing import Any
 
+from pyisomme.isomme import Isomme
+from pyisomme.report.criterion import Criterion, Role, sub
+from pyisomme.report.ctx import from_input
+from pyisomme.report.iihs.frontal import Criterion_H350M_Injury
+from pyisomme.report.iihs.limits import Limit_A, Limit_G, Limit_M, Limit_P
+from pyisomme.report.manual import Manual, manual
+from pyisomme.report.page import (
+    Page_Cover,
+    Page_Criterion_Rating_Table,
+    Page_Criterion_Values_Chart,
+    Page_Criterion_Values_Table,
+    Page_Plot_nxn,
+)
+from pyisomme.report.report import Report
 
-logger = logging.getLogger(__name__)
 
-P_DRIVER = manual("1", source="test report", doc=(
-    "Channel-code position of the driver. Defaults to the "
-    "'Driver position object 1' test-info field when the test carries it."))
+P_DRIVER = manual(
+    "1",
+    source="test report",
+    doc=("Channel-code position of the driver. Defaults to the "
+         "'Driver position object 1' test-info field when available."),
+)
 
 
 class Overall(Criterion):
     name = "Overall"
     role = Role.AGGREGATE
+    source = "Weighting principles for overall rating / Table 3"
+    aggregation = "sum"
     p_driver: Manual[str, P_DRIVER]
 
-    def __init__(self, report: Report, isomme: Isomme) -> None:
+    def __init__(self, report: Report[Any], isomme: Isomme) -> None:
         super().__init__(report, isomme)
-        # Also at construction: the pages read `p_driver` when the report is built.
         self.prepare()
 
     def prepare(self) -> None:
-        """Take the driver position from the test info before the occupant reads it."""
-        p_driver = self.isomme.get_test_info("Driver position object 1")
-        if p_driver is not None:
-            self.set_derived_input("p_driver", str(p_driver).strip())
+        position = self.isomme.get_test_info("Driver position object 1")
+        if position is not None:
+            self.set_derived_input("p_driver", str(position).strip())
 
-    def calculation(self) -> None:
-        self.rating = self.criterion_driver.rating
-
-    class Criterion_Driver(Criterion):
-        name = "Driver"
-        role = Role.AGGREGATE
+    class Criterion_Restraints_Kinematics(Criterion):
+        name = "Restraints and dummy kinematics"
+        demerits: Manual[int, manual(
+            0,
+            source="video and postcrash inspection",
+            doc=("Sum the Version VII Table 1 demerits. Frontal-airbag interaction is 0/1/2; "
+                 "lateral protection, steering-wheel motion, excursion and containment events "
+                 "are added as listed."),
+        )]
+        automatic_poor: Manual[bool, manual(
+            False,
+            source="video and postcrash inspection",
+            doc="True for late/nondeployment, seat-attachment failure, or vehicle-door opening.",
+        )]
 
         def calculation(self) -> None:
-            self.rating = self.criterion_head_neck.rating
-
-        class Criterion_Head_Neck(Criterion):
-            name = "Head & Neck"
-            role = Role.AGGREGATE
-
-            def calculation(self) -> None:
-                self.rating = np.max([
-                    self.criterion_hic_15.rating,
-                    self.criterion_nij.rating,
-                    self.criterion_fz_tension.rating,
-                    self.criterion_fz_compression.rating,
-                    self.criterion_fz_tension_corridor.rating,
-                    self.criterion_fz_compression_corridor.rating,
-                    self.criterion_fx_shear_corridor.rating
-                ])
-
-            class Criterion_HIC_15(Criterion):
-                name = "HIC 15"
-
-                def define_limits(self) -> list[Limit]:
-                    codes = self.ctx.codes("?{p}HICR??15??00RX")
-                    return [
-                        Limit_G(codes, func=lambda x: 560, y_unit=1, upper=True, rating=0),
-                        Limit_A(codes, func=lambda x: 560, y_unit=1, lower=True, rating=-2),
-                        Limit_M(codes, func=lambda x: 700, y_unit=1, lower=True, rating=-10),
-                        Limit_P(codes, func=lambda x: 840, y_unit=1, lower=True, rating=-20),
-                    ]
-
-                def calculation(self) -> None:
-                    self.channel = self.require_channel(self.ctx.code("?{p}HICR??15??00RX"))
-                    self.value = self.channel.get_data()[0]
-                    self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
-                    self.color = self.limits.get_limit_min_color(self.channel)
-
-            class Criterion_NIJ(Criterion):
-                name = "NIJ"
-
-                def define_limits(self) -> list[Limit]:
-                    codes = self.ctx.codes("?{p}NIJCIP????00Y?")
-                    return [
-                        Limit_G(codes, func=lambda x: 0.8, y_unit=1, upper=True, rating=0),
-                        Limit_A(codes, func=lambda x: 0.8, y_unit=1, lower=True, rating=-2),
-                        Limit_M(codes, func=lambda x: 1.0, y_unit=1, lower=True, rating=-10),
-                        Limit_P(codes, func=lambda x: 1.2, y_unit=1, lower=True, rating=-20),
-                    ]
-
-                def calculation(self) -> None:
-                    self.channel = self.require_channel(self.ctx.code("?{p}NIJCIP00??00YB"))
-                    self.value = np.max(self.channel.get_data())
-                    self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
-                    self.color = self.limits.get_limit_min_color(self.channel)
-
-            class Criterion_Fz_Tension(Criterion):
-                name = "Neck Fz Tension"
-
-                def define_limits(self) -> list[Limit]:
-                    codes = self.ctx.codes("?{p}NECKUP00??FOZ?")
-                    return [
-                        Limit_G(codes, lambda x: 2.6, y_unit="kN", upper=True, rating=0),
-                        Limit_A(codes, lambda x: 2.6, y_unit="kN", lower=True, rating=-2),
-                        Limit_M(codes, lambda x: 3.3, y_unit="kN", lower=True, rating=-10),
-                        Limit_P(codes, lambda x: 4.0, y_unit="kN", lower=True, rating=-20),
-                    ]
-
-                def calculation(self) -> None:
-                    self.channel = self.require_channel(self.ctx.code("?{p}NECKUP00??FOZB")).convert_unit("kN")
-                    self.value = np.max(self.channel.get_data())
-                    self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
-                    self.color = self.limits.get_limit_min_color(self.channel)
-
-            class Criterion_Fz_Compression(Criterion):
-                name = "Neck Fz Compression"
-
-                def define_limits(self) -> list[Limit]:
-                    codes = self.ctx.codes("?{p}NECKUP00??FOZ?")
-                    return [
-                        Limit_G(codes, lambda x: -3.2, y_unit="kN", lower=True, rating=0),
-                        Limit_A(codes, lambda x: -3.2, y_unit="kN", upper=True, rating=-2),
-                        Limit_M(codes, lambda x: -4.0, y_unit="kN", upper=True, rating=-10),
-                        Limit_P(codes, lambda x: -4.8, y_unit="kN", upper=True, rating=-20),
-                    ]
-
-                def calculation(self) -> None:
-                    self.channel = self.require_channel(self.ctx.code("?{p}NECKUP00??FOZB")).convert_unit("kN")
-                    self.value = np.min(self.channel.get_data())
-                    self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
-                    self.color = self.limits.get_limit_min_color(self.channel)
-
-            class Criterion_Fz_Tension_Corridor(Criterion):
-                name = "Neck Fz Tension Corridor"
-
-                def define_limits(self) -> list[Limit]:
-                    codes = self.ctx.codes("?{p}NECKUP00??FOZ?")
-                    return [
-                        Limit_G(codes, func=lambda x: np.interp(x, [0, 35, 45], [3.3, 2.9, 1.1]), x_unit="ms", y_unit="kN", upper=True, rating=0),
-                        Limit_A(codes, func=lambda x: np.interp(x, [0, 35, 45], [3.3, 2.9, 1.1]), x_unit="ms", y_unit="kN", lower=True, rating=-2),
-                    ]
-
-                def calculation(self) -> None:
-                    self.channel = self.require_channel(self.ctx.code("?{p}NECKUP00??FOZB")).convert_unit("kN")
-                    self.value = self.limits.get_limit_min_y(self.channel)
-                    self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
-                    self.color = self.limits.get_limit_min_color(self.channel)
-
-            class Criterion_Fz_Compression_Corridor(Criterion):
-                name = "Neck Fz Compression Corridor"
-
-                def define_limits(self) -> list[Limit]:
-                    codes = self.ctx.codes("?{p}NECKUP00??FOZ?")
-                    return [
-                        Limit_G(codes, func=lambda x: np.interp(x, [0, 30], [-4, -1.1]), x_unit="ms", y_unit="kN", lower=True, rating=0),
-                        Limit_A(codes, func=lambda x: np.interp(x, [0, 30], [-4, -1.1]), x_unit="ms", y_unit="kN", upper=True, rating=-2),
-                    ]
-
-                def calculation(self) -> None:
-                    self.channel = self.require_channel(self.ctx.code("?{p}NECKUP00??FOZB")).convert_unit("kN")
-                    self.value = self.limits.get_limit_min_y(self.channel)
-                    self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
-                    self.color = self.limits.get_limit_min_color(self.channel)
-
-            class Criterion_Fx_Shear_Corridor(Criterion):
-                name = "Neck Fx Shear Corridor"
-
-                def define_limits(self) -> list[Limit]:
-                    codes = self.ctx.codes("?{p}NECKUP00??FOX?")
-                    return [
-                        Limit_G(codes, func=lambda x: np.interp(x, [0, 25, 35, 45], [-3.1, -1.5, -1.5, -1.1]), x_unit="ms", y_unit="kN", lower=True, rating=0),
-                        Limit_A(codes, func=lambda x: np.interp(x, [0, 25, 35, 45], [-3.1, -1.5, -1.5, -1.1]), x_unit="ms", y_unit="kN", upper=True, rating=-2),
-
-                        Limit_G(codes, func=lambda x: np.interp(x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1]), x_unit="ms", y_unit="kN", upper=True, rating=0),
-                        Limit_A(codes, func=lambda x: np.interp(x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1]), x_unit="ms", y_unit="kN", lower=True, rating=-2),
-                    ]
-
-                def calculation(self) -> None:
-                    self.channel = self.require_channel(self.ctx.code("?{p}NECKUP00??FOXB")).convert_unit("kN")
-                    self.value = self.limits.get_limit_min_y(self.channel)
-                    self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
-                    self.color = self.limits.get_limit_min_color(self.channel)
-
-            criterion_hic_15 = sub(Criterion_HIC_15)
-            criterion_nij = sub(Criterion_NIJ)
-            criterion_fz_tension = sub(Criterion_Fz_Tension)
-            criterion_fz_compression = sub(Criterion_Fz_Compression)
-            criterion_fz_tension_corridor = sub(Criterion_Fz_Tension_Corridor)
-            criterion_fz_compression_corridor = sub(Criterion_Fz_Compression_Corridor)
-            criterion_fx_shear_corridor = sub(Criterion_Fx_Shear_Corridor)
-
-        class Criterion_Chest(Criterion):
-            name = "Chest"
-            role = Role.AGGREGATE
-
-            def calculation(self) -> None:
-                self.rating = np.max([
-                    self.criterion_acceleration.rating,
-                    self.criterion_deflection.rating,
-                    self.criterion_deflection_rate.rating,
-                    self.criterion_vc.rating,
-                ])
-
-            class Criterion_Acceleration(Criterion):
-                name = "Thoracic Spine Acceleration (3ms)"  # TODO: nicht THSP?
-
-                def define_limits(self) -> list[Limit]:
-                    codes = self.ctx.codes("?{p}CHST003C??ACR?")
-                    return [
-                        Limit_G(codes, func=lambda x: 60, y_unit=Unit(g0), upper=True, rating=0),
-                        Limit_A(codes, func=lambda x: 60, y_unit=Unit(g0), lower=True, rating=-2),
-                        Limit_M(codes, func=lambda x: 75, y_unit=Unit(g0), lower=True, rating=-10),
-                        Limit_P(codes, func=lambda x: 90, y_unit=Unit(g0), lower=True, rating=-20),
-                    ]
-
-                def calculation(self) -> None:
-                    self.channel = self.require_channel(self.ctx.code("?{p}CHST003C??ACRX")).convert_unit(Unit(g0))
-                    self.value = self.channel.get_data()[0]
-                    self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
-                    self.color = self.limits.get_limit_min_color(self.channel)
-
-            class Criterion_Deflection(Criterion):
-                name = "Sternum Deflection"
-
-                def define_limits(self) -> list[Limit]:
-                    codes = self.ctx.codes("1{p}CHST0000??DSX?")
-                    return [
-                        Limit_G(codes, func=lambda x: -50, y_unit="mm", lower=True, rating=0),
-                        Limit_A(codes, func=lambda x: -50, y_unit="mm", upper=True, rating=-2),
-                        Limit_M(codes, func=lambda x: -60, y_unit="mm", upper=True, rating=-10),
-                        Limit_P(codes, func=lambda x: -75, y_unit="mm", upper=True, rating=-20),
-                    ]
-
-                def calculation(self) -> None:
-                    self.channel = self.require_channel(self.ctx.code("1{p}CHST0000??DSXC")).convert_unit("mm")
-                    self.value = np.min(self.channel.get_data())
-                    self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
-                    self.color = self.limits.get_limit_min_color(self.channel)
-
-            class Criterion_Deflection_Rate(Criterion):
-                name = "Sternum Deflection Rate"
-
-                def define_limits(self) -> list[Limit]:
-                    codes = self.ctx.codes("1{p}CHST0000??VEX?")
-                    return [
-                        Limit_G(codes, func=lambda x: -6.6, y_unit="m/s", lower=True, rating=0),
-                        Limit_A(codes, func=lambda x: -6.6, y_unit="m/s", upper=True, rating=-2),
-                        Limit_M(codes, func=lambda x: -8.2, y_unit="m/s", upper=True, rating=-10),
-                        Limit_P(codes, func=lambda x: -9.8, y_unit="m/s", upper=True, rating=-20),
-                    ]
-
-                def calculation(self) -> None:
-                    self.channel = self.require_channel(self.ctx.code("1{p}CHST0000??VEXC")).convert_unit("m/s")
-                    self.value = np.min(self.channel.get_data())
-                    self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
-                    self.color = self.limits.get_limit_min_color(self.channel)
-
-            class Criterion_VC(Criterion):
-                name = "Viscous Criterion"
-
-                def define_limits(self) -> list[Limit]:
-                    codes = self.ctx.codes("?{p}VCCR0000??VEX?")
-                    return [
-                        Limit_P(codes, func=lambda x: -1.2, y_unit="m/s", upper=True, rating=-20),
-                        Limit_M(codes, func=lambda x: -1.2, y_unit="m/s", lower=True, rating=-10),
-                        Limit_A(codes, func=lambda x: -1.0, y_unit="m/s", lower=True, rating=-2),
-                        Limit_G(codes, func=lambda x: -0.8, y_unit="m/s", lower=True, rating=0),
-
-                        Limit_G(codes, func=lambda x: 0.8, y_unit="m/s", upper=True, rating=0),
-                        Limit_A(codes, func=lambda x: 0.8, y_unit="m/s", lower=True, rating=-2),
-                        Limit_M(codes, func=lambda x: 1.0, y_unit="m/s", lower=True, rating=-10),
-                        Limit_P(codes, func=lambda x: 1.2, y_unit="m/s", lower=True, rating=-20),
-                    ]
-
-                def calculation(self) -> None:
-                    self.channel = self.require_channel(self.ctx.code("1{p}VCCR0000??VEXC")).convert_unit("m/s")
-                    self.value = self.channel.get_data()[np.argmax(np.abs(self.channel.get_data()))]
-                    self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
-                    self.color = self.limits.get_limit_min_color(self.channel)
-
-            criterion_acceleration = sub(Criterion_Acceleration)
-            criterion_deflection = sub(Criterion_Deflection)
-            criterion_deflection_rate = sub(Criterion_Deflection_Rate)
-            criterion_vc = sub(Criterion_VC)
-
-        class Criterion_Thigh_Hip(Criterion):
-            name = "Tight & Hip"
-            role = Role.AGGREGATE
-
-            def calculation(self) -> None:
-                self.rating = self.criterion_kth.rating
-
-            class Criterion_KTH(Criterion):
-                name = "Knee Thigh Hip Injury Risk (KTH)"
-
-                def define_limits(self) -> list[Limit]:
-                    codes = self.ctx.codes("?{p}KTHC??????00??")
-                    return [
-                        Limit_G(codes, func=lambda x: np.interp(x, [5.22, 5.69], [113.5, 113.5], left=np.inf, right=-np.inf), y_unit="N*s", x_unit="kN", upper=True, rating=0),
-                        Limit_A(codes, func=lambda x: np.interp(x, [5.22, 5.69], [113.5, 113.5], left=np.inf, right=-np.inf), y_unit="N*s", x_unit="kN", lower=True, rating=-2),
-                        Limit_M(codes, func=lambda x: np.interp(x, [5.92, 7.69], [127.7, 127.7], left=np.inf, right=-np.inf), y_unit="N*s", x_unit="kN", lower=True, rating=6),
-                        Limit_P(codes, func=lambda x: np.interp(x, [6.38, 8.92], [137.1, 137.1], left=np.inf, right=-np.inf), y_unit="N*s", x_unit="kN", lower=True, rating=-10),
-                    ]
-
-                def calculation(self) -> None:
-                    #TODO: rechts und links separat berechnen, da sonst integral zu groß wenn channel mit get_channel() berechnet wird (minum links rechts mit zeitversatz)
-                    pass
-                    # channel_femur_impulse = ...
-                    # channel_femur_force = ...
-                    # self.channel = Channel(code=channel_femur_impulse.code.set(physical_dimension="00"),
-                    #                        data=...,
-                    #                        unit="1",
-                    #                        info=...)
-
-            criterion_kth = sub(Criterion_KTH)
-
-        class Criterion_Leg_Foot(Criterion):
-            name = "Leg & Foot"
-            role = Role.AGGREGATE
-
-            def calculation(self) -> None:
-                self.rating = np.max([
-                    self.criterion_tibia_femur_displacement.rating,
-                    self.criterion_tibia_index.rating,
-                    self.criterion_tibia_axial_force.rating,
-                    self.criterion_foot_acceleration.rating,
-                ])
-
-            class Criterion_Tibia_Femur_Displacemnt(Criterion):
-                name = "Tibia/Femur Displacement"
-
-                def define_limits(self) -> list[Limit]:
-                    return [
-                        #TODO
-                    ]
-
-                def calculation(self) -> None:
-                    pass
-
-            class Criterion_Tibia_Index(Criterion):
-                name = "Tibia Index"
-
-                def define_limits(self) -> list[Limit]:
-                    codes = self.ctx.codes("?{p}TIIN??TO??000?")
-                    return [
-                        Limit_G(codes, func=lambda x: 0.8, y_unit="1", upper=True, rating=0),
-                        Limit_A(codes, func=lambda x: 0.8, y_unit="1", lower=True, rating=-1),
-                        Limit_M(codes, func=lambda x: 1.0, y_unit="1", lower=True, rating=-2),
-                        Limit_P(codes, func=lambda x: 1.2, y_unit="1", lower=True, rating=-4),
-                    ]
-
-                def calculation(self) -> None:
-                    self.channel = self.require_channel(self.ctx.code("?{p}TIIN00TO??000B"))
-                    self.value = np.max(self.channel.get_data())
-                    self.rating = self.limits.get_limit_min_rating(self.channel)
-                    self.color = self.limits.get_limit_min_color(self.channel)
-
-            class Criterion_Tibia_Axial_Force(Criterion):
-                name = "Tibia Axial Force"
-
-                def define_limits(self) -> list[Limit]:
-                    codes = self.ctx.codes("?{p}TIBI??LO??FOZ?")
-                    return [
-                        Limit_G(codes, func=lambda x: -4, y_unit="kN", lower=True, rating=0),
-                        Limit_A(codes, func=lambda x: -4, y_unit="kN", upper=True, rating=-1),
-                        Limit_M(codes, func=lambda x: -6, y_unit="kN", upper=True, rating=-2),
-                        Limit_P(codes, func=lambda x: -8, y_unit="kN", upper=True, rating=-4),
-                    ]
-
-                def calculation(self) -> None:
-                    self.channel = self.require_channel(self.ctx.code("?{p}TIBI00LO??FOZA")).convert_unit("kN")
-                    self.value = np.min(self.channel.get_data())
-                    self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
-                    self.color = self.limits.get_limit_min_color(self.channel)
-
-            class Criterion_Foot_Acceleration(Criterion):
-                name = "Foot Acceleration"
-
-                def define_limits(self) -> list[Limit]:
-                    codes = self.ctx.codes("?{p}FOOT0000??AC??", "?{p}FOOTLE00??AC??", "?{p}FOOTRI00??AC??")
-                    return [
-                        Limit_G(codes, func=lambda x: 150, y_unit=Unit(g0), upper=True, rating=0),
-                        Limit_A(codes, func=lambda x: 150, y_unit=Unit(g0), lower=True, rating=-1),
-                        Limit_M(codes, func=lambda x: 200, y_unit=Unit(g0), lower=True, rating=-2),
-                        Limit_P(codes, func=lambda x: 260, y_unit=Unit(g0), lower=True, rating=-4),
-                    ]
-
-                def calculation(self) -> None:
-                    self.channel = self.require_channel(self.ctx.code("?{p}FOOT0000??ACRA")).convert_unit(Unit(g0))
-                    self.value = np.max(self.channel.get_data())
-                    self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
-                    self.color = self.limits.get_limit_min_color(self.channel)
-
-            criterion_tibia_femur_displacement = sub(Criterion_Tibia_Femur_Displacemnt)
-            criterion_tibia_index = sub(Criterion_Tibia_Index)
-            criterion_tibia_axial_force = sub(Criterion_Tibia_Axial_Force)
-            criterion_foot_acceleration = sub(Criterion_Foot_Acceleration)
-
-        criterion_head_neck = sub(Criterion_Head_Neck)
-        criterion_chest = sub(Criterion_Chest)
-        criterion_thigh_hip = sub(Criterion_Thigh_Hip)
-        criterion_leg_foot = sub(Criterion_Leg_Foot)
-
-    class Criterion_Passenger(Criterion):
-        class Criterion_Head_Neck(Criterion):
-            pass
-        class Criterion_Chest(Criterion):
-            pass
-        class Criterion_Femur(Criterion):
-            pass
-        class Criterion_Leg_Foot(Criterion):
-            pass
+            self.value = 6.0 if self.automatic_poor else float(self.demerits)
+            if self.value <= 1:
+                self.rating, self.color = 0.0, Limit_G.color
+            elif self.value <= 3:
+                self.rating, self.color = -2.0, Limit_A.color
+            elif self.value <= 5:
+                self.rating, self.color = -6.0, Limit_M.color
+            else:
+                self.rating, self.color = -10.0, Limit_P.color
+
+    class Criterion_Structure(Criterion):
+        name = "Vehicle structure"
+        intrusion_rating: Manual[int, manual(
+            4,
+            source="intrusion measurements",
+            doc=("Initial Figure 15 structure category: 4=Good, 3=Acceptable, "
+                 "2=Marginal, 1=Poor."),
+        )]
+        qualitative_downgrades: Manual[int, manual(
+            0,
+            source="postcrash inspection",
+            doc="Number of one-category downgrades for adverse deformation observations.",
+        )]
+        integrity_failure: Manual[bool, manual(
+            False,
+            source="postcrash inspection",
+            doc="Significant fuel leak, electrical compromise, smoke, fire, or battery thermal event.",
+        )]
+
+        def calculation(self) -> None:
+            if self.intrusion_rating not in (1, 2, 3, 4):
+                raise ValueError("intrusion_rating must be 1 (Poor) through 4 (Good)")
+            category = 1 if self.integrity_failure else max(
+                1, self.intrusion_rating - self.qualitative_downgrades
+            )
+            self.value = category
+            self.rating, self.color = {
+                4: (0.0, Limit_G.color),
+                3: (-2.0, Limit_A.color),
+                2: (-6.0, Limit_M.color),
+                1: (-10.0, Limit_P.color),
+            }[category]
+
+    def calculation(self) -> None:
+        self.rating = self.sum_of_children()
+        self.value = -self.rating
+        if self.value <= 3:
+            self.color = Limit_G.color
+        elif self.value <= 9:
+            self.color = Limit_A.color
+        elif self.value <= 19:
+            self.color = Limit_M.color
+        else:
+            self.color = Limit_P.color
+
+    class Criterion_Driver(Criterion_H350M_Injury):
+        name = "Driver"
 
     criterion_driver = sub(Criterion_Driver, at=from_input(P_DRIVER), role=Role.AGGREGATE)
+    criterion_restraints_kinematics = sub(Criterion_Restraints_Kinematics)
+    criterion_structure = sub(Criterion_Structure)
 
 
 class IIHS_Frontal_Small_Overlap(Report[Overall]):
@@ -427,71 +127,93 @@ class IIHS_Frontal_Small_Overlap(Report[Overall]):
     protocols = {
         "VII": "Version VII (04.2024) [references/IIHS/small_overlap_rating_protocol.pdf]",
     }
-
-    #: The report's criterion tree, defined at module level (see `Overall`).
     Criterion_Overall = Overall
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
-
         self.pages = [
             Page_Cover(self),
-
-            self.Page_Driver_Result_Values_Chart(self),
-            self.Page_Driver_Rating_Table(self),
+            self.Page_Overall_Rating(self),
+            self.Page_Driver_Rating(self),
+            self.Page_Driver_Values_Chart(self),
             self.Page_Driver_Values_Table(self),
             self.Page_Driver_Head_Acceleration(self),
-            self.Page_Driver_Neck_NIJ(self),
+            self.Page_Driver_Neck_Nij(self),
             self.Page_Driver_Neck_Load(self),
-            self.Page_Driver_Neck_Load_Corridor(self),
-            self.Page_Driver_Femur_Axial_Force(self),
-            self.Page_Driver_Tibia_Compression(self),
-            self.Page_Driver_Tibia_Index_Total(self),
+            self.Page_Driver_Neck_Load_Corridors(self),
+            self.Page_Driver_Chest(self),
+            self.Page_Driver_Femur_Force(self),
+            self.Page_Driver_Knee_Displacement(self),
+            self.Page_Driver_Tibia_Index(self),
+            self.Page_Driver_Tibia_Force(self),
             self.Page_Driver_Foot_Acceleration(self),
         ]
 
-    class Page_Driver_Result_Values_Chart(Page_Criterion_Values_Chart):
+    class Page_Overall_Rating(Page_Criterion_Rating_Table):
         report: IIHS_Frontal_Small_Overlap
-        name = "Driver Result Values Chart"
-        title = "Driver Result"
+        name = "Overall Rating"
+        title = "Overall Rating"
 
         def __init__(self, report: IIHS_Frontal_Small_Overlap) -> None:
             super().__init__(report)
+            self.criteria = {
+                isomme: [
+                    report.overall(isomme),
+                    report.overall(isomme).criterion_structure,
+                    report.overall(isomme).criterion_driver.criterion_head_neck,
+                    report.overall(isomme).criterion_driver.criterion_chest,
+                    report.overall(isomme).criterion_driver.criterion_thigh_hip,
+                    report.overall(isomme).criterion_driver.criterion_leg_foot,
+                    report.overall(isomme).criterion_restraints_kinematics,
+                ]
+                for isomme in report.isomme_list
+            }
 
-            self.criteria = {isomme: [
-                self.report.criterion_overall[isomme].criterion_driver.criterion_head_neck.criterion_hic_15,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_head_neck.criterion_nij,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_head_neck.criterion_fz_tension,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_head_neck.criterion_fz_compression,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_head_neck.criterion_fz_tension_corridor,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_head_neck.criterion_fz_compression_corridor,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_head_neck.criterion_fx_shear_corridor,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_chest.criterion_acceleration,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_chest.criterion_deflection,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_chest.criterion_deflection_rate,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_chest.criterion_vc,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_thigh_hip.criterion_kth,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_leg_foot.criterion_tibia_femur_displacement,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_leg_foot.criterion_tibia_index,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_leg_foot.criterion_tibia_axial_force,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_leg_foot.criterion_foot_acceleration,
-            ] for isomme in self.report.isomme_list}
-
-    class Page_Driver_Rating_Table(Page_Criterion_Rating_Table):
+    class Page_Driver_Rating(Page_Criterion_Rating_Table):
         report: IIHS_Frontal_Small_Overlap
-        name = "Driver Rating Table"
-        title = "Driver Rating"
+        name = "Driver Injury Ratings"
+        title = "Driver Injury Ratings"
 
         def __init__(self, report: IIHS_Frontal_Small_Overlap) -> None:
             super().__init__(report)
+            self.criteria = {
+                isomme: [
+                    report.overall(isomme).criterion_driver.criterion_head_neck,
+                    report.overall(isomme).criterion_driver.criterion_chest,
+                    report.overall(isomme).criterion_driver.criterion_thigh_hip,
+                    report.overall(isomme).criterion_driver.criterion_leg_foot,
+                    report.overall(isomme).criterion_driver,
+                ]
+                for isomme in report.isomme_list
+            }
 
-            self.criteria = {isomme: [
-                self.report.criterion_overall[isomme].criterion_driver.criterion_head_neck,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_chest,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_thigh_hip,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_leg_foot,
-                self.report.criterion_overall[isomme].criterion_driver,
-            ] for isomme in self.report.isomme_list}
+    class Page_Driver_Values_Chart(Page_Criterion_Values_Chart):
+        report: IIHS_Frontal_Small_Overlap
+        name = "Driver Values Chart"
+        title = "Driver Values"
+
+        def __init__(self, report: IIHS_Frontal_Small_Overlap) -> None:
+            super().__init__(report)
+            self.criteria = {
+                isomme: [
+                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_hic_15,
+                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_nij,
+                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_neck_tension,
+                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_neck_compression,
+                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_tension_corridor,
+                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_compression_corridor,
+                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_shear_corridor,
+                    report.overall(isomme).criterion_driver.criterion_chest.criterion_acceleration,
+                    report.overall(isomme).criterion_driver.criterion_chest.criterion_deflection,
+                    report.overall(isomme).criterion_driver.criterion_chest.criterion_deflection_rate,
+                    report.overall(isomme).criterion_driver.criterion_chest.criterion_vc,
+                    report.overall(isomme).criterion_driver.criterion_leg_foot.criterion_tibia_femur_displacement,
+                    report.overall(isomme).criterion_driver.criterion_leg_foot.criterion_tibia_index,
+                    report.overall(isomme).criterion_driver.criterion_leg_foot.criterion_tibia_axial_force,
+                    report.overall(isomme).criterion_driver.criterion_leg_foot.criterion_foot_acceleration,
+                ]
+                for isomme in report.isomme_list
+            }
 
     class Page_Driver_Values_Table(Page_Criterion_Values_Table):
         report: IIHS_Frontal_Small_Overlap
@@ -500,75 +222,161 @@ class IIHS_Frontal_Small_Overlap(Report[Overall]):
 
         def __init__(self, report: IIHS_Frontal_Small_Overlap) -> None:
             super().__init__(report)
+            self.criteria = {
+                isomme: [
+                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_hic_15,
+                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_nij,
+                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_neck_tension,
+                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_neck_compression,
+                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_tension_corridor,
+                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_compression_corridor,
+                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_shear_corridor,
+                    report.overall(isomme).criterion_driver.criterion_chest.criterion_acceleration,
+                    report.overall(isomme).criterion_driver.criterion_chest.criterion_deflection,
+                    report.overall(isomme).criterion_driver.criterion_chest.criterion_deflection_rate,
+                    report.overall(isomme).criterion_driver.criterion_chest.criterion_vc,
+                    report.overall(isomme).criterion_driver.criterion_thigh_hip.criterion_left,
+                    report.overall(isomme).criterion_driver.criterion_thigh_hip.criterion_right,
+                    report.overall(isomme).criterion_driver.criterion_leg_foot.criterion_tibia_femur_displacement,
+                    report.overall(isomme).criterion_driver.criterion_leg_foot.criterion_tibia_index,
+                    report.overall(isomme).criterion_driver.criterion_leg_foot.criterion_tibia_axial_force,
+                    report.overall(isomme).criterion_driver.criterion_leg_foot.criterion_foot_acceleration,
+                ]
+                for isomme in report.isomme_list
+            }
 
-            self.criteria = {isomme: [
-                self.report.criterion_overall[isomme].criterion_driver.criterion_head_neck.criterion_hic_15,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_head_neck.criterion_nij,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_head_neck.criterion_fz_tension,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_head_neck.criterion_fz_compression,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_head_neck.criterion_fz_tension_corridor,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_head_neck.criterion_fz_compression_corridor,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_head_neck.criterion_fx_shear_corridor,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_chest.criterion_acceleration,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_chest.criterion_deflection,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_chest.criterion_deflection_rate,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_chest.criterion_vc,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_thigh_hip.criterion_kth,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_leg_foot.criterion_tibia_femur_displacement,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_leg_foot.criterion_tibia_index,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_leg_foot.criterion_tibia_axial_force,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_leg_foot.criterion_foot_acceleration,
-            ] for isomme in self.report.isomme_list}
-
-    class Page_Driver_Head_Acceleration(EuroNCAP_Frontal_MPDB.Page_Driver_Head_Acceleration):
-        pass
-
-    class Page_Driver_Neck_NIJ(Page_Plot_nxn):
+    class Page_Driver_Head_Acceleration(Page_Plot_nxn):
         report: IIHS_Frontal_Small_Overlap
-        name: str = "Driver Neck NIJ"
-        title: str = "Driver Neck NIJ"
+        name = "Driver Head Acceleration"
+        title = "Driver Head Acceleration"
+        nrows = 2
+        ncols = 2
+        sharey = True
+
+        def __init__(self, report: IIHS_Frontal_Small_Overlap) -> None:
+            super().__init__(report)
+            self.channels = {
+                isomme: [[f"?{report.overall(isomme).p_driver}HEAD??????AC{axis}A"] for axis in "XYZR"]
+                for isomme in report.isomme_list
+            }
+
+    class Page_Driver_Neck_Nij(Page_Plot_nxn):
+        report: IIHS_Frontal_Small_Overlap
+        name = "Driver Neck NIJ"
+        title = "Driver Neck NIJ"
         nrows: int = 2
         ncols: int = 2
         sharey: bool = True
 
         def __init__(self, report: IIHS_Frontal_Small_Overlap) -> None:
             super().__init__(report)
-            self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p_driver}NIJCIPCF??00YB"],
-                                      [f"?{self.report.criterion_overall[isomme].p_driver}NIJCIPCE??00YB"],
-                                      [f"?{self.report.criterion_overall[isomme].p_driver}NIJCIPTF??00YB"],
-                                      [f"?{self.report.criterion_overall[isomme].p_driver}NIJCIPTE??00YB"]] for isomme in self.report.isomme_list}
+            self.channels = {
+                isomme: [
+                    [f"?{report.overall(isomme).p_driver}NIJCIPCF??00YB"],
+                    [f"?{report.overall(isomme).p_driver}NIJCIPCE??00YB"],
+                    [f"?{report.overall(isomme).p_driver}NIJCIPTF??00YB"],
+                    [f"?{report.overall(isomme).p_driver}NIJCIPTE??00YB"],
+                ]
+                for isomme in report.isomme_list
+            }
 
     class Page_Driver_Neck_Load(Page_Plot_nxn):
-        name: str = "Driver Neck Load"
-        title: str = "Driver Neck Load"
-        nrows: int = 1
-        ncols: int = 1
-        sharey: bool = False
+        report: IIHS_Frontal_Small_Overlap
+        name = "Driver Neck Axial Load"
+        title = "Driver Neck Axial Load"
 
-        def __init__(self, report: Report) -> None:
-            super().__init__(report,
-                             limits=report.criterion_overall[report.isomme_list[0]].criterion_driver.criterion_head_neck.criterion_fz_tension.limits +
-                                    report.criterion_overall[report.isomme_list[0]].criterion_driver.criterion_head_neck.criterion_fz_compression.limits)
-            self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p_driver}NECKUP00??FOZA"]] for isomme in self.report.isomme_list}
+        def __init__(self, report: IIHS_Frontal_Small_Overlap) -> None:
+            driver = report.overall(report.isomme_list[0]).criterion_driver
+            super().__init__(
+                report,
+                limits=(driver.criterion_head_neck.criterion_neck_tension.limits
+                        + driver.criterion_head_neck.criterion_neck_compression.limits),
+            )
+            self.channels = {
+                isomme: [[f"?{report.overall(isomme).p_driver}NECKUP00??FOZB"]]
+                for isomme in report.isomme_list
+            }
 
-    class Page_Driver_Neck_Load_Corridor(Page_Plot_nxn):
-        name: str = "Driver Neck Load Corridor"
-        title: str = "Driver Neck Load Corridor"
-        nrows: int = 1
-        ncols: int = 2
-        sharey: bool = False
+    class Page_Driver_Neck_Load_Corridors(Page_Plot_nxn):
+        report: IIHS_Frontal_Small_Overlap
+        name = "Driver Neck Load Corridors"
+        title = "Driver Neck Load Corridors"
+        nrows = 1
+        ncols = 2
 
-        def __init__(self, report: Report) -> None:
-            super().__init__(report, limits=report.criterion_overall[report.isomme_list[0]].criterion_driver.criterion_head_neck.criterion_fz_tension_corridor.limits +
-                                            report.criterion_overall[report.isomme_list[0]].criterion_driver.criterion_head_neck.criterion_fz_compression_corridor.limits +
-                                            report.criterion_overall[report.isomme_list[0]].criterion_driver.criterion_head_neck.criterion_fx_shear_corridor.limits)
-            self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p_driver}NECKUP00??FOZA"],
-                                      [f"?{self.report.criterion_overall[isomme].p_driver}NECKUP00??FOXA"]] for isomme in self.report.isomme_list}
+        def __init__(self, report: IIHS_Frontal_Small_Overlap) -> None:
+            head_neck = report.overall(report.isomme_list[0]).criterion_driver.criterion_head_neck
+            super().__init__(
+                report,
+                limits=(head_neck.criterion_tension_corridor.limits
+                        + head_neck.criterion_compression_corridor.limits
+                        + head_neck.criterion_shear_corridor.limits),
+            )
+            self.channels = {
+                isomme: [
+                    [f"?{report.overall(isomme).p_driver}NECKUP00??FOZB"],
+                    [f"?{report.overall(isomme).p_driver}NECKUP00??FOXB"],
+                ]
+                for isomme in report.isomme_list
+            }
 
-    class Page_Driver_Femur_Axial_Force(EuroNCAP_Frontal_MPDB.Page_Driver_Femur_Axial_Force):
-        pass
+    class Page_Driver_Chest(Page_Plot_nxn):
+        report: IIHS_Frontal_Small_Overlap
+        name = "Driver Chest Injury Measures"
+        title = "Driver Chest Injury Measures"
+        nrows = 2
+        ncols = 2
 
-    class Page_Driver_Tibia_Index_Total(Page_Plot_nxn):
+        def __init__(self, report: IIHS_Frontal_Small_Overlap) -> None:
+            super().__init__(report)
+            self.channels = {
+                isomme: [
+                    [f"?{report.overall(isomme).p_driver}CHST0000??ACRA"],
+                    [f"?{report.overall(isomme).p_driver}CHST0000??DSXC"],
+                    [f"?{report.overall(isomme).p_driver}CHST0000??VEXC"],
+                    [f"?{report.overall(isomme).p_driver}VCCR0000??VEXC"],
+                ]
+                for isomme in report.isomme_list
+            }
+
+    class Page_Driver_Femur_Force(Page_Plot_nxn):
+        report: IIHS_Frontal_Small_Overlap
+        name = "Driver Femur Axial Force"
+        title = "Driver Femur Axial Force"
+        nrows = 1
+        ncols = 2
+        sharey = True
+
+        def __init__(self, report: IIHS_Frontal_Small_Overlap) -> None:
+            super().__init__(report)
+            self.channels = {
+                isomme: [
+                    [f"?{report.overall(isomme).p_driver}FEMRLE00??FOZB"],
+                    [f"?{report.overall(isomme).p_driver}FEMRRI00??FOZB"],
+                ]
+                for isomme in report.isomme_list
+            }
+
+    class Page_Driver_Knee_Displacement(Page_Plot_nxn):
+        report: IIHS_Frontal_Small_Overlap
+        name = "Driver Tibia-Femur Displacement"
+        title = "Driver Tibia-Femur Displacement"
+        nrows = 1
+        ncols = 2
+        sharey = True
+
+        def __init__(self, report: IIHS_Frontal_Small_Overlap) -> None:
+            super().__init__(report)
+            self.channels = {
+                isomme: [
+                    [f"?{report.overall(isomme).p_driver}KNSLLE00??DSXC"],
+                    [f"?{report.overall(isomme).p_driver}KNSLRI00??DSXC"],
+                ]
+                for isomme in report.isomme_list
+            }
+
+    class Page_Driver_Tibia_Index(Page_Plot_nxn):
+        report: IIHS_Frontal_Small_Overlap
         name = "Driver Tibia Index (Total Moment)"
         title = "Driver Tibia Index (Total Moment)"
         nrows = 2
@@ -577,22 +385,48 @@ class IIHS_Frontal_Small_Overlap(Report[Overall]):
 
         def __init__(self, report: Report) -> None:
             super().__init__(report)
-            self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p_driver}TIINLUTO??000B"],
-                                      [f"?{self.report.criterion_overall[isomme].p_driver}TIINRUTO??000B"],
-                                      [f"?{self.report.criterion_overall[isomme].p_driver}TIINLLTO??000B"],
-                                      [f"?{self.report.criterion_overall[isomme].p_driver}TIINRLTO??000B"]] for isomme in self.report.isomme_list}
+            self.channels = {
+                isomme: [
+                    [f"?{report.overall(isomme).p_driver}TIINLUTO??000B"],
+                    [f"?{report.overall(isomme).p_driver}TIINRUTO??000B"],
+                    [f"?{report.overall(isomme).p_driver}TIINLLTO??000B"],
+                    [f"?{report.overall(isomme).p_driver}TIINRLTO??000B"],
+                ]
+                for isomme in report.isomme_list
+            }
 
-    class Page_Driver_Tibia_Compression(EuroNCAP_Frontal_MPDB.Page_Driver_Tibia_Compression):
-        pass
+    class Page_Driver_Tibia_Force(Page_Plot_nxn):
+        report: IIHS_Frontal_Small_Overlap
+        name = "Driver Tibia Axial Force"
+        title = "Driver Tibia Axial Force"
+        nrows = 1
+        ncols = 2
+        sharey = True
+
+        def __init__(self, report: IIHS_Frontal_Small_Overlap) -> None:
+            super().__init__(report)
+            self.channels = {
+                isomme: [
+                    [f"?{report.overall(isomme).p_driver}TIBILELO??FOZB"],
+                    [f"?{report.overall(isomme).p_driver}TIBIRILO??FOZB"],
+                ]
+                for isomme in report.isomme_list
+            }
 
     class Page_Driver_Foot_Acceleration(Page_Plot_nxn):
-        name: str = "Driver Foot Acceleration"
-        title: str = "Driver Foot Acceleration"
+        report: IIHS_Frontal_Small_Overlap
+        name = "Driver Foot Acceleration"
+        title = "Driver Foot Acceleration"
         nrows: int = 1
         ncols: int = 2
         sharey: bool = True
 
-        def __init__(self, report: Report) -> None:
+        def __init__(self, report: IIHS_Frontal_Small_Overlap) -> None:
             super().__init__(report)
-            self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p_driver}FOOTLE00??ACRA"],
-                                      [f"?{self.report.criterion_overall[isomme].p_driver}FOOTRI00??ACRA"]] for isomme in self.report.isomme_list}
+            self.channels = {
+                isomme: [
+                    [f"?{report.overall(isomme).p_driver}FOOTLE00??ACRB"],
+                    [f"?{report.overall(isomme).p_driver}FOOTRI00??ACRB"],
+                ]
+                for isomme in report.isomme_list
+            }

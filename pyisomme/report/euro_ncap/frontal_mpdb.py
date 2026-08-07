@@ -38,14 +38,6 @@ P_PASSENGER = manual("3", source="test report", doc=(
     "('1' for a right-hand-drive test) unless set explicitly."))
 
 
-# --------------------------------------------------------------------------- #
-# Criteria the passenger tree reuses from the driver's.
-#
-# At module level because a ``sub()`` in a class body can only name what is already
-# bound, and inside ``Overall``'s body the name ``Overall`` does not exist yet.
-# TODO(step-10): the shared criteria library replaces this.
-# --------------------------------------------------------------------------- #
-
 class Criterion_UnstableAirbagContact(Criterion_UnstableAirbagContact_F50):
     source = "§3.2.1.1"
 

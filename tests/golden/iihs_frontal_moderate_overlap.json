@@ -1,8 +1,8 @@
 {
   "print_results": [
-    "iihs_frontal_small_overlap-0",
-    "\tOverall: Value=44 [] Rating=-44",
-    "\t\tDriver: Value=44 [] Rating=-44",
+    "iihs_frontal_moderate_overlap-0",
+    "\tOverall: Value=88 [] Rating=-88",
+    "\t\tDriver: Value=46 [] Rating=-46",
     "\t\t\tHead and neck: Value=nan [] Rating=-20",
     "\t\t\t\tHIC 15: Value=600 [] Rating=-10",
     "\t\t\t\tNij: Value=1.1 [] Rating=-10",
@@ -19,28 +19,40 @@
     "\t\t\tThigh and hip: Value=nan [] Rating=0",
     "\t\t\t\tLeft knee-thigh-hip injury risk: Value=4.9999 [kN] Rating=0",
     "\t\t\t\tRight knee-thigh-hip injury risk: Value=4.9999 [kN] Rating=0",
-    "\t\t\tLeg and foot: Value=nan [] Rating=-4",
-    "\t\t\t\tTibia-femur displacement: Value=60 [mm] Rating=-4",
-    "\t\t\t\tTibia index: Value=1.1 [] Rating=-2",
+    "\t\t\tLeg and foot: Value=nan [] Rating=-6",
+    "\t\t\t\tTibia-femur displacement: Value=60 [mm] Rating=-6",
+    "\t\t\t\tTibia index: Value=1.1 [] Rating=-4",
     "\t\t\t\tTibia axial force: Value=4.9999 [kN] Rating=-1",
     "\t\t\t\tFoot acceleration: Value=81.577 [g0] Rating=0",
-    "\t\tRestraints and dummy kinematics: Value=0 [] Rating=0",
+    "\t\t\tRestraints and kinematics: Value=0 [] Rating=0",
+    "\t\tRear passenger: Value=42 [] Rating=-42",
+    "\t\t\tHead and neck: Value=nan [] Rating=-20",
+    "\t\t\t\tHIC 15 (contacts only): Value=nan [] Rating=0",
+    "\t\t\t\tNij (contacts only): Value=nan [] Rating=0",
+    "\t\t\t\tNeck axial tension: Value=4.9999 [kN] Rating=-20",
+    "\t\t\t\tNeck compression: Value=-4.9999 [kN] Rating=-20",
+    "\t\t\tChest: Value=nan [] Rating=-20",
+    "\t\t\t\tChest Index: Value=59 [mm] Rating=-20",
+    "\t\t\t\tShoulder belt tension: Value=4.9999 [kN] Rating=0",
+    "\t\t\tThigh: Value=nan [] Rating=-2",
+    "\t\t\t\tFemur axial compression: Value=4.9999 [kN] Rating=-2",
+    "\t\t\tRestraints and kinematics: Value=0 [] Rating=0",
     "\t\tVehicle structure: Value=4 [] Rating=0"
   ],
-  "report": "IIHS_Frontal_Small_Overlap",
+  "report": "IIHS_Frontal_Moderate_Overlap",
   "results": {
-    "iihs_frontal_small_overlap-0": {
+    "iihs_frontal_moderate_overlap-0": {
       "Overall": {
         "color": "red",
-        "rating": -44.0,
+        "rating": -88.0,
         "status": "OK",
-        "value": 44.0
+        "value": 88.0
       },
       "criterion_driver": {
         "color": null,
-        "rating": -44.0,
+        "rating": -46.0,
         "status": "OK",
-        "value": 44.0
+        "value": 46.0
       },
       "criterion_driver/criterion_chest": {
         "color": "red",
@@ -122,7 +134,7 @@
       },
       "criterion_driver/criterion_leg_foot": {
         "color": "red",
-        "rating": -4.0,
+        "rating": -6.0,
         "status": "OK",
         "value": "nan"
       },
@@ -140,15 +152,21 @@
       },
       "criterion_driver/criterion_leg_foot/criterion_tibia_femur_displacement": {
         "color": "red",
-        "rating": -4,
+        "rating": -6,
         "status": "OK",
         "value": 59.999514038351805
       },
       "criterion_driver/criterion_leg_foot/criterion_tibia_index": {
         "color": "orange",
-        "rating": -2,
+        "rating": -4,
         "status": "OK",
         "value": 1.0999937901816454
+      },
+      "criterion_driver/criterion_restraints_kinematics": {
+        "color": "green",
+        "rating": 0.0,
+        "status": "OK",
+        "value": 0.0
       },
       "criterion_driver/criterion_thigh_hip": {
         "color": "green",
@@ -168,11 +186,77 @@
         "status": "OK",
         "value": 4.9999310020182826
       },
-      "criterion_restraints_kinematics": {
+      "criterion_rear_passenger": {
+        "color": null,
+        "rating": -42.0,
+        "status": "OK",
+        "value": 42.0
+      },
+      "criterion_rear_passenger/criterion_chest": {
+        "color": "red",
+        "rating": -20.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_rear_passenger/criterion_chest/criterion_chest_index": {
+        "color": "red",
+        "rating": -20,
+        "status": "OK",
+        "value": 59.0
+      },
+      "criterion_rear_passenger/criterion_chest/criterion_shoulder_belt_tension": {
+        "color": "green",
+        "rating": 0,
+        "status": "OK",
+        "value": 4.999930576907403
+      },
+      "criterion_rear_passenger/criterion_head_neck": {
+        "color": "red",
+        "rating": -20.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_rear_passenger/criterion_head_neck/criterion_hic_15": {
+        "color": "green",
+        "rating": 0.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_rear_passenger/criterion_head_neck/criterion_neck_compression": {
+        "color": "red",
+        "rating": -20,
+        "status": "OK",
+        "value": -4.9999310020182826
+      },
+      "criterion_rear_passenger/criterion_head_neck/criterion_neck_tension": {
+        "color": "red",
+        "rating": -20,
+        "status": "OK",
+        "value": 4.9999310020182826
+      },
+      "criterion_rear_passenger/criterion_head_neck/criterion_nij": {
+        "color": "green",
+        "rating": 0.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_rear_passenger/criterion_restraints_kinematics": {
         "color": "green",
         "rating": 0.0,
         "status": "OK",
         "value": 0.0
+      },
+      "criterion_rear_passenger/criterion_thigh": {
+        "color": "yellow",
+        "rating": -2.0,
+        "status": "OK",
+        "value": "nan"
+      },
+      "criterion_rear_passenger/criterion_thigh/criterion_femur_compression": {
+        "color": "yellow",
+        "rating": -2,
+        "status": "OK",
+        "value": 4.9999310020182826
       },
       "criterion_structure": {
         "color": "green",

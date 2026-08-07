@@ -2717,3 +2717,264 @@ Final sizes: `11391.tar` 39,189,504 bytes; `11391.tar.gz` 15,266,468 bytes.
 
 - None for this re-baseline. The maintainer's staged report fix was left unchanged and no commit was
   created.
+
+## 2026-08-07 — Out-of-band: complete IIHS crashworthiness reports from rating guidelines
+
+**Branch:** `dev` · **Commit(s):** uncommitted — awaiting manual review
+**Outcome:** small overlap rewritten; Moderate 2.0 and Side 2.0 added; IIHS scoring uses literal signed demerits
+**Review:** ☐ pending
+
+### What changed
+
+- Read the four local IIHS guideline PDFs for Small Overlap VII, Moderate Overlap 2.0 II/III and
+  Side Impact 2.0 IV. Rebuilt the reports around eager `Overall` trees, `sub()`/`Ctx`, typed manual
+  inputs and explicit page criterion lists in the same organization as the Euro NCAP frontal reports.
+- Added `pyisomme/report/iihs/frontal.py` for the genuinely shared H350M injury measurements. Every
+  `Limit_*` row contains its protocol's literal signed demerit; body regions take the minimum child
+  rating and occupant/report totals sum the signed deductions. No one-use demerit tuple remains.
+- Reworked `frontal_small_overlap.py`; added `frontal_moderate_overlap.py` and `side_impact.py` with
+  their distinct component weights, overall cutoffs, structure/restraint/head-protection manual
+  decisions, Moderate rear-occupant Chest Index, Side five-rib/VC/pelvis calculations, and explicit
+  rating/chart/table page lists. KTH rows remain in values tables but not one-dimensional charts.
+- Reduced `iihs/common.py` to manual-demerit validation only. `iihs/limits.py` owns the four IIHS
+  `Limit` display classes and no longer exposes GOOD/ACCEPTABLE/MARGINAL/POOR numeric constants.
+  Removed the category/set-category path; measurable criteria use `get_limit_min_rating()` and
+  `get_limit_min_color()` directly. The stepped `interpolate=False` flag convention is documented via
+  per-criterion `validate_ignore` reasons.
+- Removed the proposed `Criterion.require_channels()` API. Every multi-sensor criterion now calls
+  `require_channel()` once per required code, so one absent rib/leg/pelvis sensor produces `Status.NA`
+  instead of being silently omitted by `get_channels()`.
+- Hardened `calculate_femur_impulse()` around absent pre/post-peak crossings and included the closing
+  sample in the trapezoid. Registered `KTHC` in `channel_codes.xml`, eliminating invalid-code warnings.
+- Registered the three concrete IIHS reports and replaced the unfinished ODB placeholder coverage.
+  Added deterministic synthetic fixture inputs, focused IIHS regression tests, result JSON snapshots,
+  describe Markdown and validation baselines.
+
+### Behaviour changes captured
+
+- IIHS ratings now retain the repository convention `0, -demerits` (higher is better), while aggregate
+  `value` fields expose the positive total demerits used by the PDF overall cutoffs.
+- Positive and negative VC/shear excursions are rated through absolute or polarity-specific derived
+  channels, fixing cases where the old symmetric flat limit list returned a correct colour but rating 0.
+- Two-dimensional KTH force/impulse corridors are evaluated together rather than pretending either
+  force or impulse is a sufficient one-dimensional limit.
+- Moderate H35F contact-only HIC/Nij remain explicit table rows but are omitted from the chart when the
+  default no-contact input makes them inapplicable, avoiding all-NaN plot warnings.
+
+### Verification
+
+| Command | Result |
+|---|---|
+| `-m tests.golden_regen iihs_frontal_small_overlap iihs_frontal_moderate_overlap iihs_side_impact` | 3 result snapshots regenerated; 26/38/25 printed lines |
+| `-m tests.test_validate --regen` | 14-report baseline regenerated; all 3 IIHS reports have zero findings |
+| `-m tests.test_describe --regen` | 14 definition documents regenerated; IIHS files are 317/469/326 lines |
+| targeted report/calculation suite (`test_iihs`, all goldens, modules, validate, describe, femur impulse, code) | **64 tests OK** in 70.377 s |
+| `-m ruff check .` | all checks passed |
+| `-m mypy` | clean, 64 source files |
+| `git diff --check` | clean; line-ending conversion warnings only |
+| synthetic `calculate()` + `export_pptx()` for all 3 IIHS reports | 5/8/8-slide decks rendered successfully; temporary decks then removed |
+
+### Deviation / still open
+
+- Video, intrusion, postcrash and pressure-mat judgments remain typed manual inputs; the guideline data
+  is not present in ISO-MME channels and was not guessed.
+- KTH is intentionally absent from values charts because its force/impulse corridor has no honest
+  one-dimensional plot limit; both left/right results remain in the explicit values tables.
+- The repository already contained unrelated staged/unstaged edits (including Euro NCAP, `ctx.py`,
+  `limit.py`, handover notes and the head-trajectory subproject). They were preserved and no commit was
+  created.
+
+## 2026-08-07 — Follow-up: IIHS page expansion and simplification
+
+**Branch:** `dev` · **Commit(s):** uncommitted — awaiting manual review
+**Outcome:** detailed IIHS signal pages added; manual-demerit validation and KTHC XML registration removed
+**Review:** ☐ pending
+
+This entry supersedes two details in the preceding IIHS entry: `KTHC` is deliberately **not** registered
+in `channel_codes.xml`, and the final reports contain 15/23/20 slides rather than 5/8/8.
+
+### What changed
+
+- Deleted `pyisomme/report/iihs/common.py` and removed `validate_demerits()` entirely. Manual qualitative
+  and numeric demerit inputs are now consumed directly; the reports assume their callers provide valid
+  values.
+- Kept `KTHC` out of `channel_codes.xml` because it is not an ISO-defined main location. The invalid-code
+  logging warning during the two-dimensional KTH calculation is accepted and intentional.
+- Added explicit `Page_Plot_nxn` classes and explicit page lists, following the Euro NCAP frontal report
+  organization. Small overlap now has 10 detailed signal pages; Moderate adds the same 10 driver pages
+  plus 5 rear-passenger pages; Side adds 6 driver and 6 rear-passenger pages. Related multi-sensor rib
+  measures share thorax/abdomen panels; manual-only decisions and the two-dimensional KTH result remain
+  table-only, while the underlying left/right femur force histories are plotted.
+- Expanded the deterministic IIHS synthetic fixture with raw head axes, chest resultant and Nij channels
+  needed by the new pages. These additions are scoped to IIHS reports so unrelated report goldens remain
+  unchanged.
+- Regenerated the three IIHS result snapshots and the validate/describe baselines after the deliberate
+  report-definition and page-list changes.
+
+### Verification
+
+| Command | Result |
+|---|---|
+| `-m unittest tests.test_iihs tests.test_golden tests.test_report_modules tests.test_validate tests.test_describe tests.test_calculate.TestCalculate.test_calculate_femur_impulse tests.test_code` | **64 tests OK** in 81.963 s |
+| `-m ruff check .` | all checks passed |
+| `-m mypy` | clean, 63 source files |
+| synthetic `calculate()` + `export_pptx()` for all 3 IIHS reports | 15/23/20-slide decks rendered successfully; only the accepted KTHC warnings appeared |
+
+### Deviation / still open
+
+- The KTHC warning is retained by design rather than extending the ISO channel-code catalog with a
+  protocol-local identifier.
+- No commit was created; unrelated existing working-tree changes remain untouched.
+
+## 2026-08-07 — IIHS PowerPoint inspection exports
+
+**Branch:** `dev` · **Commit(s):** uncommitted — awaiting manual review
+**Outcome:** all three IIHS decks exported to `out/` for maintainer inspection
+**Review:** ☐ pending
+
+- Ran `PYISOMME_PPTX=iihs_frontal_small_overlap,iihs_frontal_moderate_overlap,iihs_side_impact
+  .venv/Scripts/python.exe -m unittest tests.test_report`.
+- The opt-in test passed in 34.504 s and reopened each generated file to verify that its slide count
+  matches the report page count.
+- Left the 15-slide Small Overlap, 23-slide Moderate Overlap and 20-slide Side Impact `.pptx` files in
+  `out/` for manual inspection. No source or snapshot definition was changed in this follow-up.
+
+## 2026-08-07 — Follow-up: IIHS casing, driver label and Nij plot limits
+
+**Branch:** `dev` · **Commit(s):** uncommitted — awaiting manual review
+**Outcome:** report artifacts and page metadata follow the established Title Case convention; Nij bands render on component plots
+**Review:** ☐ pending
+
+### What changed
+
+- `tests/test_report.py` now names generated files from the registered report class, e.g.
+  `IIHS_Frontal_Moderate_Overlap.pptx`, rather than the lower-case builder stem.
+- Changed each IIHS report name and every explicit IIHS page `name`/`title` to the Title Case style used
+  by the Euro NCAP frontal reports, including the `NIJ` acronym.
+- Small Overlap now specializes the shared H350M aggregate as `Criterion_Driver`, so the final row on the
+  Driver Injury Ratings page reads `Driver` instead of `H350M injury measures`.
+- Kept scoring Nij limits on their synthesized `NIJCIP00` channel. `make_nij_plot_limits()` copies those
+  four rows for the plotted CF/CE/TF/TE component channels, so plot bands render without changing the
+  scoring channel or synthetic-data requirements.
+- Re-generated all affected IIHS result, validation and description baselines. Re-exported the 15/23/20
+  slide decks to `out/` with the corrected file casing.
+
+### Verification
+
+| Command | Result |
+|---|---|
+| direct `tests.report_pptx_case` exports for Small/Moderate/Side | 15/23/20 pages equal 15/23/20 slides |
+| `PYISOMME_PPTX=iihs_frontal_moderate_overlap -m unittest tests.test_report` | **1 test OK** in 14.064 s |
+| relevant IIHS/golden/validation/describe/import suite | **58 tests OK** in 70.984 s |
+| `-m ruff check .` | all checks passed |
+| `-m mypy` | clean, 63 source files |
+| `git diff --check` | clean; line-ending warnings only |
+
+### Deviation / still open
+
+- The first all-three opt-in `test_report` wrapper invocation exceeded its five-minute limit in the nested
+  process path. Each direct child export, and a subsequent isolated wrapper run, completed successfully;
+  no rendering or slide-count issue reproduced.
+
+## 2026-08-07 — Follow-up: provider-backed IIHS frontal resultants
+
+**Branch:** `dev` · **Commit(s):** uncommitted — awaiting manual review
+**Outcome:** IIHS frontal criteria request combined channels through the standard provider path
+**Review:** ☐ pending
+
+### What changed
+
+- Replaced the repeated left/right channel loops in the shared H350M criteria with one
+  `require_channel()` request for the provider-built resultants: knee-slider displacement (`KNSL0000`),
+  tibia index (`TIIN0000`), tibia axial force (`TIBI00LO`) and foot acceleration (`FOOT0000`).
+- Applied the same pattern to Moderate's H35F rear femur compression (`FEMR0000`) and updated each
+  matching `Limit` pattern to include the combined result channel as well as the source channels used by
+  plots.
+- Extended the tibia-index provider to aggregate directly recorded `TIIN…TO…` channels. It deliberately
+  consults only recorded/filterable inputs, preserving the existing moment-based tibia-index calculation
+  when direct index channels are absent.
+- Added a regression for the direct total-moment tibia-index aggregation. Side-impact five-sensor torso
+  and pelvis assessments remain explicit because their prescribed average-peak, worst-peak and positive
+  force-sum operations are not a physical left/right resultant channel.
+- Regenerated the three IIHS result snapshots and validate/describe baselines; refreshed the IIHS
+  inspection decks in `out/`.
+
+### Verification
+
+| Command | Result |
+|---|---|
+| relevant IIHS/golden/validation/describe/import/provider suite | **61 tests OK** in 72.682 s |
+| focused `test_calculate` tibia-index/femur-impulse cases | **3 tests OK** |
+| scoped Ruff (`providers.py`, `report/iihs`, `test_calculate.py`) | all checks passed |
+| direct PPTX exports | 15/23/20 pages equal 15/23/20 slides |
+
+### Deviation / still open
+
+- Repository-wide Ruff and mypy are currently blocked by an unrelated invalid annotated assignment in
+  `pyisomme/report/report_protocol.py:14`; this file was not modified in this follow-up.
+
+## 2026-08-07 — Correction: Foot Acceleration fixture and Tibia Index method
+
+**Branch:** `dev` · **Commit(s):** uncommitted — awaiting manual review
+**Outcome:** removed an artificial Foot Acceleration overflow; restored the distinct IIHS total-moment Tibia Index path
+**Review:** ☐ pending
+
+This entry corrects the preceding provider-resultant entry: no `TIIN…TO…` channel is copied into a
+normal-moment `TIIN…00…` channel.
+
+### What changed
+
+- The extreme synthetic Foot Acceleration (`7.3273e+147`) came from CFC-filtering the fixture's only
+  aggregate `FOOT0000…ACRA` signal before the Foot left/right provider could run. The IIHS criterion now
+  disables that outer filtering when it requests `FOOT0000…ACRB`, and the IIHS fixture supplies the
+  required left/right B-class source channels. The provider-built result is now `81.5767 g`, rated Good.
+- Removed the temporary tibia-index provider bridge and its test. `TIIN…00…` keeps the normal bending
+  moment method; IIHS now requests `TIIN00TO…`, which uses the existing
+  `_build_tibia_index_using_total_moment()` provider and aggregates the adjusted-total-moment results
+  without conflating the two methods.
+- Regenerated IIHS result, validation and description baselines and refreshed all three inspection decks.
+
+### Verification
+
+| Command | Result |
+|---|---|
+| finite Foot / total-moment Tibia Index synthetic check | `81.57666381298868 g`, `TIIN00TO00000B` |
+| relevant IIHS/golden/validation/describe/import/calculation suite | **60 tests OK** in 83.305 s |
+| scoped Ruff | all checks passed |
+| direct PPTX exports | 15/23/20 pages equal 15/23/20 slides |
+
+### Deviation / still open
+
+- Repository-wide Ruff and mypy remain blocked by the unrelated `report_protocol.py:14` syntax error;
+  no change was made to that file.
+
+## 2026-08-07 — Foot Acceleration unit consistency
+
+**Branch:** `dev` · **Commit(s):** uncommitted — awaiting manual review
+**Outcome:** the finite Foot Acceleration result and its displayed unit are now consistent
+**Review:** ☐ pending
+
+### What changed
+
+- Converted the provider-built Foot Acceleration channel to `g0` before retaining it on the criterion.
+  The criterion value, plotted signal, table unit and g-based limits now all use the same unit: `81.577 [g0]`.
+- The total-moment Tibia Index remains a separate, existing provider route: `TIIN00TO…` dispatches to
+  `_build_tibia_index_using_total_moment()`; no channel copy or cross-method fallback is present.
+- Regenerated the three IIHS result snapshots plus validate/describe baselines, and refreshed the three
+  inspection PPTX files.
+
+### Verification
+
+| Command | Result |
+|---|---|
+| finite Foot / total-moment Tibia Index check | `81.57666381298868 [g0]`, `TIIN00TO00000B` |
+| relevant IIHS/golden/validation/describe/import/calculation suite | **60 tests OK** in 78.235 s |
+| scoped Ruff | all checks passed |
+| direct PPTX exports | 15/23/20 pages equal 15/23/20 slides |
+
+### Deviation / still open
+
+- The installed slide renderer cannot render in this environment because its bundled `@oai/artifact-tool`
+  package is incomplete; export and slide-count checks completed successfully.
+- Repository-wide Ruff and mypy remain blocked by the unrelated `report_protocol.py:14` syntax error;
+  no change was made to that file.

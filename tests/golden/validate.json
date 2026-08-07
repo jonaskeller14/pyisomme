@@ -6,11 +6,9 @@
  "EuroNCAP_Side_FarSide": [],
  "EuroNCAP_Side_Farside_VTC": [],
  "EuroNCAP_Side_Pole": [],
- "IIHS_Frontal_ODB": [],
- "IIHS_Frontal_Small_Overlap": [
-  "[warning] limit_flags @ criterion_driver/criterion_chest/criterion_vc: limit block ['?1VCCR0000??VEX?'] (-) has 3 rows flagged lower=True; a scale bounds its best band exactly once. Rows at x=0: [Poor(-1.2, upper), Marginal(-1.2, lower), Acceptable(-1, lower), Good(-0.8, lower)].",
-  "[warning] limit_symmetry @ criterion_driver/criterion_chest/criterion_vc: limit block ['?1VCCR0000??VEX?'] has rows on both sides of zero but they are not mirrors: +[Good(0.8, upper), Acceptable(0.8, lower), Marginal(1, lower), Poor(1.2, lower)] vs -[Poor(-1.2, upper), Marginal(-1.2, lower), Acceptable(-1, lower), Good(-0.8, lower)]."
- ],
+ "IIHS_Frontal_Moderate_Overlap": [],
+ "IIHS_Frontal_Small_Overlap": [],
+ "IIHS_Side_Impact": [],
  "UN_Frontal_50kmh_R137": [],
  "UN_Frontal_56kmh_ODB_R94": [],
  "UN_Side_Barrier_R95": [

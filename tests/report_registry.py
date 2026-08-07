@@ -35,8 +35,9 @@ REPORTS = (
     ReportSpec("euro_ncap_side_farside", "euro_ncap.side_farside", "EuroNCAP_Side_FarSide"),
     ReportSpec("euro_ncap_side_farside_vtc", "euro_ncap.side_farside_vtc", "EuroNCAP_Side_Farside_VTC", 2),
     ReportSpec("euro_ncap_side_pole", "euro_ncap.side_pole", "EuroNCAP_Side_Pole"),
-    ReportSpec("iihs_frontal_odb", "iihs.frontal_odb", "IIHS_Frontal_ODB"),
+    ReportSpec("iihs_frontal_moderate_overlap", "iihs.frontal_moderate_overlap", "IIHS_Frontal_Moderate_Overlap"),
     ReportSpec("iihs_frontal_small_overlap", "iihs.frontal_small_overlap", "IIHS_Frontal_Small_Overlap"),
+    ReportSpec("iihs_side_impact", "iihs.side_impact", "IIHS_Side_Impact"),
     ReportSpec("un_frontal_50kmh_r137", "un.frontal_50kmh_r137", "UN_Frontal_50kmh_R137"),
     ReportSpec("un_frontal_56kmh_odb_r94", "un.frontal_56kmh_odb_r94", "UN_Frontal_56kmh_ODB_R94"),
     ReportSpec("un_side_barrier_r95", "un.side_barrier_r95", "UN_Side_Barrier_R95"),
@@ -152,6 +153,22 @@ _DIRECT_PATTERNS = (
     "?1HICR0015??00RX",
 )
 
+_IIHS_DIRECT_PATTERNS = (
+    "?1HEAD??00??ACXA", "?1HEAD??00??ACYA", "?1HEAD??00??ACZA",
+    "?6HEAD??00??ACXA", "?6HEAD??00??ACYA", "?6HEAD??00??ACZA",
+)
+_IIHS_FRONTAL_DIRECT_PATTERNS = (
+    "?1CHST0000??ACRA",
+    "?1NIJCIPCF??00YB", "?1NIJCIPCE??00YB", "?1NIJCIPTF??00YB", "?1NIJCIPTE??00YB",
+    "?6NIJCIPCF??00YB", "?6NIJCIPCE??00YB", "?6NIJCIPTF??00YB", "?6NIJCIPTE??00YB",
+    "?1FEMRLE00??FOZB", "?1FEMRRI00??FOZB",
+    "?1FOOTLE00??ACRB", "?1FOOTRI00??ACRB",
+)
+_IIHS_SIDE_DIRECT_PATTERNS = (
+    "?1ACTBLE00??FOYB", "?1ILUMLE00??FOYB",
+    "?6ACTBLE00??FOYB", "?6ILUMLE00??FOYB",
+)
+
 
 def build_synthetic(spec: ReportSpec) -> Report:
     """
@@ -176,8 +193,20 @@ def build_synthetic(spec: ReportSpec) -> Report:
     for variant, isomme in enumerate(isommes):
         for pattern in _DIRECT_PATTERNS:
             _add_channel(isomme, pattern, variant)
+        if spec.stem.startswith("iihs_"):
+            for pattern in _IIHS_DIRECT_PATTERNS:
+                _add_channel(isomme, pattern, variant)
+        if spec.stem in ("iihs_frontal_small_overlap", "iihs_frontal_moderate_overlap"):
+            for pattern in _IIHS_FRONTAL_DIRECT_PATTERNS:
+                _add_channel(isomme, pattern, variant)
+        elif spec.stem == "iihs_side_impact":
+            for pattern in _IIHS_SIDE_DIRECT_PATTERNS:
+                _add_channel(isomme, pattern, variant)
 
     report = spec.report_class(isommes)
+    if spec.stem == "iihs_side_impact":
+        for isomme in isommes:
+            report.overall(isomme).criterion_structure.b_pillar_to_seat_centerline_cm = 20.0
     for variant, isomme in enumerate(isommes):
         for _, criterion in report.overall(isomme).walk():
             for limit in criterion.limits.limit_list:

@@ -1,1 +1,3 @@
+from pyisomme.report.iihs.frontal_moderate_overlap import IIHS_Frontal_Moderate_Overlap
 from pyisomme.report.iihs.frontal_small_overlap import IIHS_Frontal_Small_Overlap
+from pyisomme.report.iihs.side_impact import IIHS_Side_Impact

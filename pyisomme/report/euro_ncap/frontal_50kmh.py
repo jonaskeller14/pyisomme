@@ -29,16 +29,6 @@ P_REAR_PASSENGER = manual("6", source="test report", doc=(
     "('4' for a right-hand-drive test) unless set explicitly."))
 
 
-# --------------------------------------------------------------------------- #
-# Shared leaf criteria
-#
-# At module level because a ``sub()`` in a class body can only name what is already
-# bound: the front and rear occupants reuse the driver's leaves, and no nested class can
-# reach a sibling's. The old nested names are kept as aliases further down, so the
-# other reports' ``Overall.Criterion_Driver.Criterion_Head.Criterion_HIC_15`` paths
-# still resolve. TODO(step-10): the shared criteria library replaces both.
-# --------------------------------------------------------------------------- #
-
 class Criterion_HIC_15(Criterion):
     name = "HIC 15"
 

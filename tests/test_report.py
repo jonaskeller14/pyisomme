@@ -42,7 +42,9 @@ class TestReportPptx(unittest.TestCase):
         output_dir.mkdir(exist_ok=True)
         for stem in stems:
             with self.subTest(report=stem):
-                path = output_dir / f"{stem}.pptx"
+                spec = golden_utils.BY_STEM.get(stem)
+                filename = spec.class_name if spec is not None else "EuroNCAP"
+                path = output_dir / f"{filename}.pptx"
                 completed = subprocess.run(
                     [sys.executable, "-m", "tests.report_pptx_case", stem, str(path)],
                     check=True,
