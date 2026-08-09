@@ -36,6 +36,7 @@ REPORTS = (
     ReportSpec("euro_ncap_side_farside", "euro_ncap.side_farside", "EuroNCAP_Side_FarSide"),
     ReportSpec("euro_ncap_side_farside_vtc", "euro_ncap.side_farside_vtc", "EuroNCAP_Side_Farside_VTC", 2),
     ReportSpec("euro_ncap_side_pole", "euro_ncap.side_pole", "EuroNCAP_Side_Pole"),
+    ReportSpec("fmvss_208", "fmvss.fmvss_208", "FMVSS_208"),
     ReportSpec("iihs_frontal_moderate_overlap", "iihs.frontal_moderate_overlap", "IIHS_Frontal_Moderate_Overlap"),
     ReportSpec("iihs_frontal_small_overlap", "iihs.frontal_small_overlap", "IIHS_Frontal_Small_Overlap"),
     ReportSpec("iihs_side_impact", "iihs.side_impact", "IIHS_Side_Impact"),
@@ -171,6 +172,19 @@ _IIHS_SIDE_DIRECT_PATTERNS = (
 )
 
 
+_FMVSS_DIRECT_PATTERNS = tuple(
+    f"?{position}HEAD0000{dummy}AC{axis}A"
+    for position, dummy in (("1", "H3"), ("3", "HF"))
+    for axis in "XYZR"
+) + tuple(
+    f"?{position}NECKUP00{dummy}MOYB"
+    for position, dummy in (("1", "H3"), ("3", "HF"))
+) + tuple(
+    f"?{position}CHST0000{dummy}ACRA"
+    for position, dummy in (("1", "H3"), ("3", "HF"))
+)
+
+
 def build_synthetic(spec: ReportSpec) -> Report:
     """
     Build one calculated-results fixture without depending on untracked ``data/``.
@@ -202,6 +216,9 @@ def build_synthetic(spec: ReportSpec) -> Report:
                 _add_channel(isomme, pattern, variant)
         elif spec.stem == "iihs_side_impact":
             for pattern in _IIHS_SIDE_DIRECT_PATTERNS:
+                _add_channel(isomme, pattern, variant)
+        elif spec.stem == "fmvss_208":
+            for pattern in _FMVSS_DIRECT_PATTERNS:
                 _add_channel(isomme, pattern, variant)
 
     report = spec.report_class(isommes)
