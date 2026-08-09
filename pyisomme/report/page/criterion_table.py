@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Callable
-
+from typing_extensions import override
 from matplotlib.colors import to_rgb
 from matplotlib.figure import Figure
 
@@ -28,6 +28,7 @@ class Page_Criterion_Table(Page_Figure):
         super().__init__(report)
         self.criteria = {}
 
+    @override
     def figure(self, figsize: tuple[float, float]) -> Figure:
         isomme_list = list(self.criteria)
         rows = self.criteria[isomme_list[0]]

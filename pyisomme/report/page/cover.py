@@ -2,6 +2,7 @@
 # `lazyproperty` descriptor no checker can see through.
 # pyright: reportAttributeAccessIssue=false, reportIndexIssue=false
 from __future__ import annotations
+from typing_extensions import override
 from pptx.presentation import Presentation
 
 from pyisomme.report.base_report import BaseReport
@@ -21,6 +22,7 @@ class Page_Cover(Page[BaseReport]):
         labels = " | ".join(report.coverage_labels)
         self.subtitle = f"{report.name}\n{labels}" if labels else report.name
 
+    @override
     def construct(self, presentation: Presentation) -> None:
         title_slide_layout = presentation.slide_layouts[0]
         slide = presentation.slides.add_slide(title_slide_layout)

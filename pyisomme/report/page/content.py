@@ -4,9 +4,11 @@
 # pyright: reportAttributeAccessIssue=false, reportIndexIssue=false, reportOptionalOperand=false
 from __future__ import annotations
 
+from abc import ABC
 import getpass
 import os
 from datetime import datetime
+from typing_extensions import override
 
 from pptx.presentation import Presentation
 from pptx.util import Inches
@@ -24,17 +26,18 @@ def _current_user() -> str:
             return "unknown"
 
 
-class Page_Content(Page):
+class Page_Content(Page, ABC):
     """A titled content slide with a footer, and nothing in the body."""
 
     title: str | None = None
     footer: str | None = None
 
-    def get_footer(self) -> str:
+    def _get_footer(self) -> str:
         if self.footer is not None:
             return self.footer
         return f"{datetime.now().strftime('%d.%m.%Y')} | {_current_user()}"
 
+    @override
     def construct(self, presentation: Presentation) -> None:
         title_slide_layout = presentation.slide_layouts[1]
         slide = presentation.slides.add_slide(title_slide_layout)
@@ -50,5 +53,5 @@ class Page_Content(Page):
         text_frame.margin_left = Inches(0.05)
         text_frame.margin_right = Inches(0.05)
         paragraph = text_frame.paragraphs[0]
-        paragraph.text = self.get_footer()
+        paragraph.text = self._get_footer()
         paragraph.font.size = Inches(0.2)

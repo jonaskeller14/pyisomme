@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
-
+from typing_extensions import override
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 import numpy as np
@@ -29,6 +29,7 @@ class Page_Criterion_Values_Chart(Page_Figure):
         super().__init__(report)
         self.criteria = {}
 
+    @override
     def figure(self, figsize: tuple[float, float]) -> Figure:
         fig, ax = plt.subplots(figsize=figsize, layout="constrained")
 

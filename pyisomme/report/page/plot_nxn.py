@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
-
+from typing_extensions import override
 from matplotlib.figure import Figure
 
 from pyisomme.channel import Channel
@@ -30,6 +30,7 @@ class Page_Plot_nxn(Page_Figure):
             self.title = self.name
         self.limits = limits if limits is not None else report.limits
 
+    @override
     def figure(self, figsize: tuple[float, float]) -> Figure:
         return Plot_Line(self.channels,
                          nrows=self.nrows,

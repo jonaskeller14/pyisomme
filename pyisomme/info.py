@@ -74,3 +74,6 @@ class Info(list[tuple[str, Any]]):
             return any(name == key for name, _ in self)
         # Fall back to standard list item checking for tuples
         return super().__contains__(key)
+
+    def __repr__(self) -> str:
+        return "\n".join([f"{name:<28}:{value if value is not None else 'NOVALUE'}" for name, value in self.items()])

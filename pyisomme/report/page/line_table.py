@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from abc import ABC
+from typing_extensions import override
 from matplotlib.figure import Figure
 import numpy as np
 
@@ -9,7 +11,7 @@ from pyisomme.plotting import Plot_Line_Table
 from pyisomme.report.page.figure import Page_Figure
 
 
-class Page_Line_Table(Page_Figure):
+class Page_Line_Table(Page_Figure, ABC):
     channels: dict[Isomme, list[list[Channel | str | None]]]
     cell_texts: list[np.ndarray | list[list]]
     row_labels: list[np.ndarray | list]
@@ -23,7 +25,7 @@ class Page_Line_Table(Page_Figure):
     sharey: bool = False
     xlim: tuple[float | int, float | int] | None = None
     ylim: tuple[float | int, float | int] | None = None
-
+    @override
     def figure(self, figsize: tuple[float, float]) -> Figure:
         return Plot_Line_Table(channels=self.channels,
                                cell_texts=self.cell_texts,

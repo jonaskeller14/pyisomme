@@ -4,8 +4,8 @@
 from __future__ import annotations
 
 import io
-from abc import abstractmethod
-
+from abc import ABC, abstractmethod
+from typing_extensions import override
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from pptx.presentation import Presentation
@@ -16,7 +16,7 @@ from pyisomme.report.page.content import Page_Content
 FIGSIZE_Y = 8.0
 
 
-class Page_Figure(Page_Content):
+class Page_Figure(Page_Content, ABC):
     """
     A content slide whose body is a single matplotlib figure.
 
@@ -25,6 +25,7 @@ class Page_Figure(Page_Content):
     implement figure().
     """
 
+    @override
     def construct(self, presentation: Presentation) -> None:
         super().construct(presentation)
         slide = presentation.slides[-1]
