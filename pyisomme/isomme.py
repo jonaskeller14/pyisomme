@@ -9,9 +9,10 @@ from pyisomme.providers import PROVIDERS
 from pyisomme.utils import debug_logging
 from pyisomme.info import Info
 
+from collections.abc import Iterable
 from tqdm.auto import tqdm
 from tqdm.contrib.logging import logging_redirect_tqdm
-from typing import Iterable, Literal
+from typing import Literal
 import os
 import glob
 import re

@@ -29,5 +29,5 @@ def type_check(session: nox.Session) -> None:
     """Run mypy type checker."""
     session.install(".", "mypy")
     # Allows overriding target directory or passing flags like --strict
-    targets = session.posargs if session.posargs else ["pyisomme/report"]
+    targets = session.posargs if session.posargs else ["pyisomme"]
     session.run("mypy", *targets)

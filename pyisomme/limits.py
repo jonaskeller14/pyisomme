@@ -4,7 +4,7 @@ from dataclasses import replace
 import fnmatch
 import re
 import logging
-from typing import cast, TYPE_CHECKING
+from typing import TYPE_CHECKING
 import numpy as np
 
 if TYPE_CHECKING:
