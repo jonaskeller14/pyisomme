@@ -341,8 +341,8 @@ def main(argv: list[str] | None = None) -> None:
             for isomme in isomme_list:
                 isomme.crop(options.crop)
         report = {report.__name__: report for report in REPORTS}[options.report_name](isomme_list)
-        report.calculate()
-        report.export_pptx(options.report_path, template=options.template)
+        report.calculate()  # type: ignore[attr-defined]
+        report.export_pptx(options.report_path, template=options.template)  # type: ignore[attr-defined]
 
     elif options.command == "plot":
         if options.calculate:
@@ -354,13 +354,12 @@ def main(argv: list[str] | None = None) -> None:
         channels_by_isomme: dict[Isomme, list[Channel]] = {}
         for isomme in isomme_list:
             channels = isomme.get_channels(*options.codes)
-            channels.extend(channel for code in options.codes
-                            if (channel := isomme.get_channel(code)) is not None)
+            channels.extend(resolved_channel for code in options.codes if (resolved_channel := isomme.get_channel(code)) is not None)
             channels_by_isomme[isomme] = list({channel.code: channel for channel in channels}.values())[n]
 
-        Plot_Line({isomme: [list[Channel | str | None](channels)]
+        Plot_Line({isomme: [list(channels)]
                    for isomme, channels in channels_by_isomme.items()},
-                  xlim=options.xlim, ylim=options.ylim, legend=options.legend).show()
+                   xlim=options.xlim, ylim=options.ylim, legend=options.legend).show()
 
 
 if __name__ == "__main__":

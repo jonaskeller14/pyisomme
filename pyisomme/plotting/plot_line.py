@@ -83,7 +83,6 @@ class Plot_Line(Plot):
             axs = [subplot_axs, ]
         else:
             axs = list(subplot_axs.flat)
-        axs = cast("list[Axes]", axs)
 
         # Remove empty axes
         for idx, ax in enumerate(axs):

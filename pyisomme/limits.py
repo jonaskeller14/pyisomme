@@ -58,7 +58,7 @@ class Limits:
             raise ValueError(f"No limits found for channel '{channel.code}'.")
 
         channel_times = channel.data.index
-        channel_values = cast(np.ndarray, channel.get_data())
+        channel_values = channel.get_data()
 
         limit_data = np.array([limit.get_data(channel_times, x_unit="s", y_unit=channel.unit) for limit in limits])
         limit_matching = np.zeros_like(limit_data, dtype=bool)
@@ -99,7 +99,7 @@ class Limits:
             )
 
         channel_times = channel.data.index
-        channel_values = cast(np.ndarray, channel.get_data())
+        channel_values = channel.get_data()
 
         if interpolate:
             limit_ratings = []
@@ -157,7 +157,7 @@ class Limits:
         limit_list = limit_list_sort(self.find_limits(channel.code))
 
         channel_times = channel.data.index[idx_candidates]
-        channel_values = cast(np.ndarray, channel.get_data())[idx_candidates]
+        channel_values = channel.get_data()[idx_candidates]
 
         limit_data = np.array([limit.get_data(channel_times, x_unit="s", y_unit=channel.unit) for limit in limit_list])
 
@@ -216,11 +216,11 @@ class Limits:
 
     def get_limit_min_y(self, channel: Channel, unit=None) -> float:
         idx = self.get_limit_min_idx(channel)
-        return cast(np.ndarray, channel.get_data(unit=unit))[idx]
+        return channel.get_data(unit=unit)[idx]
 
     def get_limit_max_y(self, channel: Channel, unit=None) -> float:
         idx = self.get_limit_max_idx(channel)
-        return cast(np.ndarray, channel.get_data(unit=unit))[idx]
+        return channel.get_data(unit=unit)[idx]
 
     def get_limit_min_x(self, channel: Channel) -> float:
         idx = self.get_limit_min_idx(channel)

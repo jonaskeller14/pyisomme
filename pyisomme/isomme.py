@@ -11,7 +11,7 @@ from pyisomme.info import Info
 
 from tqdm.auto import tqdm
 from tqdm.contrib.logging import logging_redirect_tqdm
-from typing import Literal
+from typing import Iterable, Literal
 import os
 import glob
 import re
@@ -163,14 +163,14 @@ class Isomme:
                     if skip:
                         continue
 
-                xxx = re.search(r"Name of channel (\d*)", key)
-                if xxx is None:
-                    raise Exception
-                xxx = xxx.groups()[0]
-                xxx_pattern = str(Path(chn_name).parent.joinpath(f"{self.test_number}.{xxx}"))
+                channel_number_match = re.search(r"Name of channel (\d*)", key)
+                if channel_number_match is None:
+                    raise ValueError(f"Invalid channel number in CHN data: {key}")
+                channel_number = channel_number_match.groups()[0]
+                xxx_pattern = str(Path(chn_name).parent.joinpath(f"{self.test_number}.{channel_number}"))
                 xxx_names = fnmatch.filter(names, xxx_pattern)
                 if len(xxx_names) == 0:
-                    logger.critical(f"Channel file '{self.test_number}.{xxx}' not found.")
+                    logger.critical(f"Channel file '{self.test_number}.{channel_number}' not found.")
                     continue
 
                 xxx_name = xxx_names[0]
@@ -412,9 +412,9 @@ class Isomme:
             if calculate:
                 for provider in PROVIDERS:
                     if provider.matches(code_pattern):
-                        channel = provider.build(self, code_pattern)
-                        if channel is not None:
-                            return channel
+                        built_channel = provider.build(self, code_pattern)
+                        if built_channel is not None:
+                            return built_channel
 
             # 4. Differentiate
             if differentiate:
@@ -480,9 +480,9 @@ class Isomme:
                 continue
             # 3. Calculate Channel
             if calculate:
-                channel = self.get_channel(code_pattern)
-                if channel is not None and channel not in channel_list:
-                    channel_list.append(channel)
+                calculated_channel = self.get_channel(code_pattern)
+                if calculated_channel is not None and calculated_channel not in channel_list:
+                    channel_list.append(calculated_channel)
 
             # 4. Differentiate
             if differentiate:
@@ -526,8 +526,9 @@ class Isomme:
         return self
 
     def cfc(self, *args, **kwargs) -> Isomme:
+        kwargs.pop("return_copy", None)
         for channel in self.channels:
-            channel.cfc(*args, **kwargs, return_copy=False)
+            channel.cfc(*args, **kwargs, return_copy=False)  # type: ignore[misc]
         return self
 
     def scale_y(self, *args, **kwargs) -> Isomme:
@@ -562,16 +563,16 @@ class Isomme:
 
 
 def read(*paths, channel_code_patterns: list | None = None, recursive: bool = True, merge: bool = True) -> list[Isomme]:
-    all_paths = []
+    all_paths: list[str] = []
     for path in paths:
         all_paths += glob.glob(path, recursive=recursive)
-    all_paths = set(all_paths)
+    unique_paths = set(all_paths)
 
     channel_code_patterns = [] if channel_code_patterns is None else channel_code_patterns
 
     iso_list = []
     with logging_redirect_tqdm():
-        for path in tqdm(all_paths, desc="Reading"):
+        for path in tqdm(unique_paths, desc="Reading"):
             try:
                 iso_list.append(Isomme().read(path, *channel_code_patterns))
             except Exception as e:
@@ -584,8 +585,8 @@ def read(*paths, channel_code_patterns: list | None = None, recursive: bool = Tr
     return iso_list
 
 
-def merge_duplicate_isommes(isommes: list[Isomme]) -> list[Isomme]:
-    isommes_dict = {}
+def merge_duplicate_isommes(isommes: Iterable[Isomme]) -> list[Isomme]:
+    isommes_dict: dict[str | None, Isomme] = {}
     for isomme in isommes:
         if isomme.test_number in isommes_dict:
             isommes_dict[isomme.test_number].extend(isomme)

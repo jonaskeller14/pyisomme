@@ -1,5 +1,6 @@
 import astropy.units as u
-from astropy.constants import g0 as ASTROPY_G0  # type: ignore
+from astropy.constants import g0 as ASTROPY_G0 # pyright: ignore[reportAttributeAccessIssue]
+from typing import Any
 
 u.set_enabled_aliases({
     "Nm": u.Unit("N*m"),
@@ -7,7 +8,7 @@ u.set_enabled_aliases({
 })
 
 # Register standard earth gravity as an official custom Astropy unit
-g0_unit = u.def_unit("g0", represents=ASTROPY_G0.value * u.m / (u.s**2), doc="Standard gravity acceleration") # type: ignore
+g0_unit = u.def_unit("g0", represents=ASTROPY_G0.value * u.m / (u.s**2), doc="Standard gravity acceleration") # pyright: ignore[reportAttributeAccessIssue]
 u.add_enabled_units([g0_unit])
 
 # Export g0 to keep compatibility with existing imports
@@ -15,6 +16,8 @@ g0 = g0_unit
 
 
 class Unit:
+    _astropy_unit: Any
+
     """
     Custom Unit class wrapping Astropy unit functionality.
 
@@ -63,7 +66,7 @@ class Unit:
         else:
             target = Unit(other)._astropy_unit
 
-        return self._astropy_unit.to(target, value=value, equivalencies=equivalencies) # type: ignore
+        return self._astropy_unit.to(target, value=value, equivalencies=equivalencies) # pyright: ignore[reportCallIssue]
 
 
     # Automatically delegate all standard Astropy Unit attributes & methods.

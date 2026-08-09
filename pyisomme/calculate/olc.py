@@ -53,7 +53,7 @@ def calculate_olc(c_v: Channel,
     if not after_restraining_phase.any():
         logger.warning("Incorrect OLC values. Not reached restraining phase displacement.")
 
-    c_olc_visual.data.iloc[np.logical_xor(is_not_free_flight_phase, after_restraining_phase), 0] = -olc * c_olc_visual.data[np.logical_xor(is_not_free_flight_phase, after_restraining_phase)].index + (v_0 + olc*t_1) # type: ignore
+    c_olc_visual.data.iloc[np.logical_xor(is_not_free_flight_phase, after_restraining_phase), 0] = -olc * c_olc_visual.data[np.logical_xor(is_not_free_flight_phase, after_restraining_phase)].index + (v_0 + olc*t_1) # pyright: ignore[reportOperatorIssue]
     c_olc_visual.data.iloc[np.logical_and(is_not_free_flight_phase, after_restraining_phase), 0] = v_2
     c_olc_visual.data[~is_not_free_flight_phase] = v_0
 

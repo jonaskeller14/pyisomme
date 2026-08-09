@@ -96,7 +96,7 @@ class Channel:
         if self.unit is None:
             raise AttributeError(f"{self}. Not possible to convert units when current unit is None.")
 
-        self.data.iloc[:, :] = self.unit.to(other=new_unit, value=self.data.to_numpy()) # type: ignore
+        self.data.iloc[:, :] = self.unit.to(other=new_unit, value=self.data.to_numpy()) # pyright: ignore[reportArgumentType]
         self.unit = Unit(new_unit)
         return self
 
@@ -188,7 +188,7 @@ class Channel:
             a2 = (-1 + np.sqrt(2)*wa - wa**2) / (1 + wa**2 + np.sqrt(2) * wa)
 
             # Filter forward
-            y1 = 0
+            y1 = 0.0
             for i in range(0, 10):
                 y1 = y1 + filter_tab[i]
             y1 = y1/10
@@ -321,10 +321,10 @@ class Channel:
         value_array = copy.deepcopy(self.data.iloc[:, 0].to_numpy())
 
         if unit is not None:
-            value_array = self.unit.to(unit, value_array)  # type: ignore
+            value_array = self.unit.to(unit, value_array) # pyright: ignore[reportArgumentType]
 
         if t is None:
-            return value_array  # type: ignore
+            return value_array # pyright: ignore[reportReturnType]
 
         # Interpolation (kinds like "linear" need at least 2 points (otherwise zero division and nan return value)
         if len(time_array) < 2:
@@ -485,7 +485,7 @@ class Channel:
         return self
 
     def crop(self, x_min: float | None = None, x_max: float | None = None) -> Channel:
-        self.data = self.data.truncate(before=x_min, after=x_max)  # type: ignore[arg-type]
+        self.data = self.data.truncate(before=x_min, after=x_max) # pyright: ignore[reportArgumentType]
         return self
 
     # Operator methods

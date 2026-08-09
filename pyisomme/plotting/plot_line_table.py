@@ -10,7 +10,6 @@ from pyisomme.plotting.plot_table import Plot_Table
 
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
-from matplotlib.axes import Axes
 import numpy as np
 import logging
 from typing import cast, TYPE_CHECKING
@@ -88,7 +87,6 @@ class Plot_Line_Table(Plot_Line, Plot_Table):
             axs = [subplot_axs, ]
         else:
             axs = list(subplot_axs.flat)
-        axs = cast("list[Axes]", axs)
 
         # Some type checkers may not recognize Figure.patch; access safely
         _patch = getattr(fig, "patch", None)

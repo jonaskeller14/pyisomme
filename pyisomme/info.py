@@ -12,13 +12,13 @@ class Info(list[tuple[str, Any]]):
     multiple 'Comments' keys or repeated metadata entries.
     """
 
-    def __setitem__(self, key: str | int | slice, value: Any) -> None:
+    def __setitem__(self, key: str | int | slice, value: Any) -> None:  # type: ignore[override]
         if isinstance(key, str):
             self.append((key, value))
         else:
             super().__setitem__(key, value)
 
-    def __getitem__(self, key: str | int | slice) -> Any:
+    def __getitem__(self, key: str | int | slice) -> Any:  # type: ignore[override]
         if isinstance(key, str):
             for name, value in self:
                 if name == key:
@@ -44,13 +44,13 @@ class Info(list[tuple[str, Any]]):
                     break
             else:
                 # The for-else block executes if no 'break' was hit
-                self.append((o_name, o_value)) # type: ignore
+                self.append((o_name, o_value)) # pyright: ignore[reportArgumentType]
 
         return self
 
     def add(self, other: Mapping[str, Any] | Iterable[tuple[str, Any]]) -> Info:
         iterable = other.items() if isinstance(other, Mapping) else other
-        super().extend(iterable) # type: ignore
+        super().extend(iterable) # pyright: ignore[reportArgumentType]
         return self
 
     def keys(self) -> list[str]:

@@ -234,7 +234,7 @@ class Code(str):
             if element.name != "Physical Dimension":
                 continue
             if channel is not None and channel.default_unit is not None:
-                return Unit(channel.default_unit)  # type: ignore
+                return Unit(channel.default_unit)
         return None
 
     def integrate(self) -> Code:

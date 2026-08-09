@@ -87,7 +87,7 @@ include = ["pyisomme*"]
 # --------------------------------------------------------------------------
 [tool.mypy]
 python_version = "3.9"
-files = ["pyisomme/report"]
+files = ["pyisomme"]
 ignore_missing_imports = true
 warn_unused_ignores = true
 warn_redundant_casts = true
