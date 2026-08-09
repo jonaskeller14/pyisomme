@@ -3,10 +3,11 @@
 | property | value |
 | --- | --- |
 | name | UN-R95 \| Barrier Side Impact at 50 km/h |
-| protocol | 12.09.2023 |
-| protocols | 12.09.2023 |
+| protocol | 2023 |
+| protocols | 2023 |
 | overall criterion | `Overall` |
-| pages | Page_Cover, Page_Values_Chart, Page_Values_Table, Page_Head_Acceleration, Page_Chest_Lateral_Deflection, Page_Chest_Lateral_VC, Page_Pubic_Symphysis_Force, Page_Abdomen_Force |
+| available_pages | Page_Cover, Page_Values_Chart, Page_Values_Table, Page_Head_Acceleration, Page_Chest_Lateral_Deflection, Page_Chest_Lateral_VC, Page_Pubic_Symphysis_Force, Page_Abdomen_Force |
+| selected_pages | Page_Cover, Page_Values_Chart, Page_Values_Table, Page_Head_Acceleration, Page_Chest_Lateral_Deflection, Page_Chest_Lateral_VC, Page_Pubic_Symphysis_Force, Page_Abdomen_Force |
 
 ## `Overall` — Overall
 

@@ -11,6 +11,7 @@ from pyisomme.channel import Channel
 from pyisomme.unit import g0
 from pyisomme.limit import Limit
 from pyisomme.report.euro_ncap.side_pole import EuroNCAP_Side_Pole
+from pyisomme.report.euro_ncap.protocols import PROTOCOL_VTC_1_0
 
 import logging
 import numpy as np
@@ -372,19 +373,15 @@ class Overall(Criterion):
 
 
 class EuroNCAP_Side_Farside_VTC(Report[Overall]):
-    name = "Euro NCAP | Virtual Far Side Simulations"
-    protocol = "1.0"
-    protocols = {
-        "1.0": "Version 1.0 (15.06.2023) [references/Euro-NCAP/euro-ncap-vtc-simulation-and-assessment-protocol-v10.pdf]"
-    }
-
-    #: The report's criterion tree, defined at module level (see `Overall`).
+    _name = "Euro NCAP | Virtual Far Side Simulations"
+    _protocol = PROTOCOL_VTC_1_0
+    _protocols = (PROTOCOL_VTC_1_0, )
     Criterion_Overall = Overall
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
-        self.pages = [
+        self._available_pages = (
             Page_Cover(self),
 
             self.Page_Validation_ISO_Score_Table(self),
@@ -393,7 +390,8 @@ class EuroNCAP_Side_Farside_VTC(Report[Overall]):
             self.Page_Chest_Lateral_Compression(self),
             self.Page_Abdomen_Lateral_Compression(self),
             self.Page_Pubic_Symphysis_Force(self),
-        ]
+        )
+        self._selected_pages = list(self._available_pages)
 
     class Page_Validation_ISO_Score_Table(Page_Criterion_Values_Table):
         report: EuroNCAP_Side_Farside_VTC

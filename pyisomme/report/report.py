@@ -1,20 +1,18 @@
 from __future__ import annotations
 
 from pyisomme.isomme import Isomme
-from pyisomme.report.page import Page, Page_Cover
+from pyisomme.report.page import Page_Cover
 from pyisomme.limits import Limits
+from pyisomme.report.base_report import BaseReport
 from pyisomme.report.criterion import Criterion
 from pyisomme.report.describe import describe_report
 from pyisomme.report.manual import suggest
-from pyisomme.report.validate import Issue, format_issues, validate_report
+from pyisomme.report.report_protocol import ReportProtocol
+from pyisomme.report.validate import Issue, validate_report
 
-from pptx import Presentation
-from pptx.presentation import Presentation as PptxPresentation
 from tqdm.auto import tqdm
 from tqdm.contrib.logging import logging_redirect_tqdm
-import time
 import logging
-from pathlib import Path
 from typing import Any, Generic, TypeVar, cast
 
 
@@ -27,46 +25,50 @@ logger = logging.getLogger(__name__)
 C = TypeVar("C", bound=Criterion)
 
 
-class Overall(Criterion):
-    """Empty default tree, so a bare ``Report`` is still constructible."""
-
-    def calculation(self) -> None:
-        pass
-
-
-class Report(Generic[C]):
-    name: str | None = None
+class Report(BaseReport, Generic[C]):
+    _name: str
     title: str
+
     isomme_list: list[Isomme]
-    limits: dict[Isomme, Limits]
+
+    _limits: dict[Isomme, Limits]
     criterion_overall: dict[Isomme, C]
-    pages: list[Page]
-    protocol: str
-    protocols: dict[str, str] = {}
-    #: The report's criterion tree. Subclasses rebind it to their own ``Overall``.
-    Criterion_Overall: type[Criterion] = Overall
 
-    def __init__(self, isomme_list: list[Isomme], title: str = "Unnamed Report", protocol: str | None = None) -> None:
+    _protocol: ReportProtocol
+    _protocols: tuple[ReportProtocol, ...]
+
+    #: Concrete reports must rebind this to their module-level ``Overall`` tree.
+    Criterion_Overall: type[Criterion]
+
+    def __init__(self, isomme_list: list[Isomme], title: str = "Unnamed Report", protocol_version: str | None = None) -> None:
+        super().__init__(title=title)
         self.isomme_list = isomme_list
-        self.title = title
 
-        if protocol is not None:
-            assert protocol in self.protocols.keys(), \
-                f"Protocol {protocol} not available. Available protocols: {list(self.protocols.keys())}"
-            self.protocol = protocol
+        if protocol_version is not None:
+            self.protocol_version = protocol_version
 
-        self.limits = {isomme: Limits(name=self.name or "Unnamed Limits", limit_list=[]) for isomme in isomme_list}
+        self._limits = {isomme: Limits(name=self._name or "Unnamed Limits", limit_list=[]) for isomme in isomme_list}
+
+        overall_type = getattr(type(self), "Criterion_Overall", None)
+        if overall_type is None:
+            raise TypeError(
+                f"{type(self).__name__} must declare Criterion_Overall; "
+                "a bare Report has no criterion tree."
+            )
 
         self.criterion_overall = {}
         for isomme in self.isomme_list:
             # A concrete report's inner ``Criterion_Overall`` *is* the ``C`` it parameterises
             # ``Report`` with, but the language cannot express "this inner class is type[C]".
-            self.criterion_overall[isomme] = cast(C, self.Criterion_Overall(self, isomme))
+            self.criterion_overall[isomme] = cast(C, overall_type(self, isomme))
             self.criterion_overall[isomme].build_limits()
 
-        self.pages = [
-            Page_Cover(self),
-        ]
+        self._available_pages = (Page_Cover(self),)
+        self._selected_pages = list(self._available_pages)
+
+    @property
+    def coverage_labels(self) -> tuple[str, ...]:
+        return tuple(str(isomme.test_number) for isomme in self.isomme_list)
 
     def overall(self, isomme: Isomme) -> C:
         """The overall criterion for ``isomme``, typed as the concrete report's own tree."""
@@ -99,7 +101,7 @@ class Report(Generic[C]):
             for isomme in self.isomme_list
         }
 
-    def set_inputs(self, inputs: dict[str, dict[str, Any]]) -> Report[C]:
+    def set_inputs(self, inputs: dict[str, dict[str, Any]]) -> None:
         """
         Apply a mapping produced by :meth:`get_inputs`.
 
@@ -121,9 +123,8 @@ class Report(Generic[C]):
                     )
                 criterion, spec = criteria[path]
                 setattr(criterion, spec.name, value)
-        return self
 
-    def print_inputs(self) -> Report[C]:
+    def print_inputs(self) -> None:
         """
         List every manual input with its path, current value, default, unit and doc.
 
@@ -141,9 +142,8 @@ class Report(Generic[C]):
                 source = f" (source: {spec.source})" if spec.source else ""
                 print(f"\t{marker} {path}: {value!r}{unit} "
                       f"(default {spec.default!r}, {spec.type_name()}){doc}{source}")
-        return self
 
-    def print_results(self) -> Report[C]:
+    def print_results(self) -> None:
         for isomme in self.isomme_list:
             print(isomme)
             for path, criterion in self.criterion_overall[isomme].walk():
@@ -151,56 +151,41 @@ class Report(Generic[C]):
                 print(f"{intend}{criterion.name if criterion.name is not None else criterion.__class__.__name__}: "
                       f"Value={criterion.value:.5g} [{criterion.channel.unit if criterion.channel is not None else ''}] "
                       f"Rating={criterion.rating:.5g}")
-        return self
 
     def validate(self, errors_only: bool = False) -> list[Issue]:
-        """
-        Check the report's *definition* — see :mod:`pyisomme.report.validate`.
-
-        Needs no measurement data, so it runs on empty ``Isomme`` objects and in
-        CI. Returns the issues found (empty, i.e. falsy, when the report is
-        clean), so ``if report.validate(errors_only=True): ...`` reads as
-        "something is definitely wrong".
-
-        ``errors_only`` drops the convention warnings — the ones a protocol is
-        allowed to violate.
-        """
         issues = validate_report(self)
         return [issue for issue in issues if issue.is_error] if errors_only else issues
 
-    def print_validation(self) -> Report[C]:
-        """Print what :meth:`validate` found, errors first."""
-        issues = self.validate()
-        print(format_issues(issues) if issues else f"{self}: no issues found.")
-        return self
-
     def describe(self) -> str:
-        """
-        The report's definition as Markdown — see :mod:`pyisomme.report.describe`.
-
-        Commit the output next to the report and a moved threshold shows up as a
-        line in a pull request instead of a character in a 1500-line module.
-        """
         return describe_report(self)
 
-    def __repr__(self) -> str:
-        return f"Report(title='{self.title}', name='{self.name}')"
+    @property
+    def limits(self) -> dict[Isomme, Limits]:
+        return self._limits
 
-    def export_pptx(self, path: str | Path, template: str | Path | None = None) -> Report[C]:
-        presentation: PptxPresentation = Presentation(template)
+    @property
+    def protocol_version(self) -> str:
+        return self._protocol.version
 
-        with logging_redirect_tqdm():
-            for page_number, page in enumerate(tqdm(self.pages, desc="Construct Pages")):
-                logger.info(f"{page_number}:{page.name}")
-                page.__init__(page.report)  # update. report could be changed since init  # TODO: TEST!
-                page.construct(presentation)
+    @protocol_version.setter
+    def protocol_version(self, protocol_version: str) -> None:
+        for protocol in self._protocols:
+            if protocol.version == protocol_version:
+                self._protocol = protocol
+                return
+        raise ValueError(f"Protocol {protocol_version} not available. Available protocols: {[p.version for p in self._protocols]}")
 
-        while True:
-            try:
-                presentation.save(path)
-                break
-            except PermissionError as e:
-                logger.critical(e)
-                time.sleep(3)
-        logger.info(f"pptx successfully exported: {path}")
-        return self
+    @property
+    def protocol(self) -> ReportProtocol:
+        return self._protocol
+
+    @protocol.setter
+    def protocol(self, protocol: ReportProtocol) -> None:
+        if protocol in self._protocols:
+            self._protocol = protocol
+        else:
+            raise ValueError(f"Protocol {protocol.version} not available. Available protocols: {[p.version for p in self._protocols]}")
+
+    @property
+    def protocols(self) -> tuple[ReportProtocol, ...]:
+        return self._protocols

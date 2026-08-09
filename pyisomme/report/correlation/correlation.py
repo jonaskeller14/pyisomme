@@ -1,15 +1,17 @@
 from __future__ import annotations
 
+from datetime import date
+import logging
+import numpy as np
+from typing import Any, cast
+
 from pyisomme import Channel
 from pyisomme.isomme import Isomme
 from pyisomme.report.page import Page_Cover, Page_Criterion_Table
 from pyisomme.report.report import Report
 from pyisomme.report.criterion import Criterion, Role
 from pyisomme.correlation import Correlation_ISO18571
-
-import logging
-import numpy as np
-from typing import Any, cast
+from pyisomme.report.report_protocol import ReportProtocol
 
 
 logger = logging.getLogger(__name__)
@@ -89,25 +91,28 @@ class Overall(Criterion):
                                                   comparison_channel=self.channel_c).overall_rating()
                 self.color = "green" if self.value > 0.75 else "orange" if self.value > 0.5 else "red"
 
+PROTOCOL_ISO_18571_2024 = ReportProtocol(
+    version="ISO-18571:2024",
+    name="ISO/TS 18571:2024: Road vehicles — Objective rating metric for non-ambiguous signals",
+    date=date(2024, 5, 1),
+    sources=("https://www.iso.org/standard/85791.html",
+             "https://openvt.eu/validation-metrics/ISO18571")
+)
 
 class Correlation(Report[Overall]):
-    name = "Correlation"
-    protocol = "ISO-18571:2024"
-    protocols = {
-        "ISO-18571:2024": "Objective Rating Metric for non ambigious signals according to ISO/TS 18571:2024 "
-                          "[https://www.iso.org/standard/85791.html][https://openvt.eu/validation-metrics/ISO18571]",
-    }
-
-    #: The report's criterion tree, defined at module level (see `Overall`).
+    _name = "Correlation"
+    _protocol = PROTOCOL_ISO_18571_2024
+    _protocols = (PROTOCOL_ISO_18571_2024,)
     Criterion_Overall = Overall
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
-        self.pages = [
+        self._available_pages = (
             Page_Cover(self),
             self.Page_Correlation_Overall_Rating_Table(self),
-        ]
+        )
+        self._selected_pages = list(self._available_pages)
 
     class Page_Correlation_Overall_Rating_Table(Page_Criterion_Table):
         report: Correlation

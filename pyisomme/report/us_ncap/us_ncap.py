@@ -18,7 +18,7 @@ from typing import Any
 
 
 class USNCAP(MetaReport):
-    name = "US-NCAP"
+    _name = "US-NCAP"
     title = "US-NCAP"
 
     def __init__(self, frontal_56kmh: list, frontal_mpdb: list, side_pole: list, side_barrier: list, side_farside: list, *args: Any, **kwargs: Any) -> None:

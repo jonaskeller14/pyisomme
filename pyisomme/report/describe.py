@@ -160,10 +160,11 @@ def describe_report(report: Report) -> str:
     lines += _table(
         ["property", "value"],
         [["name", report.name or NONE],
-         ["protocol", report.protocol or NONE],
-         ["protocols", ", ".join(sorted(report.protocols)) or NONE],
+         ["protocol", report.protocol.version or NONE],
+         ["protocols", ", ".join(protocol.version for protocol in report.protocols) or NONE],
          ["overall criterion", f"`{report.Criterion_Overall.__name__}`"],
-         ["pages", ", ".join(type(page).__name__ for page in report.pages) or NONE]],
+         ["available_pages", ", ".join(type(page).__name__ for page in report.available_pages) or NONE],
+         ["selected_pages", ", ".join(type(page).__name__ for page in report.selected_pages) or NONE]],
     )
     lines.append("")
 

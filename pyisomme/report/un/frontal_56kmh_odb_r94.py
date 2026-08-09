@@ -9,6 +9,7 @@ from pyisomme.report.criterion import Criterion, Role, sub
 from pyisomme.report.ctx import from_input
 from pyisomme.report.manual import Manual, manual
 from pyisomme.report.un.limits import Limit_Fail, Limit_Pass
+from pyisomme.report.un.protocols import protocol_r94_2022
 from pyisomme.report.un.frontal_50kmh_r137 import (
     Criterion_Chest_VC as Criterion_Chest_VC_R137,
     Criterion_HPC36 as Criterion_HPC36_R137,
@@ -350,19 +351,15 @@ class Overall(Criterion):
 
 
 class UN_Frontal_56kmh_ODB_R94(Report[Overall]):
-    name = "UN-R94 | Frontal-Impact against ODB with 40 % Overlap at 56 km/h"
-    protocol = "29.12.2022"
-    protocols = {
-        "29.12.2022": "Revision 4 (29.12.2022) [references/UN-R94/B04.ckg738531jagx232x0m74928e357ft63809066928.pdf]",
-    }
-
-    #: The report's criterion tree, defined at module level (see `Overall`).
+    _name = "UN-R94 | Frontal-Impact against ODB with 40 % Overlap at 56 km/h"
+    _protocol = protocol_r94_2022
+    _protocols = (protocol_r94_2022,)
     Criterion_Overall = Overall
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
-        self.pages = [
+        self._available_pages = (
             Page_Cover(self),
             self.Page_Rating_Table(self),
 
@@ -385,7 +382,8 @@ class UN_Frontal_56kmh_ODB_R94(Report[Overall]):
             self.Page_Passenger_Knee_Slider_Compression(self),
             self.Page_Passenger_Tibia_Compression(self),
             self.Page_Passenger_Tibia_Index(self),
-        ]
+        )
+        self._selected_pages = list(self._available_pages)
 
     class Page_Rating_Table(Page_Criterion_Rating_Table):
         report: UN_Frontal_56kmh_ODB_R94

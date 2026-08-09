@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Callable
 from collections.abc import Iterator
 
+from pyisomme.report.validate.check_protocols import check_protocols
 from pyisomme.report.validate.check_code_pattern import check_code_pattern
 from pyisomme.report.validate.check_limit_capping import check_limit_capping
 from pyisomme.report.validate.check_limit_flags import check_limit_flags
@@ -71,6 +72,8 @@ def validate_report(report: Report) -> list[Issue]:
     issues: list[Issue] = []
     if not report.isomme_list:
         return issues
+
+    issues += check_protocols(report)
 
     issues += validate_tree(report.overall(report.isomme_list[0]))
 

@@ -16,7 +16,7 @@ from pyisomme.report.euro_ncap.side_pole import EuroNCAP_Side_Pole
 from pyisomme.report.euro_ncap.side_pole import Overall as Overall_Side_Pole
 from pyisomme.report.euro_ncap.side_barrier import Overall as Overall_Side_Barrier
 from pyisomme.report.euro_ncap.limits import Limit_G, Limit_P, Limit_M, Limit_A, Limit_W
-
+from pyisomme.report.euro_ncap.protocols import PROTOCOL_FARSIDE_2_4
 
 import logging
 import numpy as np
@@ -398,19 +398,15 @@ class Overall(Criterion):
 
 
 class EuroNCAP_Side_FarSide(Report[Overall]):
-    name = "Euro NCAP | Far Side Occupant Protection Sled Test"
-    protocol = "2.4"
-    protocols = {
-        "2.4": "Version 2.4 (12.05.2023) [references/Euro-NCAP/euro-ncap-far-side-test-and-assessment-protocol-v24.pdf]",
-    }
-
-    #: The report's criterion tree, defined at module level (see `Overall`).
+    _name = "Euro NCAP | Far Side Occupant Protection Sled Test"
+    _protocol = PROTOCOL_FARSIDE_2_4
+    _protocols = (PROTOCOL_FARSIDE_2_4,)
     Criterion_Overall = Overall
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
-        self.pages = [
+        self._available_pages = (
             Page_Cover(self),
 
             self.Page_Values_Chart(self),
@@ -423,7 +419,8 @@ class EuroNCAP_Side_FarSide(Report[Overall]):
             self.Page_Abdomen_Lateral_Compression(self),
             self.Page_Lumbar_Force(self),
             self.Page_Pubic_Symphysis_Force(self),
-        ]
+        )
+        self._selected_pages = list(self._available_pages)
 
     class Page_Values_Chart(Page_Criterion_Values_Chart):
         report: EuroNCAP_Side_FarSide

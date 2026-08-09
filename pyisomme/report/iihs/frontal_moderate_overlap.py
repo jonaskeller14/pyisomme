@@ -24,6 +24,7 @@ from pyisomme.report.iihs.limits import (
     Limit_M,
     Limit_P,
 )
+from pyisomme.report.iihs.protocols import PROTOCOL_MODERATE_VII, PROTOCOL_MODERATE_VIII
 from pyisomme.report.manual import Manual, manual
 from pyisomme.report.page import (
     Page_Cover,
@@ -474,18 +475,14 @@ class Overall(Criterion):
 
 
 class IIHS_Frontal_Moderate_Overlap(Report[Overall]):
-    name = "IIHS | Moderate Overlap Frontal Crashworthiness 2.0"
-    protocol = "III"
-    protocols = {
-        "III": "Version III (02.2026) [references/IIHS/Moderate_2.0_rating_guidelines.pdf]",
-        "II": ("Version II (05.2024) "
-               "[references/IIHS/Moderate 2.0 Rating guidelines Phase 2_FINAL_May2024.pdf]"),
-    }
+    _name = "IIHS | Moderate Overlap Frontal Crashworthiness 2.0"
+    _protocol = PROTOCOL_MODERATE_VIII
+    _protocols = (PROTOCOL_MODERATE_VII, PROTOCOL_MODERATE_VIII)
     Criterion_Overall = Overall
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
-        self.pages = [
+        self._available_pages = (
             Page_Cover(self),
             self.Page_Rating_Table(self),
             self.Page_Driver_Rating_Table(self),
@@ -509,7 +506,8 @@ class IIHS_Frontal_Moderate_Overlap(Report[Overall]):
             self.Page_Rear_Passenger_Neck_Load(self),
             self.Page_Rear_Passenger_Chest(self),
             self.Page_Rear_Passenger_Femur_Force(self),
-        ]
+        )
+        self._selected_pages = list(self._available_pages)
 
     class Page_Rating_Table(Page_Criterion_Rating_Table):
         report: IIHS_Frontal_Moderate_Overlap

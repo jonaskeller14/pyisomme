@@ -1,19 +1,20 @@
 from __future__ import annotations
 
-from abc import abstractmethod
-from typing import TYPE_CHECKING, Any
-
+from abc import ABC, abstractmethod
+from typing import Generic, TypeVar
 from pptx.presentation import Presentation
 
-if TYPE_CHECKING:
-    from pyisomme.report.report import Report
+from pyisomme.report.base_report import BaseReport
 
 
-class Page:
+R = TypeVar("R", bound=BaseReport)
+
+
+class Page(ABC, Generic[R]):
     name: str
-    report: Report[Any]
+    report: R
 
-    def __init__(self, report: Report[Any]) -> None:
+    def __init__(self, report: R) -> None:
         self.report = report
 
     @abstractmethod

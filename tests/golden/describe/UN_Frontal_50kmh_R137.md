@@ -3,10 +3,11 @@
 | property | value |
 | --- | --- |
 | name | UN-R137 \| Frontal-Impact against Rigid Wall with 100 % Overlap at 50 km/h |
-| protocol | 12.09.2023 |
-| protocols | 12.09.2023, 22.06.2016 |
+| protocol | 2023 |
+| protocols | 2016, 2023 |
 | overall criterion | `Overall` |
-| pages | Page_Cover, Page_Rating_Table, Page_Driver_Result_Values_Chart, Page_Driver_Values_Table, Page_Driver_Head_Acceleration, Page_Driver_Neck_Load, Page_Driver_Chest_Deflection, Page_Driver_Femur_Axial_Force, Page_Passenger_Result_Values_Chart, Page_Passenger_Values_Table, Page_Passenger_Head_Acceleration, Page_Passenger_Neck_Load, Page_Passenger_Chest_Deflection, Page_Passenger_Femur_Axial_Force |
+| available_pages | Page_Cover, Page_Rating_Table, Page_Driver_Result_Values_Chart, Page_Driver_Values_Table, Page_Driver_Head_Acceleration, Page_Driver_Neck_Load, Page_Driver_Chest_Deflection, Page_Driver_Femur_Axial_Force, Page_Passenger_Result_Values_Chart, Page_Passenger_Values_Table, Page_Passenger_Head_Acceleration, Page_Passenger_Neck_Load, Page_Passenger_Chest_Deflection, Page_Passenger_Femur_Axial_Force |
+| selected_pages | Page_Cover, Page_Rating_Table, Page_Driver_Result_Values_Chart, Page_Driver_Values_Table, Page_Driver_Head_Acceleration, Page_Driver_Neck_Load, Page_Driver_Chest_Deflection, Page_Driver_Femur_Axial_Force, Page_Passenger_Result_Values_Chart, Page_Passenger_Values_Table, Page_Passenger_Head_Acceleration, Page_Passenger_Neck_Load, Page_Passenger_Chest_Deflection, Page_Passenger_Femur_Axial_Force |
 
 ## `Overall` — Overall
 

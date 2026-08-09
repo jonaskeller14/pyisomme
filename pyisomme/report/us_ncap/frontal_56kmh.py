@@ -109,7 +109,6 @@ class Overall(Criterion):
 
 
 class USNCAP_Frontal_56kmh(Report[Overall]):
-    #: The report's criterion tree, defined at module level (see `Overall`).
     Criterion_Overall = Overall
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:

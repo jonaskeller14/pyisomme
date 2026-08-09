@@ -6,7 +6,8 @@
 | protocol | 1.0 |
 | protocols | 1.0 |
 | overall criterion | `Overall` |
-| pages | Page_Cover, Page_Validation_ISO_Score_Table, Page_Validation_Injury_Criteria_Percentage_Table, Page_Head_Acceleration, Page_Chest_Lateral_Compression, Page_Abdomen_Lateral_Compression, Page_Pubic_Symphysis_Force |
+| available_pages | Page_Cover, Page_Validation_ISO_Score_Table, Page_Validation_Injury_Criteria_Percentage_Table, Page_Head_Acceleration, Page_Chest_Lateral_Compression, Page_Abdomen_Lateral_Compression, Page_Pubic_Symphysis_Force |
+| selected_pages | Page_Cover, Page_Validation_ISO_Score_Table, Page_Validation_Injury_Criteria_Percentage_Table, Page_Head_Acceleration, Page_Chest_Lateral_Compression, Page_Abdomen_Lateral_Compression, Page_Pubic_Symphysis_Force |
 
 ## `Overall` — Overall
 

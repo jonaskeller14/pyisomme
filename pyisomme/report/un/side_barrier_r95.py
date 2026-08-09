@@ -8,6 +8,7 @@ from pyisomme.report.criterion import Criterion, Role, sub
 from pyisomme.report.ctx import from_input
 from pyisomme.report.manual import Manual, manual
 from pyisomme.report.un.limits import Limit_Fail, Limit_Pass
+from pyisomme.report.un.protocols import protocol_r95_2023
 from pyisomme.report.un.frontal_50kmh_r137 import Criterion_HPC36 as Criterion_HPC36_R137
 from pyisomme.report.un.side_pole_r135 import Overall as Overall_Side_Pole_R135
 from pyisomme.report.euro_ncap.side_pole import EuroNCAP_Side_Pole
@@ -124,19 +125,15 @@ class Overall(Criterion):
 
 
 class UN_Side_Barrier_R95(Report[Overall]):
-    name = "UN-R95 | Barrier Side Impact at 50 km/h"
-    protocol = "12.09.2023"
-    protocols = {
-        "12.09.2023": "Revision 4 (12.09.2023) [references/UN-R95/B04.qtu738801n2c4t17t97571269on1fn63832377126.pdf]"
-    }
-
-    #: The report's criterion tree, defined at module level (see `Overall`).
+    _name = "UN-R95 | Barrier Side Impact at 50 km/h"
+    _protocol = protocol_r95_2023
+    _protocols = (protocol_r95_2023,)
     Criterion_Overall = Overall
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
-        self.pages = [
+        self._available_pages = (
             Page_Cover(self),
             self.Page_Values_Chart(self),
             self.Page_Values_Table(self),
@@ -145,7 +142,8 @@ class UN_Side_Barrier_R95(Report[Overall]):
             self.Page_Chest_Lateral_VC(self),
             self.Page_Pubic_Symphysis_Force(self),
             self.Page_Abdomen_Force(self),
-        ]
+        )
+        self._selected_pages = list(self._available_pages)
 
     class Page_Values_Chart(Page_Criterion_Values_Chart):
         report: UN_Side_Barrier_R95

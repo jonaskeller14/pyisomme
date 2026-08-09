@@ -6,7 +6,8 @@
 | protocol | VII |
 | protocols | VII |
 | overall criterion | `Overall` |
-| pages | Page_Cover, Page_Overall_Rating, Page_Driver_Rating, Page_Driver_Values_Chart, Page_Driver_Values_Table, Page_Driver_Head_Acceleration, Page_Driver_Neck_Nij, Page_Driver_Neck_Load, Page_Driver_Neck_Load_Corridors, Page_Driver_Chest, Page_Driver_Femur_Force, Page_Driver_Knee_Displacement, Page_Driver_Tibia_Index, Page_Driver_Tibia_Force, Page_Driver_Foot_Acceleration |
+| available_pages | Page_Cover, Page_Overall_Rating, Page_Driver_Rating, Page_Driver_Values_Chart, Page_Driver_Values_Table, Page_Driver_Head_Acceleration, Page_Driver_Neck_Nij, Page_Driver_Neck_Load, Page_Driver_Neck_Load_Corridors, Page_Driver_Chest, Page_Driver_Femur_Force, Page_Driver_Knee_Displacement, Page_Driver_Tibia_Index, Page_Driver_Tibia_Force, Page_Driver_Foot_Acceleration |
+| selected_pages | Page_Cover, Page_Overall_Rating, Page_Driver_Rating, Page_Driver_Values_Chart, Page_Driver_Values_Table, Page_Driver_Head_Acceleration, Page_Driver_Neck_Nij, Page_Driver_Neck_Load, Page_Driver_Neck_Load_Corridors, Page_Driver_Chest, Page_Driver_Femur_Force, Page_Driver_Knee_Displacement, Page_Driver_Tibia_Index, Page_Driver_Tibia_Force, Page_Driver_Foot_Acceleration |
 
 ## `Overall` — Overall
 

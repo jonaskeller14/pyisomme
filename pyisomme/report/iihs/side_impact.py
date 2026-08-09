@@ -17,6 +17,7 @@ from pyisomme.report.iihs.limits import (
     Limit_M,
     Limit_P,
 )
+from pyisomme.report.iihs.protocols import PROTOCOL_SIDE_IMPACT_IV
 from pyisomme.report.manual import Manual, manual
 from pyisomme.report.page import (
     Page_Cover,
@@ -246,11 +247,14 @@ class Criterion_Torso(Criterion):
                     pd.DataFrame(np.abs(raw_vc.data), index=raw_vc.data.index),
                     "m/s",
                 ))
+            if not vc_channels:
+                raise ValueError("No viscous criterion channels available")
             ratings = [
                 self.limits.get_limit_min_rating(channel, interpolate=False)
                 for channel in vc_channels
             ]
             self.channel = vc_channels[int(np.argmin(ratings))]
+            assert self.channel is not None
             self.value = float(np.max(np.abs(self.channel.get_data(unit="m/s"))))
             self.rating = min(ratings)
             self.color = self.limits.get_limit_min_color(self.channel)
@@ -458,16 +462,14 @@ class Overall(Criterion):
 
 
 class IIHS_Side_Impact(Report[Overall]):
-    name = "IIHS | Side Impact Crashworthiness"
-    protocol = "IV"
-    protocols = {
-        "IV": "Version IV (04.2024) [references/IIHS/side_impact_2.0_rating_guidelines.pdf]",
-    }
+    _name = "IIHS | Side Impact Crashworthiness"
+    _protocol = PROTOCOL_SIDE_IMPACT_IV
+    _protocols = (PROTOCOL_SIDE_IMPACT_IV,)
     Criterion_Overall = Overall
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
-        self.pages = [
+        self._available_pages = (
             Page_Cover(self),
             self.Page_Overall_Rating(self),
             self.Page_Driver_Rating(self),
@@ -488,7 +490,8 @@ class IIHS_Side_Impact(Report[Overall]):
             self.Page_Rear_Passenger_Rib_Deflection_Rate(self),
             self.Page_Rear_Passenger_Viscous_Criterion(self),
             self.Page_Rear_Passenger_Pelvis_Force(self),
-        ]
+        )
+        self._selected_pages = list(self._available_pages)
 
     class Page_Overall_Rating(Page_Criterion_Rating_Table):
         report: IIHS_Side_Impact

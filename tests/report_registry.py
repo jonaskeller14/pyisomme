@@ -8,6 +8,7 @@ from pathlib import Path
 
 import pyisomme
 from pyisomme.code import Code
+from pyisomme.report.meta_report import MetaReport
 from pyisomme.report.report import Report
 
 
@@ -215,19 +216,16 @@ def build_synthetic(spec: ReportSpec) -> Report:
     return report
 
 
-def build_euro_ncap_synthetic() -> Report:
+def build_euro_ncap_synthetic() -> MetaReport:
     """Build the available EuroNCAP MetaReport from the same complete fixtures."""
     from pyisomme.report.euro_ncap import EuroNCAP
 
-    def isommes(stem: str) -> list[pyisomme.Isomme]:
-        return build_synthetic(BY_STEM[stem]).isomme_list
-
     return EuroNCAP(
-        frontal_50kmh=[isommes("euro_ncap_frontal_50kmh")],
-        frontal_mpdb=[isommes("euro_ncap_frontal_mpdb")],
-        side_pole=[isommes("euro_ncap_side_pole")],
-        side_barrier=[isommes("euro_ncap_side_barrier")],
-        side_farside=[isommes("euro_ncap_side_farside")],
+        frontal_50kmh=build_synthetic(BY_STEM["euro_ncap_frontal_50kmh"]),
+        frontal_mpdb=build_synthetic(BY_STEM["euro_ncap_frontal_mpdb"]),
+        side_pole=build_synthetic(BY_STEM["euro_ncap_side_pole"]),
+        side_barrier=build_synthetic(BY_STEM["euro_ncap_side_barrier"]),
+        side_farside=build_synthetic(BY_STEM["euro_ncap_side_farside"]),
     )
 
 

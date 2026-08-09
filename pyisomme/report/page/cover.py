@@ -2,28 +2,24 @@
 # `lazyproperty` descriptor no checker can see through.
 # pyright: reportAttributeAccessIssue=false, reportIndexIssue=false
 from __future__ import annotations
-
-from typing import TYPE_CHECKING, Any
-
 from pptx.presentation import Presentation
 
+from pyisomme.report.base_report import BaseReport
 from pyisomme.report.page.base import Page
 
-if TYPE_CHECKING:
-    from pyisomme.report.report import Report
 
-
-class Page_Cover(Page):
+class Page_Cover(Page[BaseReport]):
     """Title slide: the report's title over its name and the tests it covers."""
 
     name = "Cover"
     title: str
     subtitle: str
 
-    def __init__(self, report: Report[Any]) -> None:
+    def __init__(self, report: BaseReport) -> None:
         super().__init__(report)
         self.title = report.title
-        self.subtitle = f'{report.name}\n{" | ".join([str(isomme.test_number) for isomme in report.isomme_list])}'
+        labels = " | ".join(report.coverage_labels)
+        self.subtitle = f"{report.name}\n{labels}" if labels else report.name
 
     def construct(self, presentation: Presentation) -> None:
         title_slide_layout = presentation.slide_layouts[0]

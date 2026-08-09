@@ -9,6 +9,7 @@ from pyisomme.report.criterion import Criterion, Role, sub
 from pyisomme.report.ctx import from_input
 from pyisomme.report.manual import Manual, manual
 from pyisomme.report.un.limits import Limit_Fail, Limit_Pass
+from pyisomme.report.un.protocols import protocol_r137_2016, protocol_r137_2023
 from pyisomme.report.euro_ncap.frontal_50kmh import EuroNCAP_Frontal_50kmh
 from pyisomme.report.euro_ncap.frontal_mpdb import EuroNCAP_Frontal_MPDB
 
@@ -322,20 +323,15 @@ class Overall(Criterion):
 
 
 class UN_Frontal_50kmh_R137(Report[Overall]):
-    name = "UN-R137 | Frontal-Impact against Rigid Wall with 100 % Overlap at 50 km/h"
-    protocol = "12.09.2023"
-    protocols = {
-        "22.06.2016": "Revision 2 (22.06.2016) [references/UN-R137/R137e.pdf]",
-        "12.09.2023": "Revision 2 (12.09.2023) [references/UN-R137/B04.80k7388018sqd01x91957452w3utcf63832377452.pdf]"
-    }
-
-    #: The report's criterion tree, defined at module level (see `Overall`).
+    _name = "UN-R137 | Frontal-Impact against Rigid Wall with 100 % Overlap at 50 km/h"
+    _protocol = protocol_r137_2023
+    _protocols = (protocol_r137_2016, protocol_r137_2023)
     Criterion_Overall = Overall
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
-        self.pages = [
+        self._available_pages = (
             Page_Cover(self),
             self.Page_Rating_Table(self),
 
@@ -352,7 +348,8 @@ class UN_Frontal_50kmh_R137(Report[Overall]):
             self.Page_Passenger_Neck_Load(self),
             self.Page_Passenger_Chest_Deflection(self),
             self.Page_Passenger_Femur_Axial_Force(self),
-        ]
+        )
+        self._selected_pages = list(self._available_pages)
 
     class Page_Rating_Table(Page_Criterion_Rating_Table):
         report: UN_Frontal_50kmh_R137

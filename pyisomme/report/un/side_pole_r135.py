@@ -9,6 +9,7 @@ from pyisomme.report.criterion import Criterion, Role, sub
 from pyisomme.report.ctx import from_input
 from pyisomme.report.manual import Manual, manual
 from pyisomme.report.un.limits import Limit_Fail, Limit_Pass
+from pyisomme.report.un.protocols import protocol_r135_2016
 from pyisomme.report.euro_ncap.side_pole import EuroNCAP_Side_Pole
 
 import logging
@@ -167,19 +168,15 @@ class Overall(Criterion):
 
 
 class UN_Side_Pole_R135(Report[Overall]):
-    name = "UN-R135 | Pole Side Impact at 32 km/h"
-    protocol = "05.02.2016"
-    protocols = {
-        "05.02.2016": "Revision 1 (05.02.2016) [references/UN-R135/B04.hcu736002y3cij636z760633yex36763590547033.pdf]"
-    }
-
-    #: The report's criterion tree, defined at module level (see `Overall`).
+    _name = "UN-R135 | Pole Side Impact at 32 km/h"
+    _protocol = protocol_r135_2016
+    _protocols = (protocol_r135_2016,)
     Criterion_Overall = Overall
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
-        self.pages = [
+        self._available_pages = (
             Page_Cover(self),
 
             self.Page_Values_Chart(self),
@@ -190,7 +187,8 @@ class UN_Side_Pole_R135(Report[Overall]):
             self.Page_Abdomen_Resultant_Compression(self),
             self.Page_Spine_T12_Acceleration(self),
             self.Page_Pubic_Symphysis_Force(self),
-        ]
+        )
+        self._selected_pages = list(self._available_pages)
 
     class Page_Values_Chart(Page_Criterion_Values_Chart):
         report: UN_Side_Pole_R135

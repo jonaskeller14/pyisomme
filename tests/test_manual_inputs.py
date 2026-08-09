@@ -388,8 +388,13 @@ class TestFrameworkInternals(unittest.TestCase):
             def calculation(self) -> None:
                 self.value = 1.0 if self.flag else 0.0
 
+        class LocalReport(Report[Local]):
+            _name = "Local"
+            Criterion_Overall = Local
+
         isomme = pyisomme.Isomme(test_number="T0")
-        criterion = Local(Report([isomme]), isomme)
+        report = LocalReport([isomme])
+        criterion = report.overall(isomme)
 
         self.assertIs(criterion.flag, False)
         criterion.calculate()

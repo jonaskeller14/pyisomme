@@ -3,10 +3,11 @@
 | property | value |
 | --- | --- |
 | name | UN-R94 \| Frontal-Impact against ODB with 40 % Overlap at 56 km/h |
-| protocol | 29.12.2022 |
-| protocols | 29.12.2022 |
+| protocol | 2022 |
+| protocols | 2022 |
 | overall criterion | `Overall` |
-| pages | Page_Cover, Page_Rating_Table, Page_Driver_Result_Values_Chart, Page_Driver_Values_Table, Page_Driver_Head_Acceleration, Page_Driver_Neck_Load, Page_Driver_Chest_Deflection, Page_Driver_Femur_Axial_Force, Page_Driver_Knee_Slider_Compression, Page_Driver_Tibia_Compression, Page_Driver_Tibia_Index, Page_Passenger_Result_Values_Chart, Page_Passenger_Values_Table, Page_Passenger_Head_Acceleration, Page_Passenger_Neck_Load, Page_Passenger_Chest_Deflection, Page_Passenger_Femur_Axial_Force, Page_Passenger_Knee_Slider_Compression, Page_Passenger_Tibia_Compression, Page_Passenger_Tibia_Index |
+| available_pages | Page_Cover, Page_Rating_Table, Page_Driver_Result_Values_Chart, Page_Driver_Values_Table, Page_Driver_Head_Acceleration, Page_Driver_Neck_Load, Page_Driver_Chest_Deflection, Page_Driver_Femur_Axial_Force, Page_Driver_Knee_Slider_Compression, Page_Driver_Tibia_Compression, Page_Driver_Tibia_Index, Page_Passenger_Result_Values_Chart, Page_Passenger_Values_Table, Page_Passenger_Head_Acceleration, Page_Passenger_Neck_Load, Page_Passenger_Chest_Deflection, Page_Passenger_Femur_Axial_Force, Page_Passenger_Knee_Slider_Compression, Page_Passenger_Tibia_Compression, Page_Passenger_Tibia_Index |
+| selected_pages | Page_Cover, Page_Rating_Table, Page_Driver_Result_Values_Chart, Page_Driver_Values_Table, Page_Driver_Head_Acceleration, Page_Driver_Neck_Load, Page_Driver_Chest_Deflection, Page_Driver_Femur_Axial_Force, Page_Driver_Knee_Slider_Compression, Page_Driver_Tibia_Compression, Page_Driver_Tibia_Index, Page_Passenger_Result_Values_Chart, Page_Passenger_Values_Table, Page_Passenger_Head_Acceleration, Page_Passenger_Neck_Load, Page_Passenger_Chest_Deflection, Page_Passenger_Femur_Axial_Force, Page_Passenger_Knee_Slider_Compression, Page_Passenger_Tibia_Compression, Page_Passenger_Tibia_Index |
 
 ## `Overall` — Overall
 

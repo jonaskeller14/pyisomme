@@ -9,6 +9,7 @@ from pyisomme.report.criterion import Criterion, Role, sub
 from pyisomme.report.ctx import from_input
 from pyisomme.report.manual import Manual, manual
 from pyisomme.report.euro_ncap.limits import Limit_G, Limit_P, Limit_C, Limit_M, Limit_A, Limit_W
+from pyisomme.report.euro_ncap.protocols import PROTOCOL_9_3
 
 import logging
 import numpy as np
@@ -918,18 +919,15 @@ class Overall(Criterion):
 
 
 class EuroNCAP_Frontal_50kmh(Report[Overall]):
-    name = "Euro NCAP | Frontal-Impact against Rigid Wall with 100 % Overlap at 50 km/h"
-    protocol = "9.3"
-    protocols = {
-        "9.3": "Version 9.3 (05.12.2023) [references/Euro-NCAP/euro-ncap-assessment-protocol-aop-v93.pdf]"
-    }
-
+    _name = "Euro NCAP | Frontal-Impact against Rigid Wall with 100 % Overlap at 50 km/h"
+    _protocol = PROTOCOL_9_3
+    _protocols = (PROTOCOL_9_3,)
     Criterion_Overall = Overall
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
-        self.pages = [
+        self._available_pages = (
             Page_Cover(self),
             self.Page_Rating_Table(self),
 
@@ -963,7 +961,8 @@ class EuroNCAP_Frontal_50kmh(Report[Overall]):
             self.Page_Rear_Passenger_Femur_Axial_Force(self),
 
             Page_OLC(self),
-        ]
+        )
+        self._selected_pages = list(self._available_pages)
 
     class Page_Rating_Table(Page_Criterion_Rating_Table):
         report: EuroNCAP_Frontal_50kmh

@@ -6,7 +6,8 @@
 | protocol | IV |
 | protocols | IV |
 | overall criterion | `Overall` |
-| pages | Page_Cover, Page_Overall_Rating, Page_Driver_Rating, Page_Driver_Values_Chart, Page_Driver_Values_Table, Page_Driver_Head_Acceleration, Page_Driver_Neck_Load, Page_Driver_Rib_Deflection, Page_Driver_Rib_Deflection_Rate, Page_Driver_Viscous_Criterion, Page_Driver_Pelvis_Force, Page_Rear_Passenger_Rating, Page_Rear_Passenger_Values_Chart, Page_Rear_Passenger_Values_Table, Page_Rear_Passenger_Head_Acceleration, Page_Rear_Passenger_Neck_Load, Page_Rear_Passenger_Rib_Deflection, Page_Rear_Passenger_Rib_Deflection_Rate, Page_Rear_Passenger_Viscous_Criterion, Page_Rear_Passenger_Pelvis_Force |
+| available_pages | Page_Cover, Page_Overall_Rating, Page_Driver_Rating, Page_Driver_Values_Chart, Page_Driver_Values_Table, Page_Driver_Head_Acceleration, Page_Driver_Neck_Load, Page_Driver_Rib_Deflection, Page_Driver_Rib_Deflection_Rate, Page_Driver_Viscous_Criterion, Page_Driver_Pelvis_Force, Page_Rear_Passenger_Rating, Page_Rear_Passenger_Values_Chart, Page_Rear_Passenger_Values_Table, Page_Rear_Passenger_Head_Acceleration, Page_Rear_Passenger_Neck_Load, Page_Rear_Passenger_Rib_Deflection, Page_Rear_Passenger_Rib_Deflection_Rate, Page_Rear_Passenger_Viscous_Criterion, Page_Rear_Passenger_Pelvis_Force |
+| selected_pages | Page_Cover, Page_Overall_Rating, Page_Driver_Rating, Page_Driver_Values_Chart, Page_Driver_Values_Table, Page_Driver_Head_Acceleration, Page_Driver_Neck_Load, Page_Driver_Rib_Deflection, Page_Driver_Rib_Deflection_Rate, Page_Driver_Viscous_Criterion, Page_Driver_Pelvis_Force, Page_Rear_Passenger_Rating, Page_Rear_Passenger_Values_Chart, Page_Rear_Passenger_Values_Table, Page_Rear_Passenger_Head_Acceleration, Page_Rear_Passenger_Neck_Load, Page_Rear_Passenger_Rib_Deflection, Page_Rear_Passenger_Rib_Deflection_Rate, Page_Rear_Passenger_Viscous_Criterion, Page_Rear_Passenger_Pelvis_Force |
 
 ## `Overall` — Overall
 

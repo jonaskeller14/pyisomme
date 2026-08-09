@@ -3,10 +3,11 @@
 | property | value |
 | --- | --- |
 | name | UN-R135 \| Pole Side Impact at 32 km/h |
-| protocol | 05.02.2016 |
-| protocols | 05.02.2016 |
+| protocol | 2016 |
+| protocols | 2016 |
 | overall criterion | `Overall` |
-| pages | Page_Cover, Page_Values_Chart, Page_Values_Table, Page_Head_Acceleration, Page_Shoulder_Lateral_Force, Page_Chest_Absolute_Compression, Page_Abdomen_Resultant_Compression, Page_Spine_T12_Acceleration, Page_Pubic_Symphysis_Force |
+| available_pages | Page_Cover, Page_Values_Chart, Page_Values_Table, Page_Head_Acceleration, Page_Shoulder_Lateral_Force, Page_Chest_Absolute_Compression, Page_Abdomen_Resultant_Compression, Page_Spine_T12_Acceleration, Page_Pubic_Symphysis_Force |
+| selected_pages | Page_Cover, Page_Values_Chart, Page_Values_Table, Page_Head_Acceleration, Page_Shoulder_Lateral_Force, Page_Chest_Absolute_Compression, Page_Abdomen_Resultant_Compression, Page_Spine_T12_Acceleration, Page_Pubic_Symphysis_Force |
 
 ## `Overall` — Overall
 

@@ -7,6 +7,7 @@ from pyisomme.report.criterion import Criterion, Role, sub
 from pyisomme.report.ctx import from_input
 from pyisomme.report.iihs.frontal import Criterion_H350M_Injury
 from pyisomme.report.iihs.limits import Limit_A, Limit_G, Limit_M, Limit_P
+from pyisomme.report.iihs.protocols import PROTOCOL_SMALL_OVERLAP_VII
 from pyisomme.report.manual import Manual, manual
 from pyisomme.report.page import (
     Page_Cover,
@@ -122,16 +123,14 @@ class Overall(Criterion):
 
 
 class IIHS_Frontal_Small_Overlap(Report[Overall]):
-    name = "IIHS | Frontal Impact against Small Overlap Barrier with 25% Overlap at 64 km/h"
-    protocol = "VII"
-    protocols = {
-        "VII": "Version VII (04.2024) [references/IIHS/small_overlap_rating_protocol.pdf]",
-    }
+    _name = "IIHS | Frontal Impact against Small Overlap Barrier with 25% Overlap at 64 km/h"
+    _protocol = PROTOCOL_SMALL_OVERLAP_VII
+    _protocols = (PROTOCOL_SMALL_OVERLAP_VII,)
     Criterion_Overall = Overall
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
-        self.pages = [
+        self._available_pages = (
             Page_Cover(self),
             self.Page_Overall_Rating(self),
             self.Page_Driver_Rating(self),
@@ -147,7 +146,8 @@ class IIHS_Frontal_Small_Overlap(Report[Overall]):
             self.Page_Driver_Tibia_Index(self),
             self.Page_Driver_Tibia_Force(self),
             self.Page_Driver_Foot_Acceleration(self),
-        ]
+        )
+        self._selected_pages = list(self._available_pages)
 
     class Page_Overall_Rating(Page_Criterion_Rating_Table):
         report: IIHS_Frontal_Small_Overlap

@@ -22,7 +22,7 @@ equally valid, and none of them require a change here.
 from __future__ import annotations
 
 from collections.abc import Mapping
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, field, replace
 from string import Formatter
 from types import MappingProxyType
 from typing import TYPE_CHECKING, Protocol
@@ -52,7 +52,6 @@ __all__ = [
 #: ``?10…`` is not a code at all.
 FieldValue = str
 
-_NO_FIELDS: Mapping[str, FieldValue] = MappingProxyType({})
 _FORMATTER = Formatter()
 
 
@@ -62,7 +61,7 @@ class Ctx:
 
     report: Report
     isomme: Isomme
-    fields: Mapping[str, FieldValue] = _NO_FIELDS  # fields, e.g. ``{"p": "1"}``
+    fields: Mapping[str, FieldValue] = field(default_factory=lambda: MappingProxyType({}))
 
     def at(self, **fields: FieldValue) -> Ctx:
         """Derive a child context: ``ctx.at(p="3")``, ``ctx.at(object="M")``."""
@@ -114,9 +113,9 @@ class Ctx:
             )
         return code
 
-    def codes(self, *templates: str) -> list[str]:
+    def codes(self, *templates: str) -> tuple[str, ...]:
         """:meth:`code` for several templates — the usual leaf spelling."""
-        return [self.code(template) for template in templates]
+        return tuple(self.code(template) for template in templates)
 
 
 class CtxSource(Protocol):

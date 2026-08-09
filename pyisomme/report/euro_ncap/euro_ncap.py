@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from pyisomme.report.meta_report import MetaReport
-from pyisomme.report.page import Page_Cover
 from pyisomme.report.euro_ncap.frontal_50kmh import EuroNCAP_Frontal_50kmh
 from pyisomme.report.euro_ncap.frontal_mpdb import EuroNCAP_Frontal_MPDB
 from pyisomme.report.euro_ncap.side_pole import EuroNCAP_Side_Pole
@@ -9,7 +8,6 @@ from pyisomme.report.euro_ncap.side_barrier import EuroNCAP_Side_Barrier
 from pyisomme.report.euro_ncap.side_farside import EuroNCAP_Side_FarSide
 
 import numpy as np
-from typing import Any
 
 
 class EuroNCAP(MetaReport):
@@ -26,12 +24,8 @@ class EuroNCAP(MetaReport):
       safety (§7, 2 points) are not modelled by pyisomme, so :attr:`rating` is
       deliberately *not* expressed as the Euro NCAP percentage.
     """
-    name = "Euro-NCAP"
+    _name = "Euro-NCAP"
     title = "Euro-NCAP"
-    protocol = "9.3"
-    protocols = {
-        "9.3": "Version 9.3 (05.12.2023) [references/Euro-NCAP/euro-ncap-assessment-protocol-aop-v93.pdf]"
-    }
 
     #: §5.3: "the individual scores ... for the side impact test (max. 16 points)
     #: and the pole test (max. 16 points) are summed and scaled down to 12 points".
@@ -43,29 +37,33 @@ class EuroNCAP(MetaReport):
     #: 8 (§3.4) + 8 (§4.3) + 12 + 4 (§5.3). See the class docstring on the missing 6.
     max_rating = 32.
 
-    def __init__(self, frontal_50kmh: list, frontal_mpdb: list, side_pole: list, side_barrier: list, side_farside: list, *args: Any, **kwargs: Any) -> None:
-        super().__init__([], *args, **kwargs)
+    def __init__(
+        self,
+        frontal_50kmh: EuroNCAP_Frontal_50kmh,
+        frontal_mpdb: EuroNCAP_Frontal_MPDB,
+        side_pole: EuroNCAP_Side_Pole,
+        side_barrier: EuroNCAP_Side_Barrier,
+        side_farside: EuroNCAP_Side_FarSide,
+        title: str = "Euro-NCAP",
+    ) -> None:
+        self.frontal_50kmh = frontal_50kmh
+        self.frontal_mpdb = frontal_mpdb
+        self.side_pole = side_pole
+        self.side_barrier = side_barrier
+        self.side_farside = side_farside
 
-        self.frontal_50kmh = EuroNCAP_Frontal_50kmh(*frontal_50kmh)
-        self.frontal_mpdb = EuroNCAP_Frontal_MPDB(*frontal_mpdb)
-        self.side_pole = EuroNCAP_Side_Pole(*side_pole)
-        self.side_barrier = EuroNCAP_Side_Barrier(*side_barrier)
-        self.side_farside = EuroNCAP_Side_FarSide(*side_farside)
+        super().__init__(
+            reports={
+                "frontal_50kmh": frontal_50kmh,
+                "frontal_mpdb": frontal_mpdb,
+                "side_pole": side_pole,
+                "side_barrier": side_barrier,
+                "side_farside": side_farside,
+            },
+            title=title,
+        )
 
-        self.reports = [
-            self.frontal_50kmh,
-            self.frontal_mpdb,
-            self.side_pole,
-            self.side_barrier,
-            self.side_farside,
-        ]
-
-        self.pages = [
-            Page_Cover(self),
-            *[page for report in self.reports for page in report.pages],
-        ]
-
-    def calculation(self) -> None:
+    def aggregate_results(self) -> None:
         frontal_mpdb = self.sub_rating(self.frontal_mpdb)
         frontal_50kmh = self.sub_rating(self.frontal_50kmh)
         side_barrier = self.sub_rating(self.side_barrier)

@@ -1,3 +1,7 @@
+from pyisomme.report.base_report import BaseReport
+from pyisomme.report.meta_report import MetaReport
+from pyisomme.report.report import Report
+
 from pyisomme.report import correlation, euro_ncap, fmvss, iihs, un, us_ncap
 from pyisomme.report.euro_ncap import (
     EuroNCAP_Frontal_50kmh,

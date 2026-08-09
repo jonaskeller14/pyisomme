@@ -10,6 +10,7 @@ from pyisomme.report.criterion import Criterion, Role, sub
 from pyisomme.report.ctx import from_input
 from pyisomme.report.manual import Manual, manual
 from pyisomme.report.euro_ncap.limits import Limit_G, Limit_P, Limit_C, Limit_M, Limit_A, Limit_W
+from pyisomme.report.euro_ncap.protocols import PROTOCOL_9_3
 
 import logging
 import numpy as np
@@ -354,19 +355,15 @@ class Overall(Criterion):
 
 
 class EuroNCAP_Side_Pole(Report[Overall]):
-    name = "Euro NCAP | Pole Side Impact at 32 km/h"
-    protocol = "9.3"
-    protocols = {
-        "9.3": "Version 9.3 (05.12.2023) [references/Euro-NCAP/euro-ncap-assessment-protocol-aop-v93.pdf]"
-    }
-
-    #: The report's criterion tree, defined at module level (see `Overall`).
+    _name = "Euro NCAP | Pole Side Impact at 32 km/h"
+    _protocol = PROTOCOL_9_3
+    _protocols = (PROTOCOL_9_3,)
     Criterion_Overall = Overall
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
-        self.pages = [
+        self._available_pages = (
             Page_Cover(self),
 
             self.Page_Values_Chart(self),
@@ -380,7 +377,8 @@ class EuroNCAP_Side_Pole(Report[Overall]):
             self.Page_Abdomen_Lateral_Compression(self),
             self.Page_Abdomen_Lateral_VC(self),
             self.Page_Pubic_Symphysis_Force(self),
-        ]
+        )
+        self._selected_pages = list(self._available_pages)
 
     class Page_Values_Chart(Page_Criterion_Values_Chart):
         name = "Values Chart"

@@ -138,7 +138,8 @@ def serialise_definition(report: Report) -> dict:
     """The exact, measurement-independent report definition."""
     first = report.isomme_list[0]
     return {
-        "pages": [type(page).__name__ for page in report.pages],
+        "available_pages": [type(page).__name__ for page in report.available_pages],
+        "selected_pages": [type(page).__name__ for page in report.selected_pages],
         "criteria": {
             path: {
                 "name": criterion.name,

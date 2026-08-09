@@ -6,7 +6,8 @@
 | protocol | 9.3 |
 | protocols | 9.3 |
 | overall criterion | `Overall` |
-| pages | Page_Cover, Page_Values_Chart, Page_Rating_Table, Page_Values_Table, Page_Head_Acceleration, Page_Shoulder_Lateral_Force, Page_Chest_Lateral_Compression, Page_Chest_Lateral_VC, Page_Abdomen_Lateral_Compression, Page_Abdomen_Lateral_VC, Page_Pubic_Symphysis_Force |
+| available_pages | Page_Cover, Page_Values_Chart, Page_Rating_Table, Page_Values_Table, Page_Head_Acceleration, Page_Shoulder_Lateral_Force, Page_Chest_Lateral_Compression, Page_Chest_Lateral_VC, Page_Abdomen_Lateral_Compression, Page_Abdomen_Lateral_VC, Page_Pubic_Symphysis_Force |
+| selected_pages | Page_Cover, Page_Values_Chart, Page_Rating_Table, Page_Values_Table, Page_Head_Acceleration, Page_Shoulder_Lateral_Force, Page_Chest_Lateral_Compression, Page_Chest_Lateral_VC, Page_Abdomen_Lateral_Compression, Page_Abdomen_Lateral_VC, Page_Pubic_Symphysis_Force |
 
 ## `Overall` — Overall
 

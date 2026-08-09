@@ -15,4 +15,4 @@ if __name__ == "__main__":
     report = golden_utils.BUILDERS[sys.argv[1]]()
     report.calculate().export_pptx(sys.argv[2])
     presentation = Presentation(sys.argv[2])
-    json.dump({"pages": len(report.pages), "slides": len(presentation.slides)}, sys.stdout)
+    json.dump({"pages": len(report.selected_pages), "slides": len(presentation.slides)}, sys.stdout)

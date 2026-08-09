@@ -21,6 +21,7 @@ from pyisomme.report.criterion import Criterion, Role, sub
 from pyisomme.report.ctx import from_input
 from pyisomme.report.manual import Manual, manual
 from pyisomme.report.euro_ncap.limits import Limit_G, Limit_P, Limit_C, Limit_M, Limit_A, Limit_W
+from pyisomme.report.euro_ncap.protocols import PROTOCOL_9_3
 from pyisomme.unit import Unit, g0
 
 import logging
@@ -1002,19 +1003,15 @@ class Overall(Criterion):
 
 
 class EuroNCAP_Frontal_MPDB(Report[Overall]):
-    name = "Euro NCAP | Frontal-Impact against MPDB with 50 % Overlap at 50/50 km/h"
-    protocol = "9.3"
-    protocols = {
-        "9.3": "Version 9.3 (05.12.2023) [references/Euro-NCAP/euro-ncap-assessment-protocol-aop-v93.pdf]"
-    }
-
-    #: The report's criterion tree, defined at module level (see `Overall`).
+    _name = "Euro NCAP | Frontal-Impact against MPDB with 50 % Overlap at 50/50 km/h"
+    _protocol = PROTOCOL_9_3
+    _protocols = (PROTOCOL_9_3,)
     Criterion_Overall = Overall
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
-        self.pages = [
+        self._available_pages = (
             Page_Cover(self),
             self.Page_Rating_Table(self),
 
@@ -1047,7 +1044,8 @@ class EuroNCAP_Frontal_MPDB(Report[Overall]):
             Page_OLC(self),
 
             self.Page_OLC_Trolley(self)
-        ]
+        )
+        self._selected_pages = list(self._available_pages)
 
     class Page_Rating_Table(Page_Criterion_Rating_Table):
         report: EuroNCAP_Frontal_MPDB
