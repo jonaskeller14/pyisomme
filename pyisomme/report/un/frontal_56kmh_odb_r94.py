@@ -9,7 +9,7 @@ from pyisomme.report.criterion import Criterion, Role, sub
 from pyisomme.report.ctx import from_input
 from pyisomme.report.manual import Manual, manual
 from pyisomme.report.un.limits import Limit_Fail, Limit_Pass
-from pyisomme.report.un.protocols import protocol_r94_2022
+from pyisomme.report.un.protocols import PROTOCOL_R94_2022
 from pyisomme.report.un.frontal_50kmh_r137 import (
     Criterion_Chest_VC as Criterion_Chest_VC_R137,
     Criterion_HPC36 as Criterion_HPC36_R137,
@@ -352,8 +352,8 @@ class Overall(Criterion):
 
 class UN_Frontal_56kmh_ODB_R94(Report[Overall]):
     _name = "UN-R94 | Frontal-Impact against ODB with 40 % Overlap at 56 km/h"
-    _protocol = protocol_r94_2022
-    _protocols = (protocol_r94_2022,)
+    _protocol = PROTOCOL_R94_2022
+    _protocols = (PROTOCOL_R94_2022,)
     Criterion_Overall = Overall
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:

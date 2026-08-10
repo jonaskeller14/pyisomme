@@ -9,7 +9,7 @@ from pyisomme.report.criterion import Criterion, Role, sub
 from pyisomme.report.ctx import from_input
 from pyisomme.report.manual import Manual, manual
 from pyisomme.report.un.limits import Limit_Fail, Limit_Pass
-from pyisomme.report.un.protocols import protocol_r135_2016
+from pyisomme.report.un.protocols import PROTOCOL_R135_2016
 from pyisomme.report.euro_ncap.side_pole import EuroNCAP_Side_Pole
 
 import logging
@@ -169,8 +169,8 @@ class Overall(Criterion):
 
 class UN_Side_Pole_R135(Report[Overall]):
     _name = "UN-R135 | Pole Side Impact at 32 km/h"
-    _protocol = protocol_r135_2016
-    _protocols = (protocol_r135_2016,)
+    _protocol = PROTOCOL_R135_2016
+    _protocols = (PROTOCOL_R135_2016,)
     Criterion_Overall = Overall
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:

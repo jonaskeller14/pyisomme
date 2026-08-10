@@ -9,7 +9,7 @@ from pyisomme.report.criterion import Criterion, Role, sub
 from pyisomme.report.ctx import from_input
 from pyisomme.report.manual import Manual, manual
 from pyisomme.report.un.limits import Limit_Fail, Limit_Pass
-from pyisomme.report.un.protocols import protocol_r137_2016, protocol_r137_2023
+from pyisomme.report.un.protocols import PROTOCOL_R137_2016, PROTOCOL_R137_2023
 from pyisomme.report.euro_ncap.frontal_50kmh import EuroNCAP_Frontal_50kmh
 from pyisomme.report.euro_ncap.frontal_mpdb import EuroNCAP_Frontal_MPDB
 
@@ -324,8 +324,8 @@ class Overall(Criterion):
 
 class UN_Frontal_50kmh_R137(Report[Overall]):
     _name = "UN-R137 | Frontal-Impact against Rigid Wall with 100 % Overlap at 50 km/h"
-    _protocol = protocol_r137_2023
-    _protocols = (protocol_r137_2016, protocol_r137_2023)
+    _protocol = PROTOCOL_R137_2023
+    _protocols = (PROTOCOL_R137_2016, PROTOCOL_R137_2023)
     Criterion_Overall = Overall
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:

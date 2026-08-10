@@ -8,7 +8,7 @@ from pyisomme.report.criterion import Criterion, Role, sub
 from pyisomme.report.ctx import from_input
 from pyisomme.report.manual import Manual, manual
 from pyisomme.report.un.limits import Limit_Fail, Limit_Pass
-from pyisomme.report.un.protocols import protocol_r95_2023
+from pyisomme.report.un.protocols import PROTOCOL_R95_2023
 from pyisomme.report.un.frontal_50kmh_r137 import Criterion_HPC36 as Criterion_HPC36_R137
 from pyisomme.report.un.side_pole_r135 import Overall as Overall_Side_Pole_R135
 from pyisomme.report.euro_ncap.side_pole import EuroNCAP_Side_Pole
@@ -126,8 +126,8 @@ class Overall(Criterion):
 
 class UN_Side_Barrier_R95(Report[Overall]):
     _name = "UN-R95 | Barrier Side Impact at 50 km/h"
-    _protocol = protocol_r95_2023
-    _protocols = (protocol_r95_2023,)
+    _protocol = PROTOCOL_R95_2023
+    _protocols = (PROTOCOL_R95_2023,)
     Criterion_Overall = Overall
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
