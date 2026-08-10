@@ -1,5 +1,11 @@
 # pyisomme
 
+[![CI](https://github.com/jonaskeller14/pyisomme/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/jonaskeller14/pyisomme/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/jonaskeller14/pyisomme/branch/master/graph/badge.svg)](https://app.codecov.io/gh/jonaskeller14/pyisomme)
+[![PyPI](https://img.shields.io/pypi/v/pyisomme.svg)](https://pypi.org/project/pyisomme/)
+[![Python](https://img.shields.io/badge/python-%E2%89%A53.9-blue.svg)](https://pypi.org/project/pyisomme/)
+[![License](https://img.shields.io/pypi/l/pyisomme.svg)](https://github.com/jonaskeller14/pyisomme/blob/master/LICENSE)
+
 ## Installation
 
 ```

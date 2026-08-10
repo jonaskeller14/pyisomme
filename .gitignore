@@ -34,6 +34,13 @@ dist/
 .ipynb_checkpoints/
 .venv/
 
+# Coverage.py output
+.coverage
+.coverage.*
+coverage.json
+coverage.xml
+htmlcov/
+
 # scratch / local artifacts
 tmp/
 tmp1/
