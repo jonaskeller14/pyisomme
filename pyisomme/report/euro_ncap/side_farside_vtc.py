@@ -20,9 +20,14 @@ from typing import Any
 
 logger = logging.getLogger(__name__)
 
-P = manual("1", source="test report", doc=(
-    "Channel-code position of the assessed occupant. Defaults to the "
-    "'Driver position object 1' test-info field when the test carries it."))
+P = manual(
+    "1",
+    source="test report",
+    doc=(
+        "Channel-code position of the assessed occupant. Defaults to the "
+        "'Driver position object 1' test-info field when the test carries it."
+    ),
+)
 
 
 class Overall(Criterion):
@@ -43,10 +48,12 @@ class Overall(Criterion):
             self.set_derived_input("p", str(p_driver).strip())
 
     def calculation(self) -> None:
-        self.rating = np.min([
-            self.validation_iso_scores.rating,
-            self.criterion_validation_injury_criteria.rating,
-        ])
+        self.rating = np.min(
+            [
+                self.validation_iso_scores.rating,
+                self.criterion_validation_injury_criteria.rating,
+            ]
+        )
 
     class Criterion_Validation_ISO_Scores(Criterion):
         report: EuroNCAP_Side_Farside_VTC
@@ -55,14 +62,16 @@ class Overall(Criterion):
         criteria_iso_score: list[Criterion]
 
         def calculation(self) -> None:
-            self.value = np.min([
-                self.head_avr.value,
-                self.thsp_04_acr.value,
-                self.thsp_12_acr.value,
-                self.pelv_acr.value,
-                self.b_pillar_acr.value,
-                self.belt_b3_fo0.value
-            ])
+            self.value = np.min(
+                [
+                    self.head_avr.value,
+                    self.thsp_04_acr.value,
+                    self.thsp_12_acr.value,
+                    self.pelv_acr.value,
+                    self.b_pillar_acr.value,
+                    self.belt_b3_fo0.value,
+                ]
+            )
             self.rating = True if self.value >= 0.5 else False
             self.color = "green" if self.value >= 0.5 else "red"
 
@@ -75,14 +84,30 @@ class Overall(Criterion):
 
             def define_limits(self) -> list[Limit]:
                 return [
-                    Limit((), func=lambda x: 0.5, y_unit="1", rating=True, color="green", lower=True),
-                    Limit((), func=lambda x: 0.5, y_unit="1", rating=False, color="red", upper=True),
+                    Limit(
+                        (),
+                        func=lambda x: 0.5,
+                        y_unit="1",
+                        rating=True,
+                        color="green",
+                        lower=True,
+                    ),
+                    Limit(
+                        (),
+                        func=lambda x: 0.5,
+                        y_unit="1",
+                        rating=False,
+                        color="red",
+                        upper=True,
+                    ),
                 ]
 
             def calculation(self) -> None:
                 if self.channel is not None and self.ref_channel is not None:
-                    self.value = Correlation_ISO18571(reference_channel=self.ref_channel,
-                                                      comparison_channel=self.channel).overall_rating()
+                    self.value = Correlation_ISO18571(
+                        reference_channel=self.ref_channel,
+                        comparison_channel=self.channel,
+                    ).overall_rating()
                     self.rating = True if self.value >= 0.5 else False
                     self.color = "green" if self.value >= 0.5 else "red"
 
@@ -90,96 +115,150 @@ class Overall(Criterion):
             name = "Head COG Angular Velocity X"
 
             def calculation(self) -> None:
-                self.channel = self.isomme.get_channel(f"1{self.ctx.field('p')}HEAD0000??AVXA", f"1{self.ctx.field('p')}HEADCG00??AVXA")
-                self.ref_channel = self.report.isomme_list[0].get_channel(f"1{self.ctx.field('p')}HEAD0000??AVXA", f"1{self.ctx.field('p')}HEADCG00??AVXA")  # FIXME p
+                self.channel = self.isomme.get_channel(
+                    f"1{self.ctx.field('p')}HEAD0000??AVXA",
+                    f"1{self.ctx.field('p')}HEADCG00??AVXA",
+                )
+                self.ref_channel = self.report.isomme_list[0].get_channel(
+                    f"1{self.ctx.field('p')}HEAD0000??AVXA",
+                    f"1{self.ctx.field('p')}HEADCG00??AVXA",
+                )  # FIXME p
                 super().calculation()
 
         class Criterion_Head_COG_Angular_Velocity_Y(Criterion_Individual_ISO_Score):
             name = "Head COG Angular Velocity Y"
 
             def calculation(self) -> None:
-                self.channel = self.isomme.get_channel(f"1{self.ctx.field('p')}HEAD0000??AVYA", f"1{self.ctx.field('p')}HEADCG00??AVYA")
-                self.ref_channel = self.report.isomme_list[0].get_channel(f"1{self.ctx.field('p')}HEAD0000??AVYA", f"1{self.ctx.field('p')}HEADCG00??AVYA")
+                self.channel = self.isomme.get_channel(
+                    f"1{self.ctx.field('p')}HEAD0000??AVYA",
+                    f"1{self.ctx.field('p')}HEADCG00??AVYA",
+                )
+                self.ref_channel = self.report.isomme_list[0].get_channel(
+                    f"1{self.ctx.field('p')}HEAD0000??AVYA",
+                    f"1{self.ctx.field('p')}HEADCG00??AVYA",
+                )
                 super().calculation()
 
         class Criterion_Head_COG_Angular_Velocity_Z(Criterion_Individual_ISO_Score):
             name = "Head COG Angular Velocity Z"
 
             def calculation(self) -> None:
-                self.channel = self.isomme.get_channel(f"1{self.ctx.field('p')}HEAD0000??AVZA", f"1{self.ctx.field('p')}HEADCG00??AVZA")
-                self.ref_channel = self.report.isomme_list[0].get_channel(f"1{self.ctx.field('p')}HEAD0000??AVZA", f"1{self.ctx.field('p')}HEADCG00??AVZA")
+                self.channel = self.isomme.get_channel(
+                    f"1{self.ctx.field('p')}HEAD0000??AVZA",
+                    f"1{self.ctx.field('p')}HEADCG00??AVZA",
+                )
+                self.ref_channel = self.report.isomme_list[0].get_channel(
+                    f"1{self.ctx.field('p')}HEAD0000??AVZA",
+                    f"1{self.ctx.field('p')}HEADCG00??AVZA",
+                )
                 super().calculation()
 
         class Criterion_Spine_T4_Acceleration_X(Criterion_Individual_ISO_Score):
             name = "T4 Acceleration X"
 
             def calculation(self) -> None:
-                self.channel = self.isomme.get_channel(f"1{self.ctx.field('p')}THSP0400??ACXA")
-                self.ref_channel = self.report.isomme_list[0].get_channel(f"1{self.ctx.field('p')}THSP0400??ACXA")
+                self.channel = self.isomme.get_channel(
+                    f"1{self.ctx.field('p')}THSP0400??ACXA"
+                )
+                self.ref_channel = self.report.isomme_list[0].get_channel(
+                    f"1{self.ctx.field('p')}THSP0400??ACXA"
+                )
                 super().calculation()
 
         class Criterion_Spine_T4_Acceleration_Y(Criterion_Individual_ISO_Score):
             name = "T4 Acceleration Y"
 
             def calculation(self) -> None:
-                self.channel = self.isomme.get_channel(f"1{self.ctx.field('p')}THSP0400??ACYA")
-                self.ref_channel = self.report.isomme_list[0].get_channel(f"1{self.ctx.field('p')}THSP0400??ACYA")
+                self.channel = self.isomme.get_channel(
+                    f"1{self.ctx.field('p')}THSP0400??ACYA"
+                )
+                self.ref_channel = self.report.isomme_list[0].get_channel(
+                    f"1{self.ctx.field('p')}THSP0400??ACYA"
+                )
                 super().calculation()
 
         class Criterion_Spine_T4_Acceleration_Z(Criterion_Individual_ISO_Score):
             name = "T4 Acceleration Z"
 
             def calculation(self) -> None:
-                self.channel = self.isomme.get_channel(f"1{self.ctx.field('p')}THSP0400??ACZA")
-                self.ref_channel = self.report.isomme_list[0].get_channel(f"1{self.ctx.field('p')}THSP0400??ACZA")
+                self.channel = self.isomme.get_channel(
+                    f"1{self.ctx.field('p')}THSP0400??ACZA"
+                )
+                self.ref_channel = self.report.isomme_list[0].get_channel(
+                    f"1{self.ctx.field('p')}THSP0400??ACZA"
+                )
                 super().calculation()
 
         class Criterion_Spine_T12_Acceleration_X(Criterion_Individual_ISO_Score):
             name = "T12 Acceleration X"
 
             def calculation(self) -> None:
-                self.channel = self.isomme.get_channel(f"1{self.ctx.field('p')}THSP1200??ACXA")
-                self.ref_channel = self.report.isomme_list[0].get_channel(f"1{self.ctx.field('p')}THSP1200??ACXA")
+                self.channel = self.isomme.get_channel(
+                    f"1{self.ctx.field('p')}THSP1200??ACXA"
+                )
+                self.ref_channel = self.report.isomme_list[0].get_channel(
+                    f"1{self.ctx.field('p')}THSP1200??ACXA"
+                )
                 super().calculation()
 
         class Criterion_Spine_T12_Acceleration_Y(Criterion_Individual_ISO_Score):
             name = "T12 Acceleration Y"
 
             def calculation(self) -> None:
-                self.channel = self.isomme.get_channel(f"1{self.ctx.field('p')}THSP1200??ACYA")
-                self.ref_channel = self.report.isomme_list[0].get_channel(f"1{self.ctx.field('p')}THSP1200??ACYA")
+                self.channel = self.isomme.get_channel(
+                    f"1{self.ctx.field('p')}THSP1200??ACYA"
+                )
+                self.ref_channel = self.report.isomme_list[0].get_channel(
+                    f"1{self.ctx.field('p')}THSP1200??ACYA"
+                )
                 super().calculation()
 
         class Criterion_Spine_T12_Acceleration_Z(Criterion_Individual_ISO_Score):
             name = "T12 Acceleration Z"
 
             def calculation(self) -> None:
-                self.channel = self.isomme.get_channel(f"1{self.ctx.field('p')}THSP1200??ACZA")
-                self.ref_channel = self.report.isomme_list[0].get_channel(f"1{self.ctx.field('p')}THSP1200??ACZA")
+                self.channel = self.isomme.get_channel(
+                    f"1{self.ctx.field('p')}THSP1200??ACZA"
+                )
+                self.ref_channel = self.report.isomme_list[0].get_channel(
+                    f"1{self.ctx.field('p')}THSP1200??ACZA"
+                )
                 super().calculation()
 
         class Criterion_Pelvis_Acceleration_X(Criterion_Individual_ISO_Score):
             name = "Pelvis Acceleration X"
 
             def calculation(self) -> None:
-                self.channel = self.isomme.get_channel(f"1{self.ctx.field('p')}PELV0000??ACXA")
-                self.ref_channel = self.report.isomme_list[0].get_channel(f"1{self.ctx.field('p')}PELV0000??ACXA")
+                self.channel = self.isomme.get_channel(
+                    f"1{self.ctx.field('p')}PELV0000??ACXA"
+                )
+                self.ref_channel = self.report.isomme_list[0].get_channel(
+                    f"1{self.ctx.field('p')}PELV0000??ACXA"
+                )
                 super().calculation()
 
         class Criterion_Pelvis_Acceleration_Y(Criterion_Individual_ISO_Score):
             name = "Pelvis Acceleration Y"
 
             def calculation(self) -> None:
-                self.channel = self.isomme.get_channel(f"1{self.ctx.field('p')}PELV0000??ACYA")
-                self.ref_channel = self.report.isomme_list[0].get_channel(f"1{self.ctx.field('p')}PELV0000??ACYA")
+                self.channel = self.isomme.get_channel(
+                    f"1{self.ctx.field('p')}PELV0000??ACYA"
+                )
+                self.ref_channel = self.report.isomme_list[0].get_channel(
+                    f"1{self.ctx.field('p')}PELV0000??ACYA"
+                )
                 super().calculation()
 
         class Criterion_Pelvis_Acceleration_Z(Criterion_Individual_ISO_Score):
             name = "Pelvis Acceleration Z"
 
             def calculation(self) -> None:
-                self.channel = self.isomme.get_channel(f"1{self.ctx.field('p')}PELV0000??ACZA")
-                self.ref_channel = self.report.isomme_list[0].get_channel(f"1{self.ctx.field('p')}PELV0000??ACZA")
+                self.channel = self.isomme.get_channel(
+                    f"1{self.ctx.field('p')}PELV0000??ACZA"
+                )
+                self.ref_channel = self.report.isomme_list[0].get_channel(
+                    f"1{self.ctx.field('p')}PELV0000??ACZA"
+                )
                 super().calculation()
 
         class Criterion_B_Pillar_Acceleration_X(Criterion_Individual_ISO_Score):
@@ -189,8 +268,12 @@ class Overall(Criterion):
             def calculation(self) -> None:
                 p = self.ctx.field("p")
                 p_ref = self.report.criterion_overall[self.report.isomme_list[0]].p
-                self.channel = self.isomme.get_channel(f"1{'4' if p == '1' else '6'}BPILLO0000ACXC")
-                self.ref_channel = self.report.isomme_list[0].get_channel(f"1{'4' if p_ref == '1' else '6'}BPILLO0000ACXC")
+                self.channel = self.isomme.get_channel(
+                    f"1{'4' if p == '1' else '6'}BPILLO0000ACXC"
+                )
+                self.ref_channel = self.report.isomme_list[0].get_channel(
+                    f"1{'4' if p_ref == '1' else '6'}BPILLO0000ACXC"
+                )
                 super().calculation()
 
         class Criterion_B_Pillar_Acceleration_Y(Criterion_Individual_ISO_Score):
@@ -200,8 +283,12 @@ class Overall(Criterion):
             def calculation(self) -> None:
                 p = self.ctx.field("p")
                 p_ref = self.report.criterion_overall[self.report.isomme_list[0]].p
-                self.channel = self.isomme.get_channel(f"1{'4' if p == '1' else '6'}BPILLO0000ACYC")
-                self.ref_channel = self.report.isomme_list[0].get_channel(f"1{'4' if p_ref == '1' else '6'}BPILLO0000ACYC")
+                self.channel = self.isomme.get_channel(
+                    f"1{'4' if p == '1' else '6'}BPILLO0000ACYC"
+                )
+                self.ref_channel = self.report.isomme_list[0].get_channel(
+                    f"1{'4' if p_ref == '1' else '6'}BPILLO0000ACYC"
+                )
                 super().calculation()
 
         class Criterion_B_Pillar_Acceleration_Z(Criterion_Individual_ISO_Score):
@@ -211,16 +298,24 @@ class Overall(Criterion):
             def calculation(self) -> None:
                 p = self.ctx.field("p")
                 p_ref = self.report.criterion_overall[self.report.isomme_list[0]].p
-                self.channel = self.isomme.get_channel(f"1{'4' if p == '1' else '6'}BPILLO0000ACZC")
-                self.ref_channel = self.report.isomme_list[0].get_channel(f"1{'4' if p_ref == '1' else '6'}BPILLO0000ACZC")
+                self.channel = self.isomme.get_channel(
+                    f"1{'4' if p == '1' else '6'}BPILLO0000ACZC"
+                )
+                self.ref_channel = self.report.isomme_list[0].get_channel(
+                    f"1{'4' if p_ref == '1' else '6'}BPILLO0000ACZC"
+                )
                 super().calculation()
 
         class Criterion_Shoulder_B3_Force(Criterion_Individual_ISO_Score):
             name = "Shoulder Belt (B3) Force"
 
             def calculation(self) -> None:
-                self.channel = self.isomme.get_channel(f"1{self.ctx.field('p')}SEBE0003B3FO0C")
-                self.ref_channel = self.report.isomme_list[0].get_channel(f"1{self.ctx.field('p')}SEBE0003B3FO0C")
+                self.channel = self.isomme.get_channel(
+                    f"1{self.ctx.field('p')}SEBE0003B3FO0C"
+                )
+                self.ref_channel = self.report.isomme_list[0].get_channel(
+                    f"1{self.ctx.field('p')}SEBE0003B3FO0C"
+                )
                 super().calculation()
 
         class Criterion_Reference_ISO_Score(Criterion):
@@ -237,8 +332,22 @@ class Overall(Criterion):
 
             def define_limits(self) -> list[Limit]:
                 return [
-                    Limit((), func=lambda x: 0.5, y_unit="1", rating=True, color="green", lower=True),
-                    Limit((), func=lambda x: 0.5, y_unit="1", rating=False, color="red", upper=True),
+                    Limit(
+                        (),
+                        func=lambda x: 0.5,
+                        y_unit="1",
+                        rating=True,
+                        color="green",
+                        lower=True,
+                    ),
+                    Limit(
+                        (),
+                        func=lambda x: 0.5,
+                        y_unit="1",
+                        rating=False,
+                        color="red",
+                        upper=True,
+                    ),
                 ]
 
             @property
@@ -247,12 +356,27 @@ class Overall(Criterion):
                 return tuple(getattr(parent, name) for name in self.components)
 
             def calculation(self) -> None:
-                channels = [self.require(c.channel, c.name) for c in self.criteria_individual_iso_score]
-                self.values = np.array([c.value for c in self.criteria_individual_iso_score])
+                channels = [
+                    self.require(c.channel, c.name)
+                    for c in self.criteria_individual_iso_score
+                ]
+                self.values = np.array(
+                    [c.value for c in self.criteria_individual_iso_score]
+                )
 
                 unit = channels[0].unit
-                channel_abs_max = np.array([np.max(np.abs(channel.get_data(unit=unit))) for channel in channels])
-                self.weights = np.array([channel_abs_max_i / np.sum(channel_abs_max) for channel_abs_max_i in channel_abs_max])
+                channel_abs_max = np.array(
+                    [
+                        np.max(np.abs(channel.get_data(unit=unit)))
+                        for channel in channels
+                    ]
+                )
+                self.weights = np.array(
+                    [
+                        channel_abs_max_i / np.sum(channel_abs_max)
+                        for channel_abs_max_i in channel_abs_max
+                    ]
+                )
 
                 self.value = np.dot(self.weights, self.values)
                 self.rating = True if self.value >= 0.5 else False
@@ -311,10 +435,12 @@ class Overall(Criterion):
         role = Role.AGGREGATE
 
         def calculation(self) -> None:
-            self.rating = np.min([
-                self.criterion_hic_15.rating,
-                self.criterion_head_a3ms.rating,
-            ])
+            self.rating = np.min(
+                [
+                    self.criterion_hic_15.rating,
+                    self.criterion_head_a3ms.rating,
+                ]
+            )
 
         class Criterion_HIC_15(Criterion):
             name = "HIC 15"
@@ -326,8 +452,15 @@ class Overall(Criterion):
             r_ac_sim: float = np.nan
 
             def calculation(self) -> None:
-                self.channel = self.require_channel(self.ctx.code("?{p}HICR0015??00RX"), self.ctx.code("?{p}HICRCG15??00RX"))
-                self.ref_channel = self.require_channel(self.ctx.code("?{p}HICR0015??00RX"), self.ctx.code("?{p}HICRCG15??00RX"), isomme=self.report.isomme_list[0])
+                self.channel = self.require_channel(
+                    self.ctx.code("?{p}HICR0015??00RX"),
+                    self.ctx.code("?{p}HICRCG15??00RX"),
+                )
+                self.ref_channel = self.require_channel(
+                    self.ctx.code("?{p}HICR0015??00RX"),
+                    self.ctx.code("?{p}HICRCG15??00RX"),
+                    isomme=self.report.isomme_list[0],
+                )
 
                 self.ac_test = self.ref_channel.get_data()[0]
                 self.ac_sim = self.channel.get_data()[0]
@@ -350,8 +483,15 @@ class Overall(Criterion):
             r_ac_sim: float = np.nan
 
             def calculation(self) -> None:
-                self.channel = self.require_channel(self.ctx.code("?{p}HEAD003C??ACRX"), self.ctx.code("?{p}HEADCG3C??ACRX"))
-                self.ref_channel = self.require_channel(self.ctx.code("?{p}HEAD003C??ACRX"), self.ctx.code("?{p}HEADCG3C??ACRX"), isomme=self.report.isomme_list[0])
+                self.channel = self.require_channel(
+                    self.ctx.code("?{p}HEAD003C??ACRX"),
+                    self.ctx.code("?{p}HEADCG3C??ACRX"),
+                )
+                self.ref_channel = self.require_channel(
+                    self.ctx.code("?{p}HEAD003C??ACRX"),
+                    self.ctx.code("?{p}HEADCG3C??ACRX"),
+                    isomme=self.report.isomme_list[0],
+                )
 
                 self.ac_test = self.ref_channel.get_data(unit=g0)[0]
                 self.ac_sim = self.channel.get_data(unit=g0)[0]
@@ -367,15 +507,18 @@ class Overall(Criterion):
         criterion_hic_15 = sub(Criterion_HIC_15)
         criterion_head_a3ms = sub(Criterion_Head_a3ms)
 
-    validation_iso_scores = sub(Criterion_Validation_ISO_Scores, at=from_input(P), role=Role.AGGREGATE)
-    criterion_validation_injury_criteria = sub(Criterion_Validation_Injury_Criteria,
-                                               at=from_input(P), role=Role.AGGREGATE)
+    validation_iso_scores = sub(
+        Criterion_Validation_ISO_Scores, at=from_input(P), role=Role.AGGREGATE
+    )
+    criterion_validation_injury_criteria = sub(
+        Criterion_Validation_Injury_Criteria, at=from_input(P), role=Role.AGGREGATE
+    )
 
 
 class EuroNCAP_Side_Farside_VTC(Report[Overall]):
     _name = "Euro NCAP | Virtual Far Side Simulations"
     _protocol = PROTOCOL_VTC_1_0
-    _protocols = (PROTOCOL_VTC_1_0, )
+    _protocols = (PROTOCOL_VTC_1_0,)
     Criterion_Overall = Overall
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
@@ -383,7 +526,6 @@ class EuroNCAP_Side_Farside_VTC(Report[Overall]):
 
         self._available_pages = (
             Page_Cover(self),
-
             self.Page_Validation_ISO_Score_Table(self),
             self.Page_Validation_Injury_Criteria_Percentage_Table(self),
             self.Page_Head_Acceleration(self),
@@ -403,44 +545,98 @@ class EuroNCAP_Side_Farside_VTC(Report[Overall]):
         def __init__(self, report: EuroNCAP_Side_Farside_VTC) -> None:
             super().__init__(report)
 
-            self.criteria = {isomme: [
-                self.report.criterion_overall[isomme].validation_iso_scores.head_avx,
-                self.report.criterion_overall[isomme].validation_iso_scores.head_avy,
-                self.report.criterion_overall[isomme].validation_iso_scores.head_avz,
-                self.report.criterion_overall[isomme].validation_iso_scores.head_avr,
-                self.report.criterion_overall[isomme].validation_iso_scores.thsp_04_acx,
-                self.report.criterion_overall[isomme].validation_iso_scores.thsp_04_acy,
-                self.report.criterion_overall[isomme].validation_iso_scores.thsp_04_acz,
-                self.report.criterion_overall[isomme].validation_iso_scores.thsp_04_acr,
-                self.report.criterion_overall[isomme].validation_iso_scores.thsp_12_acx,
-                self.report.criterion_overall[isomme].validation_iso_scores.thsp_12_acy,
-                self.report.criterion_overall[isomme].validation_iso_scores.thsp_12_acz,
-                self.report.criterion_overall[isomme].validation_iso_scores.thsp_12_acr,
-                self.report.criterion_overall[isomme].validation_iso_scores.pelv_acx,
-                self.report.criterion_overall[isomme].validation_iso_scores.pelv_acy,
-                self.report.criterion_overall[isomme].validation_iso_scores.pelv_acz,
-                self.report.criterion_overall[isomme].validation_iso_scores.pelv_acr,
-                self.report.criterion_overall[isomme].validation_iso_scores.b_pillar_acx,
-                self.report.criterion_overall[isomme].validation_iso_scores.b_pillar_acy,
-                self.report.criterion_overall[isomme].validation_iso_scores.b_pillar_acz,
-                self.report.criterion_overall[isomme].validation_iso_scores.b_pillar_acr,
-                self.report.criterion_overall[isomme].validation_iso_scores.belt_b3_fo0,
-            ] for isomme in self.report.isomme_list[1:]}
+            self.criteria = {
+                isomme: [
+                    self.report.criterion_overall[
+                        isomme
+                    ].validation_iso_scores.head_avx,
+                    self.report.criterion_overall[
+                        isomme
+                    ].validation_iso_scores.head_avy,
+                    self.report.criterion_overall[
+                        isomme
+                    ].validation_iso_scores.head_avz,
+                    self.report.criterion_overall[
+                        isomme
+                    ].validation_iso_scores.head_avr,
+                    self.report.criterion_overall[
+                        isomme
+                    ].validation_iso_scores.thsp_04_acx,
+                    self.report.criterion_overall[
+                        isomme
+                    ].validation_iso_scores.thsp_04_acy,
+                    self.report.criterion_overall[
+                        isomme
+                    ].validation_iso_scores.thsp_04_acz,
+                    self.report.criterion_overall[
+                        isomme
+                    ].validation_iso_scores.thsp_04_acr,
+                    self.report.criterion_overall[
+                        isomme
+                    ].validation_iso_scores.thsp_12_acx,
+                    self.report.criterion_overall[
+                        isomme
+                    ].validation_iso_scores.thsp_12_acy,
+                    self.report.criterion_overall[
+                        isomme
+                    ].validation_iso_scores.thsp_12_acz,
+                    self.report.criterion_overall[
+                        isomme
+                    ].validation_iso_scores.thsp_12_acr,
+                    self.report.criterion_overall[
+                        isomme
+                    ].validation_iso_scores.pelv_acx,
+                    self.report.criterion_overall[
+                        isomme
+                    ].validation_iso_scores.pelv_acy,
+                    self.report.criterion_overall[
+                        isomme
+                    ].validation_iso_scores.pelv_acz,
+                    self.report.criterion_overall[
+                        isomme
+                    ].validation_iso_scores.pelv_acr,
+                    self.report.criterion_overall[
+                        isomme
+                    ].validation_iso_scores.b_pillar_acx,
+                    self.report.criterion_overall[
+                        isomme
+                    ].validation_iso_scores.b_pillar_acy,
+                    self.report.criterion_overall[
+                        isomme
+                    ].validation_iso_scores.b_pillar_acz,
+                    self.report.criterion_overall[
+                        isomme
+                    ].validation_iso_scores.b_pillar_acr,
+                    self.report.criterion_overall[
+                        isomme
+                    ].validation_iso_scores.belt_b3_fo0,
+                ]
+                for isomme in self.report.isomme_list[1:]
+            }
 
     class Page_Validation_Injury_Criteria_Percentage_Table(Page_Criterion_Values_Table):
         report: EuroNCAP_Side_Farside_VTC
         name = "Validation Injury-Criteria Percentage Table"
         title = "Validation Injury-Criteria Percentage"
         row_label = staticmethod(lambda criterion: f"{criterion.name}")
-        cell_text = staticmethod(lambda criterion: f"{criterion.r_ac_sim:.1%}\n{criterion.value:.1%}")
+        cell_text = staticmethod(
+            lambda criterion: f"{criterion.r_ac_sim:.1%}\n{criterion.value:.1%}"
+        )
 
         def __init__(self, report: EuroNCAP_Side_Farside_VTC) -> None:
             super().__init__(report)
 
-            self.criteria = {isomme: [
-                self.report.criterion_overall[isomme].criterion_validation_injury_criteria.criterion_hic_15,
-                self.report.criterion_overall[isomme].criterion_validation_injury_criteria.criterion_head_a3ms,
-            ] for isomme in self.report.isomme_list}
+            self.criteria = {
+                isomme: [
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_validation_injury_criteria.criterion_hic_15,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_validation_injury_criteria.criterion_head_a3ms,
+                ]
+                for isomme in self.report.isomme_list
+            }
 
     class Page_Validation_Injury_Criteria_Difference_Table(Page_Criterion_Values_Table):
         pass
@@ -448,12 +644,15 @@ class EuroNCAP_Side_Farside_VTC(Report[Overall]):
     class Page_Head_Acceleration(EuroNCAP_Side_Pole.Page_Head_Acceleration):
         pass
 
-    class Page_Chest_Lateral_Compression(EuroNCAP_Side_Pole.Page_Chest_Lateral_Compression):
+    class Page_Chest_Lateral_Compression(
+        EuroNCAP_Side_Pole.Page_Chest_Lateral_Compression
+    ):
         pass
 
-    class Page_Abdomen_Lateral_Compression(EuroNCAP_Side_Pole.Page_Abdomen_Lateral_Compression):
+    class Page_Abdomen_Lateral_Compression(
+        EuroNCAP_Side_Pole.Page_Abdomen_Lateral_Compression
+    ):
         pass
 
     class Page_Pubic_Symphysis_Force(EuroNCAP_Side_Pole.Page_Pubic_Symphysis_Force):
         pass
-

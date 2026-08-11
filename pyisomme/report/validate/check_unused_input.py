@@ -61,7 +61,11 @@ def check_unused_input(path: str, criterion: Criterion) -> Iterator[Issue]:
         if source is None:
             continue
         if not re.search(rf"\.{re.escape(name)}\b", source):
-            yield Issue("unused_input", IssueSeverity.WARNING, path,
-                        f"manual input {name!r} is declared by "
-                        f"{spec.owner.__qualname__} but never read in "
-                        f"{spec.owner.__module__}.")
+            yield Issue(
+                "unused_input",
+                IssueSeverity.WARNING,
+                path,
+                f"manual input {name!r} is declared by "
+                f"{spec.owner.__qualname__} but never read in "
+                f"{spec.owner.__module__}.",
+            )

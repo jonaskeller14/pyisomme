@@ -15,5 +15,9 @@ def check_limit_unit(path: str, criterion: Criterion) -> Iterator[Issue]:
     for patterns, limits in blocks(criterion).items():
         units = {str(limit.y_unit) for limit in limits}
         if len(units) > 1:
-            yield Issue("limit_unit", IssueSeverity.WARNING, path,
-                        f"limit block {list(patterns)} mixes y_units {sorted(units)}.")
+            yield Issue(
+                "limit_unit",
+                IssueSeverity.WARNING,
+                path,
+                f"limit block {list(patterns)} mixes y_units {sorted(units)}.",
+            )

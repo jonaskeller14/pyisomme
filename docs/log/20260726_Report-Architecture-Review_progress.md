@@ -2978,3 +2978,224 @@ normal-moment `TIIN…00…` channel.
   package is incomplete; export and slide-count checks completed successfully.
 - Repository-wide Ruff and mypy remain blocked by the unrelated `report_protocol.py:14` syntax error;
   no change was made to that file.
+
+## 2026-08-07 — Fix immutable Limit regressions
+
+**Branch:** `dev` · **Commit(s):** uncommitted — awaiting manual review
+**Outcome:** all 311 tests restored after the frozen-dataclass migration
+**Review:** ☐ pending
+
+### What changed
+
+- Annotated the inherited dataclass field overrides in `report/euro_ncap/limits.py`,
+  `report/iihs/limits.py`, `report/fmvss/limits.py`, `report/un/limits.py` and
+  `report/us_ncap/limits.py`. Without annotations, the generated subclass constructors
+  installed `Limit`'s base defaults (`name=None`, `color="black"`, `rating=nan`) instead
+  of the protocol defaults; this caused the validation, IIHS and golden failures.
+- Corrected `Ctx.fields` to use a real per-instance `default_factory` returning an
+  immutable empty mapping. Retained the in-progress `Ctx.codes()` tuple return needed by
+  immutable `Limit.code_patterns`.
+- Finished the tuple migration in `side_farside_vtc.py` and the criterion-tree test.
+  The test now uses `dataclasses.replace()` rather than mutating a frozen Limit.
+- Reworked `get_full_limits()` to create its adjusted Limit with `dataclasses.replace()`
+  instead of deep-copying and mutating a frozen instance.
+- Added postponed annotation evaluation to the untracked `report_protocol.py`, making its
+  union annotations importable and mypy-clean on the supported Python 3.9 target.
+- Restored the existing validation golden's human-facing `Fail`/`Pass` labels; no result,
+  definition, describe or validation snapshot needed re-baselining.
+
+### Verification
+
+| Command | Result |
+|---|---|
+| `-m unittest tests.test_limit tests.test_limits tests.test_criterion_tree tests.test_validate tests.test_iihs tests.test_report_modules` | **90 tests OK** in 13.873 s |
+| `-m unittest tests.test_golden` | **16 tests OK** in 88.826 s |
+| `-m unittest discover -s tests` | **311 tests OK, 1 skipped** in 195.528 s |
+| `-m ruff check .` | all checks passed |
+| `-m mypy` | clean, 64 source files |
+| `git diff --check` | clean; line-ending conversion warnings only |
+
+### Deviation / still open
+
+- No behavior or protocol-number change is intended; the fixes restore the defaults and
+  golden results from before commit `69105ed` while keeping Limit definitions frozen.
+- Pre-existing staged `tests/test_limits.py`, unstaged `tests/test_validate.py`, handover
+  notes, notebook and bundled subproject changes were preserved. No commit was created.
+## 2026-08-09 — Out-of-band: Report / MetaReport composite architecture
+
+**Branch:** `dev` · **Commit(s):** uncommitted — awaiting manual review
+**Outcome:** criterion reports and composite reports now share a small enforced presentation/lifecycle base
+**Review:** ☐ pending
+
+### What changed
+
+- Added `BaseReport`, an ABC that owns report identity, cover labels, available/selected page state,
+  ordered glob selection, `clear_pages()` / `reset_pages()`, validation printing and the shared PPTX
+  export implementation. Saving a locked deck now retries three times and then raises instead of
+  sleeping forever. Removed the in-progress `ReportInterface` typing Protocol; implementations no
+  longer inherit empty Protocol method bodies.
+- Made criterion-backed `Report` and composite `MetaReport` siblings under `BaseReport`. A bare
+  `Report` now fails clearly because it has no `Criterion_Overall`; concrete protocol reports retain
+  their typed trees, limits, manual inputs and per-report protocol selection.
+- Rebuilt `MetaReport` around an ordered mapping of stable subreport keys to already constructed
+  `BaseReport` objects. Its inputs, validation paths, printed headings and read-only protocol view use
+  those keys. Ratings are per-instance, a generic unscored composite uses `rating = None`, and scored
+  subclasses override the optional `aggregate_results()` hook.
+- Meta reports now own optional cover/summary pages followed by every child's available pages. Their
+  selected-page state is independent from child selection, and qualified patterns such as
+  `frontal_mpdb/Page Name` disambiguate duplicate names while retaining available-page order.
+- Migrated `EuroNCAP` to typed injection of its five constructed load-case reports and renamed its
+  scoring hook to `aggregate_results()` without changing the score calculation. Its child protocols
+  remain independently configurable (`meta.side_farside.protocol = ...`); no broad MetaReport
+  protocol setter remains.
+- Made `Page` a generic ABC and allowed `Page_Cover` to render any `BaseReport` via `coverage_labels`.
+  Added focused hierarchy/composition/page/export regressions and adapted the synthetic EuroNCAP
+  builder and the manual-input local fixture to the new API.
+- Finished the overlapping protocol-metadata work sufficiently for Python 3.9 and static checking:
+  `ReportProtocol` no longer uses the Python-3.10-only dataclass `slots` option, the protocol validator
+  has postponed annotations, and `describe()` renders protocol versions explicitly. Re-baselined all
+  14 describe snapshots; their only changes are `pages` becoming separate `available_pages` /
+  `selected_pages` rows and the four UN protocol headers using version identifiers rather than dates.
+
+### Behaviour / API changes
+
+- `EuroNCAP(...)` now accepts constructed load-case `Report` objects, not lists of constructor
+  arguments. Calculation result goldens, including the combined EuroNCAP score, are unchanged.
+- `selected_pages` is a read-only tuple view. Selection changes use the named methods and preserve the
+  report's defined page order; MetaReport selection does not mutate its children.
+- A generic `MetaReport` is a valid non-scoring bundle (`rating is None`); missing data in an actual
+  scoring scheme continues to propagate `nan` unchanged.
+- Direct `Report(...)` construction is rejected instead of silently building an empty criterion tree.
+
+### Verification
+
+| Command | Result |
+|---|---|
+| `-m unittest discover -s tests` | **319 tests OK, 1 skipped** in 149.820 s |
+| report/golden/architecture subset | **92 tests OK** in 100.062 s; includes all result goldens and a temporary MetaReport PPTX render/reopen |
+| `-m tests.test_describe --regen` then `-m unittest tests.test_describe` | 14 definition snapshots regenerated; **5 tests OK** |
+| `-m ruff check .` | all checks passed |
+| `-m mypy` | clean, 69 source files |
+| `git diff --check` | clean; line-ending conversion warnings only |
+
+### Deviation / still open
+
+- The `page.__init__(page.report)` export-time refresh moved into `BaseReport` but deliberately remains;
+  the active refactor plan assigns its removal and lazy page selection to Step 11.
+- The repository contained substantial staged and unstaged report/protocol/IIHS work before this
+  session. It was preserved, no commit was created, and the combined working tree requires manual
+  review.
+
+## 2026-08-09 — Out-of-band: FMVSS 208 adult frontal rigid-barrier report
+
+**Branch:** dev · **Commit(s):** uncommitted — awaiting manual review
+**Outcome:** configurable HF/H3 pass-fail report implemented from 49 CFR 571.208
+**Review:** pending
+
+### What changed
+
+- Added pyisomme/report/fmvss/fmvss_208.py with an eager declarative tree for driver and front
+  passenger containment, HIC15, chest a3ms, chest deflection, Nij, neck peak
+  tension/compression and left/right femur force. Overall and occupant results are strict pass/fail
+  minima; NaN is never skipped.
+- Added DummyType.FEMALE_5TH (HF) and DummyType.MALE_50TH (H3) as construction-time report
+  configuration. The stricter HF family is the default. Every measurement pattern carries the selected
+  dummy identifier, preventing cross-family thresholds or derived Nij constants.
+- Added 18 explicit pages in the Euro NCAP frontal style: cover, overall/occupant compliance tables,
+  values charts/tables, and detailed head, neck load, Nij, chest and femur plots for both occupants.
+- Added pyisomme/report/fmvss/protocols.py for the supplied 2022-10-14 eCFR source and re-exported /
+  registered FMVSS_208 in the FMVSS package, top-level report registry, CLI registry and deterministic
+  test registry.
+- Added docs/log/20260809_FMVSS-208-Report.md, documenting the included S14.4/S14.5/S15 adult frontal
+  criteria, conservative defaults and the deliberately excluded equipment, setup, child, lateral,
+  rollover and low-risk-deployment provisions.
+- Corrected calculate_neck_nij()'s combined channel: tension-flexion is now included and
+  tension-extension is no longer counted twice. Added a regression with an analytical Ntf result of
+  0.2.
+- Added tests/test_fmvss.py, a result golden, a 279-line definition snapshot, and the report's empty
+  validation baseline entry. Extended the synthetic fixture with HF raw head, chest and neck-moment
+  channels so HIC15/a3ms are genuinely derived and every signal page is exercised.
+
+### Behaviour / assumptions
+
+- Dummy containment is a typed per-occupant manual input and defaults to False; compliance must be
+  positively confirmed from video or post-test inspection.
+- The default HF thresholds are HIC15 700, chest a3ms 60 g, chest compression 52 mm, Nij 1.0,
+  neck tension/compression 2620/2520 N and femur compression 6805 N. H3 selects 63 mm,
+  4170/4000 N and 10008 N while HIC15, chest a3ms and Nij remain unchanged.
+- One Isomme represents one front-outboard adult rigid-barrier test with a single selected dummy
+  family. Physical test speed, angle, belt state, positioning and other setup compliance are not
+  inferred from signal data.
+- The Nij fix can change a provider-derived total when a crash contains tension-flexion or
+  tension-extension loading. Existing report goldens did not change; the new analytical regression
+  demonstrates the corrected Ntf contribution.
+
+### Verification
+
+| Command | Result |
+|---|---|
+| focused FMVSS/Nij/import suite | **9 tests OK** in 18.861 s |
+| python -m unittest discover -s tests | **323 tests OK, 1 skipped** in 254.850 s |
+| python -m ruff check . | all checks passed |
+| python -m mypy | clean, 71 source files |
+| git diff --check and git diff --cached --check | clean; line-ending conversion warning only |
+| synthetic calculate() + export_pptx() + reopen | **18 pages = 18 slides** |
+
+### Deviation / still open
+
+- The source pages were extracted and rendered with Poppler, but both available image-inspection
+  surfaces failed because the Windows sandbox helper could not start. Thresholds were checked against
+  the complete extracted S5/S6/S14/S15 passages; a maintainer should still visually compare the
+  implementation with PDF pages 34-37 and 58-63 during manual review.
+- The report intentionally does not claim complete FMVSS 208 vehicle certification; the precise scope
+  and every conservative assumption are recorded in the dedicated scope document.
+- Pre-existing progress-log, handover, notebook and bundled-subproject changes were preserved. The
+  temporary rendered PDF pages and 18-slide smoke deck were removed after verification. No commit was
+  created.
+
+## 2026-08-09 — Follow-up: per-occupant FMVSS 208 dummy detection
+
+**Branch:** dev · **Commit(s):** uncommitted — awaiting manual review
+**Outcome:** report-level dummy selection replaced by automatic per-occupant H3/HF detection
+**Review:** pending
+
+### What changed
+
+- Removed the `FMVSS_208(..., dummy_type=...)` constructor argument and report-wide dummy state.
+  Each driver/passenger `Criterion_Occupant` now owns a typed `dummy_type` manual input.
+- Derive that input from the ISO-MME `fine_location_3` field on channels at the occupant's resolved
+  position. A unique `H3` or `HF` selects its corresponding channel patterns and limit family;
+  missing or conflicting identifiers conservatively derive `HF`. A user assignment still wins over
+  derivation and limits rebuild from it during calculation.
+- Updated all signal pages to use the resolved dummy identifier of their own occupant. One report can
+  therefore plot and assess, for example, an H3 driver at position 1 and an HF passenger at position 3.
+- Changed the deterministic FMVSS fixture to that mixed H3-driver/HF-passenger arrangement. Added
+  focused regressions for automatic mixed detection, family-specific limits/patterns, the conservative
+  empty-data fallback and explicit per-occupant override.
+- Re-baselined the FMVSS definition snapshot to record the two new manual inputs. Re-baselined the
+  result golden because the mixed fixture's H3 driver now passes the 63 mm chest-deflection limit at
+  about 60 mm; the passenger remains on the stricter HF family.
+- Updated the dedicated scope/assumptions document. The user-removed analytical Nij typo regression
+  was not restored; the underlying tension-flexion calculation correction remains unchanged.
+
+### Verification
+
+| Command | Result |
+|---|---|
+| `-m unittest tests.test_fmvss` | **4 tests OK** in 0.063 s |
+| `-m tests.test_describe --regen` | FMVSS describe snapshot now contains one `dummy_type` input per occupant |
+| `-m tests.golden_regen fmvss_208` | one intentional H3 chest-deflection result change; exact diff manually reviewed |
+| `PYISOMME_PPTX=fmvss_208 ... -m unittest tests.test_report` | **1 test OK** in 40.906 s; **18 pages = 18 slides**, deck retained at `out/FMVSS_208.pptx` |
+| `-m unittest discover -s tests` | **323 tests OK, 1 skipped** in 246.732 s |
+| `-m ruff check .` | all checks passed |
+| `-m mypy` | clean, 71 source files |
+| `git diff --check` | clean; line-ending conversion warnings only |
+
+### Deviation / still open
+
+- Automatic identification intentionally accepts only `H3` and `HF`. Ambiguous positions do not
+  guess: they use the stricter HF limits unless the engineer explicitly sets that occupant's input.
+- The earlier PDF visual-review limitation still applies; this follow-up changes selection mechanics,
+  not any regulatory threshold or scope.
+- Existing staged work and unrelated untracked handover/notebook/subproject files were preserved.
+  Follow-up edits remain unstaged on top of the partially staged FMVSS files. No commit was created.

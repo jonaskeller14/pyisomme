@@ -17,6 +17,7 @@ objects), so the whole module runs in CI:
       .venv/Scripts/python.exe -m tests.test_validate --regen
       git diff tests/golden/
 """
+
 from __future__ import annotations
 
 import json
@@ -30,7 +31,14 @@ from dataclasses import replace
 import pyisomme
 from pyisomme.limit import Limit
 from pyisomme.report.criterion import Criterion
-from pyisomme.report.euro_ncap.limits import Limit_A, Limit_C, Limit_G, Limit_M, Limit_P, Limit_W
+from pyisomme.report.euro_ncap.limits import (
+    Limit_A,
+    Limit_C,
+    Limit_G,
+    Limit_M,
+    Limit_P,
+    Limit_W,
+)
 from pyisomme.report.manual import Manual, manual
 from pyisomme.report.report import Report
 from pyisomme.report.validate import validate_tree
@@ -57,9 +65,14 @@ def checks_of(criterion: Criterion) -> set[str]:
 
 def leaf(limit_list: list[Limit], **attributes: Any) -> Criterion:
     """A named leaf criterion carrying ``limit_list``, detached from any report."""
-    made: type[Criterion] = type("Made", (Criterion,),
-                                 {"name": "Made", "calculation": lambda self: None, **attributes})
-    criterion = made.__new__(made)  # bypass __init__: it wants a report to register limits with
+    made: type[Criterion] = type(
+        "Made",
+        (Criterion,),
+        {"name": "Made", "calculation": lambda self: None, **attributes},
+    )
+    criterion = made.__new__(
+        made
+    )  # bypass __init__: it wants a report to register limits with
     criterion.name = "Made"
     criterion.limits = pyisomme.Limits(name="test", limit_list=limit_list)
     return criterion
@@ -78,8 +91,9 @@ def attach(parent: Criterion, name: str, child: Criterion) -> Criterion:
     return child
 
 
-def sliding_scale(good: float, marginal: float, weak: float, poor: float,
-                  capping: float | None = None) -> list[Limit]:
+def sliding_scale(
+    good: float, marginal: float, weak: float, poor: float, capping: float | None = None
+) -> list[Limit]:
     """
     A Euro-NCAP 4-point block, written the way the report modules write it.
 
@@ -109,16 +123,22 @@ class TestChecks(unittest.TestCase):
     """Each check fires on a broken definition and stays quiet on a correct one."""
 
     def test_correct_scale_is_silent(self) -> None:
-        self.assertEqual(checks_of(leaf(sliding_scale(500, 566.667, 633.333, 700))), set())
+        self.assertEqual(
+            checks_of(leaf(sliding_scale(500, 566.667, 633.333, 700))), set()
+        )
 
     def test_correct_capped_scale_is_silent(self) -> None:
         self.assertEqual(
-            checks_of(leaf(sliding_scale(500, 566.667, 633.333, 700, capping=700))), set())
+            checks_of(leaf(sliding_scale(500, 566.667, 633.333, 700, capping=700))),
+            set(),
+        )
 
     def test_capping_above_poor_keeps_the_poor_flag(self) -> None:
         """Capping at a *different* value: both rows are flagged, and that is correct."""
         self.assertEqual(
-            checks_of(leaf(sliding_scale(-36, -40.333, -44.667, -49, capping=-57))), set())
+            checks_of(leaf(sliding_scale(-36, -40.333, -44.667, -49, capping=-57))),
+            set(),
+        )
 
     def test_unnamed_criterion(self) -> None:
         criterion = leaf([])
@@ -133,8 +153,10 @@ class TestChecks(unittest.TestCase):
         self.assertIn("566.667", issues[0].message)
 
     def test_perturbed_intermediate_on_a_negative_scale(self) -> None:
-        self.assertIn("limit_interpolation",
-                      checks_of(leaf(sliding_scale(-2.6, -3.9, -5.0, -6.2))))
+        self.assertIn(
+            "limit_interpolation",
+            checks_of(leaf(sliding_scale(-2.6, -3.9, -5.0, -6.2))),
+        )
 
     def test_poor_row_flagged_at_the_capping_value(self) -> None:
         """The `capped_at_poor` typo: Poor keeps `lower` although Capping sits on it."""
@@ -160,30 +182,42 @@ class TestChecks(unittest.TestCase):
 
     def test_mixed_units_in_one_block(self) -> None:
         rows = sliding_scale(500, 566.667, 633.333, 700)
-        rows[2] = replace(rows[2], y_unit = "mm")
+        rows[2] = replace(rows[2], y_unit="mm")
         self.assertIn("limit_unit", checks_of(leaf(rows)))
 
     def test_asymmetric_symmetric_block(self) -> None:
         """Poor mistyped as -1.90 on one side of a ± scale only."""
-        rows = sliding_scale(1.20, 1.45, 1.70, 1.95) + sliding_scale(-1.20, -1.45, -1.70, -1.90)
+        rows = sliding_scale(1.20, 1.45, 1.70, 1.95) + sliding_scale(
+            -1.20, -1.45, -1.70, -1.90
+        )
         self.assertIn("limit_symmetry", checks_of(leaf(rows)))
 
     def test_symmetric_block_is_silent(self) -> None:
-        rows = sliding_scale(1.20, 1.45, 1.70, 1.95) + sliding_scale(-1.20, -1.45, -1.70, -1.95)
+        rows = sliding_scale(1.20, 1.45, 1.70, 1.95) + sliding_scale(
+            -1.20, -1.45, -1.70, -1.95
+        )
         self.assertEqual(checks_of(leaf(rows)), set())
 
     def test_code_pattern_length(self) -> None:
-        self.assertIn("code_pattern", checks_of(leaf([Limit(("?1HICR0015??00R",), func=lambda x: 1.0)])))
+        self.assertIn(
+            "code_pattern",
+            checks_of(leaf([Limit(("?1HICR0015??00R",), func=lambda x: 1.0)])),
+        )
 
     def test_code_pattern_character_class_counts_as_one(self) -> None:
         """`fnmatch` reads `[03]` as one code character, so this pattern is fine."""
         self.assertEqual(
-            checks_of(leaf([Limit(("?1CHST000[03]??DSX?",), func=lambda x: 1.0, lower=True)])),
-            set())
+            checks_of(
+                leaf([Limit(("?1CHST000[03]??DSX?",), func=lambda x: 1.0, lower=True)])
+            ),
+            set(),
+        )
 
     def test_code_pattern_with_an_impossible_character(self) -> None:
-        self.assertIn("code_pattern",
-                      checks_of(leaf([Limit(("?1CHST0000 ?DSX?",), func=lambda x: 1.0)])))
+        self.assertIn(
+            "code_pattern",
+            checks_of(leaf([Limit(("?1CHST0000 ?DSX?",), func=lambda x: 1.0)])),
+        )
 
     def test_unused_manual_input(self) -> None:
         class Unused(Criterion):
@@ -204,7 +238,11 @@ class TestMaxRating(unittest.TestCase):
 
     def tree(self, parent_max: float, aggregation: str) -> Criterion:
         parent = leaf([], max_rating=parent_max, aggregation=aggregation)
-        attach(parent, "head", leaf(sliding_scale(500, 566.667, 633.333, 700), max_rating=4.0))
+        attach(
+            parent,
+            "head",
+            leaf(sliding_scale(500, 566.667, 633.333, 700), max_rating=4.0),
+        )
         attach(parent, "chest", leaf(sliding_scale(-30, -35, -40, -45), max_rating=4.0))
         return parent
 
@@ -213,8 +251,11 @@ class TestMaxRating(unittest.TestCase):
         self.assertEqual(checks_of(self.tree(4.0, "min")), set())
 
     def test_broken_aggregation(self) -> None:
-        issues = [issue for issue in validate_tree(self.tree(16.0, "sum"))
-                  if issue.check == "max_rating"]
+        issues = [
+            issue
+            for issue in validate_tree(self.tree(16.0, "sum"))
+            if issue.check == "max_rating"
+        ]
         self.assertEqual(len(issues), 1, issues)
         self.assertIn("sum", issues[0].message)
 
@@ -227,7 +268,9 @@ class TestMaxRating(unittest.TestCase):
         self.assertEqual([issue.severity for issue in issues], ["error"])
 
     def test_undeclared_max_rating_says_nothing(self) -> None:
-        self.assertEqual(checks_of(leaf(sliding_scale(500, 566.667, 633.333, 700))), set())
+        self.assertEqual(
+            checks_of(leaf(sliding_scale(500, 566.667, 633.333, 700))), set()
+        )
 
 
 class TestOrphans(unittest.TestCase):
@@ -256,8 +299,10 @@ class TestRegisteredReports(unittest.TestCase):
 
     def test_warnings_match_golden(self) -> None:
         if not os.path.exists(VALIDATE_GOLDEN):
-            self.fail(f"missing {VALIDATE_GOLDEN} — create it with "
-                      f"`python -m tests.test_validate --regen`")
+            self.fail(
+                f"missing {VALIDATE_GOLDEN} — create it with "
+                f"`python -m tests.test_validate --regen`"
+            )
         with open(VALIDATE_GOLDEN, encoding="utf-8") as handle:
             golden = json.load(handle)
         current = produce_validate()
@@ -265,19 +310,24 @@ class TestRegisteredReports(unittest.TestCase):
         for name in sorted(current):
             with self.subTest(report=name):
                 self.assertEqual(
-                    golden[name], current[name],
+                    golden[name],
+                    current[name],
                     f"{name}'s validate() warnings changed. A new warning is a finding to look "
                     f"at, not a formality; once judged, re-baseline with "
                     f"`python -m tests.test_validate --regen` and say why in the progress log.",
                 )
 
+
 # --------------------------------------------------------------------------- #
 # baseline
 # --------------------------------------------------------------------------- #
 
+
 def produce_validate() -> dict[str, list[str]]:
-    return {spec.class_name: [str(issue) for issue in build(spec.class_name).validate()]
-            for spec in REPORTS}
+    return {
+        spec.class_name: [str(issue) for issue in build(spec.class_name).validate()]
+        for spec in REPORTS
+    }
 
 
 def _regen() -> int:

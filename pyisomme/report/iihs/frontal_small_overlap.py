@@ -22,8 +22,10 @@ from pyisomme.report.report import Report
 P_DRIVER = manual(
     "1",
     source="test report",
-    doc=("Channel-code position of the driver. Defaults to the "
-         "'Driver position object 1' test-info field when available."),
+    doc=(
+        "Channel-code position of the driver. Defaults to the "
+        "'Driver position object 1' test-info field when available."
+    ),
 )
 
 
@@ -45,18 +47,26 @@ class Overall(Criterion):
 
     class Criterion_Restraints_Kinematics(Criterion):
         name = "Restraints and dummy kinematics"
-        demerits: Manual[int, manual(
-            0,
-            source="video and postcrash inspection",
-            doc=("Sum the Version VII Table 1 demerits. Frontal-airbag interaction is 0/1/2; "
-                 "lateral protection, steering-wheel motion, excursion and containment events "
-                 "are added as listed."),
-        )]
-        automatic_poor: Manual[bool, manual(
-            False,
-            source="video and postcrash inspection",
-            doc="True for late/nondeployment, seat-attachment failure, or vehicle-door opening.",
-        )]
+        demerits: Manual[
+            int,
+            manual(
+                0,
+                source="video and postcrash inspection",
+                doc=(
+                    "Sum the Version VII Table 1 demerits. Frontal-airbag interaction is 0/1/2; "
+                    "lateral protection, steering-wheel motion, excursion and containment events "
+                    "are added as listed."
+                ),
+            ),
+        ]
+        automatic_poor: Manual[
+            bool,
+            manual(
+                False,
+                source="video and postcrash inspection",
+                doc="True for late/nondeployment, seat-attachment failure, or vehicle-door opening.",
+            ),
+        ]
 
         def calculation(self) -> None:
             self.value = 6.0 if self.automatic_poor else float(self.demerits)
@@ -71,28 +81,41 @@ class Overall(Criterion):
 
     class Criterion_Structure(Criterion):
         name = "Vehicle structure"
-        intrusion_rating: Manual[int, manual(
-            4,
-            source="intrusion measurements",
-            doc=("Initial Figure 15 structure category: 4=Good, 3=Acceptable, "
-                 "2=Marginal, 1=Poor."),
-        )]
-        qualitative_downgrades: Manual[int, manual(
-            0,
-            source="postcrash inspection",
-            doc="Number of one-category downgrades for adverse deformation observations.",
-        )]
-        integrity_failure: Manual[bool, manual(
-            False,
-            source="postcrash inspection",
-            doc="Significant fuel leak, electrical compromise, smoke, fire, or battery thermal event.",
-        )]
+        intrusion_rating: Manual[
+            int,
+            manual(
+                4,
+                source="intrusion measurements",
+                doc=(
+                    "Initial Figure 15 structure category: 4=Good, 3=Acceptable, "
+                    "2=Marginal, 1=Poor."
+                ),
+            ),
+        ]
+        qualitative_downgrades: Manual[
+            int,
+            manual(
+                0,
+                source="postcrash inspection",
+                doc="Number of one-category downgrades for adverse deformation observations.",
+            ),
+        ]
+        integrity_failure: Manual[
+            bool,
+            manual(
+                False,
+                source="postcrash inspection",
+                doc="Significant fuel leak, electrical compromise, smoke, fire, or battery thermal event.",
+            ),
+        ]
 
         def calculation(self) -> None:
             if self.intrusion_rating not in (1, 2, 3, 4):
                 raise ValueError("intrusion_rating must be 1 (Poor) through 4 (Good)")
-            category = 1 if self.integrity_failure else max(
-                1, self.intrusion_rating - self.qualitative_downgrades
+            category = (
+                1
+                if self.integrity_failure
+                else max(1, self.intrusion_rating - self.qualitative_downgrades)
             )
             self.value = category
             self.rating, self.color = {
@@ -117,7 +140,9 @@ class Overall(Criterion):
     class Criterion_Driver(Criterion_H350M_Injury):
         name = "Driver"
 
-    criterion_driver = sub(Criterion_Driver, at=from_input(P_DRIVER), role=Role.AGGREGATE)
+    criterion_driver = sub(
+        Criterion_Driver, at=from_input(P_DRIVER), role=Role.AGGREGATE
+    )
     criterion_restraints_kinematics = sub(Criterion_Restraints_Kinematics)
     criterion_structure = sub(Criterion_Structure)
 
@@ -196,21 +221,51 @@ class IIHS_Frontal_Small_Overlap(Report[Overall]):
             super().__init__(report)
             self.criteria = {
                 isomme: [
-                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_hic_15,
-                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_nij,
-                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_neck_tension,
-                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_neck_compression,
-                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_tension_corridor,
-                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_compression_corridor,
-                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_shear_corridor,
-                    report.overall(isomme).criterion_driver.criterion_chest.criterion_acceleration,
-                    report.overall(isomme).criterion_driver.criterion_chest.criterion_deflection,
-                    report.overall(isomme).criterion_driver.criterion_chest.criterion_deflection_rate,
-                    report.overall(isomme).criterion_driver.criterion_chest.criterion_vc,
-                    report.overall(isomme).criterion_driver.criterion_leg_foot.criterion_tibia_femur_displacement,
-                    report.overall(isomme).criterion_driver.criterion_leg_foot.criterion_tibia_index,
-                    report.overall(isomme).criterion_driver.criterion_leg_foot.criterion_tibia_axial_force,
-                    report.overall(isomme).criterion_driver.criterion_leg_foot.criterion_foot_acceleration,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_head_neck.criterion_hic_15,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_head_neck.criterion_nij,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_head_neck.criterion_neck_tension,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_head_neck.criterion_neck_compression,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_head_neck.criterion_tension_corridor,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_head_neck.criterion_compression_corridor,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_head_neck.criterion_shear_corridor,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_chest.criterion_acceleration,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_chest.criterion_deflection,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_chest.criterion_deflection_rate,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_chest.criterion_vc,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_leg_foot.criterion_tibia_femur_displacement,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_leg_foot.criterion_tibia_index,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_leg_foot.criterion_tibia_axial_force,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_leg_foot.criterion_foot_acceleration,
                 ]
                 for isomme in report.isomme_list
             }
@@ -224,23 +279,57 @@ class IIHS_Frontal_Small_Overlap(Report[Overall]):
             super().__init__(report)
             self.criteria = {
                 isomme: [
-                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_hic_15,
-                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_nij,
-                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_neck_tension,
-                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_neck_compression,
-                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_tension_corridor,
-                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_compression_corridor,
-                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_shear_corridor,
-                    report.overall(isomme).criterion_driver.criterion_chest.criterion_acceleration,
-                    report.overall(isomme).criterion_driver.criterion_chest.criterion_deflection,
-                    report.overall(isomme).criterion_driver.criterion_chest.criterion_deflection_rate,
-                    report.overall(isomme).criterion_driver.criterion_chest.criterion_vc,
-                    report.overall(isomme).criterion_driver.criterion_thigh_hip.criterion_left,
-                    report.overall(isomme).criterion_driver.criterion_thigh_hip.criterion_right,
-                    report.overall(isomme).criterion_driver.criterion_leg_foot.criterion_tibia_femur_displacement,
-                    report.overall(isomme).criterion_driver.criterion_leg_foot.criterion_tibia_index,
-                    report.overall(isomme).criterion_driver.criterion_leg_foot.criterion_tibia_axial_force,
-                    report.overall(isomme).criterion_driver.criterion_leg_foot.criterion_foot_acceleration,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_head_neck.criterion_hic_15,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_head_neck.criterion_nij,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_head_neck.criterion_neck_tension,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_head_neck.criterion_neck_compression,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_head_neck.criterion_tension_corridor,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_head_neck.criterion_compression_corridor,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_head_neck.criterion_shear_corridor,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_chest.criterion_acceleration,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_chest.criterion_deflection,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_chest.criterion_deflection_rate,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_chest.criterion_vc,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_thigh_hip.criterion_left,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_thigh_hip.criterion_right,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_leg_foot.criterion_tibia_femur_displacement,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_leg_foot.criterion_tibia_index,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_leg_foot.criterion_tibia_axial_force,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_leg_foot.criterion_foot_acceleration,
                 ]
                 for isomme in report.isomme_list
             }
@@ -256,7 +345,10 @@ class IIHS_Frontal_Small_Overlap(Report[Overall]):
         def __init__(self, report: IIHS_Frontal_Small_Overlap) -> None:
             super().__init__(report)
             self.channels = {
-                isomme: [[f"?{report.overall(isomme).p_driver}HEAD??????AC{axis}A"] for axis in "XYZR"]
+                isomme: [
+                    [f"?{report.overall(isomme).p_driver}HEAD??????AC{axis}A"]
+                    for axis in "XYZR"
+                ]
                 for isomme in report.isomme_list
             }
 
@@ -289,8 +381,10 @@ class IIHS_Frontal_Small_Overlap(Report[Overall]):
             driver = report.overall(report.isomme_list[0]).criterion_driver
             super().__init__(
                 report,
-                limits=(driver.criterion_head_neck.criterion_neck_tension.limits
-                        + driver.criterion_head_neck.criterion_neck_compression.limits),
+                limits=(
+                    driver.criterion_head_neck.criterion_neck_tension.limits
+                    + driver.criterion_head_neck.criterion_neck_compression.limits
+                ),
             )
             self.channels = {
                 isomme: [[f"?{report.overall(isomme).p_driver}NECKUP00??FOZB"]]
@@ -305,12 +399,16 @@ class IIHS_Frontal_Small_Overlap(Report[Overall]):
         ncols = 2
 
         def __init__(self, report: IIHS_Frontal_Small_Overlap) -> None:
-            head_neck = report.overall(report.isomme_list[0]).criterion_driver.criterion_head_neck
+            head_neck = report.overall(
+                report.isomme_list[0]
+            ).criterion_driver.criterion_head_neck
             super().__init__(
                 report,
-                limits=(head_neck.criterion_tension_corridor.limits
-                        + head_neck.criterion_compression_corridor.limits
-                        + head_neck.criterion_shear_corridor.limits),
+                limits=(
+                    head_neck.criterion_tension_corridor.limits
+                    + head_neck.criterion_compression_corridor.limits
+                    + head_neck.criterion_shear_corridor.limits
+                ),
             )
             self.channels = {
                 isomme: [

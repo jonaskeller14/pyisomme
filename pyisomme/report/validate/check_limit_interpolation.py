@@ -25,7 +25,10 @@ def check_limit_interpolation(path: str, criterion: Criterion) -> Iterator[Issue
     the two derived ones are machine-checked against them, rather than a helper
     owning all four.
     """
-    def at(patterns: tuple[str, ...], side: list[Row], direction: Direction, x: float) -> Iterator[Issue]:
+
+    def at(
+        patterns: tuple[str, ...], side: list[Row], direction: Direction, x: float
+    ) -> Iterator[Issue]:
         by_rating: dict[float, list[Row]] = defaultdict(list)
         for row in side:
             by_rating[round(row.rating, 6)].append(row)
@@ -36,13 +39,20 @@ def check_limit_interpolation(path: str, criterion: Criterion) -> Iterator[Issue
         good = min(by_rating[GOOD], key=lambda row: row.y * direction.sign).y
         poor = by_rating[POOR][0].y
 
-        for label, rating, fraction in (("Marginal", MARGINAL, 1 / 3), ("Weak", WEAK, 2 / 3)):
+        for label, rating, fraction in (
+            ("Marginal", MARGINAL, 1 / 3),
+            ("Weak", WEAK, 2 / 3),
+        ):
             actual = by_rating[rating][0].y
             expected = round(good + fraction * (poor - good), DECIMALS)
-            if not close(actual, expected, tolerance=10 ** -DECIMALS / 2):
-                yield Issue("limit_interpolation", IssueSeverity.WARNING, path,
-                            f"{block_label(patterns, side)}: {label} is {actual:g}, but "
-                            f"{fraction:.3f} of the way from Good {good:g} to Poor {poor:g} "
-                            f"is {expected:g} (x={x:g}).")
+            if not close(actual, expected, tolerance=10**-DECIMALS / 2):
+                yield Issue(
+                    "limit_interpolation",
+                    IssueSeverity.WARNING,
+                    path,
+                    f"{block_label(patterns, side)}: {label} is {actual:g}, but "
+                    f"{fraction:.3f} of the way from Good {good:g} to Poor {poor:g} "
+                    f"is {expected:g} (x={x:g}).",
+                )
 
     return per_side(criterion, at)

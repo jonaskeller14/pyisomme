@@ -2,7 +2,12 @@ from __future__ import annotations
 
 from pyisomme.isomme import Isomme
 from pyisomme.report.euro_ncap import EuroNCAP_Frontal_50kmh, EuroNCAP_Frontal_MPDB
-from pyisomme.report.page import Page_Cover, Page_Criterion_Rating_Table, Page_Criterion_Values_Chart, Page_Criterion_Values_Table
+from pyisomme.report.page import (
+    Page_Cover,
+    Page_Criterion_Rating_Table,
+    Page_Criterion_Values_Chart,
+    Page_Criterion_Values_Table,
+)
 from pyisomme.limit import Limit
 from pyisomme.report.report import Report
 from pyisomme.report.criterion import Criterion, Role, sub
@@ -25,12 +30,22 @@ from typing import Any
 
 logger = logging.getLogger(__name__)
 
-P_DRIVER = manual("1", source="test report", doc=(
-    "Channel-code position of the driver. Defaults to the "
-    "'Driver position object 1' test-info field when the test carries it."))
-P_PASSENGER = manual("3", source="test report", doc=(
-    "Channel-code position of the front passenger. Derived from p_driver "
-    "('1' for a right-hand-drive test) unless set explicitly."))
+P_DRIVER = manual(
+    "1",
+    source="test report",
+    doc=(
+        "Channel-code position of the driver. Defaults to the "
+        "'Driver position object 1' test-info field when the test carries it."
+    ),
+)
+P_PASSENGER = manual(
+    "3",
+    source="test report",
+    doc=(
+        "Channel-code position of the front passenger. Derived from p_driver "
+        "('1' for a right-hand-drive test) unless set explicitly."
+    ),
+)
 
 
 class Overall(Criterion):
@@ -52,29 +67,30 @@ class Overall(Criterion):
         self.set_derived_input("p_passenger", "1" if self.p_driver != "1" else "3")
 
     def calculation(self) -> None:
-        self.rating = np.min([
-            self.criterion_driver.rating,
-            self.criterion_passenger.rating
-        ])
+        self.rating = np.min(
+            [self.criterion_driver.rating, self.criterion_passenger.rating]
+        )
 
     class Criterion_Driver(Criterion):
         name = "Driver"
         role = Role.AGGREGATE
 
         def calculation(self) -> None:
-            self.rating = np.min([
-                self.criterion_hpc36.rating,
-                self.criterion_head_a3ms.rating,
-                self.criterion_neck_fz_tension.rating,
-                self.criterion_neck_fx_shear.rating,
-                self.criterion_neck_my_extension.rating,
-                self.criterion_chest_deflection.rating,
-                self.criterion_chest_vc.rating,
-                self.criterion_femur_compression.rating,
-                self.criterion_tibia_compression.rating,
-                self.criterion_tibia_index.rating,
-                self.criterion_knee_slider_compression.rating
-            ])
+            self.rating = np.min(
+                [
+                    self.criterion_hpc36.rating,
+                    self.criterion_head_a3ms.rating,
+                    self.criterion_neck_fz_tension.rating,
+                    self.criterion_neck_fx_shear.rating,
+                    self.criterion_neck_my_extension.rating,
+                    self.criterion_chest_deflection.rating,
+                    self.criterion_chest_vc.rating,
+                    self.criterion_femur_compression.rating,
+                    self.criterion_tibia_compression.rating,
+                    self.criterion_tibia_index.rating,
+                    self.criterion_knee_slider_compression.rating,
+                ]
+            )
 
         class Criterion_HPC36(Criterion_HPC36_R137):
             pass
@@ -88,14 +104,30 @@ class Overall(Criterion):
             def define_limits(self) -> list[Limit]:
                 codes = self.ctx.codes("?{p}NECKUP00??FOZ?")
                 return [
-                    Limit_Pass(codes, func=lambda x: np.interp(x, [0, 35, 60], [3.3, 2.9, 1.1]), x_unit="ms", y_unit="kN", upper=True),
-                    Limit_Fail(codes, func=lambda x: np.interp(x, [0, 35, 60], [3.3, 2.9, 1.1]), x_unit="ms", y_unit="kN", lower=True),
+                    Limit_Pass(
+                        codes,
+                        func=lambda x: np.interp(x, [0, 35, 60], [3.3, 2.9, 1.1]),
+                        x_unit="ms",
+                        y_unit="kN",
+                        upper=True,
+                    ),
+                    Limit_Fail(
+                        codes,
+                        func=lambda x: np.interp(x, [0, 35, 60], [3.3, 2.9, 1.1]),
+                        x_unit="ms",
+                        y_unit="kN",
+                        lower=True,
+                    ),
                 ]
 
             def calculation(self) -> None:
-                self.channel = self.require_channel(self.ctx.code("?{p}NECKUP00??FOZA")).convert_unit("kN")
+                self.channel = self.require_channel(
+                    self.ctx.code("?{p}NECKUP00??FOZA")
+                ).convert_unit("kN")
                 self.value = np.max(self.channel.get_data())
-                self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
+                self.rating = self.limits.get_limit_min_rating(
+                    self.channel, interpolate=False
+                )
                 self.color = self.limits.get_limit_min_color(self.channel)
 
         class Criterion_Neck_Fx_shear(Criterion):
@@ -104,22 +136,62 @@ class Overall(Criterion):
             def define_limits(self) -> list[Limit]:
                 codes = self.ctx.codes("?{p}NECKUP00??FOX?")
                 return [
-                    Limit_Fail(codes, func=lambda x: -np.interp(x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1]), x_unit="ms", y_unit="kN", upper=True),
-                    Limit_Pass(codes, func=lambda x: -np.interp(x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1]), x_unit="ms", y_unit="kN", lower=True),
-                    Limit_Pass(codes, func=lambda x: np.interp(x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1]), x_unit="ms", y_unit="kN", upper=True),
-                    Limit_Fail(codes, func=lambda x: np.interp(x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1]), x_unit="ms", y_unit="kN", lower=True),
+                    Limit_Fail(
+                        codes,
+                        func=lambda x: (
+                            -np.interp(x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1])
+                        ),
+                        x_unit="ms",
+                        y_unit="kN",
+                        upper=True,
+                    ),
+                    Limit_Pass(
+                        codes,
+                        func=lambda x: (
+                            -np.interp(x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1])
+                        ),
+                        x_unit="ms",
+                        y_unit="kN",
+                        lower=True,
+                    ),
+                    Limit_Pass(
+                        codes,
+                        func=lambda x: np.interp(
+                            x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1]
+                        ),
+                        x_unit="ms",
+                        y_unit="kN",
+                        upper=True,
+                    ),
+                    Limit_Fail(
+                        codes,
+                        func=lambda x: np.interp(
+                            x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1]
+                        ),
+                        x_unit="ms",
+                        y_unit="kN",
+                        lower=True,
+                    ),
                 ]
 
             def calculation(self) -> None:
-                self.channel = self.require_channel(self.ctx.code("?{p}NECKUP00??FOXA")).convert_unit("kN")
-                self.value = self.channel.get_data(unit="kN")[np.argmax(np.abs(self.channel.get_data()))]
-                self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
+                self.channel = self.require_channel(
+                    self.ctx.code("?{p}NECKUP00??FOXA")
+                ).convert_unit("kN")
+                self.value = self.channel.get_data(unit="kN")[
+                    np.argmax(np.abs(self.channel.get_data()))
+                ]
+                self.rating = self.limits.get_limit_min_rating(
+                    self.channel, interpolate=False
+                )
                 self.color = self.limits.get_limit_min_color(self.channel)
 
         class Criterion_Neck_My_extension(Criterion_Neck_My_extension_R137):
             pass
 
-        class Criterion_Chest_Deflection(Overall_Frontal_50kmh_R137.Criterion_Driver.Criterion_Chest_Deflection):
+        class Criterion_Chest_Deflection(
+            Overall_Frontal_50kmh_R137.Criterion_Driver.Criterion_Chest_Deflection
+        ):
             pass
 
         class Criterion_Chest_VC(Criterion_Chest_VC_R137):
@@ -131,14 +203,30 @@ class Overall(Criterion):
             def define_limits(self) -> list[Limit]:
                 codes = self.ctx.codes("?{p}FEMR??00??FOZ?")
                 return [
-                    Limit_Fail(codes, func=lambda x: np.interp(x, [0, 10], [-9.07, -7.58]), y_unit="kN", x_unit="ms", upper=True),
-                    Limit_Pass(codes, func=lambda x: np.interp(x, [0, 10], [-9.07, -7.58]), y_unit="kN", x_unit="ms", lower=True),
+                    Limit_Fail(
+                        codes,
+                        func=lambda x: np.interp(x, [0, 10], [-9.07, -7.58]),
+                        y_unit="kN",
+                        x_unit="ms",
+                        upper=True,
+                    ),
+                    Limit_Pass(
+                        codes,
+                        func=lambda x: np.interp(x, [0, 10], [-9.07, -7.58]),
+                        y_unit="kN",
+                        x_unit="ms",
+                        lower=True,
+                    ),
                 ]
 
             def calculation(self) -> None:
-                self.channel = self.require_channel(self.ctx.code("?{p}FEMR0000??FOZB")).convert_unit("kN")
+                self.channel = self.require_channel(
+                    self.ctx.code("?{p}FEMR0000??FOZB")
+                ).convert_unit("kN")
                 self.value = self.limits.get_limit_min_y(self.channel)
-                self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
+                self.rating = self.limits.get_limit_min_rating(
+                    self.channel, interpolate=False
+                )
                 self.color = self.limits.get_limit_min_color(self.channel)
 
         class Criterion_Tibia_Compression(Criterion):
@@ -152,9 +240,13 @@ class Overall(Criterion):
                 ]
 
             def calculation(self) -> None:
-                self.channel = self.require_channel(self.ctx.code("?{p}TIBI0000??FOZB")).convert_unit("kN")
+                self.channel = self.require_channel(
+                    self.ctx.code("?{p}TIBI0000??FOZB")
+                ).convert_unit("kN")
                 self.value = np.min(self.channel.get_data())
-                self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
+                self.rating = self.limits.get_limit_min_rating(
+                    self.channel, interpolate=False
+                )
                 self.color = self.limits.get_limit_min_color(self.channel)
 
         class Criterion_Tibia_Index(Criterion):
@@ -170,7 +262,9 @@ class Overall(Criterion):
             def calculation(self) -> None:
                 self.channel = self.require_channel(self.ctx.code("?{p}TIIN0000??000B"))
                 self.value = np.max(self.channel.get_data())
-                self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
+                self.rating = self.limits.get_limit_min_rating(
+                    self.channel, interpolate=False
+                )
                 self.color = self.limits.get_limit_min_color(self.channel)
 
         class Criterion_Knee_Slider_Compression(Criterion):
@@ -184,9 +278,13 @@ class Overall(Criterion):
                 ]
 
             def calculation(self) -> None:
-                self.channel = self.require_channel(self.ctx.code("?{p}KNSL0000??DSXC")).convert_unit("mm")
+                self.channel = self.require_channel(
+                    self.ctx.code("?{p}KNSL0000??DSXC")
+                ).convert_unit("mm")
                 self.value = np.min(self.channel.get_data())
-                self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
+                self.rating = self.limits.get_limit_min_rating(
+                    self.channel, interpolate=False
+                )
                 self.color = self.limits.get_limit_min_color(self.channel)
 
         criterion_hpc36 = sub(Criterion_HPC36)
@@ -206,19 +304,21 @@ class Overall(Criterion):
         role = Role.AGGREGATE
 
         def calculation(self) -> None:
-            self.rating = np.min([
-                self.criterion_hpc36.rating,
-                self.criterion_head_a3ms.rating,
-                self.criterion_neck_fz_tension.rating,
-                self.criterion_neck_fx_shear.rating,
-                self.criterion_neck_my_extension.rating,
-                self.criterion_chest_deflection.rating,
-                self.criterion_chest_vc.rating,
-                self.criterion_femur_compression.rating,
-                self.criterion_tibia_compression.rating,
-                self.criterion_tibia_index.rating,
-                self.criterion_knee_slider_compression.rating
-            ])
+            self.rating = np.min(
+                [
+                    self.criterion_hpc36.rating,
+                    self.criterion_head_a3ms.rating,
+                    self.criterion_neck_fz_tension.rating,
+                    self.criterion_neck_fx_shear.rating,
+                    self.criterion_neck_my_extension.rating,
+                    self.criterion_chest_deflection.rating,
+                    self.criterion_chest_vc.rating,
+                    self.criterion_femur_compression.rating,
+                    self.criterion_tibia_compression.rating,
+                    self.criterion_tibia_index.rating,
+                    self.criterion_knee_slider_compression.rating,
+                ]
+            )
 
         class Criterion_HPC36(Criterion_HPC36_R137):
             pass
@@ -232,14 +332,30 @@ class Overall(Criterion):
             def define_limits(self) -> list[Limit]:
                 codes = self.ctx.codes("?{p}NECKUP00??FOZ?")
                 return [
-                    Limit_Pass(codes, func=lambda x: np.interp(x, [0, 35, 60], [3.3, 2.9, 1.1]), x_unit="ms", y_unit="kN", upper=True),
-                    Limit_Fail(codes, func=lambda x: np.interp(x, [0, 35, 60], [3.3, 2.9, 1.1]), x_unit="ms", y_unit="kN", lower=True),
+                    Limit_Pass(
+                        codes,
+                        func=lambda x: np.interp(x, [0, 35, 60], [3.3, 2.9, 1.1]),
+                        x_unit="ms",
+                        y_unit="kN",
+                        upper=True,
+                    ),
+                    Limit_Fail(
+                        codes,
+                        func=lambda x: np.interp(x, [0, 35, 60], [3.3, 2.9, 1.1]),
+                        x_unit="ms",
+                        y_unit="kN",
+                        lower=True,
+                    ),
                 ]
 
             def calculation(self) -> None:
-                self.channel = self.require_channel(self.ctx.code("?{p}NECKUP00??FOZA")).convert_unit("kN")
+                self.channel = self.require_channel(
+                    self.ctx.code("?{p}NECKUP00??FOZA")
+                ).convert_unit("kN")
                 self.value = np.max(self.channel.get_data())
-                self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
+                self.rating = self.limits.get_limit_min_rating(
+                    self.channel, interpolate=False
+                )
                 self.color = self.limits.get_limit_min_color(self.channel)
 
         class Criterion_Neck_Fx_shear(Criterion):
@@ -248,22 +364,62 @@ class Overall(Criterion):
             def define_limits(self) -> list[Limit]:
                 codes = self.ctx.codes("?{p}NECKUP00??FOX?")
                 return [
-                    Limit_Fail(codes, func=lambda x: -np.interp(x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1]), x_unit="ms", y_unit="kN", upper=True),
-                    Limit_Pass(codes, func=lambda x: -np.interp(x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1]), x_unit="ms", y_unit="kN", lower=True),
-                    Limit_Pass(codes, func=lambda x: np.interp(x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1]), x_unit="ms", y_unit="kN", upper=True),
-                    Limit_Fail(codes, func=lambda x: np.interp(x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1]), x_unit="ms", y_unit="kN", lower=True),
+                    Limit_Fail(
+                        codes,
+                        func=lambda x: (
+                            -np.interp(x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1])
+                        ),
+                        x_unit="ms",
+                        y_unit="kN",
+                        upper=True,
+                    ),
+                    Limit_Pass(
+                        codes,
+                        func=lambda x: (
+                            -np.interp(x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1])
+                        ),
+                        x_unit="ms",
+                        y_unit="kN",
+                        lower=True,
+                    ),
+                    Limit_Pass(
+                        codes,
+                        func=lambda x: np.interp(
+                            x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1]
+                        ),
+                        x_unit="ms",
+                        y_unit="kN",
+                        upper=True,
+                    ),
+                    Limit_Fail(
+                        codes,
+                        func=lambda x: np.interp(
+                            x, [0, 25, 35, 45], [3.1, 1.5, 1.5, 1.1]
+                        ),
+                        x_unit="ms",
+                        y_unit="kN",
+                        lower=True,
+                    ),
                 ]
 
             def calculation(self) -> None:
-                self.channel = self.require_channel(self.ctx.code("?{p}NECKUP00??FOXA")).convert_unit("kN")
-                self.value = self.channel.get_data(unit="kN")[np.argmax(np.abs(self.channel.get_data()))]
-                self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
+                self.channel = self.require_channel(
+                    self.ctx.code("?{p}NECKUP00??FOXA")
+                ).convert_unit("kN")
+                self.value = self.channel.get_data(unit="kN")[
+                    np.argmax(np.abs(self.channel.get_data()))
+                ]
+                self.rating = self.limits.get_limit_min_rating(
+                    self.channel, interpolate=False
+                )
                 self.color = self.limits.get_limit_min_color(self.channel)
 
         class Criterion_Neck_My_extension(Criterion_Neck_My_extension_R137):
             pass
 
-        class Criterion_Chest_Deflection(Overall_Frontal_50kmh_R137.Criterion_Driver.Criterion_Chest_Deflection):
+        class Criterion_Chest_Deflection(
+            Overall_Frontal_50kmh_R137.Criterion_Driver.Criterion_Chest_Deflection
+        ):
             pass
 
         class Criterion_Chest_VC(Criterion_Chest_VC_R137):
@@ -275,14 +431,30 @@ class Overall(Criterion):
             def define_limits(self) -> list[Limit]:
                 codes = self.ctx.codes("?{p}FEMR??00??FOZ?")
                 return [
-                    Limit_Fail(codes, func=lambda x: np.interp(x, [0, 10], [-9.07, -7.58]), y_unit="kN", x_unit="ms", upper=True),
-                    Limit_Pass(codes, func=lambda x: np.interp(x, [0, 10], [-9.07, -7.58]), y_unit="kN", x_unit="ms", lower=True),
+                    Limit_Fail(
+                        codes,
+                        func=lambda x: np.interp(x, [0, 10], [-9.07, -7.58]),
+                        y_unit="kN",
+                        x_unit="ms",
+                        upper=True,
+                    ),
+                    Limit_Pass(
+                        codes,
+                        func=lambda x: np.interp(x, [0, 10], [-9.07, -7.58]),
+                        y_unit="kN",
+                        x_unit="ms",
+                        lower=True,
+                    ),
                 ]
 
             def calculation(self) -> None:
-                self.channel = self.require_channel(self.ctx.code("?{p}FEMR0000??FOZB")).convert_unit("kN")
+                self.channel = self.require_channel(
+                    self.ctx.code("?{p}FEMR0000??FOZB")
+                ).convert_unit("kN")
                 self.value = self.limits.get_limit_min_y(self.channel)
-                self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
+                self.rating = self.limits.get_limit_min_rating(
+                    self.channel, interpolate=False
+                )
                 self.color = self.limits.get_limit_min_color(self.channel)
 
         class Criterion_Tibia_Compression(Criterion):
@@ -296,9 +468,13 @@ class Overall(Criterion):
                 ]
 
             def calculation(self) -> None:
-                self.channel = self.require_channel(self.ctx.code("?{p}TIBI0000??FOZB")).convert_unit("kN")
+                self.channel = self.require_channel(
+                    self.ctx.code("?{p}TIBI0000??FOZB")
+                ).convert_unit("kN")
                 self.value = np.min(self.channel.get_data())
-                self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
+                self.rating = self.limits.get_limit_min_rating(
+                    self.channel, interpolate=False
+                )
                 self.color = self.limits.get_limit_min_color(self.channel)
 
         class Criterion_Tibia_Index(Criterion):
@@ -314,7 +490,9 @@ class Overall(Criterion):
             def calculation(self) -> None:
                 self.channel = self.require_channel(self.ctx.code("?{p}TIIN0000??000B"))
                 self.value = np.max(self.channel.get_data())
-                self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
+                self.rating = self.limits.get_limit_min_rating(
+                    self.channel, interpolate=False
+                )
                 self.color = self.limits.get_limit_min_color(self.channel)
 
         class Criterion_Knee_Slider_Compression(Criterion):
@@ -328,9 +506,13 @@ class Overall(Criterion):
                 ]
 
             def calculation(self) -> None:
-                self.channel = self.require_channel(self.ctx.code("?{p}KNSL0000??DSXC")).convert_unit("mm")
+                self.channel = self.require_channel(
+                    self.ctx.code("?{p}KNSL0000??DSXC")
+                ).convert_unit("mm")
                 self.value = np.min(self.channel.get_data())
-                self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
+                self.rating = self.limits.get_limit_min_rating(
+                    self.channel, interpolate=False
+                )
                 self.color = self.limits.get_limit_min_color(self.channel)
 
         criterion_hpc36 = sub(Criterion_HPC36)
@@ -345,9 +527,12 @@ class Overall(Criterion):
         criterion_tibia_index = sub(Criterion_Tibia_Index)
         criterion_knee_slider_compression = sub(Criterion_Knee_Slider_Compression)
 
-    criterion_driver = sub(Criterion_Driver, at=from_input(P_DRIVER), role=Role.AGGREGATE)
-    criterion_passenger = sub(Criterion_Passenger, role=Role.AGGREGATE,
-                              at=from_input(P_PASSENGER))
+    criterion_driver = sub(
+        Criterion_Driver, at=from_input(P_DRIVER), role=Role.AGGREGATE
+    )
+    criterion_passenger = sub(
+        Criterion_Passenger, role=Role.AGGREGATE, at=from_input(P_PASSENGER)
+    )
 
 
 class UN_Frontal_56kmh_ODB_R94(Report[Overall]):
@@ -362,7 +547,6 @@ class UN_Frontal_56kmh_ODB_R94(Report[Overall]):
         self._available_pages = (
             Page_Cover(self),
             self.Page_Rating_Table(self),
-
             self.Page_Driver_Result_Values_Chart(self),
             self.Page_Driver_Values_Table(self),
             self.Page_Driver_Head_Acceleration(self),
@@ -372,7 +556,6 @@ class UN_Frontal_56kmh_ODB_R94(Report[Overall]):
             self.Page_Driver_Knee_Slider_Compression(self),
             self.Page_Driver_Tibia_Compression(self),
             self.Page_Driver_Tibia_Index(self),
-
             self.Page_Passenger_Result_Values_Chart(self),
             self.Page_Passenger_Values_Table(self),
             self.Page_Passenger_Head_Acceleration(self),
@@ -394,11 +577,14 @@ class UN_Frontal_56kmh_ODB_R94(Report[Overall]):
         def __init__(self, report: UN_Frontal_56kmh_ODB_R94) -> None:
             super().__init__(report)
 
-            self.criteria = {isomme: [
-                self.report.criterion_overall[isomme].criterion_driver,
-                self.report.criterion_overall[isomme].criterion_passenger,
-                self.report.criterion_overall[isomme],
-            ] for isomme in self.report.isomme_list}
+            self.criteria = {
+                isomme: [
+                    self.report.criterion_overall[isomme].criterion_driver,
+                    self.report.criterion_overall[isomme].criterion_passenger,
+                    self.report.criterion_overall[isomme],
+                ]
+                for isomme in self.report.isomme_list
+            }
 
     class Page_Driver_Result_Values_Chart(Page_Criterion_Values_Chart):
         report: UN_Frontal_56kmh_ODB_R94
@@ -408,19 +594,44 @@ class UN_Frontal_56kmh_ODB_R94(Report[Overall]):
         def __init__(self, report: UN_Frontal_56kmh_ODB_R94) -> None:
             super().__init__(report)
 
-            self.criteria = {isomme: [
-                self.report.criterion_overall[isomme].criterion_driver.criterion_hpc36,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_head_a3ms,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_neck_fz_tension,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_neck_fx_shear,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_neck_my_extension,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_chest_deflection,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_chest_vc,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_femur_compression,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_tibia_compression,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_tibia_index,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_knee_slider_compression,
-            ] for isomme in self.report.isomme_list}
+            self.criteria = {
+                isomme: [
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_driver.criterion_hpc36,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_driver.criterion_head_a3ms,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_driver.criterion_neck_fz_tension,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_driver.criterion_neck_fx_shear,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_driver.criterion_neck_my_extension,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_driver.criterion_chest_deflection,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_driver.criterion_chest_vc,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_driver.criterion_femur_compression,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_driver.criterion_tibia_compression,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_driver.criterion_tibia_index,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_driver.criterion_knee_slider_compression,
+                ]
+                for isomme in self.report.isomme_list
+            }
 
     class Page_Driver_Values_Table(Page_Criterion_Values_Table):
         report: UN_Frontal_56kmh_ODB_R94
@@ -430,36 +641,71 @@ class UN_Frontal_56kmh_ODB_R94(Report[Overall]):
         def __init__(self, report: UN_Frontal_56kmh_ODB_R94) -> None:
             super().__init__(report)
 
-            self.criteria = {isomme: [
-                self.report.criterion_overall[isomme].criterion_driver.criterion_hpc36,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_head_a3ms,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_neck_fz_tension,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_neck_fx_shear,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_neck_my_extension,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_chest_deflection,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_chest_vc,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_femur_compression,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_tibia_compression,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_tibia_index,
-                self.report.criterion_overall[isomme].criterion_driver.criterion_knee_slider_compression,
-            ] for isomme in self.report.isomme_list}
+            self.criteria = {
+                isomme: [
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_driver.criterion_hpc36,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_driver.criterion_head_a3ms,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_driver.criterion_neck_fz_tension,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_driver.criterion_neck_fx_shear,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_driver.criterion_neck_my_extension,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_driver.criterion_chest_deflection,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_driver.criterion_chest_vc,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_driver.criterion_femur_compression,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_driver.criterion_tibia_compression,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_driver.criterion_tibia_index,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_driver.criterion_knee_slider_compression,
+                ]
+                for isomme in self.report.isomme_list
+            }
 
-    class Page_Driver_Head_Acceleration(EuroNCAP_Frontal_50kmh.Page_Driver_Head_Acceleration):
+    class Page_Driver_Head_Acceleration(
+        EuroNCAP_Frontal_50kmh.Page_Driver_Head_Acceleration
+    ):
         pass
 
     class Page_Driver_Neck_Load(EuroNCAP_Frontal_50kmh.Page_Driver_Neck_Load):
         pass
 
-    class Page_Driver_Chest_Deflection(EuroNCAP_Frontal_50kmh.Page_Driver_Chest_Deflection):
+    class Page_Driver_Chest_Deflection(
+        EuroNCAP_Frontal_50kmh.Page_Driver_Chest_Deflection
+    ):
         pass
 
-    class Page_Driver_Femur_Axial_Force(EuroNCAP_Frontal_50kmh.Page_Driver_Femur_Axial_Force):
+    class Page_Driver_Femur_Axial_Force(
+        EuroNCAP_Frontal_50kmh.Page_Driver_Femur_Axial_Force
+    ):
         pass
 
-    class Page_Driver_Knee_Slider_Compression(EuroNCAP_Frontal_MPDB.Page_Driver_Knee_Slider_Compression):
+    class Page_Driver_Knee_Slider_Compression(
+        EuroNCAP_Frontal_MPDB.Page_Driver_Knee_Slider_Compression
+    ):
         pass
 
-    class Page_Driver_Tibia_Compression(EuroNCAP_Frontal_MPDB.Page_Driver_Tibia_Compression):
+    class Page_Driver_Tibia_Compression(
+        EuroNCAP_Frontal_MPDB.Page_Driver_Tibia_Compression
+    ):
         pass
 
     class Page_Driver_Tibia_Index(EuroNCAP_Frontal_MPDB.Page_Driver_Tibia_Index):
@@ -473,19 +719,44 @@ class UN_Frontal_56kmh_ODB_R94(Report[Overall]):
         def __init__(self, report: UN_Frontal_56kmh_ODB_R94) -> None:
             super().__init__(report)
 
-            self.criteria = {isomme: [
-                self.report.criterion_overall[isomme].criterion_passenger.criterion_hpc36,
-                self.report.criterion_overall[isomme].criterion_passenger.criterion_head_a3ms,
-                self.report.criterion_overall[isomme].criterion_passenger.criterion_neck_fz_tension,
-                self.report.criterion_overall[isomme].criterion_passenger.criterion_neck_fx_shear,
-                self.report.criterion_overall[isomme].criterion_passenger.criterion_neck_my_extension,
-                self.report.criterion_overall[isomme].criterion_passenger.criterion_chest_deflection,
-                self.report.criterion_overall[isomme].criterion_passenger.criterion_chest_vc,
-                self.report.criterion_overall[isomme].criterion_passenger.criterion_femur_compression,
-                self.report.criterion_overall[isomme].criterion_passenger.criterion_tibia_compression,
-                self.report.criterion_overall[isomme].criterion_passenger.criterion_tibia_index,
-                self.report.criterion_overall[isomme].criterion_passenger.criterion_knee_slider_compression,
-            ] for isomme in self.report.isomme_list}
+            self.criteria = {
+                isomme: [
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_passenger.criterion_hpc36,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_passenger.criterion_head_a3ms,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_passenger.criterion_neck_fz_tension,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_passenger.criterion_neck_fx_shear,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_passenger.criterion_neck_my_extension,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_passenger.criterion_chest_deflection,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_passenger.criterion_chest_vc,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_passenger.criterion_femur_compression,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_passenger.criterion_tibia_compression,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_passenger.criterion_tibia_index,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_passenger.criterion_knee_slider_compression,
+                ]
+                for isomme in self.report.isomme_list
+            }
 
     class Page_Passenger_Values_Table(Page_Criterion_Values_Table):
         report: UN_Frontal_56kmh_ODB_R94
@@ -495,36 +766,71 @@ class UN_Frontal_56kmh_ODB_R94(Report[Overall]):
         def __init__(self, report: UN_Frontal_56kmh_ODB_R94) -> None:
             super().__init__(report)
 
-            self.criteria = {isomme: [
-                self.report.criterion_overall[isomme].criterion_passenger.criterion_hpc36,
-                self.report.criterion_overall[isomme].criterion_passenger.criterion_head_a3ms,
-                self.report.criterion_overall[isomme].criterion_passenger.criterion_neck_fz_tension,
-                self.report.criterion_overall[isomme].criterion_passenger.criterion_neck_fx_shear,
-                self.report.criterion_overall[isomme].criterion_passenger.criterion_neck_my_extension,
-                self.report.criterion_overall[isomme].criterion_passenger.criterion_chest_deflection,
-                self.report.criterion_overall[isomme].criterion_passenger.criterion_chest_vc,
-                self.report.criterion_overall[isomme].criterion_passenger.criterion_femur_compression,
-                self.report.criterion_overall[isomme].criterion_passenger.criterion_tibia_compression,
-                self.report.criterion_overall[isomme].criterion_passenger.criterion_tibia_index,
-                self.report.criterion_overall[isomme].criterion_passenger.criterion_knee_slider_compression,
-            ] for isomme in self.report.isomme_list}
+            self.criteria = {
+                isomme: [
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_passenger.criterion_hpc36,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_passenger.criterion_head_a3ms,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_passenger.criterion_neck_fz_tension,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_passenger.criterion_neck_fx_shear,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_passenger.criterion_neck_my_extension,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_passenger.criterion_chest_deflection,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_passenger.criterion_chest_vc,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_passenger.criterion_femur_compression,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_passenger.criterion_tibia_compression,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_passenger.criterion_tibia_index,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_passenger.criterion_knee_slider_compression,
+                ]
+                for isomme in self.report.isomme_list
+            }
 
-    class Page_Passenger_Head_Acceleration(EuroNCAP_Frontal_MPDB.Page_Passenger_Head_Acceleration):
+    class Page_Passenger_Head_Acceleration(
+        EuroNCAP_Frontal_MPDB.Page_Passenger_Head_Acceleration
+    ):
         pass
 
     class Page_Passenger_Neck_Load(EuroNCAP_Frontal_MPDB.Page_Passenger_Neck_Load):
         pass
 
-    class Page_Passenger_Chest_Deflection(EuroNCAP_Frontal_MPDB.Page_Passenger_Chest_Deflection):
+    class Page_Passenger_Chest_Deflection(
+        EuroNCAP_Frontal_MPDB.Page_Passenger_Chest_Deflection
+    ):
         pass
 
-    class Page_Passenger_Femur_Axial_Force(EuroNCAP_Frontal_MPDB.Page_Passenger_Femur_Axial_Force):
+    class Page_Passenger_Femur_Axial_Force(
+        EuroNCAP_Frontal_MPDB.Page_Passenger_Femur_Axial_Force
+    ):
         pass
 
-    class Page_Passenger_Knee_Slider_Compression(EuroNCAP_Frontal_MPDB.Page_Passenger_Knee_Slider_Compression):
+    class Page_Passenger_Knee_Slider_Compression(
+        EuroNCAP_Frontal_MPDB.Page_Passenger_Knee_Slider_Compression
+    ):
         pass
 
-    class Page_Passenger_Tibia_Compression(EuroNCAP_Frontal_MPDB.Page_Passenger_Tibia_Compression):
+    class Page_Passenger_Tibia_Compression(
+        EuroNCAP_Frontal_MPDB.Page_Passenger_Tibia_Compression
+    ):
         pass
 
     class Page_Passenger_Tibia_Index(EuroNCAP_Frontal_MPDB.Page_Passenger_Tibia_Index):

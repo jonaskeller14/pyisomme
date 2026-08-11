@@ -94,7 +94,9 @@ class TestReportHierarchy(unittest.TestCase):
         with self.assertRaises(KeyError):
             report.set_inputs({"missing": {}})
 
-    def test_meta_page_selection_is_qualified_and_does_not_mutate_children(self) -> None:
+    def test_meta_page_selection_is_qualified_and_does_not_mutate_children(
+        self,
+    ) -> None:
         alpha = DummyReport("alpha")
         beta = DummyReport("beta")
         child_selection = alpha.selected_pages

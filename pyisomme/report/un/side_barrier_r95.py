@@ -1,7 +1,12 @@
 from __future__ import annotations
 
 from pyisomme.isomme import Isomme
-from pyisomme.report.page import Page_Cover, Page_Plot_nxn, Page_Criterion_Values_Chart, Page_Criterion_Values_Table
+from pyisomme.report.page import (
+    Page_Cover,
+    Page_Plot_nxn,
+    Page_Criterion_Values_Chart,
+    Page_Criterion_Values_Table,
+)
 from pyisomme.limit import Limit
 from pyisomme.report.report import Report
 from pyisomme.report.criterion import Criterion, Role, sub
@@ -9,7 +14,9 @@ from pyisomme.report.ctx import from_input
 from pyisomme.report.manual import Manual, manual
 from pyisomme.report.un.limits import Limit_Fail, Limit_Pass
 from pyisomme.report.un.protocols import PROTOCOL_R95_2023
-from pyisomme.report.un.frontal_50kmh_r137 import Criterion_HPC36 as Criterion_HPC36_R137
+from pyisomme.report.un.frontal_50kmh_r137 import (
+    Criterion_HPC36 as Criterion_HPC36_R137,
+)
 from pyisomme.report.un.side_pole_r135 import Overall as Overall_Side_Pole_R135
 from pyisomme.report.euro_ncap.side_pole import EuroNCAP_Side_Pole
 
@@ -20,10 +27,15 @@ from typing import Any
 
 logger = logging.getLogger(__name__)
 
-P = manual("1", source="test report", doc=(
-    "Channel-code position of the struck-side occupant — the only occupant "
-    "the regulation assesses. Defaults to the 'Driver position object 1' "
-    "test-info field when the test carries it."))
+P = manual(
+    "1",
+    source="test report",
+    doc=(
+        "Channel-code position of the struck-side occupant — the only occupant "
+        "the regulation assesses. Defaults to the 'Driver position object 1' "
+        "test-info field when the test carries it."
+    ),
+)
 
 
 class Overall(Criterion):
@@ -50,13 +62,15 @@ class Overall(Criterion):
         role = Role.AGGREGATE
 
         def calculation(self) -> None:
-            self.rating = np.min([
-                self.criterion_hpc36.rating,
-                self.criterion_chest_lateral_deflection.rating,
-                self.criterion_chest_lateral_vc.rating,
-                self.criterion_pubic_symphysis_force.rating,
-                self.criterion_abdomen_force.rating
-            ])
+            self.rating = np.min(
+                [
+                    self.criterion_hpc36.rating,
+                    self.criterion_chest_lateral_deflection.rating,
+                    self.criterion_chest_lateral_vc.rating,
+                    self.criterion_pubic_symphysis_force.rating,
+                    self.criterion_abdomen_force.rating,
+                ]
+            )
 
         class Criterion_HPC36(Criterion_HPC36_R137):
             pass
@@ -73,16 +87,22 @@ class Overall(Criterion):
                 ]
 
             def calculation(self) -> None:
-                self.channel = self.require_channel(self.ctx.code("?{p}RIBSLE00??DSYC")).convert_unit("mm")
+                self.channel = self.require_channel(
+                    self.ctx.code("?{p}RIBSLE00??DSYC")
+                ).convert_unit("mm")
                 self.value = np.min(self.channel.get_data())
-                self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
+                self.rating = self.limits.get_limit_min_rating(
+                    self.channel, interpolate=False
+                )
                 self.color = self.limits.get_limit_min_color(self.channel)
 
         class Criterion_Chest_Lateral_VC(Criterion):
             name = "Chest Lateral VC"
 
             def define_limits(self) -> list[Limit]:
-                codes = self.ctx.codes("?{p}VCCR00????VEY?", "?{p}VCCRLE????VEY?", "?{p}VCCRRI????VEY?")
+                codes = self.ctx.codes(
+                    "?{p}VCCR00????VEY?", "?{p}VCCRLE????VEY?", "?{p}VCCRRI????VEY?"
+                )
                 return [
                     Limit_Fail(codes, func=lambda x: -1, y_unit="m/s", upper=True),
                     Limit_Pass(codes, func=lambda x: -1, y_unit="m/s", lower=True),
@@ -91,12 +111,18 @@ class Overall(Criterion):
                 ]
 
             def calculation(self) -> None:
-                self.channel = self.require_channel(self.ctx.code("?{p}VCCRLE00??VEYC")).convert_unit("m/s")
+                self.channel = self.require_channel(
+                    self.ctx.code("?{p}VCCRLE00??VEYC")
+                ).convert_unit("m/s")
                 self.value = np.min(self.channel.get_data())
-                self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
+                self.rating = self.limits.get_limit_min_rating(
+                    self.channel, interpolate=False
+                )
                 self.color = self.limits.get_limit_min_color(self.channel)
 
-        class Criterion_Pubic_Symphysis_Force(Overall_Side_Pole_R135.Criterion_Dummy.Criterion_Pubic_Symphysis_Force):
+        class Criterion_Pubic_Symphysis_Force(
+            Overall_Side_Pole_R135.Criterion_Dummy.Criterion_Pubic_Symphysis_Force
+        ):
             pass
 
         class Criterion_Abdomen_Force(Criterion):
@@ -110,9 +136,13 @@ class Overall(Criterion):
                 ]
 
             def calculation(self) -> None:
-                self.channel = self.require_channel(self.ctx.code("?{p}ABDOLE00??FOYB")).convert_unit("kN")
+                self.channel = self.require_channel(
+                    self.ctx.code("?{p}ABDOLE00??FOYB")
+                ).convert_unit("kN")
                 self.value = np.min(self.channel.get_data())
-                self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
+                self.rating = self.limits.get_limit_min_rating(
+                    self.channel, interpolate=False
+                )
                 self.color = self.limits.get_limit_min_color(self.channel)
 
         criterion_hpc36 = sub(Criterion_HPC36)
@@ -153,13 +183,26 @@ class UN_Side_Barrier_R95(Report[Overall]):
         def __init__(self, report: UN_Side_Barrier_R95) -> None:
             super().__init__(report)
 
-            self.criteria = {isomme: [
-                self.report.criterion_overall[isomme].criterion_dummy.criterion_hpc36,
-                self.report.criterion_overall[isomme].criterion_dummy.criterion_chest_lateral_deflection,
-                self.report.criterion_overall[isomme].criterion_dummy.criterion_chest_lateral_vc,
-                self.report.criterion_overall[isomme].criterion_dummy.criterion_pubic_symphysis_force,
-                self.report.criterion_overall[isomme].criterion_dummy.criterion_abdomen_force,
-            ] for isomme in self.report.isomme_list}
+            self.criteria = {
+                isomme: [
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_dummy.criterion_hpc36,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_dummy.criterion_chest_lateral_deflection,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_dummy.criterion_chest_lateral_vc,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_dummy.criterion_pubic_symphysis_force,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_dummy.criterion_abdomen_force,
+                ]
+                for isomme in self.report.isomme_list
+            }
 
     class Page_Values_Table(Page_Criterion_Values_Table):
         report: UN_Side_Barrier_R95
@@ -169,13 +212,26 @@ class UN_Side_Barrier_R95(Report[Overall]):
         def __init__(self, report: UN_Side_Barrier_R95) -> None:
             super().__init__(report)
 
-            self.criteria = {isomme: [
-                self.report.criterion_overall[isomme].criterion_dummy.criterion_hpc36,
-                self.report.criterion_overall[isomme].criterion_dummy.criterion_chest_lateral_deflection,
-                self.report.criterion_overall[isomme].criterion_dummy.criterion_chest_lateral_vc,
-                self.report.criterion_overall[isomme].criterion_dummy.criterion_pubic_symphysis_force,
-                self.report.criterion_overall[isomme].criterion_dummy.criterion_abdomen_force,
-            ] for isomme in self.report.isomme_list}
+            self.criteria = {
+                isomme: [
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_dummy.criterion_hpc36,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_dummy.criterion_chest_lateral_deflection,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_dummy.criterion_chest_lateral_vc,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_dummy.criterion_pubic_symphysis_force,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_dummy.criterion_abdomen_force,
+                ]
+                for isomme in self.report.isomme_list
+            }
 
     class Page_Head_Acceleration(EuroNCAP_Side_Pole.Page_Head_Acceleration):
         pass
@@ -190,12 +246,17 @@ class UN_Side_Barrier_R95(Report[Overall]):
 
         def __init__(self, report: UN_Side_Barrier_R95) -> None:
             super().__init__(report)
-            self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p}RIBSLEUP??DSYC"],
-                                      [f"?{self.report.criterion_overall[isomme].p}RIBSRIUP??DSYC"],
-                                      [f"?{self.report.criterion_overall[isomme].p}RIBSLEMI??DSYC"],
-                                      [f"?{self.report.criterion_overall[isomme].p}RIBSRIMI??DSYC"],
-                                      [f"?{self.report.criterion_overall[isomme].p}RIBSLELO??DSYC"],
-                                      [f"?{self.report.criterion_overall[isomme].p}RIBSRILO??DSYC"]] for isomme in self.report.isomme_list}
+            self.channels = {
+                isomme: [
+                    [f"?{self.report.criterion_overall[isomme].p}RIBSLEUP??DSYC"],
+                    [f"?{self.report.criterion_overall[isomme].p}RIBSRIUP??DSYC"],
+                    [f"?{self.report.criterion_overall[isomme].p}RIBSLEMI??DSYC"],
+                    [f"?{self.report.criterion_overall[isomme].p}RIBSRIMI??DSYC"],
+                    [f"?{self.report.criterion_overall[isomme].p}RIBSLELO??DSYC"],
+                    [f"?{self.report.criterion_overall[isomme].p}RIBSRILO??DSYC"],
+                ]
+                for isomme in self.report.isomme_list
+            }
 
     class Page_Chest_Lateral_VC(Page_Plot_nxn):
         report: UN_Side_Barrier_R95
@@ -207,12 +268,17 @@ class UN_Side_Barrier_R95(Report[Overall]):
 
         def __init__(self, report: UN_Side_Barrier_R95) -> None:
             super().__init__(report)
-            self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p}VCCRLEUP??VEYC"],
-                                      [f"?{self.report.criterion_overall[isomme].p}VCCRRIUP??VEYC"],
-                                      [f"?{self.report.criterion_overall[isomme].p}VCCRLEMI??VEYC"],
-                                      [f"?{self.report.criterion_overall[isomme].p}VCCRRIMI??VEYC"],
-                                      [f"?{self.report.criterion_overall[isomme].p}VCCRLELO??VEYC"],
-                                      [f"?{self.report.criterion_overall[isomme].p}VCCRRILO??VEYC"]] for isomme in self.report.isomme_list}
+            self.channels = {
+                isomme: [
+                    [f"?{self.report.criterion_overall[isomme].p}VCCRLEUP??VEYC"],
+                    [f"?{self.report.criterion_overall[isomme].p}VCCRRIUP??VEYC"],
+                    [f"?{self.report.criterion_overall[isomme].p}VCCRLEMI??VEYC"],
+                    [f"?{self.report.criterion_overall[isomme].p}VCCRRIMI??VEYC"],
+                    [f"?{self.report.criterion_overall[isomme].p}VCCRLELO??VEYC"],
+                    [f"?{self.report.criterion_overall[isomme].p}VCCRRILO??VEYC"],
+                ]
+                for isomme in self.report.isomme_list
+            }
 
     class Page_Pubic_Symphysis_Force(EuroNCAP_Side_Pole.Page_Pubic_Symphysis_Force):
         pass
@@ -227,9 +293,14 @@ class UN_Side_Barrier_R95(Report[Overall]):
 
         def __init__(self, report: UN_Side_Barrier_R95) -> None:
             super().__init__(report)
-            self.channels = {isomme: [[f"?{self.report.criterion_overall[isomme].p}ABDOLEFR??FOYB"],
-                                      [f"?{self.report.criterion_overall[isomme].p}ABDORIFR??FOYB"],
-                                      [f"?{self.report.criterion_overall[isomme].p}ABDOLEMI??FOYB"],
-                                      [f"?{self.report.criterion_overall[isomme].p}ABDORIMI??FOYB"],
-                                      [f"?{self.report.criterion_overall[isomme].p}ABDOLERE??FOYB"],
-                                      [f"?{self.report.criterion_overall[isomme].p}ABDORIRE??FOYB"]] for isomme in self.report.isomme_list}
+            self.channels = {
+                isomme: [
+                    [f"?{self.report.criterion_overall[isomme].p}ABDOLEFR??FOYB"],
+                    [f"?{self.report.criterion_overall[isomme].p}ABDORIFR??FOYB"],
+                    [f"?{self.report.criterion_overall[isomme].p}ABDOLEMI??FOYB"],
+                    [f"?{self.report.criterion_overall[isomme].p}ABDORIMI??FOYB"],
+                    [f"?{self.report.criterion_overall[isomme].p}ABDOLERE??FOYB"],
+                    [f"?{self.report.criterion_overall[isomme].p}ABDORIRE??FOYB"],
+                ]
+                for isomme in self.report.isomme_list
+            }

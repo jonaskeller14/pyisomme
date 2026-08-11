@@ -44,13 +44,13 @@ class Info(list[tuple[str, Any]]):
                     break
             else:
                 # The for-else block executes if no 'break' was hit
-                self.append((o_name, o_value)) # pyright: ignore[reportArgumentType]
+                self.append((o_name, o_value))  # pyright: ignore[reportArgumentType]
 
         return self
 
     def add(self, other: Mapping[str, Any] | Iterable[tuple[str, Any]]) -> Info:
         iterable = other.items() if isinstance(other, Mapping) else other
-        super().extend(iterable) # pyright: ignore[reportArgumentType]
+        super().extend(iterable)  # pyright: ignore[reportArgumentType]
         return self
 
     def keys(self) -> list[str]:
@@ -65,7 +65,7 @@ class Info(list[tuple[str, Any]]):
 
     def write(self, file: IO[str]) -> IO[str]:
         for name, value in self:
-            val_str = value if value is not None else 'NOVALUE'
+            val_str = value if value is not None else "NOVALUE"
             file.write(f"{name:<28}:{val_str}\n")
         return file
 
@@ -76,4 +76,9 @@ class Info(list[tuple[str, Any]]):
         return super().__contains__(key)
 
     def __repr__(self) -> str:
-        return "\n".join([f"{name:<28}:{value if value is not None else 'NOVALUE'}" for name, value in self.items()])
+        return "\n".join(
+            [
+                f"{name:<28}:{value if value is not None else 'NOVALUE'}"
+                for name, value in self.items()
+            ]
+        )

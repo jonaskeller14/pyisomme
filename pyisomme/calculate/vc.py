@@ -15,10 +15,12 @@ logger = logging.getLogger("pyisomme.calculate")
 
 
 @debug_logging(logger)
-def calculate_vc(channel: Channel,
-                 scaling_factor: float | None = None,
-                 defo_constant: float | None = None,
-                 dummy: str | None = None) -> tuple[Channel, Channel]:
+def calculate_vc(
+    channel: Channel,
+    scaling_factor: float | None = None,
+    defo_constant: float | None = None,
+    dummy: str | None = None,
+) -> tuple[Channel, Channel]:
     """
     References:
     - references/Euro-NCAP/tb-021-data-acquisition-and-injury-calculation-v402.pdf
@@ -35,7 +37,20 @@ def calculate_vc(channel: Channel,
     if scaling_factor is None or defo_constant is None:
         if dummy is None:
             dummy = channel.code.fine_location_3
-        if dummy not in ("BS", "E2", "ER", "H3", "HF", "HM", "S2", "WF", "WS", "Y6", "Y7", "YA"):
+        if dummy not in (
+            "BS",
+            "E2",
+            "ER",
+            "H3",
+            "HF",
+            "HM",
+            "S2",
+            "WF",
+            "WS",
+            "Y6",
+            "Y7",
+            "YA",
+        ):
             raise UnsupportedCalculationError(
                 f"Dummy {dummy} not supported by {calculate_vc.__name__}"
             )
@@ -80,28 +95,51 @@ def calculate_vc(channel: Channel,
     v_t = np.zeros(n)
     for i in range(n):
         if 2 <= i < (n - 2):
-            v_t[i] = (8 * (v[i+1] - v[i-1]) - (v[i+2] - v[i-2])) / (12 * (t[i] - t[i-1]))
+            v_t[i] = (8 * (v[i + 1] - v[i - 1]) - (v[i + 2] - v[i - 2])) / (
+                12 * (t[i] - t[i - 1])
+            )
 
     vc = scaling_factor * v_t * c_t
 
-    channel_vc = Channel(code=channel.code.set(main_location="VCCR" if channel.code.main_location in ("CHST", "TRRI", "RIBS") else "VCAR" if channel.code.main_location in ("ABDO", "ABRI") else "VC??", physical_dimension="VE"),
-                         data=pd.DataFrame(vc, index=t),
-                         unit=channel.unit / Unit("s"),
-                         info=channel.info.update({
-                             "Data source": "calculation",
-                         }).add({
-                             ".Channel 001": channel.code,
-                             ".Filter": channel.code.filter_class,
-                             ".Scaling factor": scaling_factor,
-                             ".Deformation constant": defo_constant}))
+    channel_vc = Channel(
+        code=channel.code.set(
+            main_location="VCCR"
+            if channel.code.main_location in ("CHST", "TRRI", "RIBS")
+            else "VCAR"
+            if channel.code.main_location in ("ABDO", "ABRI")
+            else "VC??",
+            physical_dimension="VE",
+        ),
+        data=pd.DataFrame(vc, index=t),
+        unit=channel.unit / Unit("s"),
+        info=channel.info.update(
+            {
+                "Data source": "calculation",
+            }
+        ).add(
+            {
+                ".Channel 001": channel.code,
+                ".Filter": channel.code.filter_class,
+                ".Scaling factor": scaling_factor,
+                ".Deformation constant": defo_constant,
+            }
+        ),
+    )
 
-    channel_vc_x = Channel(code=channel_vc.code.set(filter_class="X"),
-                           data=pd.DataFrame([np.max(np.abs(channel_vc.get_data()))], index=[channel.data.index[int(np.argmax(np.abs(channel_vc.get_data())))]]),
-                           unit=channel_vc.unit,
-                           info=channel_vc.info.add({
-                               ".Analysis start time": channel_vc.data.index[0],
-                               ".Analysis end time": channel_vc.data.index[-1],
-                               ".Time": channel.data.index[int(np.argmax(channel_vc.get_data()))],
-                           }))
+    channel_vc_x = Channel(
+        code=channel_vc.code.set(filter_class="X"),
+        data=pd.DataFrame(
+            [np.max(np.abs(channel_vc.get_data()))],
+            index=[channel.data.index[int(np.argmax(np.abs(channel_vc.get_data())))]],
+        ),
+        unit=channel_vc.unit,
+        info=channel_vc.info.add(
+            {
+                ".Analysis start time": channel_vc.data.index[0],
+                ".Analysis end time": channel_vc.data.index[-1],
+                ".Time": channel.data.index[int(np.argmax(channel_vc.get_data()))],
+            }
+        ),
+    )
 
     return channel_vc, channel_vc_x

@@ -28,12 +28,22 @@ from typing import Any
 
 logger = logging.getLogger(__name__)
 
-P_DRIVER = manual("1", source="test report", doc=(
-    "Channel-code position of the driver. Defaults to the "
-    "'Driver position object 1' test-info field when the test carries it."))
-P_PASSENGER = manual("3", source="test report", doc=(
-    "Channel-code position of the front passenger. Derived from p_driver "
-    "('1' for a right-hand-drive test) unless set explicitly."))
+P_DRIVER = manual(
+    "1",
+    source="test report",
+    doc=(
+        "Channel-code position of the driver. Defaults to the "
+        "'Driver position object 1' test-info field when the test carries it."
+    ),
+)
+P_PASSENGER = manual(
+    "3",
+    source="test report",
+    doc=(
+        "Channel-code position of the front passenger. Derived from p_driver "
+        "('1' for a right-hand-drive test) unless set explicitly."
+    ),
+)
 
 
 class Overall(Criterion):
@@ -59,17 +69,23 @@ class Overall(Criterion):
         # once it exists it is wired beside the driver with
         #     criterion_passenger = sub(Criterion_Passenger, role=Role.AGGREGATE,
         #                               at=from_input(P_PASSENGER))
-        self.rating = float(np.mean([
-            self.criterion_driver.rating,
-            self.criterion_passenger.rating,  # type: ignore[attr-defined]
-        ]))  # relative risk (RR)
+        self.rating = float(
+            np.mean(
+                [
+                    self.criterion_driver.rating,
+                    self.criterion_passenger.rating,  # type: ignore[attr-defined]
+                ]
+            )
+        )  # relative risk (RR)
 
     class Criterion_Driver(Criterion):
         name = "Driver"
         role = Role.AGGREGATE
 
         def calculation(self) -> None:
-            self.value = 1 - (1 - self.criterion_head.value) * (1 - self.criterion_chest.value) * (1 - self.criterion_femur.value) * (1 - self.criterion_neck.value)
+            self.value = 1 - (1 - self.criterion_head.value) * (
+                1 - self.criterion_chest.value
+            ) * (1 - self.criterion_femur.value) * (1 - self.criterion_neck.value)
             self.rating = self.value / 0.15  # relative risk (RR)
 
         class Criterion_Head(Criterion):
@@ -77,17 +93,35 @@ class Overall(Criterion):
 
             def define_limits(self) -> list[Limit]:
                 return [
-                    Limit_5(("????????????????",), func=lambda x: 0.67 * 0.15, upper=True),
-                    Limit_4(("????????????????",), func=lambda x: 1.00 * 0.15, upper=True),
-                    Limit_3(("????????????????",), func=lambda x: 1.33 * 0.15, upper=True),
-                    Limit_2(("????????????????",), func=lambda x: 2.67 * 0.15, upper=True),
-                    Limit_1(("????????????????",), func=lambda x: 2.67 * 0.15, lower=True),
+                    Limit_5(
+                        ("????????????????",), func=lambda x: 0.67 * 0.15, upper=True
+                    ),
+                    Limit_4(
+                        ("????????????????",), func=lambda x: 1.00 * 0.15, upper=True
+                    ),
+                    Limit_3(
+                        ("????????????????",), func=lambda x: 1.33 * 0.15, upper=True
+                    ),
+                    Limit_2(
+                        ("????????????????",), func=lambda x: 2.67 * 0.15, upper=True
+                    ),
+                    Limit_1(
+                        ("????????????????",), func=lambda x: 2.67 * 0.15, lower=True
+                    ),
                 ]
 
             def calculation(self) -> None:
-                self.channel = calculate_p_head_hic15_ais_3plus(self.require_channel(self.ctx.code("?{p}HEAD0000??ACRA"), self.ctx.code("?{p}HEADCG00??ACRA")), dummy="H3")
+                self.channel = calculate_p_head_hic15_ais_3plus(
+                    self.require_channel(
+                        self.ctx.code("?{p}HEAD0000??ACRA"),
+                        self.ctx.code("?{p}HEADCG00??ACRA"),
+                    ),
+                    dummy="H3",
+                )
                 self.value = np.max(self.channel.get_data())
-                self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=True)  # stars
+                self.rating = self.limits.get_limit_min_rating(
+                    self.channel, interpolate=True
+                )  # stars
 
         # Chest/femur/neck are empty `pass` placeholders: they have no calculation().
         # The other reason this report is a stub.
@@ -105,7 +139,9 @@ class Overall(Criterion):
         criterion_femur = sub(Criterion_Femur)  # type: ignore[type-abstract]
         criterion_neck = sub(Criterion_Neck)  # type: ignore[type-abstract]
 
-    criterion_driver = sub(Criterion_Driver, at=from_input(P_DRIVER), role=Role.AGGREGATE)
+    criterion_driver = sub(
+        Criterion_Driver, at=from_input(P_DRIVER), role=Role.AGGREGATE
+    )
 
 
 class USNCAP_Frontal_56kmh(Report[Overall]):
@@ -117,4 +153,3 @@ class USNCAP_Frontal_56kmh(Report[Overall]):
             "defined and the driver's chest/femur/neck criteria are empty. See the "
             "module docstring."
         )
-

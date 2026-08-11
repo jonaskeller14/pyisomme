@@ -16,6 +16,7 @@ Covers the four things the declaration buys:
 plus the F15 fix: a seating position set *after* construction now moves the criteria,
 not only the plots.
 """
+
 from __future__ import annotations
 
 import io
@@ -58,7 +59,9 @@ class TestDeclaration(unittest.TestCase):
 
     def test_spec_carries_metadata(self) -> None:
         report, (v1,) = build()
-        column = report.overall(v1).criterion_driver.criterion_head.criterion_DisplacementSteeringColumn
+        column = report.overall(
+            v1
+        ).criterion_driver.criterion_head.criterion_DisplacementSteeringColumn
         spec = column.get_input_specs()["displacement_steering_column_rearwards"]
         self.assertEqual(spec.type, float)
         self.assertEqual(spec.default, 0.0)
@@ -69,7 +72,9 @@ class TestDeclaration(unittest.TestCase):
     def test_declaration_is_inherited(self) -> None:
         """The rear passenger reuses the driver's Submarining class."""
         report, (v1,) = build()
-        submarining = report.overall(v1).criterion_rear_passenger.criterion_femur.criterion_submarining
+        submarining = report.overall(
+            v1
+        ).criterion_rear_passenger.criterion_femur.criterion_submarining
         self.assertIn("submarining", submarining.get_input_specs())
 
     def test_undeclared_class_attributes_are_not_inputs(self) -> None:
@@ -96,7 +101,9 @@ class TestSetattrGuard(unittest.TestCase):
 
     def test_wrong_type_is_refused(self) -> None:
         report, (v1,) = build()
-        submarining = report.overall(v1).criterion_driver.criterion_femur.criterion_submarining
+        submarining = report.overall(
+            v1
+        ).criterion_driver.criterion_femur.criterion_submarining
         with self.assertRaises(TypeError):
             submarining.submarining = "yes"
         self.assertIs(submarining.submarining, False)
@@ -104,13 +111,17 @@ class TestSetattrGuard(unittest.TestCase):
     def test_bool_is_not_a_number(self) -> None:
         """``isinstance(True, int)`` must not wave through a boolean for a float input."""
         report, (v1,) = build()
-        column = report.overall(v1).criterion_driver.criterion_head.criterion_DisplacementSteeringColumn
+        column = report.overall(
+            v1
+        ).criterion_driver.criterion_head.criterion_DisplacementSteeringColumn
         with self.assertRaises(TypeError):
             column.displacement_steering_column_rearwards = True
 
     def test_int_is_accepted_for_a_float_input(self) -> None:
         report, (v1,) = build()
-        column = report.overall(v1).criterion_driver.criterion_head.criterion_DisplacementSteeringColumn
+        column = report.overall(
+            v1
+        ).criterion_driver.criterion_head.criterion_DisplacementSteeringColumn
         column.displacement_steering_column_rearwards = 38
         self.assertEqual(column.displacement_steering_column_rearwards, 38)
 
@@ -126,7 +137,9 @@ class TestSetattrGuard(unittest.TestCase):
         overall.value = 1.0
         overall.rating = 2.0
         overall.color = "green"
-        self.assertEqual((overall.value, overall.rating, overall.color), (1.0, 2.0, "green"))
+        self.assertEqual(
+            (overall.value, overall.rating, overall.color), (1.0, 2.0, "green")
+        )
 
     def test_private_names_are_exempt(self) -> None:
         report, (v1,) = build()
@@ -151,15 +164,23 @@ class TestEnumeration(unittest.TestCase):
 
     def test_print_inputs_marks_deviations(self) -> None:
         report, (v1,) = build()
-        report.overall(v1).criterion_driver.criterion_femur.criterion_submarining.submarining = True
+        report.overall(
+            v1
+        ).criterion_driver.criterion_femur.criterion_submarining.submarining = True
 
         buffer = io.StringIO()
         with redirect_stdout(buffer):
             report.print_inputs()
-        lines = [line for line in buffer.getvalue().splitlines() if "submarining" in line]
+        lines = [
+            line for line in buffer.getvalue().splitlines() if "submarining" in line
+        ]
 
-        self.assertEqual(len(lines), 2, buffer.getvalue())  # driver (changed) + rear (default)
-        self.assertEqual(len([line for line in lines if line.lstrip().startswith("*")]), 1)
+        self.assertEqual(
+            len(lines), 2, buffer.getvalue()
+        )  # driver (changed) + rear (default)
+        self.assertEqual(
+            len([line for line in lines if line.lstrip().startswith("*")]), 1
+        )
 
     def test_round_trip_is_a_no_op(self) -> None:
         report, (v1,) = build()
@@ -169,22 +190,37 @@ class TestEnumeration(unittest.TestCase):
 
     def test_json_round_trip_reproduces_a_run(self) -> None:
         report_a, (a1,) = build()
-        report_a.overall(a1).criterion_driver.criterion_femur.criterion_submarining.submarining = True
-        report_a.overall(a1).criterion_door_opening_during_impact.number_of_door_openings_during_impact = 2
+        report_a.overall(
+            a1
+        ).criterion_driver.criterion_femur.criterion_submarining.submarining = True
+        report_a.overall(
+            a1
+        ).criterion_door_opening_during_impact.number_of_door_openings_during_impact = 2
         stored = json.loads(json.dumps(report_a.get_inputs()))
 
         report_b, (b1,) = build()
         report_b.set_inputs(stored)
 
-        self.assertIs(report_b.overall(b1).criterion_driver.criterion_femur.criterion_submarining.submarining, True)
+        self.assertIs(
+            report_b.overall(
+                b1
+            ).criterion_driver.criterion_femur.criterion_submarining.submarining,
+            True,
+        )
         self.assertEqual(
-            report_b.overall(b1).criterion_door_opening_during_impact.number_of_door_openings_during_impact, 2)
+            report_b.overall(
+                b1
+            ).criterion_door_opening_during_impact.number_of_door_openings_during_impact,
+            2,
+        )
         self.assertEqual(report_a.get_inputs(), report_b.get_inputs())
 
         report_a.calculate()
         report_b.calculate()
-        self.assertEqual(report_a.overall(a1).criterion_door_opening_during_impact.rating,
-                         report_b.overall(b1).criterion_door_opening_during_impact.rating)
+        self.assertEqual(
+            report_a.overall(a1).criterion_door_opening_during_impact.rating,
+            report_b.overall(b1).criterion_door_opening_during_impact.rating,
+        )
 
     def test_unknown_test_is_refused(self) -> None:
         report, _ = build()
@@ -194,12 +230,16 @@ class TestEnumeration(unittest.TestCase):
     def test_unknown_path_is_refused(self) -> None:
         report, _ = build()
         with self.assertRaises(KeyError):
-            report.set_inputs({"T0": {"criterion_driver/criterion_head/hard_contct": False}})
+            report.set_inputs(
+                {"T0": {"criterion_driver/criterion_head/hard_contct": False}}
+            )
 
     def test_wrong_type_from_json_is_refused(self) -> None:
         report, _ = build()
         with self.assertRaises(TypeError):
-            report.set_inputs({"T0": {"criterion_driver/criterion_head/hard_contact": "yes"}})
+            report.set_inputs(
+                {"T0": {"criterion_driver/criterion_head/hard_contact": "yes"}}
+            )
 
 
 class TestPositionSyncF15(unittest.TestCase):
@@ -223,7 +263,9 @@ class TestPositionSyncF15(unittest.TestCase):
         report.calculate()
 
         self.assertEqual(position(overall.criterion_driver), "3")
-        self.assertEqual(position(overall.criterion_driver.criterion_head.criterion_hic_15), "3")
+        self.assertEqual(
+            position(overall.criterion_driver.criterion_head.criterion_hic_15), "3"
+        )
         # ...and the derived positions follow the right-hand-drive rule.
         self.assertEqual(overall.p_front_passenger, "1")
         self.assertEqual(position(overall.criterion_front_passenger), "1")
@@ -234,19 +276,28 @@ class TestPositionSyncF15(unittest.TestCase):
         overall.p_driver = "3"
         report.calculate()
 
-        patterns = overall.criterion_driver.criterion_head.criterion_hic_15.limits.limit_list[0].code_patterns
+        patterns = (
+            overall.criterion_driver.criterion_head.criterion_hic_15.limits.limit_list[
+                0
+            ].code_patterns
+        )
         self.assertTrue(all(pattern[1] == "3" for pattern in patterns), patterns)
 
     def test_rebuild_preserves_manual_inputs(self) -> None:
         report, (v1,) = build()
         overall = report.overall(v1)
-        overall.criterion_driver.criterion_femur.criterion_submarining.submarining = True
+        overall.criterion_driver.criterion_femur.criterion_submarining.submarining = (
+            True
+        )
         overall.criterion_driver.steering_wheel_airbag_exists = False
 
         overall.p_driver = "3"
         report.calculate()
 
-        self.assertIs(overall.criterion_driver.criterion_femur.criterion_submarining.submarining, True)
+        self.assertIs(
+            overall.criterion_driver.criterion_femur.criterion_submarining.submarining,
+            True,
+        )
         self.assertIs(overall.criterion_driver.steering_wheel_airbag_exists, False)
 
     def test_rebuild_does_not_leave_stale_report_limits(self) -> None:
@@ -280,13 +331,13 @@ class TestDerivedVsUserSetPositions(unittest.TestCase):
         report, (v1,) = build()
         overall = report.overall(v1)
 
-        overall.p_driver = "3"            # right-hand drive: would derive 1 / 4
-        overall.p_front_passenger = "5"   # ...but this test seated it centrally
+        overall.p_driver = "3"  # right-hand drive: would derive 1 / 4
+        overall.p_front_passenger = "5"  # ...but this test seated it centrally
         report.calculate()
 
         self.assertEqual(overall.p_front_passenger, "5")
         self.assertEqual(position(overall.criterion_front_passenger), "5")
-        self.assertEqual(overall.p_rear_passenger, "4")   # untouched -> still derived
+        self.assertEqual(overall.p_rear_passenger, "4")  # untouched -> still derived
 
     def test_explicit_value_equal_to_the_default_still_wins(self) -> None:
         """The case ``value != default`` cannot see: set explicitly *to* the default."""
@@ -294,7 +345,7 @@ class TestDerivedVsUserSetPositions(unittest.TestCase):
         overall = report.overall(v1)
 
         overall.p_driver = "3"
-        overall.p_front_passenger = "3"   # the declared default, meant literally
+        overall.p_front_passenger = "3"  # the declared default, meant literally
         report.calculate()
 
         self.assertEqual(overall.p_front_passenger, "3")
@@ -352,15 +403,18 @@ class TestDerivedVsUserSetPositions(unittest.TestCase):
 
     def test_print_inputs_distinguishes_derived_from_user_set(self) -> None:
         report, (v1,) = build()
-        report.overall(v1).p_driver = "3"   # derives p_front_passenger = 1
+        report.overall(v1).p_driver = "3"  # derives p_front_passenger = 1
         report.calculate()
 
         buffer = io.StringIO()
         with redirect_stdout(buffer):
             report.print_inputs()
         # "\t{marker} {path}: {value} ..."
-        markers = {line[3:].split(":")[0]: line[1]
-                   for line in buffer.getvalue().splitlines() if line.startswith("\t")}
+        markers = {
+            line[3:].split(":")[0]: line[1]
+            for line in buffer.getvalue().splitlines()
+            if line.startswith("\t")
+        }
 
         self.assertEqual(markers["p_driver"], "*")
         self.assertEqual(markers["p_front_passenger"], "~")
@@ -370,9 +424,9 @@ class TestDerivedVsUserSetPositions(unittest.TestCase):
 class TestFrameworkInternals(unittest.TestCase):
     def test_settable_names_include_annotations_and_attributes(self) -> None:
         names = settable_names(EuroNCAP_Frontal_50kmh.Criterion_Overall)
-        self.assertIn("value", names)       # annotated on Criterion, never assigned there
-        self.assertIn("name", names)        # plain class attribute
-        self.assertIn("p_driver", names)    # manual input, declared without a value
+        self.assertIn("value", names)  # annotated on Criterion, never assigned there
+        self.assertIn("name", names)  # plain class attribute
+        self.assertIn("p_driver", names)  # manual input, declared without a value
 
     def test_declared_inputs_is_cached(self) -> None:
         cls = EuroNCAP_Frontal_50kmh.Criterion_Overall

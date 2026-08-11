@@ -26,12 +26,15 @@ class TestDescribe(unittest.TestCase):
             with self.subTest(report=name):
                 path = describe_path(name)
                 if not os.path.exists(path):
-                    self.fail(f"missing {path} — create it with "
-                              f"`python -m tests.test_describe --regen`")
+                    self.fail(
+                        f"missing {path} — create it with "
+                        f"`python -m tests.test_describe --regen`"
+                    )
                 with open(path, encoding="utf-8") as handle:
                     golden = handle.read()
                 self.assertEqual(
-                    golden.splitlines(), build(name).describe().splitlines(),
+                    golden.splitlines(),
+                    build(name).describe().splitlines(),
                     f"{name}'s definition changed. If that is intended, re-baseline with "
                     f"`python -m tests.test_describe --regen` and explain the diff.",
                 )
@@ -45,10 +48,12 @@ class TestDescribe(unittest.TestCase):
 
         self.assertEqual(
             resolve_sources(root),
-            {"": "§5",
-             "child": "§5 (inherited)",
-             "child/grandchild": "§5.2.1",
-             "child/grandchild/great": "§5.2.1 (inherited)"},
+            {
+                "": "§5",
+                "child": "§5 (inherited)",
+                "child/grandchild": "§5.2.1",
+                "child/grandchild/great": "§5.2.1 (inherited)",
+            },
         )
 
     def test_source_absent_everywhere(self) -> None:
@@ -71,6 +76,7 @@ class TestDescribe(unittest.TestCase):
 # --------------------------------------------------------------------------- #
 # baseline
 # --------------------------------------------------------------------------- #
+
 
 def _regen() -> int:
     os.makedirs(DESCRIBE_DIR, exist_ok=True)

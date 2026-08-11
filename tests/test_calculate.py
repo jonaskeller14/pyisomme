@@ -7,8 +7,11 @@ import pandas as pd
 
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(format='%(module)-12s %(levelname)-8s %(message)s',
-                    datefmt='%m/%d/%Y %I:%M:%S', level=logging.WARNING)
+logging.basicConfig(
+    format="%(module)-12s %(levelname)-8s %(message)s",
+    datefmt="%m/%d/%Y %I:%M:%S",
+    level=logging.WARNING,
+)
 
 
 CRASH_TIME_RANGE = (-0.05, 0.3, 7001)
@@ -19,7 +22,7 @@ def add_crash_channel(isomme, code, unit, peak, noise, frequency, seed):
     isomme.add_sample_channel(
         code=code,
         t_range=CRASH_TIME_RANGE,
-        y_range=(0., peak),
+        y_range=(0.0, peak),
         mode="pulse",
         unit=unit,
         frequency=frequency,
@@ -32,10 +35,10 @@ def build_neck_isomme():
     isomme = pyisomme.Isomme(test_number="SYNTHETIC-NECK")
     # 11391 neck channels peak at roughly 1.05 kN / 90 N and 8 / 20 N*m.
     # Their dominant spectral components lie between about 3 and 14 Hz.
-    add_crash_channel(isomme, "11NECKUP00WSFOXP", "N", 1050., 1.4, 8., 1)
-    add_crash_channel(isomme, "11NECKUP00WSFOYP", "N", 92., 2.8, 6., 2)
-    add_crash_channel(isomme, "11NECKUP00WSMOXP", "N*m", -8.3, 0.09, 6., 3)
-    add_crash_channel(isomme, "11NECKUP00WSMOYP", "N*m", -20., 0.05, 3., 4)
+    add_crash_channel(isomme, "11NECKUP00WSFOXP", "N", 1050.0, 1.4, 8.0, 1)
+    add_crash_channel(isomme, "11NECKUP00WSFOYP", "N", 92.0, 2.8, 6.0, 2)
+    add_crash_channel(isomme, "11NECKUP00WSMOXP", "N*m", -8.3, 0.09, 6.0, 3)
+    add_crash_channel(isomme, "11NECKUP00WSMOYP", "N*m", -20.0, 0.05, 3.0, 4)
     return isomme
 
 
@@ -44,34 +47,40 @@ def build_leg_isomme():
     # Corrected H3 codes and approximate peaks from 11391. Four locations are
     # required to exercise the individual and aggregate tibia-index providers.
     tibia_peaks = {
-        ("11", "LE", "UP"): (-37., -31., -2260.),
-        ("11", "LE", "LO"): (23., -77., -1850.),
-        ("11", "RI", "UP"): (-49., -65., -2330.),
-        ("11", "RI", "LO"): (35., 39., -2970.),
-        ("13", "RI", "LO"): (-7.5, -35.5, -2320.),
+        ("11", "LE", "UP"): (-37.0, -31.0, -2260.0),
+        ("11", "LE", "LO"): (23.0, -77.0, -1850.0),
+        ("11", "RI", "UP"): (-49.0, -65.0, -2330.0),
+        ("11", "RI", "LO"): (35.0, 39.0, -2970.0),
+        ("13", "RI", "LO"): (-7.5, -35.5, -2320.0),
     }
     seed = 10
     for occupant, side, level in tibia_peaks:
         peak_mx, peak_my, peak_fz = tibia_peaks[(occupant, side, level)]
         prefix = f"{occupant}TIBI{side}{level}H3"
-        add_crash_channel(isomme, prefix + "MOXP", "N*m", peak_mx, 0.3, 6., seed)
-        add_crash_channel(isomme, prefix + "MOYP", "N*m", peak_my, 0.5, 10., seed + 1)
-        add_crash_channel(isomme, prefix + "FOZP", "N", peak_fz, 4., 5., seed + 2)
+        add_crash_channel(isomme, prefix + "MOXP", "N*m", peak_mx, 0.3, 6.0, seed)
+        add_crash_channel(isomme, prefix + "MOYP", "N*m", peak_my, 0.5, 10.0, seed + 1)
+        add_crash_channel(isomme, prefix + "FOZP", "N", peak_fz, 4.0, 5.0, seed + 2)
         seed += 3
 
     # Femur compression in 11391 is predominantly negative, with peaks near
     # -1.2 kN left and -1.65 kN right and a few newtons of baseline noise.
-    add_crash_channel(isomme, "11FEMRLE0000FOZP", "N", -1160., 3., 3., 30)
-    add_crash_channel(isomme, "11FEMRRI0000FOZP", "N", -1650., 3., 5., 31)
+    add_crash_channel(isomme, "11FEMRLE0000FOZP", "N", -1160.0, 3.0, 3.0, 30)
+    add_crash_channel(isomme, "11FEMRRI0000FOZP", "N", -1650.0, 3.0, 5.0, 31)
     return isomme
 
 
 class TestCalculate(unittest.TestCase):
     def test_calculate_damage(self):
         iso = pyisomme.Isomme(test_number="1234")
-        iso.add_sample_channel(code="11HEAD0000THAAXP", unit="rad/s^2", y_range=[0, 8e5])
-        iso.add_sample_channel(code="11HEAD0000THAAYP", unit="rad/s^2", y_range=[0, 5e5])
-        iso.add_sample_channel(code="11HEAD0000THAAZP", unit="rad/s^2", y_range=[0, 3e5])
+        iso.add_sample_channel(
+            code="11HEAD0000THAAXP", unit="rad/s^2", y_range=[0, 8e5]
+        )
+        iso.add_sample_channel(
+            code="11HEAD0000THAAYP", unit="rad/s^2", y_range=[0, 5e5]
+        )
+        iso.add_sample_channel(
+            code="11HEAD0000THAAZP", unit="rad/s^2", y_range=[0, 3e5]
+        )
         assert iso.get_channel("?1HEADDAMA??AAX?") is not None
         assert iso.get_channel("?1HEADDAMA??AAY?") is not None
         assert iso.get_channel("?1HEADDAMA??AAZ?") is not None
@@ -108,10 +117,10 @@ class TestCalculate(unittest.TestCase):
     def test_get_channel_returns_none_for_unsupported_nij_dummy(self):
         isomme = pyisomme.Isomme(test_number="UNSUPPORTED-NIJ")
         isomme.add_sample_channel(
-            code="11NECKUP0000FOZB", unit="N", mode="linear", y_range=(-100., 100.)
+            code="11NECKUP0000FOZB", unit="N", mode="linear", y_range=(-100.0, 100.0)
         )
         isomme.add_sample_channel(
-            code="11NECKUP0000MOYB", unit="N*m", mode="linear", y_range=(-10., 10.)
+            code="11NECKUP0000MOYB", unit="N*m", mode="linear", y_range=(-10.0, 10.0)
         )
 
         self.assertIsNone(isomme.get_channel("11NIJCIPCF0000YB"))
@@ -119,10 +128,10 @@ class TestCalculate(unittest.TestCase):
     def test_fn_provider_handles_unsupported_dummy_for_other_calculations(self):
         isomme = pyisomme.Isomme(test_number="UNSUPPORTED-MOC")
         isomme.add_sample_channel(
-            code="11NECKUP00H3MOXB", unit="N*m", mode="linear", y_range=(-10., 10.)
+            code="11NECKUP00H3MOXB", unit="N*m", mode="linear", y_range=(-10.0, 10.0)
         )
         isomme.add_sample_channel(
-            code="11NECKUP00H3FOYB", unit="N", mode="linear", y_range=(-100., 100.)
+            code="11NECKUP00H3FOYB", unit="N", mode="linear", y_range=(-100.0, 100.0)
         )
 
         self.assertIsNone(isomme.get_channel("11TMONUP00H3MOXB"))
@@ -130,10 +139,10 @@ class TestCalculate(unittest.TestCase):
     def test_get_channel_does_not_hide_inconsistent_nij_inputs(self):
         isomme = pyisomme.Isomme(test_number="INCONSISTENT-NIJ")
         isomme.add_sample_channel(
-            code="11NECKUP00H3FOZB", unit="N", mode="linear", y_range=(-100., 100.)
+            code="11NECKUP00H3FOZB", unit="N", mode="linear", y_range=(-100.0, 100.0)
         )
         isomme.add_sample_channel(
-            code="11NECKUP00HFMOYB", unit="N*m", mode="linear", y_range=(-10., 10.)
+            code="11NECKUP00HFMOYB", unit="N*m", mode="linear", y_range=(-10.0, 10.0)
         )
 
         with self.assertRaisesRegex(ValueError, "Multiple dummy types"):
@@ -158,7 +167,7 @@ class TestCalculate(unittest.TestCase):
 
         assert tibia_index is not None
         assert mx is not None and my is not None and fz is not None
-        expected = np.hypot(mx.get_data(unit="N*m"), my.get_data(unit="N*m")) / 225.
+        expected = np.hypot(mx.get_data(unit="N*m"), my.get_data(unit="N*m")) / 225.0
         expected += np.abs(fz.get_data(unit="kN")) / 35.9
         np.testing.assert_allclose(tibia_index.get_data(), expected)
 
@@ -191,7 +200,7 @@ class TestCalculate(unittest.TestCase):
 
         assert left is not None and right is not None and minimum is not None
         self.assertTrue(np.isfinite(direct.get_data()[0]))
-        self.assertLess(direct.get_data()[0], 0.)
+        self.assertLess(direct.get_data()[0], 0.0)
         self.assertEqual(
             minimum.get_data()[0],
             min(left.get_data()[0], right.get_data()[0]),
@@ -202,9 +211,21 @@ class TestCalculate(unittest.TestCase):
         # Distinct per-axis peaks so the result depends on all three inputs. This guards
         # the bug where av_y/av_z were read from c_av_x (BrIC computed from X alone): with
         # the dominant Y peak the correct BrIC is ~1.86, the X-only bug gives ~0.34.
-        c_x = pyisomme.Channel(code="11HEAD000000AVXD", data=pd.DataFrame([10.0, 10.0], index=time), unit="rad/s")
-        c_y = pyisomme.Channel(code="11HEAD000000AVYD", data=pd.DataFrame([10.0, 100.0], index=time), unit="rad/s")
-        c_z = pyisomme.Channel(code="11HEAD000000AVZD", data=pd.DataFrame([10.0, 10.0], index=time), unit="rad/s")
+        c_x = pyisomme.Channel(
+            code="11HEAD000000AVXD",
+            data=pd.DataFrame([10.0, 10.0], index=time),
+            unit="rad/s",
+        )
+        c_y = pyisomme.Channel(
+            code="11HEAD000000AVYD",
+            data=pd.DataFrame([10.0, 100.0], index=time),
+            unit="rad/s",
+        )
+        c_z = pyisomme.Channel(
+            code="11HEAD000000AVZD",
+            data=pd.DataFrame([10.0, 10.0], index=time),
+            unit="rad/s",
+        )
         bric = pyisomme.calculate_bric(c_x, c_y, c_z)
         assert bric is not None
         assert bric.code.main_location == "BRIC"
@@ -212,7 +233,11 @@ class TestCalculate(unittest.TestCase):
 
     def test_calculate_xms(self):
         time = [0.0, 0.001, 0.002, 0.003, 0.004]
-        channel = pyisomme.Channel(code="11HEAD0000H3ACXA", data=pd.DataFrame([0.0, 1.0, 2.0, 3.0, 4.0], index=time), unit="g")
+        channel = pyisomme.Channel(
+            code="11HEAD0000H3ACXA",
+            data=pd.DataFrame([0.0, 1.0, 2.0, 3.0, 4.0], index=time),
+            unit="g",
+        )
         xms = pyisomme.calculate_xms(channel, min_delta_t=1, method="S")
         assert xms.code.fine_location_2 == "1S"
         assert xms.code.filter_class == "X"
@@ -220,7 +245,11 @@ class TestCalculate(unittest.TestCase):
 
     def test_calculate_vc(self):
         time = [0.0, 0.01, 0.02, 0.03, 0.04]
-        channel = pyisomme.Channel(code="11CHSTLE00WSDSXA", data=pd.DataFrame([0.01, 0.02, 0.03, 0.04, 0.05], index=time), unit="m")
+        channel = pyisomme.Channel(
+            code="11CHSTLE00WSDSXA",
+            data=pd.DataFrame([0.01, 0.02, 0.03, 0.04, 0.05], index=time),
+            unit="m",
+        )
         channel_vc, channel_vc_x = pyisomme.calculate_vc(channel)
         assert channel_vc.code.main_location == "VCCR"
         assert channel_vc_x.code.filter_class == "X"
@@ -232,7 +261,9 @@ class TestCalculate(unittest.TestCase):
         # free-flight (65 mm) and restraining (235 mm) phases OLC requires.
         time = np.linspace(0.0, 0.15, 151)
         velocity = np.clip(15.6 - 200.0 * time, 0.0, None)
-        channel = pyisomme.Channel(code="11CHST000000VEXA", data=pd.DataFrame(velocity, index=time), unit="m/s")
+        channel = pyisomme.Channel(
+            code="11CHST000000VEXA", data=pd.DataFrame(velocity, index=time), unit="m/s"
+        )
         olc, olc_visual = pyisomme.calculate_olc(channel)
         assert olc is not None
         assert olc_visual is not None
@@ -242,14 +273,26 @@ class TestCalculate(unittest.TestCase):
 
     def test_calculate_damage_direct(self):
         time = [0.0, 0.01, 0.02]
-        c_x = pyisomme.Channel(code="11HEAD0000THAAXA", data=pd.DataFrame([0.0, 0.0, 0.0], index=time), unit="rad/s^2")
-        c_y = pyisomme.Channel(code="11HEAD0000THAAYA", data=pd.DataFrame([0.0, 0.0, 0.0], index=time), unit="rad/s^2")
-        c_z = pyisomme.Channel(code="11HEAD0000THAAZA", data=pd.DataFrame([0.0, 0.0, 0.0], index=time), unit="rad/s^2")
+        c_x = pyisomme.Channel(
+            code="11HEAD0000THAAXA",
+            data=pd.DataFrame([0.0, 0.0, 0.0], index=time),
+            unit="rad/s^2",
+        )
+        c_y = pyisomme.Channel(
+            code="11HEAD0000THAAYA",
+            data=pd.DataFrame([0.0, 0.0, 0.0], index=time),
+            unit="rad/s^2",
+        )
+        c_z = pyisomme.Channel(
+            code="11HEAD0000THAAZA",
+            data=pd.DataFrame([0.0, 0.0, 0.0], index=time),
+            unit="rad/s^2",
+        )
         damage = pyisomme.calculate_damage(c_x, c_y, c_z)
         assert len(damage) == 8
         assert damage[0].code.fine_location_1 == "DA"
         assert damage[-1].code.filter_class == "X"
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

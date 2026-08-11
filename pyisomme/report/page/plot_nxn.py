@@ -24,7 +24,9 @@ class Page_Plot_nxn(Page_Figure):
     ylim: tuple[float | int, float | int] | None = None
     limits: Limits | dict[Isomme, Limits] | None = None
 
-    def __init__(self, report: Report[Any], limits: Limits | dict[Isomme, Limits] | None = None) -> None:
+    def __init__(
+        self, report: Report[Any], limits: Limits | dict[Isomme, Limits] | None = None
+    ) -> None:
         super().__init__(report)
         if self.title is None:
             self.title = self.name
@@ -32,12 +34,14 @@ class Page_Plot_nxn(Page_Figure):
 
     @override
     def figure(self, figsize: tuple[float, float]) -> Figure:
-        return Plot_Line(self.channels,
-                         nrows=self.nrows,
-                         ncols=self.ncols,
-                         sharex=self.sharex,
-                         sharey=self.sharey,
-                         xlim=self.xlim,
-                         ylim=self.ylim,
-                         limits=self.limits,
-                         figsize=figsize).fig
+        return Plot_Line(
+            self.channels,
+            nrows=self.nrows,
+            ncols=self.ncols,
+            sharex=self.sharex,
+            sharey=self.sharey,
+            xlim=self.xlim,
+            ylim=self.ylim,
+            limits=self.limits,
+            figsize=figsize,
+        ).fig

@@ -2,7 +2,7 @@ name: Lint and Test
 
 on:
   push:
-    branches: [master]
+    branches: [master, dev]
   pull_request:
     branches: [master]
   # Lets python-publish.yml gate a release on these same checks instead of
@@ -68,10 +68,7 @@ jobs:
       - name: Install Nox
         run: uv tool install nox
 
-      # Non-blocking for now: several tests rely on fixture data that is not
-      # yet tracked in the repo. Flip continue-on-error off once that is fixed.
       - name: Run test suite via Nox
-        continue-on-error: true
         run: nox -s tests-${{ matrix.python-version }}
 
   coverage:
@@ -92,10 +89,7 @@ jobs:
         with:
           python-version: "3.12"
 
-      # Preserve the test matrix's current fixture policy while still making
-      # the coverage threshold a blocking requirement.
       - name: Measure test coverage
-        continue-on-error: true
         run: uv run coverage run --source=pyisomme -m unittest discover -s tests
 
       - name: Generate XML coverage report

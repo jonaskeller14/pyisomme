@@ -1,4 +1,5 @@
 """One registry and deterministic fixture builder for every concrete report."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -30,18 +31,48 @@ class ReportSpec:
 # guards this list against silently going stale.
 REPORTS = (
     ReportSpec("correlation", "correlation.correlation", "Correlation", 2),
-    ReportSpec("euro_ncap_frontal_50kmh", "euro_ncap.frontal_50kmh", "EuroNCAP_Frontal_50kmh", 2),
-    ReportSpec("euro_ncap_frontal_mpdb", "euro_ncap.frontal_mpdb", "EuroNCAP_Frontal_MPDB", 2),
-    ReportSpec("euro_ncap_side_barrier", "euro_ncap.side_barrier", "EuroNCAP_Side_Barrier"),
-    ReportSpec("euro_ncap_side_farside", "euro_ncap.side_farside", "EuroNCAP_Side_FarSide"),
-    ReportSpec("euro_ncap_side_farside_vtc", "euro_ncap.side_farside_vtc", "EuroNCAP_Side_Farside_VTC", 2),
+    ReportSpec(
+        "euro_ncap_frontal_50kmh",
+        "euro_ncap.frontal_50kmh",
+        "EuroNCAP_Frontal_50kmh",
+        2,
+    ),
+    ReportSpec(
+        "euro_ncap_frontal_mpdb", "euro_ncap.frontal_mpdb", "EuroNCAP_Frontal_MPDB", 2
+    ),
+    ReportSpec(
+        "euro_ncap_side_barrier", "euro_ncap.side_barrier", "EuroNCAP_Side_Barrier"
+    ),
+    ReportSpec(
+        "euro_ncap_side_farside", "euro_ncap.side_farside", "EuroNCAP_Side_FarSide"
+    ),
+    ReportSpec(
+        "euro_ncap_side_farside_vtc",
+        "euro_ncap.side_farside_vtc",
+        "EuroNCAP_Side_Farside_VTC",
+        2,
+    ),
     ReportSpec("euro_ncap_side_pole", "euro_ncap.side_pole", "EuroNCAP_Side_Pole"),
     ReportSpec("fmvss_208", "fmvss.fmvss_208", "FMVSS_208"),
-    ReportSpec("iihs_frontal_moderate_overlap", "iihs.frontal_moderate_overlap", "IIHS_Frontal_Moderate_Overlap"),
-    ReportSpec("iihs_frontal_small_overlap", "iihs.frontal_small_overlap", "IIHS_Frontal_Small_Overlap"),
+    ReportSpec(
+        "iihs_frontal_moderate_overlap",
+        "iihs.frontal_moderate_overlap",
+        "IIHS_Frontal_Moderate_Overlap",
+    ),
+    ReportSpec(
+        "iihs_frontal_small_overlap",
+        "iihs.frontal_small_overlap",
+        "IIHS_Frontal_Small_Overlap",
+    ),
     ReportSpec("iihs_side_impact", "iihs.side_impact", "IIHS_Side_Impact"),
-    ReportSpec("un_frontal_50kmh_r137", "un.frontal_50kmh_r137", "UN_Frontal_50kmh_R137"),
-    ReportSpec("un_frontal_56kmh_odb_r94", "un.frontal_56kmh_odb_r94", "UN_Frontal_56kmh_ODB_R94"),
+    ReportSpec(
+        "un_frontal_50kmh_r137", "un.frontal_50kmh_r137", "UN_Frontal_50kmh_R137"
+    ),
+    ReportSpec(
+        "un_frontal_56kmh_odb_r94",
+        "un.frontal_56kmh_odb_r94",
+        "UN_Frontal_56kmh_ODB_R94",
+    ),
     ReportSpec("un_side_barrier_r95", "un.side_barrier_r95", "UN_Side_Barrier_R95"),
     ReportSpec("un_side_pole_r135", "un.side_pole_r135", "UN_Side_Pole_R135"),
 )
@@ -76,7 +107,7 @@ def _concretise(pattern: str) -> str:
                 chars.append("0")
                 index += 1
             else:
-                choices = pattern[index + 1:close].lstrip("!")
+                choices = pattern[index + 1 : close].lstrip("!")
                 chars.append(choices[0] if choices else "0")
                 index = close + 1
         elif char == "*":
@@ -88,7 +119,9 @@ def _concretise(pattern: str) -> str:
 
     code = "".join(chars[:16]).ljust(16, "0")
     if not fnmatch(code, pattern):
-        raise ValueError(f"cannot make a concrete channel code for {pattern!r}: {code!r}")
+        raise ValueError(
+            f"cannot make a concrete channel code for {pattern!r}: {code!r}"
+        )
     return code
 
 
@@ -111,16 +144,29 @@ def _range_for(code: Code, variant: int) -> tuple[float, float]:
 
 
 def _add_channel(isomme: pyisomme.Isomme, pattern: str, variant: int) -> None:
-    if not pattern or isomme.get_channel(pattern, filter=False, calculate=False,
-                                         differentiate=False, integrate=False) is not None:
+    if (
+        not pattern
+        or isomme.get_channel(
+            pattern, filter=False, calculate=False, differentiate=False, integrate=False
+        )
+        is not None
+    ):
         return
     code = Code(_concretise(pattern))
-    isomme.channels.append(pyisomme.create_sample(
+    channel = pyisomme.create_sample(
         code,
         t_range=(-0.02, 0.12, 300),
         y_range=_range_for(code, variant),
         unit=code.get_default_unit(),
-    ))
+    )
+    if code.main_location == "HICR":
+        channel.info.update(
+            {
+                ".Start time": 0.010 + 0.001 * variant,
+                ".End time": 0.025 + 0.001 * variant,
+            }
+        )
+    isomme.channels.append(channel)
 
 
 _CORRELATION_CODES = (
@@ -129,59 +175,86 @@ _CORRELATION_CODES = (
     "11NECKUP00H3FOZD",
 )
 
-_VTC_CODES = tuple(
-    f"11{location}{axis}{filter_class}"
-    for location, filter_class in (
-        ("HEAD0000H3AV", "A"),
-        ("THSP0400H3AC", "A"),
-        ("THSP1200H3AC", "A"),
-        ("PELV0000H3AC", "A"),
+_VTC_CODES = (
+    tuple(
+        f"11{location}{axis}{filter_class}"
+        for location, filter_class in (
+            ("HEAD0000H3AV", "A"),
+            ("THSP0400H3AC", "A"),
+            ("THSP1200H3AC", "A"),
+            ("PELV0000H3AC", "A"),
+        )
+        for axis in "XYZ"
     )
-    for axis in "XYZ"
-) + tuple(f"14BPILLO0000AC{axis}C" for axis in "XYZ") + ("11SEBE0003B3FO0C",)
+    + tuple(f"14BPILLO0000AC{axis}C" for axis in "XYZ")
+    + ("11SEBE0003B3FO0C",)
+)
 
 # Some calculations deliberately request a concrete derived/output code while
 # their Limit applies to all filter classes or result directions. Seeding these
 # requests directly keeps the synthetic fixture about report scoring, not about
 # whether a particular core calculation provider happens to be available.
 _DIRECT_PATTERNS = (
-    "?1HEAD??00??ACRA", "?3HEAD??00??ACRA", "?6HEAD??00??ACRA",
-    "?1HEAD003C??ACRX", "?3HEAD003C??ACRX", "?6HEAD003C??ACRX",
+    "?1HEAD??00??ACRA",
+    "?3HEAD??00??ACRA",
+    "?6HEAD??00??ACRA",
+    "?1HEAD003C??ACRX",
+    "?3HEAD003C??ACRX",
+    "?6HEAD003C??ACRX",
     "?1CHST003C??ACRX",
     "?1FOOT0000??ACRA",
-    "?1RIBSLE00??DSYC", "?1ABDOLE00??FOYB",
+    "?1RIBSLE00??DSYC",
+    "?1ABDOLE00??FOYB",
     "11THSP123C??ACRX",
     "M?MBAR0000??VEXA",
     "?1HICR0015??00RX",
 )
 
 _IIHS_DIRECT_PATTERNS = (
-    "?1HEAD??00??ACXA", "?1HEAD??00??ACYA", "?1HEAD??00??ACZA",
-    "?6HEAD??00??ACXA", "?6HEAD??00??ACYA", "?6HEAD??00??ACZA",
+    "?1HEAD??00??ACXA",
+    "?1HEAD??00??ACYA",
+    "?1HEAD??00??ACZA",
+    "?6HEAD??00??ACXA",
+    "?6HEAD??00??ACYA",
+    "?6HEAD??00??ACZA",
 )
 _IIHS_FRONTAL_DIRECT_PATTERNS = (
     "?1CHST0000??ACRA",
-    "?1NIJCIPCF??00YB", "?1NIJCIPCE??00YB", "?1NIJCIPTF??00YB", "?1NIJCIPTE??00YB",
-    "?6NIJCIPCF??00YB", "?6NIJCIPCE??00YB", "?6NIJCIPTF??00YB", "?6NIJCIPTE??00YB",
-    "?1FEMRLE00??FOZB", "?1FEMRRI00??FOZB",
-    "?1FOOTLE00??ACRB", "?1FOOTRI00??ACRB",
+    "?1NIJCIPCF??00YB",
+    "?1NIJCIPCE??00YB",
+    "?1NIJCIPTF??00YB",
+    "?1NIJCIPTE??00YB",
+    "?6NIJCIPCF??00YB",
+    "?6NIJCIPCE??00YB",
+    "?6NIJCIPTF??00YB",
+    "?6NIJCIPTE??00YB",
+    "?1FEMRLE00??FOZB",
+    "?1FEMRRI00??FOZB",
+    "?1FOOTLE00??ACRB",
+    "?1FOOTRI00??ACRB",
 )
 _IIHS_SIDE_DIRECT_PATTERNS = (
-    "?1ACTBLE00??FOYB", "?1ILUMLE00??FOYB",
-    "?6ACTBLE00??FOYB", "?6ILUMLE00??FOYB",
+    "?1ACTBLE00??FOYB",
+    "?1ILUMLE00??FOYB",
+    "?6ACTBLE00??FOYB",
+    "?6ILUMLE00??FOYB",
 )
 
 
-_FMVSS_DIRECT_PATTERNS = tuple(
-    f"?{position}HEAD0000{dummy}AC{axis}A"
-    for position, dummy in (("1", "H3"), ("3", "HF"))
-    for axis in "XYZR"
-) + tuple(
-    f"?{position}NECKUP00{dummy}MOYB"
-    for position, dummy in (("1", "H3"), ("3", "HF"))
-) + tuple(
-    f"?{position}CHST0000{dummy}ACRA"
-    for position, dummy in (("1", "H3"), ("3", "HF"))
+_FMVSS_DIRECT_PATTERNS = (
+    tuple(
+        f"?{position}HEAD0000{dummy}AC{axis}A"
+        for position, dummy in (("1", "H3"), ("3", "HF"))
+        for axis in "XYZR"
+    )
+    + tuple(
+        f"?{position}NECKUP00{dummy}MOYB"
+        for position, dummy in (("1", "H3"), ("3", "HF"))
+    )
+    + tuple(
+        f"?{position}CHST0000{dummy}ACRA"
+        for position, dummy in (("1", "H3"), ("3", "HF"))
+    )
 )
 
 
@@ -193,8 +266,9 @@ def build_synthetic(spec: ReportSpec) -> Report:
     VTC are the two data-shaped trees, so their explicit comparison channels are
     seeded before construction as well.
     """
-    isommes = [pyisomme.Isomme(test_number=f"{spec.stem}-{i}")
-               for i in range(spec.n_isomme)]
+    isommes = [
+        pyisomme.Isomme(test_number=f"{spec.stem}-{i}") for i in range(spec.n_isomme)
+    ]
 
     if spec.stem == "correlation":
         for variant, isomme in enumerate(isommes):
@@ -224,7 +298,9 @@ def build_synthetic(spec: ReportSpec) -> Report:
     report = spec.report_class(isommes)
     if spec.stem == "iihs_side_impact":
         for isomme in isommes:
-            report.overall(isomme).criterion_structure.b_pillar_to_seat_centerline_cm = 20.0
+            report.overall(
+                isomme
+            ).criterion_structure.b_pillar_to_seat_centerline_cm = 20.0
     for variant, isomme in enumerate(isommes):
         for _, criterion in report.overall(isomme).walk():
             for limit in criterion.limits.limit_list:

@@ -22,7 +22,10 @@ from pyisomme.calculate.damage import calculate_damage
 from pyisomme.calculate.femur_impulse import calculate_femur_impulse
 from pyisomme.calculate.hic import calculate_hic
 from pyisomme.calculate.iliac_force_drop import calculate_iliac_force_drop
-from pyisomme.calculate.neck_m_base import calculate_neck_Mx_base, calculate_neck_My_base
+from pyisomme.calculate.neck_m_base import (
+    calculate_neck_Mx_base,
+    calculate_neck_My_base,
+)
 from pyisomme.calculate.neck_moc import calculate_neck_MOCx, calculate_neck_MOCy
 from pyisomme.calculate.neck_nij import calculate_neck_nij
 from pyisomme.calculate.olc import calculate_olc

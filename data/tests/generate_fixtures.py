@@ -60,7 +60,9 @@ def _head_acceleration() -> list[float]:
 
 def _chest_deflection() -> list[float | None]:
     """A monotone chest deflection ramp in µm, with one dropped sample (``NOVALUE``)."""
-    values: list[float | None] = [0.0 if t < 0 else 1.4e4 * (t / 0.0020) ** 2 for t in _times()]
+    values: list[float | None] = [
+        0.0 if t < 0 else 1.4e4 * (t / 0.0020) ** 2 for t in _times()
+    ]
     values[12] = None  # transducer dropout -> NOVALUE -> NaN
     return values
 
@@ -78,12 +80,25 @@ def _header(pairs: list[tuple[str, str]]) -> list[str]:
 # Per-encoding header text
 # --------------------------------------------------------------------------------------
 
+
 class Variant:
     """One fixture: an encoding, a line ending, and the free-text header values."""
 
-    def __init__(self, name: str, codec: str, *, bom: bool = False, newline: str = "\n",
-                 laboratory: str, customer: str, test_type: str, comments: list[str],
-                 head_channel_name: str, chest_channel_name: str, chest_unit: str) -> None:
+    def __init__(
+        self,
+        name: str,
+        codec: str,
+        *,
+        bom: bool = False,
+        newline: str = "\n",
+        laboratory: str,
+        customer: str,
+        test_type: str,
+        comments: list[str],
+        head_channel_name: str,
+        chest_channel_name: str,
+        chest_unit: str,
+    ) -> None:
         self.name = name
         self.codec = codec
         self.bom = bom
@@ -99,51 +114,63 @@ class Variant:
 
 VARIANTS = [
     Variant(
-        "ascii", "ascii",
+        "ascii",
+        "ascii",
         # Written on Windows: CRLF. Everything a 7-bit file can still do wrong.
         newline="\r\n",
         laboratory="MGA Research Corporation",
         customer="NHTSA / Office of Vehicle Safety Compliance",
         test_type="NCAP frontal rigid barrier, 56 km/h",
-        comments=["Time zero: first contact with the barrier face",
-                  "Chest deflection channel: IR-TRACC, 50 % ile Hybrid III"],
+        comments=[
+            "Time zero: first contact with the barrier face",
+            "Chest deflection channel: IR-TRACC, 50 % ile Hybrid III",
+        ],
         head_channel_name="Head CG X acceleration",
         chest_channel_name="Chest deflection X (IR-TRACC)",
         chest_unit="um",
     ),
     Variant(
-        "iso-8859-1", "iso-8859-1",
+        "iso-8859-1",
+        "iso-8859-1",
         laboratory="Crash-Prüfzentrum Köln GmbH",
         customer="Société Automobile Française S.A.",
         test_type="Frontalaufprall ODB, 40 % Überdeckung",
-        comments=["Meßunsicherheit ±0,5 %; Prüftemperatur 22 °C",
-                  "Dummy: Hybrid III 50 %, Sitzposition vorne links"],
+        comments=[
+            "Meßunsicherheit ±0,5 %; Prüftemperatur 22 °C",
+            "Dummy: Hybrid III 50 %, Sitzposition vorne links",
+        ],
         head_channel_name="Kopf-Schwerpunkt Beschleunigung X",
         chest_channel_name="Brustkorb-Eindrückung X (µm)",
         chest_unit="µm",  # U+00B5 MICRO SIGN - present in Latin-1 and cp1252 alike
     ),
     Variant(
-        "windows-1252", "cp1252",
+        "windows-1252",
+        "cp1252",
         laboratory="Crash-Prüfzentrum Köln GmbH",
         # 0x97 EM DASH and 0x92 RIGHT SINGLE QUOTE - not representable in ISO-8859-1.
         customer="Renault S.A. — Direction de la Sécurité",
         test_type="Frontalaufprall ODB, 40 % Überdeckung",
         # 0x80 EURO, 0x84/0x93 QUOTES, 0x85 HORIZONTAL ELLIPSIS, 0x99 TRADE MARK.
-        comments=["Prüfkosten 25.000 €; Bericht „Nr. 4711“ …",
-                  "Sensorik: Kistler™ – Drift ±0,5 % nachgeprüft"],
+        comments=[
+            "Prüfkosten 25.000 €; Bericht „Nr. 4711“ …",
+            "Sensorik: Kistler™ – Drift ±0,5 % nachgeprüft",
+        ],
         head_channel_name="Kopf-Schwerpunkt Beschleunigung X",
         chest_channel_name="Brustkorb-Eindrückung X (µm)",
         chest_unit="µm",
     ),
     Variant(
-        "utf-8", "utf-8",
+        "utf-8",
+        "utf-8",
         bom=True,  # as a Windows editor saves it
         laboratory="Crash-Prüfzentrum Köln GmbH",
         customer="トヨタ自動車株式会社 (Toyota Motor Corp.)",
         test_type="Frontalaufprall ODB, 40 % Überdeckung",
         # Beyond Latin-1: GREEK CAPITAL DELTA, GREEK CAPITAL OMEGA, RIGHTWARDS ARROW.
-        comments=["Δv = 56,3 km/h → Pulsdauer 78 ms; Prüftemperatur 22 °C",
-                  "Brückenimpedanz 50 Ω; Meßunsicherheit ±0,5 % …"],
+        comments=[
+            "Δv = 56,3 km/h → Pulsdauer 78 ms; Prüftemperatur 22 °C",
+            "Brückenimpedanz 50 Ω; Meßunsicherheit ±0,5 % …",
+        ],
         head_channel_name="Kopf-Schwerpunkt Beschleunigung X",
         chest_channel_name="Brustkorb-Eindrückung X (µm)",
         chest_unit="µm",
@@ -155,24 +182,27 @@ VARIANTS = [
 # File bodies
 # --------------------------------------------------------------------------------------
 
+
 def mme_lines(v: Variant) -> list[str]:
-    lines = _header([
-        ("Data format", "ISO-MME"),
-        ("Version", "1.6"),
-        ("Test number", TEST_NUMBER),
-        ("Test date", "2026-05-14"),
-        # Colons inside a value: the name/value split must land on the FIRST colon.
-        ("Time of test", "10:32:45"),
-        ("Test type", v.test_type),
-        ("Laboratory name", v.laboratory),
-        ("Customer name", v.customer),
-        ("Test object", "Vehicle"),
-        ("Number of test objects", "1"),
-        ("Impact velocity", "56.3"),
-        # Deliberately empty and explicitly-absent values: get_value() maps both to None.
-        ("Regulation", ""),
-        ("Client test ref number", "NOVALUE"),
-    ])
+    lines = _header(
+        [
+            ("Data format", "ISO-MME"),
+            ("Version", "1.6"),
+            ("Test number", TEST_NUMBER),
+            ("Test date", "2026-05-14"),
+            # Colons inside a value: the name/value split must land on the FIRST colon.
+            ("Time of test", "10:32:45"),
+            ("Test type", v.test_type),
+            ("Laboratory name", v.laboratory),
+            ("Customer name", v.customer),
+            ("Test object", "Vehicle"),
+            ("Number of test objects", "1"),
+            ("Impact velocity", "56.3"),
+            # Deliberately empty and explicitly-absent values: get_value() maps both to None.
+            ("Regulation", ""),
+            ("Client test ref number", "NOVALUE"),
+        ]
+    )
     # Padding style is not part of the format: a tab-separated line must parse the same.
     lines.append("Movie reference\t\t:NOVALUE")
     # A blank line and a trailing-whitespace line are both tolerated by parse_mme.
@@ -183,73 +213,81 @@ def mme_lines(v: Variant) -> list[str]:
 
 
 def chn_lines(v: Variant) -> list[str]:
-    return _header([
-        ("Instrumentation standard", "SAEJ211, issued 1992"),
-        ("Number of channels", "3"),
-        ("Name of channel 001", "11TIRS000000TIRP / Time reference"),
-        ("Name of channel 002", f"11HEADCG0000ACXP / {v.head_channel_name}"),
-        ("Name of channel 003", f"11CHST0000H3DSXP / {v.chest_channel_name}"),
-    ])
+    return _header(
+        [
+            ("Instrumentation standard", "SAEJ211, issued 1992"),
+            ("Number of channels", "3"),
+            ("Name of channel 001", "11TIRS000000TIRP / Time reference"),
+            ("Name of channel 002", f"11HEADCG0000ACXP / {v.head_channel_name}"),
+            ("Name of channel 003", f"11CHST0000H3DSXP / {v.chest_channel_name}"),
+        ]
+    )
 
 
 def channel_001_lines(v: Variant) -> list[str]:
     """Time-reference channel. No timing header, so it falls back to the sample index."""
     values = _times()
-    return _header([
-        ("Channel code", "11TIRS000000TIRP"),
-        ("Name of the channel", "Time reference channel"),
-        ("Data source", "calculated"),
-        ("Test object number", "1"),
-        ("Dimension", "TI"),
-        ("Unit", "s"),
-        ("Number of samples", str(N_SAMPLES)),
-        ("Data status", "ok"),
-    ]) + [_format_sample(t) for t in values]
+    return _header(
+        [
+            ("Channel code", "11TIRS000000TIRP"),
+            ("Name of the channel", "Time reference channel"),
+            ("Data source", "calculated"),
+            ("Test object number", "1"),
+            ("Dimension", "TI"),
+            ("Unit", "s"),
+            ("Number of samples", str(N_SAMPLES)),
+            ("Data status", "ok"),
+        ]
+    ) + [_format_sample(t) for t in values]
 
 
 def channel_002_lines(v: Variant) -> list[str]:
     """Head acceleration with an *explicit* time reference pointing at channel 001."""
-    return _header([
-        ("Channel code", "11HEADCG0000ACXP"),
-        ("Laboratory channel code", "11HEADCG0000ACXP"),
-        ("Name of the channel", v.head_channel_name),
-        ("Reference channel", "explicit"),
-        ("Reference channel name", "11TIRS000000TIRP"),
-        ("Data source", "transducer"),
-        ("Test object number", "1"),
-        ("Location", "11HEADCG0000ACXP"),
-        ("Direction", "X"),
-        ("Dimension", "AC"),
-        ("Channel frequency class", "1000"),
-        ("Unit", "g"),
-        ("Number of samples", str(N_SAMPLES)),
-        ("Transducer type", "NOVALUE"),
-        ("Data status", "ok"),
-    ]) + [_format_sample(a) for a in _head_acceleration()]
+    return _header(
+        [
+            ("Channel code", "11HEADCG0000ACXP"),
+            ("Laboratory channel code", "11HEADCG0000ACXP"),
+            ("Name of the channel", v.head_channel_name),
+            ("Reference channel", "explicit"),
+            ("Reference channel name", "11TIRS000000TIRP"),
+            ("Data source", "transducer"),
+            ("Test object number", "1"),
+            ("Location", "11HEADCG0000ACXP"),
+            ("Direction", "X"),
+            ("Dimension", "AC"),
+            ("Channel frequency class", "1000"),
+            ("Unit", "g"),
+            ("Number of samples", str(N_SAMPLES)),
+            ("Transducer type", "NOVALUE"),
+            ("Data status", "ok"),
+        ]
+    ) + [_format_sample(a) for a in _head_acceleration()]
 
 
 def channel_003_lines(v: Variant) -> list[str]:
     """Chest deflection with a declared *implicit* time axis and one dropped sample."""
-    return _header([
-        ("Channel code", "11CHST0000H3DSXP"),
-        ("Laboratory channel code", "11CHST0000H3DSXP"),
-        ("Name of the channel", v.chest_channel_name),
-        ("Reference channel", "implicit"),
-        ("Reference channel name", "NOVALUE"),
-        ("Data source", "transducer"),
-        ("Test object number", "1"),
-        ("Location", "11CHST0000H3DSXP"),
-        ("Direction", "X"),
-        ("Dimension", "DS"),
-        ("Channel frequency class", "600"),
-        ("Unit", v.chest_unit),
-        ("Time of first sample", str(TIME_OF_FIRST_SAMPLE)),
-        ("Sampling interval", str(SAMPLING_INTERVAL)),
-        ("Number of samples", str(N_SAMPLES)),
-        # A colon inside the value: the name/value split must happen at the FIRST colon.
-        ("Comments", "IR-TRACC, calibrated 2026-04-02: drift within tolerance"),
-        ("Data status", "ok"),
-    ]) + [_format_sample(d) for d in _chest_deflection()]
+    return _header(
+        [
+            ("Channel code", "11CHST0000H3DSXP"),
+            ("Laboratory channel code", "11CHST0000H3DSXP"),
+            ("Name of the channel", v.chest_channel_name),
+            ("Reference channel", "implicit"),
+            ("Reference channel name", "NOVALUE"),
+            ("Data source", "transducer"),
+            ("Test object number", "1"),
+            ("Location", "11CHST0000H3DSXP"),
+            ("Direction", "X"),
+            ("Dimension", "DS"),
+            ("Channel frequency class", "600"),
+            ("Unit", v.chest_unit),
+            ("Time of first sample", str(TIME_OF_FIRST_SAMPLE)),
+            ("Sampling interval", str(SAMPLING_INTERVAL)),
+            ("Number of samples", str(N_SAMPLES)),
+            # A colon inside the value: the name/value split must happen at the FIRST colon.
+            ("Comments", "IR-TRACC, calibrated 2026-04-02: drift within tolerance"),
+            ("Data status", "ok"),
+        ]
+    ) + [_format_sample(d) for d in _chest_deflection()]
 
 
 MEMBERS = {
@@ -286,8 +324,10 @@ def build(v: Variant) -> None:
         for name, data in members.items():
             archive.writestr(f"{TEST_NUMBER}/{name}", data)
 
-    print(f"{v.name:<14} {v.codec:<12} {sum(len(d) for d in members.values()):>6} B  "
-          f"-> {root.relative_to(HERE.parent)}/ and {zip_path.name}")
+    print(
+        f"{v.name:<14} {v.codec:<12} {sum(len(d) for d in members.values()):>6} B  "
+        f"-> {root.relative_to(HERE.parent)}/ and {zip_path.name}"
+    )
 
 
 if __name__ == "__main__":

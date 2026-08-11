@@ -14,7 +14,9 @@ logger = logging.getLogger("pyisomme.calculate")
 
 
 @debug_logging(logger)
-def calculate_p_head_hic15_ais_2plus(channel_hic15: Channel, dummy: str | None = None) -> Channel:
+def calculate_p_head_hic15_ais_2plus(
+    channel_hic15: Channel, dummy: str | None = None
+) -> Channel:
     """
     References:
     - references/SafetyWissen/SafetyCompanion-2023.pdf
@@ -32,13 +34,17 @@ def calculate_p_head_hic15_ais_2plus(channel_hic15: Channel, dummy: str | None =
     else:
         raise UnsupportedCalculationError(f"Dummy {dummy} not supported.")
 
-    return Channel(code="????????????????",
-                   data=pd.DataFrame(p, index=channel_hic15.data.index),
-                   unit="1")
+    return Channel(
+        code="????????????????",
+        data=pd.DataFrame(p, index=channel_hic15.data.index),
+        unit="1",
+    )
 
 
 @debug_logging(logger)
-def calculate_p_head_hic15_ais_3plus(channel_hic15: Channel, dummy: str | None = None) -> Channel:
+def calculate_p_head_hic15_ais_3plus(
+    channel_hic15: Channel, dummy: str | None = None
+) -> Channel:
     """
     References:
     - references/SafetyWissen/SafetyCompanion-2024.pdf
@@ -56,13 +62,17 @@ def calculate_p_head_hic15_ais_3plus(channel_hic15: Channel, dummy: str | None =
     else:
         raise UnsupportedCalculationError(f"Dummy {dummy} not supported.")
 
-    return Channel(code="????????????????",
-                   data=pd.DataFrame(p, index=channel_hic15.data.index),
-                   unit="1")
+    return Channel(
+        code="????????????????",
+        data=pd.DataFrame(p, index=channel_hic15.data.index),
+        unit="1",
+    )
 
 
 @debug_logging(logger)
-def calculate_p_head_hic36_ais_3plus(channel_hic36: Channel, dummy: str | None = None) -> Channel:
+def calculate_p_head_hic36_ais_3plus(
+    channel_hic36: Channel, dummy: str | None = None
+) -> Channel:
     """
     References:
     - references/SafetyWissen/SafetyCompanion-2024.pdf
@@ -80,13 +90,17 @@ def calculate_p_head_hic36_ais_3plus(channel_hic36: Channel, dummy: str | None =
     else:
         raise UnsupportedCalculationError(f"Dummy {dummy} not supported.")
 
-    return Channel(code="????????????????",
-                   data=pd.DataFrame(p, index=channel_hic36.data.index),
-                   unit="1")
+    return Channel(
+        code="????????????????",
+        data=pd.DataFrame(p, index=channel_hic36.data.index),
+        unit="1",
+    )
 
 
 @debug_logging(logger)
-def calculate_p_head_bric_ais_3plus(channel_bric: Channel, dummy: str | None = None) -> Channel:
+def calculate_p_head_bric_ais_3plus(
+    channel_bric: Channel, dummy: str | None = None
+) -> Channel:
     """
     References:
     - references/SafetyWissen/SafetyCompanion-2023.pdf
@@ -100,17 +114,21 @@ def calculate_p_head_bric_ais_3plus(channel_bric: Channel, dummy: str | None = N
     bric = channel_bric.get_data()
 
     if dummy in ("TH", "T3"):
-        p = 1 - np.exp(-((bric - 0.523) / 0.531)**1.8)
+        p = 1 - np.exp(-(((bric - 0.523) / 0.531) ** 1.8))
     else:
         raise UnsupportedCalculationError(f"Dummy {dummy} not supported.")
 
-    return Channel(code="????????????????",
-                   data=pd.DataFrame(p, index=channel_bric.data.index),
-                   unit="1")
+    return Channel(
+        code="????????????????",
+        data=pd.DataFrame(p, index=channel_bric.data.index),
+        unit="1",
+    )
 
 
 @debug_logging(logger)
-def calculate_p_head_bric_ais_4plus(channel_bric: Channel, dummy: str | None = None) -> Channel:
+def calculate_p_head_bric_ais_4plus(
+    channel_bric: Channel, dummy: str | None = None
+) -> Channel:
     """
     References:
     - references/SafetyWissen/SafetyCompanion-2023.pdf
@@ -124,17 +142,21 @@ def calculate_p_head_bric_ais_4plus(channel_bric: Channel, dummy: str | None = N
     bric = channel_bric.get_data()
 
     if dummy in ("TH", "T3"):
-        p = 1 - np.exp(-((bric - 0.523) / 0.647)**1.8)
+        p = 1 - np.exp(-(((bric - 0.523) / 0.647) ** 1.8))
     else:
         raise UnsupportedCalculationError(f"Dummy {dummy} not supported.")
 
-    return Channel(code="????????????????",
-                   data=pd.DataFrame(p, index=channel_bric.data.index),
-                   unit="1")
+    return Channel(
+        code="????????????????",
+        data=pd.DataFrame(p, index=channel_bric.data.index),
+        unit="1",
+    )
 
 
 @debug_logging(logger)
-def calculate_p_chest_deflection_ais_3plus(channel_chest_deflection: Channel, dummy: str | None = None) -> Channel:
+def calculate_p_chest_deflection_ais_3plus(
+    channel_chest_deflection: Channel, dummy: str | None = None
+) -> Channel:
     """
     References:
     - references/SafetyWissen/SafetyCompanion-2024.pdf
@@ -149,21 +171,25 @@ def calculate_p_chest_deflection_ais_3plus(channel_chest_deflection: Channel, du
     chest_deflection = np.abs(channel_chest_deflection.get_data(unit="mm"))
 
     if dummy == "H3":
-        p = 1 / (1 + np.exp(10.5456 - 1.568 * chest_deflection ** 0.4612))
+        p = 1 / (1 + np.exp(10.5456 - 1.568 * chest_deflection**0.4612))
     elif dummy == "HF":
-        p = 1 / (1 + np.exp(10.5456 - 1.7212 * chest_deflection ** 0.4612))
+        p = 1 / (1 + np.exp(10.5456 - 1.7212 * chest_deflection**0.4612))
     elif dummy in ("TH", "T3"):
-        p = 1 - np.exp(-(chest_deflection / 58.183)**2.997)
+        p = 1 - np.exp(-((chest_deflection / 58.183) ** 2.997))
     else:
         raise UnsupportedCalculationError(f"Dummy {dummy} not supported.")
 
-    return Channel(code="????????????????",
-                   data=pd.DataFrame(p, index=channel_chest_deflection.data.index),
-                   unit="1")
+    return Channel(
+        code="????????????????",
+        data=pd.DataFrame(p, index=channel_chest_deflection.data.index),
+        unit="1",
+    )
 
 
 @debug_logging(logger)
-def calculate_p_femur_force_ais_2plus(channel_femur_force: Channel, dummy: str | None = None) -> Channel:
+def calculate_p_femur_force_ais_2plus(
+    channel_femur_force: Channel, dummy: str | None = None
+) -> Channel:
     """
     References:
     - references/SafetyWissen/SafetyCompanion-2024.pdf
@@ -183,13 +209,17 @@ def calculate_p_femur_force_ais_2plus(channel_femur_force: Channel, dummy: str |
     else:
         raise UnsupportedCalculationError(f"Dummy {dummy} not supported.")
 
-    return Channel(code="????????????????",
-                   data=pd.DataFrame(p, index=channel_femur_force.data.index),
-                   unit="1")
+    return Channel(
+        code="????????????????",
+        data=pd.DataFrame(p, index=channel_femur_force.data.index),
+        unit="1",
+    )
 
 
 @debug_logging(logger)
-def calculate_p_neck_nij_ais_2plus(channel_neck_nij: Channel, dummy: str | None = None) -> Channel:
+def calculate_p_neck_nij_ais_2plus(
+    channel_neck_nij: Channel, dummy: str | None = None
+) -> Channel:
     """
     References:
     - references/SafetyWissen/SafetyCompanion-2023.pdf
@@ -207,13 +237,17 @@ def calculate_p_neck_nij_ais_2plus(channel_neck_nij: Channel, dummy: str | None 
     else:
         raise UnsupportedCalculationError(f"Dummy {dummy} not supported.")
 
-    return Channel(code="????????????????",
-                   data=pd.DataFrame(p, index=channel_neck_nij.data.index),
-                   unit="1")
+    return Channel(
+        code="????????????????",
+        data=pd.DataFrame(p, index=channel_neck_nij.data.index),
+        unit="1",
+    )
 
 
 @debug_logging(logger)
-def calculate_p_neck_nij_ais_3plus(channel_neck_nij: Channel, dummy: str | None = None) -> Channel:
+def calculate_p_neck_nij_ais_3plus(
+    channel_neck_nij: Channel, dummy: str | None = None
+) -> Channel:
     """
     References:
     - references/SafetyWissen/SafetyCompanion-2024.pdf
@@ -234,13 +268,17 @@ def calculate_p_neck_nij_ais_3plus(channel_neck_nij: Channel, dummy: str | None 
     else:
         raise UnsupportedCalculationError(f"Dummy {dummy} not supported.")
 
-    return Channel(code="????????????????",
-                   data=pd.DataFrame(p, index=channel_neck_nij.data.index),
-                   unit="1")
+    return Channel(
+        code="????????????????",
+        data=pd.DataFrame(p, index=channel_neck_nij.data.index),
+        unit="1",
+    )
 
 
 @debug_logging(logger)
-def calculate_p_neck_tension_ais_3plus(channel_neck_tension: Channel, dummy: str | None = None) -> Channel:
+def calculate_p_neck_tension_ais_3plus(
+    channel_neck_tension: Channel, dummy: str | None = None
+) -> Channel:
     """
     References:
     - references/SafetyWissen/SafetyCompanion-2024.pdf
@@ -260,13 +298,17 @@ def calculate_p_neck_tension_ais_3plus(channel_neck_tension: Channel, dummy: str
     else:
         raise UnsupportedCalculationError(f"Dummy {dummy} not supported.")
 
-    return Channel(code="????????????????",
-                   data=pd.DataFrame(p, index=channel_neck_tension.data.index),
-                   unit="1")
+    return Channel(
+        code="????????????????",
+        data=pd.DataFrame(p, index=channel_neck_tension.data.index),
+        unit="1",
+    )
 
 
 @debug_logging(logger)
-def calculate_p_neck_compression_ais_3plus(channel_neck_compression: Channel, dummy: str | None = None) -> Channel:
+def calculate_p_neck_compression_ais_3plus(
+    channel_neck_compression: Channel, dummy: str | None = None
+) -> Channel:
     """
     References:
     - references/SafetyWissen/SafetyCompanion-2024.pdf
@@ -286,13 +328,17 @@ def calculate_p_neck_compression_ais_3plus(channel_neck_compression: Channel, du
     else:
         raise UnsupportedCalculationError(f"Dummy {dummy} not supported.")
 
-    return Channel(code="????????????????",
-                   data=pd.DataFrame(p, index=channel_neck_compression.data.index),
-                   unit="1")
+    return Channel(
+        code="????????????????",
+        data=pd.DataFrame(p, index=channel_neck_compression.data.index),
+        unit="1",
+    )
 
 
 @debug_logging(logger)
-def calculate_p_chest_rib_deflection_ais_3plus(channel_chest_rib_deflection: Channel, dummy: str | None = None) -> Channel:
+def calculate_p_chest_rib_deflection_ais_3plus(
+    channel_chest_rib_deflection: Channel, dummy: str | None = None
+) -> Channel:
     """
     References:
     - references/SafetyWissen/SafetyCompanion-2024.pdf
@@ -310,13 +356,17 @@ def calculate_p_chest_rib_deflection_ais_3plus(channel_chest_rib_deflection: Cha
     else:
         raise UnsupportedCalculationError(f"Dummy {dummy} not supported.")
 
-    return Channel(code="????????????????",
-                   data=pd.DataFrame(p, index=channel_chest_rib_deflection.data.index),
-                   unit="1")
+    return Channel(
+        code="????????????????",
+        data=pd.DataFrame(p, index=channel_chest_rib_deflection.data.index),
+        unit="1",
+    )
 
 
 @debug_logging(logger)
-def calculate_p_abdomen_force_ais_3plus(channel_abdomen_force: Channel, dummy: str | None = None) -> Channel:
+def calculate_p_abdomen_force_ais_3plus(
+    channel_abdomen_force: Channel, dummy: str | None = None
+) -> Channel:
     """
     References:
     - references/SafetyWissen/SafetyCompanion-2024.pdf
@@ -334,13 +384,17 @@ def calculate_p_abdomen_force_ais_3plus(channel_abdomen_force: Channel, dummy: s
     else:
         raise UnsupportedCalculationError(f"Dummy {dummy} not supported.")
 
-    return Channel(code="????????????????",
-                   data=pd.DataFrame(p, index=channel_abdomen_force.data.index),
-                   unit="1")
+    return Channel(
+        code="????????????????",
+        data=pd.DataFrame(p, index=channel_abdomen_force.data.index),
+        unit="1",
+    )
 
 
 @debug_logging(logger)
-def calculate_p_abdomen_compression_ais_3plus(channel_abdomen_compression: Channel, dummy: str | None = None) -> Channel:
+def calculate_p_abdomen_compression_ais_3plus(
+    channel_abdomen_compression: Channel, dummy: str | None = None
+) -> Channel:
     """
     References:
     - references/SafetyWissen/SafetyCompanion-2023.pdf
@@ -348,11 +402,15 @@ def calculate_p_abdomen_compression_ais_3plus(channel_abdomen_compression: Chann
     :param dummy:
     :return:
     """
-    raise UnsupportedCalculationError("Abdomen-compression AIS 3+ is not implemented.")  # FIXME
+    raise UnsupportedCalculationError(
+        "Abdomen-compression AIS 3+ is not implemented."
+    )  # FIXME
 
 
 @debug_logging(logger)
-def calculate_p_pelvis_force_ais_3plus(channel_pelvis_force: Channel, dummy: str | None = None) -> Channel:
+def calculate_p_pelvis_force_ais_3plus(
+    channel_pelvis_force: Channel, dummy: str | None = None
+) -> Channel:
     """
     References:
     - references/SafetyWissen/SafetyCompanion-2024.pdf
@@ -370,13 +428,17 @@ def calculate_p_pelvis_force_ais_3plus(channel_pelvis_force: Channel, dummy: str
     else:
         raise UnsupportedCalculationError(f"Dummy {dummy} not supported.")
 
-    return Channel(code="????????????????",
-                   data=pd.DataFrame(p, index=channel_pelvis_force.data.index),
-                   unit="1")
+    return Channel(
+        code="????????????????",
+        data=pd.DataFrame(p, index=channel_pelvis_force.data.index),
+        unit="1",
+    )
 
 
 @debug_logging(logger)
-def calculate_p_pelvis_force_ais_2plus(channel_pelvis_force: Channel, dummy: str | None = None) -> Channel:
+def calculate_p_pelvis_force_ais_2plus(
+    channel_pelvis_force: Channel, dummy: str | None = None
+) -> Channel:
     """
     References:
     - references/SafetyWissen/SafetyCompanion-2024.pdf
@@ -394,6 +456,8 @@ def calculate_p_pelvis_force_ais_2plus(channel_pelvis_force: Channel, dummy: str
     else:
         raise UnsupportedCalculationError(f"Dummy {dummy} not supported.")
 
-    return Channel(code="????????????????",
-                   data=pd.DataFrame(p, index=channel_pelvis_force.data.index),
-                   unit="1")
+    return Channel(
+        code="????????????????",
+        data=pd.DataFrame(p, index=channel_pelvis_force.data.index),
+        unit="1",
+    )

@@ -37,6 +37,7 @@ CHECKS: tuple[Callable[[str, Criterion], Iterator[Issue]], ...] = (
 # entry points
 # --------------------------------------------------------------------------- #
 
+
 def validate_criterion(path: str, criterion: Criterion) -> Iterator[Issue]:
     """Run every check against one criterion, honouring its ``validate_ignore``."""
     ignored = criterion.validate_ignore
@@ -53,9 +54,15 @@ def validate_tree(overall: Criterion) -> list[Issue]:
     for path, criterion in overall.walk():
         first = seen.setdefault(id(criterion), path)
         if first != path:
-            issues.append(Issue("orphan", IssueSeverity.ERROR, path,
-                                f"the same criterion object is also reachable as {first!r}; "
-                                f"one of the two references is stale."))
+            issues.append(
+                Issue(
+                    "orphan",
+                    IssueSeverity.ERROR,
+                    path,
+                    f"the same criterion object is also reachable as {first!r}; "
+                    f"one of the two references is stale.",
+                )
+            )
             continue
         issues += validate_criterion(path, criterion)
     return issues
@@ -79,13 +86,22 @@ def validate_report(report: Report) -> list[Issue]:
 
     for isomme in report.isomme_list:
         overall = report.overall(isomme)
-        owned = {id(limit) for _, criterion in overall.walk()
-                 for limit in criterion.limits.limit_list}
+        owned = {
+            id(limit)
+            for _, criterion in overall.walk()
+            for limit in criterion.limits.limit_list
+        }
         for limit in report.limits[isomme].limit_list:
             if id(limit) not in owned:
-                issues.append(Issue("orphan", IssueSeverity.ERROR, "",
-                                    f"{isomme}: limit {limit.name or type(limit).__name__} "
-                                    f"{limit.code_patterns} is in the report's limit list but "
-                                    f"belongs to no criterion — a rebuilt subtree left it "
-                                    f"behind, and it still draws in the plots."))
+                issues.append(
+                    Issue(
+                        "orphan",
+                        IssueSeverity.ERROR,
+                        "",
+                        f"{isomme}: limit {limit.name or type(limit).__name__} "
+                        f"{limit.code_patterns} is in the report's limit list but "
+                        f"belongs to no criterion — a rebuilt subtree left it "
+                        f"behind, and it still draws in the plots.",
+                    )
+                )
     return issues

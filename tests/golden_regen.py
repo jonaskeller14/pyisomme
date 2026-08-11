@@ -8,6 +8,7 @@ Regeneration is always a **deliberate** act: the golden tests never rewrite the
 files themselves. When a refactor step legitimately changes a number, run this,
 inspect ``git diff tests/golden/``, and explain the diff in the progress log.
 """
+
 from __future__ import annotations
 
 import logging
@@ -31,8 +32,10 @@ def main(argv: list[str]) -> int:
         data = golden_utils.produce_isolated(stem)
         golden_utils.store(stem, data)
         tests = len(data["results"])
-        print(f"  -> {golden_utils.golden_path(stem)}"
-              f" ({tests} test(s), {len(data['print_results'])} printed lines)")
+        print(
+            f"  -> {golden_utils.golden_path(stem)}"
+            f" ({tests} test(s), {len(data['print_results'])} printed lines)"
+        )
 
     print("\nDone. Review `git diff tests/golden/` before committing.")
     return 0

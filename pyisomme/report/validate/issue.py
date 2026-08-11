@@ -27,10 +27,14 @@ class Issue:
         return self.severity is IssueSeverity.ERROR
 
     def __str__(self) -> str:
-        return f"[{self.severity}] {self.check} @ {self.path or 'Overall'}: {self.message}"
+        return (
+            f"[{self.severity}] {self.check} @ {self.path or 'Overall'}: {self.message}"
+        )
 
 
 def format_issues(issues: Sequence[Issue]) -> str:
     """The issue list as text, errors first."""
-    ordered = sorted(issues, key=lambda issue: (not issue.is_error, issue.path, issue.check))
+    ordered = sorted(
+        issues, key=lambda issue: (not issue.is_error, issue.path, issue.check)
+    )
     return "\n".join(str(issue) for issue in ordered)

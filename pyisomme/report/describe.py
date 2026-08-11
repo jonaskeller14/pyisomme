@@ -38,8 +38,10 @@ def _cell(text: Any) -> str:
 
 
 def _table(header: Sequence[str], rows: Sequence[Sequence[Any]]) -> list[str]:
-    lines = ["| " + " | ".join(header) + " |",
-             "| " + " | ".join("---" for _ in header) + " |"]
+    lines = [
+        "| " + " | ".join(header) + " |",
+        "| " + " | ".join("---" for _ in header) + " |",
+    ]
     lines += ["| " + " | ".join(_cell(cell) for cell in row) + " |" for row in rows]
     return lines
 
@@ -56,9 +58,14 @@ def _threshold(limit: Limit) -> str:
         values = [float(limit.func(x)) for x in SAMPLE_X]
     except Exception:
         return "<not sampleable>"
-    if all(value == values[0] or (math.isnan(value) and math.isnan(values[0])) for value in values):
+    if all(
+        value == values[0] or (math.isnan(value) and math.isnan(values[0]))
+        for value in values
+    ):
         return _num(values[0])
-    return "x=" + ", ".join(f"{x:g}:{_num(value)}" for x, value in zip(SAMPLE_X, values))
+    return "x=" + ", ".join(
+        f"{x:g}:{_num(value)}" for x, value in zip(SAMPLE_X, values)
+    )
 
 
 def _flags(limit: Limit) -> str:
@@ -106,41 +113,62 @@ def resolve_sources(overall: Criterion) -> dict[str, str]:
     return rendered
 
 
-def describe_criterion(path: str, criterion: Criterion, source: str = NONE) -> list[str]:
+def describe_criterion(
+    path: str, criterion: Criterion, source: str = NONE
+) -> list[str]:
     lines = [f"## `{path or 'Overall'}` — {criterion.name or NONE}", ""]
     lines += _table(
         ["class", "source", "max rating", "aggregation"],
-        [[f"`{type(criterion).__name__}`",
-          source,
-          _max_rating(criterion),
-          criterion.aggregation or NONE]],
+        [
+            [
+                f"`{type(criterion).__name__}`",
+                source,
+                _max_rating(criterion),
+                criterion.aggregation or NONE,
+            ]
+        ],
     )
 
     for patterns, limits in blocks(criterion).items():
         lines += ["", f"Limits for `{'`, `'.join(patterns) or NONE}`:", ""]
         lines += _table(
             ["row", "threshold", "rating", "color", "flag", "y_unit", "linestyle"],
-            [[limit.name or type(limit).__name__,
-              _threshold(limit),
-              _num(limit.rating),
-              limit.color,
-              _flags(limit),
-              str(limit.y_unit),
-              limit.linestyle] for limit in limits],
+            [
+                [
+                    limit.name or type(limit).__name__,
+                    _threshold(limit),
+                    _num(limit.rating),
+                    limit.color,
+                    _flags(limit),
+                    str(limit.y_unit),
+                    limit.linestyle,
+                ]
+                for limit in limits
+            ],
         )
 
-    specs = {name: spec for name, spec in sorted(criterion.get_input_specs().items())
-             if spec.owner is type(criterion)}
+    specs = {
+        name: spec
+        for name, spec in sorted(criterion.get_input_specs().items())
+        if spec.owner is type(criterion)
+    }
     if specs:
         lines += ["", "Manual inputs:", ""]
         lines += _table(
             ["input", "type", "default", "unit", "source", "doc"],
-            [[name,
-              spec.type_name(),
-              _num(spec.default) if isinstance(spec.default, (int, float)) else repr(spec.default),
-              spec.unit or NONE,
-              spec.source or NONE,
-              spec.doc or NONE] for name, spec in specs.items()],
+            [
+                [
+                    name,
+                    spec.type_name(),
+                    _num(spec.default)
+                    if isinstance(spec.default, (int, float))
+                    else repr(spec.default),
+                    spec.unit or NONE,
+                    spec.source or NONE,
+                    spec.doc or NONE,
+                ]
+                for name, spec in specs.items()
+            ],
         )
 
     return lines + [""]
@@ -154,17 +182,34 @@ def describe_report(report: Report) -> str:
     definition, and the values that do differ between tests are results, which
     this deliberately does not show.
     """
-    sources = resolve_sources(report.overall(report.isomme_list[0])) if report.isomme_list else {}
+    sources = (
+        resolve_sources(report.overall(report.isomme_list[0]))
+        if report.isomme_list
+        else {}
+    )
 
     lines = [f"# {type(report).__name__}", ""]
     lines += _table(
         ["property", "value"],
-        [["name", report.name or NONE],
-         ["protocol", report.protocol.version or NONE],
-         ["protocols", ", ".join(protocol.version for protocol in report.protocols) or NONE],
-         ["overall criterion", f"`{report.Criterion_Overall.__name__}`"],
-         ["available_pages", ", ".join(type(page).__name__ for page in report.available_pages) or NONE],
-         ["selected_pages", ", ".join(type(page).__name__ for page in report.selected_pages) or NONE]],
+        [
+            ["name", report.name or NONE],
+            ["protocol", report.protocol.version or NONE],
+            [
+                "protocols",
+                ", ".join(protocol.version for protocol in report.protocols) or NONE,
+            ],
+            ["overall criterion", f"`{report.Criterion_Overall.__name__}`"],
+            [
+                "available_pages",
+                ", ".join(type(page).__name__ for page in report.available_pages)
+                or NONE,
+            ],
+            [
+                "selected_pages",
+                ", ".join(type(page).__name__ for page in report.selected_pages)
+                or NONE,
+            ],
+        ],
     )
     lines.append("")
 

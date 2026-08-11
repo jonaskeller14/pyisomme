@@ -3,15 +3,18 @@ import logging
 import pickle
 import unittest
 import astropy.units as u
-from astropy.constants import g0 as ASTROPY_G0_CONSTANT # type: ignore
+from astropy.constants import g0 as ASTROPY_G0_CONSTANT  # type: ignore
 import pandas as pd
 
 from pyisomme import Unit, g0
 from pyisomme.channel import Channel
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(format='%(module)-12s %(levelname)-8s %(message)s',
-                    datefmt='%m/%d/%Y %I:%M:%S', level=logging.WARNING)
+logging.basicConfig(
+    format="%(module)-12s %(levelname)-8s %(message)s",
+    datefmt="%m/%d/%Y %I:%M:%S",
+    level=logging.WARNING,
+)
 
 
 class TestUnitClassIdentity(unittest.TestCase):
@@ -22,7 +25,7 @@ class TestUnitClassIdentity(unittest.TestCase):
         self.assertIsInstance(
             unit_obj,
             Unit,
-            msg="Unit('m') should be an instance of the custom Unit class, not u.UnitBase"
+            msg="Unit('m') should be an instance of the custom Unit class, not u.UnitBase",
         )
 
     def test_passthrough_instantiation(self):
@@ -73,7 +76,7 @@ class TestStringSanitizationAndEdgeCases(unittest.TestCase):
     def test_channel_unit(self):
         channel = Channel(
             code="11HEAD0000H3ACXA",
-            data=pd.DataFrame([1,2,3]),
+            data=pd.DataFrame([1, 2, 3]),
             unit="g",
         )
         assert channel.unit == Unit(g0)
@@ -85,19 +88,19 @@ class TestGravityConstantHandling(unittest.TestCase):
     def test_g0_object_behavior(self):
         unit_g0 = Unit(g0)
         self.assertIsInstance(unit_g0, Unit)
-        self.assertTrue(unit_g0.is_equivalent(u.m / (u.s ** 2))) # type: ignore
+        self.assertTrue(unit_g0.is_equivalent(u.m / (u.s**2)))  # type: ignore
 
     def test_g0_scaling_equivalence(self):
         # 1 g0 must equal ~9.80665 m/s^2
         unit_g0 = Unit(g0)
-        converted_val = (1 * unit_g0._astropy_unit).to(u.m / (u.s ** 2)).value # type: ignore
+        converted_val = (1 * unit_g0._astropy_unit).to(u.m / (u.s**2)).value  # type: ignore
         self.assertAlmostEqual(converted_val, ASTROPY_G0_CONSTANT.value, places=5)
 
     def test_astropy_constant_quantity_passthrough(self):
         # Passing raw astropy Constant/Quantity directly
         unit_from_quantity = Unit(ASTROPY_G0_CONSTANT)
         self.assertIsInstance(unit_from_quantity, Unit)
-        self.assertTrue(unit_from_quantity.is_equivalent(u.m / (u.s ** 2))) # type: ignore
+        self.assertTrue(unit_from_quantity.is_equivalent(u.m / (u.s**2)))  # type: ignore
 
 
 class TestArithmeticAndDelegation(unittest.TestCase):
@@ -164,9 +167,11 @@ class TestCopyingAndHashing(unittest.TestCase):
         # Regression: calculate_olc() deep-copies its velocity channel, and the copy's
         # unit used to come back as a raw astropy unit -- convert_unit() then failed
         # with "'m / s' and 'm / s' are not convertible" while exporting the PPTX.
-        channel = Channel(code="10VEHC000000VEXA",
-                          data=pd.DataFrame({0: [1.0, 2.0]}, index=[0.0, 0.01]),
-                          unit="m/s")
+        channel = Channel(
+            code="10VEHC000000VEXA",
+            data=pd.DataFrame({0: [1.0, 2.0]}, index=[0.0, 0.01]),
+            unit="m/s",
+        )
         copied = copy.deepcopy(channel)
         self.assertIsInstance(copied.unit, Unit)
         copied.convert_unit(Unit("m/s"))
@@ -196,7 +201,7 @@ class TestNumericAndInvalidInputs(unittest.TestCase):
         # Numbers like 1 or 12345 produce dimensionless scale units in Astropy
         unit_int = Unit(12345)
         self.assertIsInstance(unit_int, Unit)
-        self.assertEqual(unit_int._astropy_unit, u.Unit(12345)) # type: ignore
+        self.assertEqual(unit_int._astropy_unit, u.Unit(12345))  # type: ignore
 
     def test_invalid_unit_string(self):
         with self.assertRaises(ValueError):

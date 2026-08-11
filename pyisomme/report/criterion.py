@@ -6,7 +6,13 @@ from pyisomme.limit import Limit
 from pyisomme.limits import Limits
 from pyisomme.errors import MissingData, Status
 from pyisomme.report.ctx import Ctx, CtxSource
-from pyisomme.report.manual import InputSpec, declared_inputs, manual, settable_names, suggest
+from pyisomme.report.manual import (
+    InputSpec,
+    declared_inputs,
+    manual,
+    settable_names,
+    suggest,
+)
 
 import numpy as np
 import itertools
@@ -41,6 +47,7 @@ class Role(Enum):
 #: which are added on top of it. The default of the aggregation helpers.
 SCORING_ROLES = (Role.RESULT, Role.AGGREGATE)
 
+
 class Undeclared:
     """
     Declared value type of :meth:`Criterion.__setattr__` — never instantiated.
@@ -70,8 +77,14 @@ class sub(Generic[C]):
 
     attr: str
 
-    def __init__(self, cls: type[C], *, name: str | None = None,
-                 at: CtxSource | None = None, role: Role | None = None) -> None:
+    def __init__(
+        self,
+        cls: type[C],
+        *,
+        name: str | None = None,
+        at: CtxSource | None = None,
+        role: Role | None = None,
+    ) -> None:
         self.cls = cls
         self.display_name = name
         self.at = at
@@ -112,7 +125,9 @@ class sub(Generic[C]):
             return self
         try:
             return cast("C", obj._children[self.attr])
-        except KeyError:  # pragma: no cover - a subclass that never ran Criterion.__init__
+        except (
+            KeyError
+        ):  # pragma: no cover - a subclass that never ran Criterion.__init__
             raise AttributeError(
                 f"{type(obj).__name__}.{self.attr} was never built — did "
                 f"{type(obj).__name__}.__init__ forget to call super().__init__()?"
@@ -160,7 +175,9 @@ class Criterion:
 
         # Tree is built, so it is complete and mutable before calculate()
         children = self._child_map()
-        for spec in sorted(type(self)._declared_children.values(), key=lambda spec: spec.order):
+        for spec in sorted(
+            type(self)._declared_children.values(), key=lambda spec: spec.order
+        ):
             children[spec.attr] = spec.build(self)
 
     def __setattr__(self, name: str, value: Undeclared) -> None:
@@ -361,7 +378,9 @@ class Criterion:
         """
         parent = self._parent
         base = parent.ctx if parent is not None else Ctx(self.report, self.isomme)
-        return base if self._ctx_source is None else self._ctx_source.resolve(base, self)
+        return (
+            base if self._ctx_source is None else self._ctx_source.resolve(base, self)
+        )
 
     def code(self, template: str) -> str:
         """``self.ctx.code(template)`` — the spelling a criterion body uses."""
@@ -392,7 +411,9 @@ class Criterion:
             raise MissingData(*what)
         return value
 
-    def require_channel(self, *code_patterns: str, isomme: Isomme | None = None, **kwargs: Any) -> Channel:
+    def require_channel(
+        self, *code_patterns: str, isomme: Isomme | None = None, **kwargs: Any
+    ) -> Channel:
         """
         Like ``self.isomme.get_channel(...)`` but raise :class:`MissingData` (naming the
         requested patterns) instead of returning ``None`` when no channel is available.
@@ -443,7 +464,9 @@ class Criterion:
         stale = {id(limit) for limit in self.limits.limit_list}
         if stale:
             report_limits = self.report.limits[self.isomme].limit_list
-            report_limits[:] = [limit for limit in report_limits if id(limit) not in stale]
+            report_limits[:] = [
+                limit for limit in report_limits if id(limit) not in stale
+            ]
             self.limits.limit_list.clear()
         self.extend_limit_list(self.define_limits())
 
@@ -522,8 +545,10 @@ class Criterion:
         present = [rating for rating in ratings if not np.isnan(rating)]
         if len(present) != len(ratings):
             self.skip_missing = skip_missing
-            logger.info(f"{self}: {len(ratings) - len(present)} of {len(ratings)} children "
-                        f"missing, skipped ({skip_missing}).")
+            logger.info(
+                f"{self}: {len(ratings) - len(present)} of {len(ratings)} children "
+                f"missing, skipped ({skip_missing})."
+            )
         return float(np.mean(present)) if present else float(np.nan)
 
     def modifiers_sum(self) -> float:
@@ -547,5 +572,8 @@ class Criterion:
         Uses the ordered children list rather than ``dir()`` (F6, A11), so the result
         follows the protocol instead of the alphabet.
         """
-        return [criterion for _, criterion in self.walk()
-                if isinstance(criterion, criterion_types)]
+        return [
+            criterion
+            for _, criterion in self.walk()
+            if isinstance(criterion, criterion_types)
+        ]

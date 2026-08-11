@@ -32,10 +32,13 @@ class Isomme:
     channels: list[Channel]
     channel_info: Info
 
-    def __init__(self, test_number: str | None = None,
-                 test_info: list | None = None,
-                 channels: list[Channel] | None = None,
-                 channel_info: list | None = None):
+    def __init__(
+        self,
+        test_number: str | None = None,
+        test_info: list | None = None,
+        channels: list[Channel] | None = None,
+        channel_info: list | None = None,
+    ):
         """
         Create empty Isomme object.
         """
@@ -107,14 +110,20 @@ class Isomme:
             self.read_from_xxx(path, *channel_code_patterns)
         elif path.suffix.lower() == ".tar":
             self.read_from_tarfile(path, *channel_code_patterns, mode="r")
-        elif len(path.suffixes) >= 2 and path.suffixes[-1].lower() == ".gz" and path.suffixes[-2].lower() == ".tar":
+        elif (
+            len(path.suffixes) >= 2
+            and path.suffixes[-1].lower() == ".gz"
+            and path.suffixes[-2].lower() == ".tar"
+        ):
             self.read_from_tarfile(path, *channel_code_patterns, mode="r:gz")
         else:
             raise NotImplementedError(f"Could not read path: {path}")
         logger.info(f"Reading '{path}' done. Number of channel: {len(self.channels)}")
         return self
 
-    def _read_from_source(self, source: ArchiveSource, *channel_code_patterns, mme_name: str | None = None) -> Isomme:
+    def _read_from_source(
+        self, source: ArchiveSource, *channel_code_patterns, mme_name: str | None = None
+    ) -> Isomme:
         """
         Read an ISO-MME container from any :class:`ArchiveSource` (folder/zip/tar).
 
@@ -140,12 +149,18 @@ class Isomme:
         self.test_info = parse_mme(source.read_text(mme_name))
 
         # CHN
-        chn_pattern = str(Path(mme_name).parent.joinpath("[cC][hH][aA][nN][nN][eE][lL]*", f"{self.test_number}.[cC][hH][nN]"))
+        chn_pattern = str(
+            Path(mme_name).parent.joinpath(
+                "[cC][hH][aA][nN][nN][eE][lL]*", f"{self.test_number}.[cC][hH][nN]"
+            )
+        )
         chn_names = fnmatch.filter(names, chn_pattern)
         if len(chn_names) == 0:
             raise FileNotFoundError("No .chn file found.")
         elif len(chn_names) > 1:
-            logger.warning(f"Multiple .chn file found. {chn_names}. Only first will be considered.")
+            logger.warning(
+                f"Multiple .chn file found. {chn_names}. Only first will be considered."
+            )
 
         chn_name = chn_names[0]
         self.channel_info = parse_chn(source.read_text(chn_name))
@@ -153,7 +168,10 @@ class Isomme:
         # 001
         self.channels = []  # in case channel exist trough constructor, use extend()
         with logging_redirect_tqdm():
-            for key in tqdm(fnmatch.filter(self.channel_info.keys(), "Name of channel *"), desc=f"Read Channel of {self.test_number}"):
+            for key in tqdm(
+                fnmatch.filter(self.channel_info.keys(), "Name of channel *"),
+                desc=f"Read Channel of {self.test_number}",
+            ):
                 code = self.channel_info[key].split()[0].split("/")[0]
                 if len(channel_code_patterns) != 0:
                     skip = True
@@ -168,10 +186,16 @@ class Isomme:
                 if channel_number_match is None:
                     raise ValueError(f"Invalid channel number in CHN data: {key}")
                 channel_number = channel_number_match.groups()[0]
-                xxx_pattern = str(Path(chn_name).parent.joinpath(f"{self.test_number}.{channel_number}"))
+                xxx_pattern = str(
+                    Path(chn_name).parent.joinpath(
+                        f"{self.test_number}.{channel_number}"
+                    )
+                )
                 xxx_names = fnmatch.filter(names, xxx_pattern)
                 if len(xxx_names) == 0:
-                    logger.critical(f"Channel file '{self.test_number}.{channel_number}' not found.")
+                    logger.critical(
+                        f"Channel file '{self.test_number}.{channel_number}' not found."
+                    )
                     continue
 
                 xxx_name = xxx_names[0]
@@ -181,14 +205,20 @@ class Isomme:
 
     def read_from_mme(self, mme_path: Path, *channel_code_patterns) -> Isomme:
         mme_path = Path(mme_path)
-        return self._read_from_source(FolderSource(mme_path.parent), *channel_code_patterns, mme_name=mme_path.name)
+        return self._read_from_source(
+            FolderSource(mme_path.parent),
+            *channel_code_patterns,
+            mme_name=mme_path.name,
+        )
 
     def read_from_folder(self, folder_path: Path, *channel_code_patterns) -> Isomme:
         mme_paths = list(folder_path.rglob("*.[mM][mM][eE]"))
         if len(mme_paths) == 0:
             raise FileNotFoundError("Folder not containing any .mme/.MME file.")
         elif len(mme_paths) > 1:
-            raise Exception("Multiple .mme files found inside of the folder. Please specify the .mme-file path.")
+            raise Exception(
+                "Multiple .mme files found inside of the folder. Please specify the .mme-file path."
+            )
         return self.read_from_mme(mme_paths[0], *channel_code_patterns)
 
     def read_from_chn(self, chn_path: Path, *channel_code_patterns) -> Isomme:
@@ -207,16 +237,27 @@ class Isomme:
         with ZipSource(zip_path) as source:
             return self._read_from_source(source, *channel_code_patterns)
 
-    def read_from_tarfile(self, tar_path: Path, *channel_code_patterns, mode: Literal['r', 'r:*', 'r:', 'r:gz', 'r:bz2', 'r:xz'] = "r") -> Isomme:
+    def read_from_tarfile(
+        self,
+        tar_path: Path,
+        *channel_code_patterns,
+        mode: Literal["r", "r:*", "r:", "r:gz", "r:bz2", "r:xz"] = "r",
+    ) -> Isomme:
         with TarSource(tar_path, mode) as source:
             return self._read_from_source(source, *channel_code_patterns)
 
     def write_mme(self, path: str | Path, *channel_code_patterns) -> Isomme:
-        channels = self.get_channels(*channel_code_patterns) if len(channel_code_patterns) != 0 else self.channels
+        channels = (
+            self.get_channels(*channel_code_patterns)
+            if len(channel_code_patterns) != 0
+            else self.channels
+        )
         path = Path(path)
 
         if path.stem != self.test_number:
-            logger.warning("Test number does not match file stem. Not compliant with convention.")
+            logger.warning(
+                "Test number does not match file stem. Not compliant with convention."
+            )
 
         os.makedirs(path.parent, exist_ok=True)
 
@@ -237,12 +278,19 @@ class Isomme:
 
         # 001 - iterate over channels
         with logging_redirect_tqdm():
-            for channel_idx, channel in tqdm(enumerate(channels, 1), desc=f"Write Channel of {self.test_number}",
-                                             total=len(channels)):
+            for channel_idx, channel in tqdm(
+                enumerate(channels, 1),
+                desc=f"Write Channel of {self.test_number}",
+                total=len(channels),
+            ):
                 channel_info[f"Name of channel {channel_idx:03}"] = channel.code + (
-                    f' / {channel.get_info("Name of the channel")}' if channel.get_info(
-                        "Name of the channel") is not None else "")
-                channel.write(path.parent.joinpath("Channel", f"{path.stem}.{channel_idx:03}"))
+                    f" / {channel.get_info('Name of the channel')}"
+                    if channel.get_info("Name of the channel") is not None
+                    else ""
+                )
+                channel.write(
+                    path.parent.joinpath("Channel", f"{path.stem}.{channel_idx:03}")
+                )
 
         # CHN
         with open(path.parent.joinpath("Channel", f"{path.stem}.chn"), "w") as chn_file:
@@ -258,7 +306,7 @@ class Isomme:
         path = Path(path)
         folder_path = path.parent.joinpath(path.stem)
         self.write_folder(folder_path, *channel_code_patterns)
-        shutil.make_archive(str(folder_path), 'zip', str(folder_path), logger=logger)
+        shutil.make_archive(str(folder_path), "zip", str(folder_path), logger=logger)
         shutil.rmtree(folder_path)
         return self
 
@@ -266,7 +314,7 @@ class Isomme:
         path = Path(path)
         folder_path = path.parent.joinpath(path.stem)
         self.write(folder_path, *channel_code_patterns)
-        shutil.make_archive(str(folder_path), 'tar', folder_path)
+        shutil.make_archive(str(folder_path), "tar", folder_path)
         shutil.rmtree(folder_path)
         return self
 
@@ -274,7 +322,7 @@ class Isomme:
         path = Path(path)
         folder_path = str(path).removesuffix(".tar.gz")
         self.write(folder_path, *channel_code_patterns)
-        shutil.make_archive(folder_path, 'gztar', folder_path)
+        shutil.make_archive(folder_path, "gztar", folder_path)
         shutil.rmtree(folder_path)
         return self
 
@@ -294,10 +342,16 @@ class Isomme:
             return self.write_zip(path, *channel_code_patterns)
         elif path.suffix.lower() == ".tar":
             return self.write_tar(path, *channel_code_patterns)
-        elif len(path.suffixes) >= 2 and path.suffixes[-1].lower() == ".gz" and path.suffixes[-2].lower() == ".tar":
+        elif (
+            len(path.suffixes) >= 2
+            and path.suffixes[-1].lower() == ".gz"
+            and path.suffixes[-2].lower() == ".tar"
+        ):
             return self.write_tar_gz(path, *channel_code_patterns)
         else:
-            raise NotImplementedError(f"{path.suffix} is not supported. Only .mme/folder/.zip/.tar/.tar.gz are supported.")
+            raise NotImplementedError(
+                f"{path.suffix} is not supported. Only .mme/folder/.zip/.tar/.tar.gz are supported."
+            )
 
     def extend(self, *others) -> Isomme:
         """
@@ -316,7 +370,9 @@ class Isomme:
                 for other_item in other:
                     self.extend(other_item)
             else:
-                raise NotImplementedError(f"Could not extend Isomme with type {type(other)}")
+                raise NotImplementedError(
+                    f"Could not extend Isomme with type {type(other)}"
+                )
         return self
 
     def delete_duplicates(self, filter_class_duplicates: bool = False) -> Isomme:
@@ -326,17 +382,35 @@ class Isomme:
         :return: self
         """
         for code in {channel.code for channel in self.channels}:
-            channels = self.get_channels(code, calculate=False, filter=False, differentiate=False, integrate=False)
+            channels = self.get_channels(
+                code,
+                calculate=False,
+                filter=False,
+                differentiate=False,
+                integrate=False,
+            )
             for channel in channels[1:]:
                 self.channels.remove(channel)
                 logger.debug(f"Removed duplicate Channel: {channel.code}")
 
         if filter_class_duplicates:
             for code in {channel.code for channel in self.channels}:
-                channels = self.get_channels(code[:-1].replace("?", "[?]") + "?", calculate=False, filter=False, differentiate=False, integrate=False)
+                channels = self.get_channels(
+                    code[:-1].replace("?", "[?]") + "?",
+                    calculate=False,
+                    filter=False,
+                    differentiate=False,
+                    integrate=False,
+                )
                 sort_seq = "0XAEPBF2CG3DHQLVS"
-                sort_map = {filter_class: sort_seq.index(filter_class) for filter_class in sort_seq}
-                for channel in sorted(channels, key=lambda c: sort_map.get(c.code.filter_class, float('inf')))[1:]:
+                sort_map = {
+                    filter_class: sort_seq.index(filter_class)
+                    for filter_class in sort_seq
+                }
+                for channel in sorted(
+                    channels,
+                    key=lambda c: sort_map.get(c.code.filter_class, float("inf")),
+                )[1:]:
                     self.channels.remove(channel)
                     logger.debug(f"Removed duplicate filter Channel: {channel.code}")
         return self
@@ -371,7 +445,9 @@ class Isomme:
             return self.get_channels(index)
         if isinstance(index, (int, slice)):
             return self.channels[index]
-        raise TypeError(f"Isomme indices must be int, slice or str, not {type(index).__name__}")
+        raise TypeError(
+            f"Isomme indices must be int, slice or str, not {type(index).__name__}"
+        )
 
     def __contains__(self, item) -> bool:
         return item in self.channels
@@ -383,7 +459,14 @@ class Isomme:
         return hash(self.test_number or "Unnamed ISOMME")
 
     @debug_logging(logger)
-    def get_channel(self, *code_patterns: str, filter: bool = True, calculate: bool = True, differentiate: bool = True, integrate: bool = True) -> Channel | None:
+    def get_channel(
+        self,
+        *code_patterns: str,
+        filter: bool = True,
+        calculate: bool = True,
+        differentiate: bool = True,
+        integrate: bool = True,
+    ) -> Channel | None:
         """
         Get channel by channel code pattern.
         First match will be returned, although multiple matches could exist.
@@ -424,7 +507,12 @@ class Isomme:
                 except NotImplementedError as error:
                     logger.debug(error)
                 else:
-                    channel_int = self.get_channel(code_integrated, filter=filter, calculate=calculate, integrate=False)
+                    channel_int = self.get_channel(
+                        code_integrated,
+                        filter=filter,
+                        calculate=calculate,
+                        integrate=False,
+                    )
                     if channel_int is not None:
                         try:
                             return channel_int.differentiate()
@@ -438,7 +526,12 @@ class Isomme:
                 except NotImplementedError as error:
                     logger.debug(error)
                 else:
-                    channel_dif = self.get_channel(code_differentiated, filter=filter, calculate=calculate, differentiate=False)
+                    channel_dif = self.get_channel(
+                        code_differentiated,
+                        filter=filter,
+                        calculate=calculate,
+                        differentiate=False,
+                    )
                     if channel_dif is not None:
                         try:
                             return channel_dif.integrate()
@@ -449,7 +542,14 @@ class Isomme:
         return None
 
     @debug_logging(logger)
-    def get_channels(self, *code_patterns: str, filter: bool = True, calculate: bool = True, differentiate: bool = False, integrate: bool = False) -> list[Channel]:
+    def get_channels(
+        self,
+        *code_patterns: str,
+        filter: bool = True,
+        calculate: bool = True,
+        differentiate: bool = False,
+        integrate: bool = False,
+    ) -> list[Channel]:
         """
         Get all channels by channel code patter. All Wildcards are supported.
         A list of all matching channels will be returned.
@@ -482,16 +582,21 @@ class Isomme:
             # 3. Calculate Channel
             if calculate:
                 calculated_channel = self.get_channel(code_pattern)
-                if calculated_channel is not None and calculated_channel not in channel_list:
+                if (
+                    calculated_channel is not None
+                    and calculated_channel not in channel_list
+                ):
                     channel_list.append(calculated_channel)
 
             # 4. Differentiate
             if differentiate:
                 try:
-                    for channel in self.get_channels(code_pattern.integrate(),
-                                                     filter=filter,
-                                                     calculate=calculate,
-                                                     integrate=False):
+                    for channel in self.get_channels(
+                        code_pattern.integrate(),
+                        filter=filter,
+                        calculate=calculate,
+                        integrate=False,
+                    ):
                         channel_list.append(channel.differentiate())
                 except (AttributeError, NotImplementedError) as error:
                     logger.debug(error)
@@ -499,10 +604,12 @@ class Isomme:
             # 5. Integrate
             if integrate:
                 try:
-                    for channel in self.get_channels(code_pattern.differentiate(),
-                                                     filter=filter,
-                                                     calculate=calculate,
-                                                     differentiate=False):
+                    for channel in self.get_channels(
+                        code_pattern.differentiate(),
+                        filter=filter,
+                        calculate=calculate,
+                        differentiate=False,
+                    ):
                         channel_list.append(channel.integrate())
                 except (AttributeError, NotImplementedError) as error:
                     logger.debug(error)
@@ -519,7 +626,7 @@ class Isomme:
         """
         print(f"{self.test_number} - Channel List:")
         for idx, channel in enumerate(self.channels):
-            print(f"\t{(idx+1):03}\t{channel.code}")
+            print(f"\t{(idx + 1):03}\t{channel.code}")
 
     def set_code(self, *args, **kwargs) -> Isomme:
         for channel in self.channels:
@@ -563,13 +670,20 @@ class Isomme:
         return self
 
 
-def read(*paths, channel_code_patterns: list | None = None, recursive: bool = True, merge: bool = True) -> list[Isomme]:
+def read(
+    *paths,
+    channel_code_patterns: list | None = None,
+    recursive: bool = True,
+    merge: bool = True,
+) -> list[Isomme]:
     all_paths: list[str] = []
     for path in paths:
         all_paths += glob.glob(path, recursive=recursive)
     unique_paths = set(all_paths)
 
-    channel_code_patterns = [] if channel_code_patterns is None else channel_code_patterns
+    channel_code_patterns = (
+        [] if channel_code_patterns is None else channel_code_patterns
+    )
 
     iso_list = []
     with logging_redirect_tqdm():

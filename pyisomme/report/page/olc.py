@@ -23,16 +23,34 @@ class Page_OLC(Page_Line_Table):
         # NOTE: the availability check deliberately uses a *narrower* pattern set than the
         # lookup it guards — a test carrying only "10VEH0OLC??VEXX" renders as nan. Kept
         # as-is; see the progress log (deferred item D7).
-        channel = isomme.get_channel("10VEH0OLC??VEXX", "14BPIL0OLC??VEXX", "10SEAT0OLC??VEXX")
-        if channel is None or isomme.get_channel("14BPIL0OLC??VEXX", "10SEAT0OLC??VEXX") is None:
+        channel = isomme.get_channel(
+            "10VEH0OLC??VEXX", "14BPIL0OLC??VEXX", "10SEAT0OLC??VEXX"
+        )
+        if (
+            channel is None
+            or isomme.get_channel("14BPIL0OLC??VEXX", "10SEAT0OLC??VEXX") is None
+        ):
             return f"{np.nan:.2f}"
         return f"{channel.get_data(unit=Unit(g0))[0]:.2f}"
 
     def __init__(self, report: Report[Any]) -> None:
         super().__init__(report)
 
-        self.channels = {isomme: [[isomme.get_channel("10VEHCCG00??VEXA", "14BPIL??????VEXA", "10SEATLERE??VEXA"),
-                                   isomme.get_channel("10VEH0OLC??VEXA", "14BPIL0OLC??VEXA", "10SEAT0OLC??VEXA")]] for isomme in self.report.isomme_list}
-        self.cell_texts = [[[self._olc_cell_text(isomme)] for isomme in self.report.isomme_list]]
+        self.channels = {
+            isomme: [
+                [
+                    isomme.get_channel(
+                        "10VEHCCG00??VEXA", "14BPIL??????VEXA", "10SEATLERE??VEXA"
+                    ),
+                    isomme.get_channel(
+                        "10VEH0OLC??VEXA", "14BPIL0OLC??VEXA", "10SEAT0OLC??VEXA"
+                    ),
+                ]
+            ]
+            for isomme in self.report.isomme_list
+        }
+        self.cell_texts = [
+            [[self._olc_cell_text(isomme)] for isomme in self.report.isomme_list]
+        ]
         self.col_labels = [["OLC [g]"]]
         self.row_labels = [[isomme.test_number for isomme in self.report.isomme_list]]

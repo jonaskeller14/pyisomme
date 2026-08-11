@@ -1,4 +1,5 @@
 """Child-process entry point used by the result-golden test and regenerator."""
+
 from __future__ import annotations
 
 import json

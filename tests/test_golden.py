@@ -5,6 +5,7 @@ Each covered report is constructed, calculated and compared against a committed
 JSON snapshot. See ``tests/golden_utils.py`` for the two comparison layers and
 ``tests/golden_regen.py`` for how to re-baseline a deliberate change.
 """
+
 from __future__ import annotations
 
 import logging
@@ -15,6 +16,7 @@ from tests import golden_utils
 
 
 logging.basicConfig(level=logging.ERROR)
+
 
 class TestGolden(unittest.TestCase):
     """One test per covered report; each builds the report from scratch."""
@@ -60,23 +62,35 @@ class TestGoldenCoverage(unittest.TestCase):
     def test_goldens_are_not_empty(self):
         for stem in golden_utils.BUILDERS:
             golden = golden_utils.load(stem)
-            self.assertGreater(len(golden["results"]), 0, f"{stem}: no test results captured")
-            self.assertGreater(len(golden["print_results"]), 0, f"{stem}: no printed results captured")
+            self.assertGreater(
+                len(golden["results"]), 0, f"{stem}: no test results captured"
+            )
+            self.assertGreater(
+                len(golden["print_results"]), 0, f"{stem}: no printed results captured"
+            )
 
     def test_synthetic_data_has_no_missing_channels(self):
         """NA means the shared synthetic fixture failed to supply a report input."""
         for stem in golden_utils.BUILDERS:
             golden = golden_utils.load(stem)
-            missing = [f"{test}:{path}" for test, tree in golden["results"].items()
-                       for path, node in tree.items() if node["status"] == "NA"]
+            missing = [
+                f"{test}:{path}"
+                for test, tree in golden["results"].items()
+                for path, node in tree.items()
+                if node["status"] == "NA"
+            ]
             self.assertEqual([], missing, f"{stem}: incomplete synthetic data")
 
     def test_calculations_have_no_errors(self):
         """A re-baseline must not normalize a swallowed calculation exception."""
         for stem in golden_utils.BUILDERS:
             golden = golden_utils.load(stem)
-            errors = {path for tree in golden["results"].values()
-                      for path, node in tree.items() if node["status"] == "ERROR"}
+            errors = {
+                path
+                for tree in golden["results"].values()
+                for path, node in tree.items()
+                if node["status"] == "ERROR"
+            }
             self.assertEqual(set(), errors, stem)
 
 
@@ -108,7 +122,9 @@ class TestComparisonSemantics(unittest.TestCase):
         self.assertIn("a.value", regressions[0])
 
     def test_tiny_float_drift_within_rtol_is_accepted(self):
-        regressions, _ = golden_utils.compare(self._golden(), self._golden(value=1.0 + 1e-13))
+        regressions, _ = golden_utils.compare(
+            self._golden(), self._golden(value=1.0 + 1e-13)
+        )
         self.assertEqual([], regressions)
 
     def test_known_value_becoming_nan_is_a_regression(self):
@@ -116,17 +132,23 @@ class TestComparisonSemantics(unittest.TestCase):
         self.assertEqual(1, len(regressions))
 
     def test_nan_becoming_a_number_is_an_improvement(self):
-        regressions, improvements = golden_utils.compare(self._golden(value="nan"), self._golden(value=3.0))
+        regressions, improvements = golden_utils.compare(
+            self._golden(value="nan"), self._golden(value=3.0)
+        )
         self.assertEqual([], regressions)
         self.assertEqual(1, len(improvements))
 
     def test_nan_staying_nan_is_clean(self):
-        regressions, improvements = golden_utils.compare(self._golden(value="nan"), self._golden(value="nan"))
+        regressions, improvements = golden_utils.compare(
+            self._golden(value="nan"), self._golden(value="nan")
+        )
         self.assertEqual([], regressions)
         self.assertEqual([], improvements)
 
     def test_status_downgrade_is_a_regression(self):
-        regressions, _ = golden_utils.compare(self._golden(), self._golden(status="ERROR"))
+        regressions, _ = golden_utils.compare(
+            self._golden(), self._golden(status="ERROR")
+        )
         self.assertEqual(1, len(regressions))
 
     def test_print_results_change_is_a_regression(self):

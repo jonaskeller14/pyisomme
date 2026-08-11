@@ -4,6 +4,7 @@ nox.options.default_venv_backend = "uv"
 
 PYTHON_VERSIONS = ["3.9", "3.10", "3.11", "3.12"]
 
+
 @nox.session(python=PYTHON_VERSIONS)
 def tests(session: nox.Session) -> None:
     """Run the unit test suite across Python versions."""

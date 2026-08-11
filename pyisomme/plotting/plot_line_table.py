@@ -23,22 +23,24 @@ logger = logging.getLogger(__name__)
 
 
 class Plot_Line_Table(Plot_Line, Plot_Table):
-    def __init__(self,
-                 channels: dict[Isomme, list[list[Channel | str | None]]],
-                 cell_texts: list[np.ndarray | list[list]],
-                 row_labels: list[np.ndarray | list],
-                 col_labels: list[np.ndarray | list],
-                 xlim: tuple[float, float] | None = None,
-                 ylim: tuple[float, float] | None = None,
-                 sharex: bool = True,
-                 sharey: bool = False,
-                 limits: Limits | dict[Isomme, Limits] | None = None,
-                 cell_colors: list[np.ndarray | list[list]] | None = None,
-                 col_labels_colors: list[np.ndarray | list] | None = None,
-                 col_labels_fontweight: str | None = None,
-                 nrows: int | None = None,
-                 ncols: int | None = None,
-                 figsize: tuple[float, float] = (10, 10)):
+    def __init__(
+        self,
+        channels: dict[Isomme, list[list[Channel | str | None]]],
+        cell_texts: list[np.ndarray | list[list]],
+        row_labels: list[np.ndarray | list],
+        col_labels: list[np.ndarray | list],
+        xlim: tuple[float, float] | None = None,
+        ylim: tuple[float, float] | None = None,
+        sharex: bool = True,
+        sharey: bool = False,
+        limits: Limits | dict[Isomme, Limits] | None = None,
+        cell_colors: list[np.ndarray | list[list]] | None = None,
+        col_labels_colors: list[np.ndarray | list] | None = None,
+        col_labels_fontweight: str | None = None,
+        nrows: int | None = None,
+        ncols: int | None = None,
+        figsize: tuple[float, float] = (10, 10),
+    ):
         Plot.__init__(self, figsize=figsize, nrows=nrows, ncols=ncols)
 
         # Line
@@ -46,9 +48,15 @@ class Plot_Line_Table(Plot_Line, Plot_Table):
 
         # Replace Channel-Code with Channel
         self.channels = {
-            isomme: [[isomme.get_channel(channel_ax) if isinstance(channel_ax, str) else channel_ax
-                      for channel_ax in channel_ax_list]
-                     for channel_ax_list in channel_list]
+            isomme: [
+                [
+                    isomme.get_channel(channel_ax)
+                    if isinstance(channel_ax, str)
+                    else channel_ax
+                    for channel_ax in channel_ax_list
+                ]
+                for channel_ax_list in channel_list
+            ]
             for isomme, channel_list in channels.items()
         }
 
@@ -76,15 +84,24 @@ class Plot_Line_Table(Plot_Line, Plot_Table):
             self.col_labels_fontweight = col_labels_fontweight
 
         if self.cell_colors is None:
-            self.cell_colors = [[[(0,0,0,0) for _ in row] for row in cell_text] for cell_text in self.cell_texts]
+            self.cell_colors = [
+                [[(0, 0, 0, 0) for _ in row] for row in cell_text]
+                for cell_text in self.cell_texts
+            ]
 
         self.fig = self.plot()
 
     def plot(self) -> Figure:
-        fig, subplot_axs = plt.subplots(self.nrows, self.ncols, figsize=self.figsize, layout="constrained")
-        fig = cast(Figure, fig)  # matplotlib is unstubbed: inferred as FigureBase | Unknown
+        fig, subplot_axs = plt.subplots(
+            self.nrows, self.ncols, figsize=self.figsize, layout="constrained"
+        )
+        fig = cast(
+            Figure, fig
+        )  # matplotlib is unstubbed: inferred as FigureBase | Unknown
         if (self.nrows * self.ncols) == 1:
-            axs = [subplot_axs, ]
+            axs = [
+                subplot_axs,
+            ]
         else:
             axs = list(subplot_axs.flat)
 
@@ -97,7 +114,7 @@ class Plot_Line_Table(Plot_Line, Plot_Table):
         n_tables = len(self.cell_texts)
 
         axs_lines = axs[:n_lines]
-        axs_tables = axs[n_lines:n_lines + n_tables]
+        axs_tables = axs[n_lines : n_lines + n_tables]
 
         # Remove empty axes
         for idx, ax in enumerate(axs):

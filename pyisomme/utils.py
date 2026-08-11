@@ -16,7 +16,11 @@ def debug_logging(logger_or_func):
         def wrapper(*args, **kwargs):
             global intend
 
-            logger = logging.getLogger(__name__) if callable(logger_or_func) else logger_or_func
+            logger = (
+                logging.getLogger(__name__)
+                if callable(logger_or_func)
+                else logger_or_func
+            )
 
             args_repr = [repr(arg) for arg in args]
             kwargs_repr = [f"{key}={value!r}" for key, value in kwargs.items()]
@@ -30,5 +34,7 @@ def debug_logging(logger_or_func):
             logger.debug(f"{intend}--> {result!r}")
 
             return result
+
         return wrapper
+
     return decorator(logger_or_func) if callable(logger_or_func) else decorator

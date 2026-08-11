@@ -33,22 +33,32 @@ class Page_Criterion_Table(Page_Figure):
         isomme_list = list(self.criteria)
         rows = self.criteria[isomme_list[0]]
 
-        cell_text = [[self.cell_text(self.criteria[isomme][idx]) for isomme in isomme_list]
-                     for idx in range(len(rows))]
-        cell_colors = [[(*to_rgb(criterion.color), 0.5) if criterion.color is not None else TRANSPARENT
-                        for criterion in (self.criteria[isomme][idx] for isomme in isomme_list)]
-                       for idx in range(len(rows))]
+        cell_text = [
+            [self.cell_text(self.criteria[isomme][idx]) for isomme in isomme_list]
+            for idx in range(len(rows))
+        ]
+        cell_colors = [
+            [
+                (*to_rgb(criterion.color), 0.5)
+                if criterion.color is not None
+                else TRANSPARENT
+                for criterion in (self.criteria[isomme][idx] for isomme in isomme_list)
+            ]
+            for idx in range(len(rows))
+        ]
 
         row_labels = [self.row_label(criterion) for criterion in rows]
         col_labels = [isomme.test_number for isomme in isomme_list]
-        col_colors = list(Plot.colors)[:len(isomme_list)]
+        col_colors = list(Plot.colors)[: len(isomme_list)]
 
-        return Plot_Table(cell_texts=[cell_text],
-                          cell_colors=[cell_colors],
-                          row_labels=[row_labels],
-                          col_labels=[col_labels],
-                          col_labels_colors=[col_colors],
-                          col_labels_fontweight="bold",
-                          nrows=1,
-                          ncols=1,
-                          figsize=figsize).fig
+        return Plot_Table(
+            cell_texts=[cell_text],
+            cell_colors=[cell_colors],
+            row_labels=[row_labels],
+            col_labels=[col_labels],
+            col_labels_colors=[col_colors],
+            col_labels_fontweight="bold",
+            nrows=1,
+            ncols=1,
+            figsize=figsize,
+        ).fig

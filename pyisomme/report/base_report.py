@@ -86,8 +86,13 @@ class BaseReport(ABC):
         return tuple((page.name, page) for page in self.available_pages)
 
     @staticmethod
-    def _matches_page(path: str, page: Page[Any], name_patterns: tuple[str, ...]) -> bool:
-        return any(fnmatch(path, pattern) or fnmatch(page.name, pattern) for pattern in name_patterns)
+    def _matches_page(
+        path: str, page: Page[Any], name_patterns: tuple[str, ...]
+    ) -> bool:
+        return any(
+            fnmatch(path, pattern) or fnmatch(page.name, pattern)
+            for pattern in name_patterns
+        )
 
     def select_pages(self, *name_patterns: str) -> None:
         """Add matching pages while preserving :attr:`available_pages` order."""
@@ -117,7 +122,9 @@ class BaseReport(ABC):
         presentation: PptxPresentation = Presentation(template)
 
         with logging_redirect_tqdm():
-            for page_number, page in enumerate(tqdm(self.selected_pages, desc="Construct Pages")):
+            for page_number, page in enumerate(
+                tqdm(self.selected_pages, desc="Construct Pages")
+            ):
                 logger.info(f"{page_number}:{page.name}")
                 # TODO(step-11): resolve page data in construct() and remove this re-initialisation.
                 page.__init__(page.report)
@@ -131,7 +138,12 @@ class BaseReport(ABC):
             except PermissionError:
                 if attempt == attempts:
                     raise
-                logger.warning("Could not save %s (attempt %d/%d); retrying", path, attempt, attempts)
+                logger.warning(
+                    "Could not save %s (attempt %d/%d); retrying",
+                    path,
+                    attempt,
+                    attempts,
+                )
                 time.sleep(5)
         logger.info(f"pptx successfully exported: {path}")
 

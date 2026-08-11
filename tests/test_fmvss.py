@@ -23,12 +23,14 @@ class TestFMVSS208(unittest.TestCase):
     def build(self, *codes: str) -> FMVSS_208:
         isomme = pyisomme.Isomme(test_number="FMVSS-208")
         for code in codes:
-            isomme.channels.append(pyisomme.create_sample(
-                code,
-                t_range=(-0.01, 0.01, 3),
-                y_range=(0.0, 1.0),
-                unit=pyisomme.Code(code).get_default_unit(),
-            ))
+            isomme.channels.append(
+                pyisomme.create_sample(
+                    code,
+                    t_range=(-0.01, 0.01, 3),
+                    y_range=(0.0, 1.0),
+                    unit=pyisomme.Code(code).get_default_unit(),
+                )
+            )
         return FMVSS_208([isomme])
 
     def test_conservative_female_fallback_without_identifying_channels(self) -> None:
@@ -83,7 +85,9 @@ class TestFMVSS208(unittest.TestCase):
 
     def test_containment_requires_positive_confirmation(self) -> None:
         report = self.build()
-        containment = report.overall(report.isomme_list[0]).criterion_driver.criterion_containment
+        containment = report.overall(
+            report.isomme_list[0]
+        ).criterion_driver.criterion_containment
 
         containment.calculate()
         self.assertEqual(containment.rating, 0.0)

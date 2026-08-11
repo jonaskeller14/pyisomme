@@ -51,7 +51,9 @@ class TestGet(BaseInfoTestCase):
 
     def test_get_missing_key_returns_default(self) -> None:
         self.assertIsNone(self.populated_info.get("missing"))
-        self.assertEqual(self.populated_info.get("missing", "default_val"), "default_val")
+        self.assertEqual(
+            self.populated_info.get("missing", "default_val"), "default_val"
+        )
 
 
 class TestUpdate(BaseInfoTestCase):

@@ -2,8 +2,13 @@ from __future__ import annotations
 
 from pyisomme.isomme import Isomme
 from pyisomme.limit import Limit
-from pyisomme.report.page import Page_Cover, Page_Plot_nxn, Page_Criterion_Values_Chart, Page_Criterion_Rating_Table, \
-    Page_Criterion_Values_Table
+from pyisomme.report.page import (
+    Page_Cover,
+    Page_Plot_nxn,
+    Page_Criterion_Values_Chart,
+    Page_Criterion_Rating_Table,
+    Page_Criterion_Values_Table,
+)
 from pyisomme.report.report import Report
 from pyisomme.report.criterion import Criterion, Role, sub
 from pyisomme.report.ctx import from_input
@@ -25,10 +30,15 @@ from typing import Any
 
 logger = logging.getLogger(__name__)
 
-P = manual("1", source="test report", doc=(
-    "Channel-code position of the far-side occupant — the only occupant §6 "
-    "assesses. Defaults to the 'Driver position object 1' test-info field when "
-    "the test carries it."))
+P = manual(
+    "1",
+    source="test report",
+    doc=(
+        "Channel-code position of the far-side occupant — the only occupant §6 "
+        "assesses. Defaults to the 'Driver position object 1' test-info field when "
+        "the test carries it."
+    ),
+)
 
 
 class Overall(Criterion):
@@ -51,11 +61,13 @@ class Overall(Criterion):
 
     def calculation(self) -> None:
 
-        self.rating = np.sum([
-            self.criterion_head.rating,
-            self.criterion_neck.rating,
-            self.criterion_chest_abdomen.rating,
-        ])
+        self.rating = np.sum(
+            [
+                self.criterion_head.rating,
+                self.criterion_neck.rating,
+                self.criterion_chest_abdomen.rating,
+            ]
+        )
 
         # Modifier
         self.rating += self.criterion_pelvis_lumbar_modifier.rating
@@ -69,25 +81,31 @@ class Overall(Criterion):
         max_neck_score: float = 4
         max_chest_score: float = 4
 
-
         def calculation(self) -> None:
             pass
 
     class Criterion_Head(Criterion):
         report: EuroNCAP_Side_FarSide
         name = "Head"
-        #TODO hard contact
-
+        # TODO hard contact
 
         def calculation(self) -> None:
 
-            self.rating = self.value = np.min([
-                self.criterion_hic_15.rating,
-                self.criterion_head_a3ms.rating,
-            ])
+            self.rating = self.value = np.min(
+                [
+                    self.criterion_hic_15.rating,
+                    self.criterion_head_a3ms.rating,
+                ]
+            )
 
             # Downscaling
-            self.rating = self.rating / 4 * self.report.criterion_overall[self.isomme].criterion_head_excursion.max_head_score
+            self.rating = (
+                self.rating
+                / 4
+                * self.report.criterion_overall[
+                    self.isomme
+                ].criterion_head_excursion.max_head_score
+            )
 
         class Criterion_HIC_15(Criterion_HIC_15_F50):
             pass
@@ -102,28 +120,36 @@ class Overall(Criterion):
         report: EuroNCAP_Side_FarSide
         name = "Neck"
 
-
         def calculation(self) -> None:
 
-            self.rating = np.min([
-                self.criterion_upper_neck.rating,
-                self.criterion_lower_neck.rating,
-            ])
+            self.rating = np.min(
+                [
+                    self.criterion_upper_neck.rating,
+                    self.criterion_lower_neck.rating,
+                ]
+            )
 
             # Downscaling
-            self.rating = self.rating / 4 * self.report.criterion_overall[self.isomme].criterion_head_excursion.max_neck_score
+            self.rating = (
+                self.rating
+                / 4
+                * self.report.criterion_overall[
+                    self.isomme
+                ].criterion_head_excursion.max_neck_score
+            )
 
         class Criterion_Upper_Neck(Criterion):
             name = "Upper_Neck"
 
-
             def calculation(self) -> None:
 
-                self.rating = np.min([
-                    self.criterion_tension_fz.rating,
-                    self.criterion_lateral_flexion_mxoc.rating,
-                    self.criterion_extension_myoc.rating,
-                ])
+                self.rating = np.min(
+                    [
+                        self.criterion_tension_fz.rating,
+                        self.criterion_lateral_flexion_mxoc.rating,
+                        self.criterion_extension_myoc.rating,
+                    ]
+                )
 
             class Criterion_Tension_Fz(Criterion):
                 name = "Upper Neck Fz tension"
@@ -135,9 +161,10 @@ class Overall(Criterion):
                         Limit_P(codes, func=lambda x: 3.74, y_unit="kN", lower=True),
                     ]
 
-
                 def calculation(self) -> None:
-                    self.channel = self.require_channel(self.ctx.code("?{p}NECKUP00??FOZA")).convert_unit("kN")
+                    self.channel = self.require_channel(
+                        self.ctx.code("?{p}NECKUP00??FOZA")
+                    ).convert_unit("kN")
                     self.value = np.max(self.channel.get_data())
                     self.rating = self.limits.get_limit_min_rating(self.channel)
                     self.color = self.limits.get_limit_min_color(self.channel)
@@ -148,12 +175,21 @@ class Overall(Criterion):
                 def define_limits(self) -> list[Limit]:
                     codes = self.ctx.codes("?{p}TMONUP00??MOX?")
                     return [
-                        Limit_P(codes, func=lambda x: -248.000, y_unit="Nm", upper=True),
-                        Limit_W(codes, func=lambda x: -219.333, y_unit="Nm", upper=True),
-                        Limit_M(codes, func=lambda x: -190.667, y_unit="Nm", upper=True),
-                        Limit_A(codes, func=lambda x: -162.000, y_unit="Nm", upper=True),
-                        Limit_G(codes, func=lambda x: -162.000, y_unit="Nm", lower=True),
-
+                        Limit_P(
+                            codes, func=lambda x: -248.000, y_unit="Nm", upper=True
+                        ),
+                        Limit_W(
+                            codes, func=lambda x: -219.333, y_unit="Nm", upper=True
+                        ),
+                        Limit_M(
+                            codes, func=lambda x: -190.667, y_unit="Nm", upper=True
+                        ),
+                        Limit_A(
+                            codes, func=lambda x: -162.000, y_unit="Nm", upper=True
+                        ),
+                        Limit_G(
+                            codes, func=lambda x: -162.000, y_unit="Nm", lower=True
+                        ),
                         Limit_G(codes, func=lambda x: 162.000, y_unit="Nm", upper=True),
                         Limit_A(codes, func=lambda x: 162.000, y_unit="Nm", lower=True),
                         Limit_M(codes, func=lambda x: 190.667, y_unit="Nm", lower=True),
@@ -161,10 +197,13 @@ class Overall(Criterion):
                         Limit_P(codes, func=lambda x: 248.000, y_unit="Nm", lower=True),
                     ]
 
-
                 def calculation(self) -> None:
-                    self.channel = self.require_channel(self.ctx.code("?{p}TMONUP00??MOXB"))
-                    self.value = self.channel.get_data()[np.argmax(np.abs(self.channel.get_data()))]
+                    self.channel = self.require_channel(
+                        self.ctx.code("?{p}TMONUP00??MOXB")
+                    )
+                    self.value = self.channel.get_data()[
+                        np.argmax(np.abs(self.channel.get_data()))
+                    ]
                     self.rating = self.limits.get_limit_min_rating(self.channel)
                     self.color = self.limits.get_limit_min_color(self.channel)
 
@@ -178,9 +217,10 @@ class Overall(Criterion):
                         Limit_G(codes, func=lambda x: -50, y_unit="Nm", lower=True),
                     ]
 
-
                 def calculation(self) -> None:
-                    self.channel = self.require_channel(self.ctx.code("?{p}TMONUP00??MOYB"))
+                    self.channel = self.require_channel(
+                        self.ctx.code("?{p}TMONUP00??MOYB")
+                    )
                     self.value = np.min(self.channel.get_data(unit="N*m"))
                     self.rating = self.limits.get_limit_min_rating(self.channel)
                     self.color = self.limits.get_limit_min_color(self.channel)
@@ -192,14 +232,15 @@ class Overall(Criterion):
         class Criterion_Lower_Neck(Criterion):
             name = "Lower_Neck"
 
-
             def calculation(self) -> None:
 
-                self.rating = np.min([
-                    self.criterion_tension_fz.rating,
-                    self.criterion_lateral_flexion_mx.rating,
-                    self.criterion_extension_my_base.rating
-                ])
+                self.rating = np.min(
+                    [
+                        self.criterion_tension_fz.rating,
+                        self.criterion_lateral_flexion_mx.rating,
+                        self.criterion_extension_my_base.rating,
+                    ]
+                )
 
             class Criterion_Tension_Fz(Criterion):
                 name = "Lower Neck Fz tension"
@@ -211,9 +252,10 @@ class Overall(Criterion):
                         Limit_P(codes, func=lambda x: 3.74, y_unit="kN", lower=True),
                     ]
 
-
                 def calculation(self) -> None:
-                    self.channel = self.require_channel(self.ctx.code("?{p}NECKLO00??FOZA")).convert_unit("kN")
+                    self.channel = self.require_channel(
+                        self.ctx.code("?{p}NECKLO00??FOZA")
+                    ).convert_unit("kN")
                     self.value = np.max(self.channel.get_data())
                     self.rating = self.limits.get_limit_min_rating(self.channel)
                     self.color = self.limits.get_limit_min_color(self.channel)
@@ -224,12 +266,21 @@ class Overall(Criterion):
                 def define_limits(self) -> list[Limit]:
                     codes = self.ctx.codes("?{p}TMONLO00??MOX?")
                     return [
-                        Limit_P(codes, func=lambda x: -248.000, y_unit="Nm", upper=True),
-                        Limit_W(codes, func=lambda x: -219.333, y_unit="Nm", upper=True),
-                        Limit_M(codes, func=lambda x: -190.667, y_unit="Nm", upper=True),
-                        Limit_A(codes, func=lambda x: -162.000, y_unit="Nm", upper=True),
-                        Limit_G(codes, func=lambda x: -162.000, y_unit="Nm", lower=True),
-
+                        Limit_P(
+                            codes, func=lambda x: -248.000, y_unit="Nm", upper=True
+                        ),
+                        Limit_W(
+                            codes, func=lambda x: -219.333, y_unit="Nm", upper=True
+                        ),
+                        Limit_M(
+                            codes, func=lambda x: -190.667, y_unit="Nm", upper=True
+                        ),
+                        Limit_A(
+                            codes, func=lambda x: -162.000, y_unit="Nm", upper=True
+                        ),
+                        Limit_G(
+                            codes, func=lambda x: -162.000, y_unit="Nm", lower=True
+                        ),
                         Limit_G(codes, func=lambda x: 162.000, y_unit="Nm", upper=True),
                         Limit_A(codes, func=lambda x: 162.000, y_unit="Nm", lower=True),
                         Limit_M(codes, func=lambda x: 190.667, y_unit="Nm", lower=True),
@@ -237,10 +288,13 @@ class Overall(Criterion):
                         Limit_P(codes, func=lambda x: 248.000, y_unit="Nm", lower=True),
                     ]
 
-
                 def calculation(self) -> None:
-                    self.channel = self.require_channel(self.ctx.code("?{p}TMONLO00??MOXB"))
-                    self.value = self.channel.get_data(unit="N*m")[np.argmax(np.abs(self.channel.get_data()))]
+                    self.channel = self.require_channel(
+                        self.ctx.code("?{p}TMONLO00??MOXB")
+                    )
+                    self.value = self.channel.get_data(unit="N*m")[
+                        np.argmax(np.abs(self.channel.get_data()))
+                    ]
                     self.rating = self.limits.get_limit_min_rating(self.channel)
                     self.color = self.limits.get_limit_min_color(self.channel)
 
@@ -254,9 +308,10 @@ class Overall(Criterion):
                         Limit_G(codes, func=lambda x: -100, y_unit="Nm", lower=True),
                     ]
 
-
                 def calculation(self) -> None:
-                    self.channel = self.require_channel(self.ctx.code("?{p}TMONLO00??MOYB"))
+                    self.channel = self.require_channel(
+                        self.ctx.code("?{p}TMONLO00??MOYB")
+                    )
                     self.value = np.min(self.channel.get_data(unit="N*m"))
                     self.rating = self.limits.get_limit_min_rating(self.channel)
                     self.color = self.limits.get_limit_min_color(self.channel)
@@ -272,38 +327,52 @@ class Overall(Criterion):
         report: EuroNCAP_Side_FarSide
         name = "Chest & Abdomen"
 
-
         def calculation(self) -> None:
 
-            self.rating = np.min([
-                self.criterion_chest_lateral_compression.rating,
-                self.criterion_abdomen_lateral_compression.rating
-            ])
+            self.rating = np.min(
+                [
+                    self.criterion_chest_lateral_compression.rating,
+                    self.criterion_abdomen_lateral_compression.rating,
+                ]
+            )
 
             # Downscaling
-            self.rating = self.rating / 4 * self.report.criterion_overall[self.isomme].criterion_head_excursion.max_chest_score
+            self.rating = (
+                self.rating
+                / 4
+                * self.report.criterion_overall[
+                    self.isomme
+                ].criterion_head_excursion.max_chest_score
+            )
 
-        class Criterion_Chest_Lateral_Compression(Overall_Side_Barrier.Criterion_Chest.Criterion_Chest_Lateral_Compression):
+        class Criterion_Chest_Lateral_Compression(
+            Overall_Side_Barrier.Criterion_Chest.Criterion_Chest_Lateral_Compression
+        ):
             pass
 
-        class Criterion_Abdomen_Lateral_Compression(Overall_Side_Pole.Criterion_Abdomen.Criterion_Abdomen_Lateral_Compression):
+        class Criterion_Abdomen_Lateral_Compression(
+            Overall_Side_Pole.Criterion_Abdomen.Criterion_Abdomen_Lateral_Compression
+        ):
             pass
 
         criterion_chest_lateral_compression = sub(Criterion_Chest_Lateral_Compression)
-        criterion_abdomen_lateral_compression = sub(Criterion_Abdomen_Lateral_Compression)
+        criterion_abdomen_lateral_compression = sub(
+            Criterion_Abdomen_Lateral_Compression
+        )
 
     class Criterion_Pelvis_Lumbar_Modifier(Criterion):
         name = "Pelvis and Lumbar Modifier"
 
-
         def calculation(self) -> None:
 
-            self.rating = np.min([
-                self.criterion_pubic_symphysis.rating,
-                self.criterion_lumbar_fy.rating,
-                self.criterion_lumbar_fz.rating,
-                self.criterion_lumbar_mx.rating,
-            ])
+            self.rating = np.min(
+                [
+                    self.criterion_pubic_symphysis.rating,
+                    self.criterion_lumbar_fy.rating,
+                    self.criterion_lumbar_fz.rating,
+                    self.criterion_lumbar_mx.rating,
+                ]
+            )
 
         class Criterion_Pubic_Symphysis(Criterion):
             name = "Modifier Pubic Symphysis"
@@ -313,16 +382,43 @@ class Overall(Criterion):
             def define_limits(self) -> list[Limit]:
                 codes = self.ctx.codes("?{p}PUBC0000??FOY?")
                 return [
-                    Limit(codes, func=lambda x: -2.8, y_unit="kN", upper=True, color="red", rating=-4, name="-4 pt. Modifier"),
-                    Limit(codes, func=lambda x: 2.8, y_unit="kN", upper=True, color="green", rating=0, name="0 pt. Modifier"),
-                    Limit(codes, func=lambda x: 2.8, y_unit="kN", lower=True, color="red", rating=-4, name="-4 pt. Modifier"),
+                    Limit(
+                        codes,
+                        func=lambda x: -2.8,
+                        y_unit="kN",
+                        upper=True,
+                        color="red",
+                        rating=-4,
+                        name="-4 pt. Modifier",
+                    ),
+                    Limit(
+                        codes,
+                        func=lambda x: 2.8,
+                        y_unit="kN",
+                        upper=True,
+                        color="green",
+                        rating=0,
+                        name="0 pt. Modifier",
+                    ),
+                    Limit(
+                        codes,
+                        func=lambda x: 2.8,
+                        y_unit="kN",
+                        lower=True,
+                        color="red",
+                        rating=-4,
+                        name="-4 pt. Modifier",
+                    ),
                 ]
 
-
             def calculation(self) -> None:
-                self.channel = self.require_channel(self.ctx.code("?{p}PUBC0000??FOYB")).convert_unit("kN")
+                self.channel = self.require_channel(
+                    self.ctx.code("?{p}PUBC0000??FOYB")
+                ).convert_unit("kN")
                 self.value = self.limits.get_limit_min_y(self.channel, unit="kN")
-                self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
+                self.rating = self.limits.get_limit_min_rating(
+                    self.channel, interpolate=False
+                )
                 self.color = self.limits.get_limit_min_color(self.channel)
 
         class Criterion_Lumbar_Fy(Criterion):
@@ -333,16 +429,43 @@ class Overall(Criterion):
             def define_limits(self) -> list[Limit]:
                 codes = self.ctx.codes("?{p}LUSP0000??FOY?")
                 return [
-                    Limit(codes, func=lambda x: -2, y_unit="kN", upper=True, color="red", rating=-4, name="-4 pt. Modifier"),
-                    Limit(codes, func=lambda x: 2, y_unit="kN", upper=True, color="green", rating=0, name="0 pt. Modifier"),
-                    Limit(codes, func=lambda x: 2, y_unit="kN", lower=True, color="red", rating=-4, name="-4 pt. Modifier"),
+                    Limit(
+                        codes,
+                        func=lambda x: -2,
+                        y_unit="kN",
+                        upper=True,
+                        color="red",
+                        rating=-4,
+                        name="-4 pt. Modifier",
+                    ),
+                    Limit(
+                        codes,
+                        func=lambda x: 2,
+                        y_unit="kN",
+                        upper=True,
+                        color="green",
+                        rating=0,
+                        name="0 pt. Modifier",
+                    ),
+                    Limit(
+                        codes,
+                        func=lambda x: 2,
+                        y_unit="kN",
+                        lower=True,
+                        color="red",
+                        rating=-4,
+                        name="-4 pt. Modifier",
+                    ),
                 ]
 
-
             def calculation(self) -> None:
-                self.channel = self.require_channel(self.ctx.code("?{p}LUSP0000??FOYB")).convert_unit("kN")
+                self.channel = self.require_channel(
+                    self.ctx.code("?{p}LUSP0000??FOYB")
+                ).convert_unit("kN")
                 self.value = self.limits.get_limit_min_y(self.channel, unit="kN")
-                self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
+                self.rating = self.limits.get_limit_min_rating(
+                    self.channel, interpolate=False
+                )
                 self.color = self.limits.get_limit_min_color(self.channel)
 
         class Criterion_Lumbar_Fz(Criterion):
@@ -353,16 +476,43 @@ class Overall(Criterion):
             def define_limits(self) -> list[Limit]:
                 codes = self.ctx.codes("?{p}LUSP0000??FOZ?")
                 return [
-                    Limit(codes, func=lambda x: -3.5, y_unit="kN", upper=True, color="red", rating=-4, name="-4 pt. Modifier"),
-                    Limit(codes, func=lambda x: 3.5, y_unit="kN", upper=True, color="green", rating=0, name="0 pt. Modifier"),
-                    Limit(codes, func=lambda x: 3.5, y_unit="kN", lower=True, color="red", rating=-4, name="-4 pt. Modifier"),
+                    Limit(
+                        codes,
+                        func=lambda x: -3.5,
+                        y_unit="kN",
+                        upper=True,
+                        color="red",
+                        rating=-4,
+                        name="-4 pt. Modifier",
+                    ),
+                    Limit(
+                        codes,
+                        func=lambda x: 3.5,
+                        y_unit="kN",
+                        upper=True,
+                        color="green",
+                        rating=0,
+                        name="0 pt. Modifier",
+                    ),
+                    Limit(
+                        codes,
+                        func=lambda x: 3.5,
+                        y_unit="kN",
+                        lower=True,
+                        color="red",
+                        rating=-4,
+                        name="-4 pt. Modifier",
+                    ),
                 ]
 
-
             def calculation(self) -> None:
-                self.channel = self.require_channel(self.ctx.code("?{p}LUSP0000??FOZB")).convert_unit("kN")
+                self.channel = self.require_channel(
+                    self.ctx.code("?{p}LUSP0000??FOZB")
+                ).convert_unit("kN")
                 self.value = self.limits.get_limit_min_y(self.channel, unit="kN")
-                self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
+                self.rating = self.limits.get_limit_min_rating(
+                    self.channel, interpolate=False
+                )
                 self.color = self.limits.get_limit_min_color(self.channel)
 
         class Criterion_Lumbar_Mx(Criterion):
@@ -373,16 +523,43 @@ class Overall(Criterion):
             def define_limits(self) -> list[Limit]:
                 codes = self.ctx.codes("?{p}LUSP0000??MOX?")
                 return [
-                    Limit(codes, func=lambda x: -120, y_unit="Nm", upper=True, color="red", rating=-4, name="-4 pt. Modifier"),
-                    Limit(codes, func=lambda x: 120, y_unit="Nm", upper=True, color="green", rating=0, name="0 pt. Modifier"),
-                    Limit(codes, func=lambda x: 120, y_unit="Nm", lower=True, color="red", rating=-4, name="-4 pt. Modifier"),
+                    Limit(
+                        codes,
+                        func=lambda x: -120,
+                        y_unit="Nm",
+                        upper=True,
+                        color="red",
+                        rating=-4,
+                        name="-4 pt. Modifier",
+                    ),
+                    Limit(
+                        codes,
+                        func=lambda x: 120,
+                        y_unit="Nm",
+                        upper=True,
+                        color="green",
+                        rating=0,
+                        name="0 pt. Modifier",
+                    ),
+                    Limit(
+                        codes,
+                        func=lambda x: 120,
+                        y_unit="Nm",
+                        lower=True,
+                        color="red",
+                        rating=-4,
+                        name="-4 pt. Modifier",
+                    ),
                 ]
 
-
             def calculation(self) -> None:
-                self.channel = self.require_channel(self.ctx.code("?{p}LUSP0000??MOXB")).convert_unit("Nm")
+                self.channel = self.require_channel(
+                    self.ctx.code("?{p}LUSP0000??MOXB")
+                ).convert_unit("Nm")
                 self.value = self.limits.get_limit_min_y(self.channel, unit="Nm")
-                self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
+                self.rating = self.limits.get_limit_min_rating(
+                    self.channel, interpolate=False
+                )
                 self.color = self.limits.get_limit_min_color(self.channel)
 
         criterion_pubic_symphysis = sub(Criterion_Pubic_Symphysis)
@@ -394,7 +571,9 @@ class Overall(Criterion):
     criterion_head = sub(Criterion_Head)
     criterion_neck = sub(Criterion_Neck)
     criterion_chest_abdomen = sub(Criterion_Chest_Abdomen)
-    criterion_pelvis_lumbar_modifier = sub(Criterion_Pelvis_Lumbar_Modifier, role=Role.MODIFIER)
+    criterion_pelvis_lumbar_modifier = sub(
+        Criterion_Pelvis_Lumbar_Modifier, role=Role.MODIFIER
+    )
 
 
 class EuroNCAP_Side_FarSide(Report[Overall]):
@@ -408,7 +587,6 @@ class EuroNCAP_Side_FarSide(Report[Overall]):
 
         self._available_pages = (
             Page_Cover(self),
-
             self.Page_Values_Chart(self),
             self.Page_Rating_Table(self),
             self.Page_Values_Table(self),
@@ -430,22 +608,53 @@ class EuroNCAP_Side_FarSide(Report[Overall]):
         def __init__(self, report: EuroNCAP_Side_FarSide) -> None:
             super().__init__(report)
 
-            self.criteria = {isomme: [
-                self.report.criterion_overall[isomme].criterion_head.criterion_hic_15,
-                self.report.criterion_overall[isomme].criterion_head.criterion_head_a3ms,
-                self.report.criterion_overall[isomme].criterion_neck.criterion_upper_neck.criterion_tension_fz,
-                self.report.criterion_overall[isomme].criterion_neck.criterion_upper_neck.criterion_lateral_flexion_mxoc,
-                self.report.criterion_overall[isomme].criterion_neck.criterion_upper_neck.criterion_extension_myoc,
-                self.report.criterion_overall[isomme].criterion_neck.criterion_lower_neck.criterion_tension_fz,
-                self.report.criterion_overall[isomme].criterion_neck.criterion_lower_neck.criterion_lateral_flexion_mx,
-                self.report.criterion_overall[isomme].criterion_neck.criterion_lower_neck.criterion_extension_my_base,
-                self.report.criterion_overall[isomme].criterion_chest_abdomen.criterion_chest_lateral_compression,
-                self.report.criterion_overall[isomme].criterion_chest_abdomen.criterion_abdomen_lateral_compression,
-                self.report.criterion_overall[isomme].criterion_pelvis_lumbar_modifier.criterion_pubic_symphysis,
-                self.report.criterion_overall[isomme].criterion_pelvis_lumbar_modifier.criterion_lumbar_fy,
-                self.report.criterion_overall[isomme].criterion_pelvis_lumbar_modifier.criterion_lumbar_fz,
-                self.report.criterion_overall[isomme].criterion_pelvis_lumbar_modifier.criterion_lumbar_mx,
-            ] for isomme in self.report.isomme_list}
+            self.criteria = {
+                isomme: [
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_head.criterion_hic_15,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_head.criterion_head_a3ms,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_neck.criterion_upper_neck.criterion_tension_fz,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_neck.criterion_upper_neck.criterion_lateral_flexion_mxoc,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_neck.criterion_upper_neck.criterion_extension_myoc,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_neck.criterion_lower_neck.criterion_tension_fz,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_neck.criterion_lower_neck.criterion_lateral_flexion_mx,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_neck.criterion_lower_neck.criterion_extension_my_base,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_chest_abdomen.criterion_chest_lateral_compression,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_chest_abdomen.criterion_abdomen_lateral_compression,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_pelvis_lumbar_modifier.criterion_pubic_symphysis,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_pelvis_lumbar_modifier.criterion_lumbar_fy,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_pelvis_lumbar_modifier.criterion_lumbar_fz,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_pelvis_lumbar_modifier.criterion_lumbar_mx,
+                ]
+                for isomme in self.report.isomme_list
+            }
 
     class Page_Values_Table(Page_Criterion_Values_Table):
         report: EuroNCAP_Side_FarSide
@@ -455,22 +664,53 @@ class EuroNCAP_Side_FarSide(Report[Overall]):
         def __init__(self, report: EuroNCAP_Side_FarSide) -> None:
             super().__init__(report)
 
-            self.criteria = {isomme: [
-                self.report.criterion_overall[isomme].criterion_head.criterion_hic_15,
-                self.report.criterion_overall[isomme].criterion_head.criterion_head_a3ms,
-                self.report.criterion_overall[isomme].criterion_neck.criterion_upper_neck.criterion_tension_fz,
-                self.report.criterion_overall[isomme].criterion_neck.criterion_upper_neck.criterion_lateral_flexion_mxoc,
-                self.report.criterion_overall[isomme].criterion_neck.criterion_upper_neck.criterion_extension_myoc,
-                self.report.criterion_overall[isomme].criterion_neck.criterion_lower_neck.criterion_tension_fz,
-                self.report.criterion_overall[isomme].criterion_neck.criterion_lower_neck.criterion_lateral_flexion_mx,
-                self.report.criterion_overall[isomme].criterion_neck.criterion_lower_neck.criterion_extension_my_base,
-                self.report.criterion_overall[isomme].criterion_chest_abdomen.criterion_chest_lateral_compression,
-                self.report.criterion_overall[isomme].criterion_chest_abdomen.criterion_abdomen_lateral_compression,
-                self.report.criterion_overall[isomme].criterion_pelvis_lumbar_modifier.criterion_pubic_symphysis,
-                self.report.criterion_overall[isomme].criterion_pelvis_lumbar_modifier.criterion_lumbar_fy,
-                self.report.criterion_overall[isomme].criterion_pelvis_lumbar_modifier.criterion_lumbar_fz,
-                self.report.criterion_overall[isomme].criterion_pelvis_lumbar_modifier.criterion_lumbar_mx,
-            ] for isomme in self.report.isomme_list}
+            self.criteria = {
+                isomme: [
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_head.criterion_hic_15,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_head.criterion_head_a3ms,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_neck.criterion_upper_neck.criterion_tension_fz,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_neck.criterion_upper_neck.criterion_lateral_flexion_mxoc,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_neck.criterion_upper_neck.criterion_extension_myoc,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_neck.criterion_lower_neck.criterion_tension_fz,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_neck.criterion_lower_neck.criterion_lateral_flexion_mx,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_neck.criterion_lower_neck.criterion_extension_my_base,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_chest_abdomen.criterion_chest_lateral_compression,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_chest_abdomen.criterion_abdomen_lateral_compression,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_pelvis_lumbar_modifier.criterion_pubic_symphysis,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_pelvis_lumbar_modifier.criterion_lumbar_fy,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_pelvis_lumbar_modifier.criterion_lumbar_fz,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_pelvis_lumbar_modifier.criterion_lumbar_mx,
+                ]
+                for isomme in self.report.isomme_list
+            }
 
     class Page_Rating_Table(Page_Criterion_Rating_Table):
         report: EuroNCAP_Side_FarSide
@@ -480,14 +720,23 @@ class EuroNCAP_Side_FarSide(Report[Overall]):
         def __init__(self, report: EuroNCAP_Side_FarSide) -> None:
             super().__init__(report)
 
-            self.criteria = {isomme: [
-                self.report.criterion_overall[isomme].criterion_head,
-                self.report.criterion_overall[isomme].criterion_neck.criterion_upper_neck,
-                self.report.criterion_overall[isomme].criterion_neck.criterion_lower_neck,
-                self.report.criterion_overall[isomme].criterion_chest_abdomen,
-                self.report.criterion_overall[isomme].criterion_pelvis_lumbar_modifier,
-                self.report.criterion_overall[isomme],
-            ] for isomme in self.report.isomme_list}
+            self.criteria = {
+                isomme: [
+                    self.report.criterion_overall[isomme].criterion_head,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_neck.criterion_upper_neck,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_neck.criterion_lower_neck,
+                    self.report.criterion_overall[isomme].criterion_chest_abdomen,
+                    self.report.criterion_overall[
+                        isomme
+                    ].criterion_pelvis_lumbar_modifier,
+                    self.report.criterion_overall[isomme],
+                ]
+                for isomme in self.report.isomme_list
+            }
 
     class Page_Head_Acceleration(EuroNCAP_Side_Pole.Page_Head_Acceleration):
         pass
@@ -501,9 +750,26 @@ class EuroNCAP_Side_FarSide(Report[Overall]):
 
         def __init__(self, report: EuroNCAP_Side_FarSide) -> None:
             super().__init__(report)
-            self.channels = {isomme: [[self.report.criterion_overall[isomme].criterion_neck.criterion_upper_neck.criterion_tension_fz.channel],
-                                      [self.report.criterion_overall[isomme].criterion_neck.criterion_upper_neck.criterion_lateral_flexion_mxoc.channel],
-                                      [self.report.criterion_overall[isomme].criterion_neck.criterion_upper_neck.criterion_extension_myoc.channel]] for isomme in self.report.isomme_list}
+            self.channels = {
+                isomme: [
+                    [
+                        self.report.criterion_overall[
+                            isomme
+                        ].criterion_neck.criterion_upper_neck.criterion_tension_fz.channel
+                    ],
+                    [
+                        self.report.criterion_overall[
+                            isomme
+                        ].criterion_neck.criterion_upper_neck.criterion_lateral_flexion_mxoc.channel
+                    ],
+                    [
+                        self.report.criterion_overall[
+                            isomme
+                        ].criterion_neck.criterion_upper_neck.criterion_extension_myoc.channel
+                    ],
+                ]
+                for isomme in self.report.isomme_list
+            }
 
     class Page_Lower_Neck(Page_Plot_nxn):
         report: EuroNCAP_Side_FarSide
@@ -514,14 +780,35 @@ class EuroNCAP_Side_FarSide(Report[Overall]):
 
         def __init__(self, report: EuroNCAP_Side_FarSide) -> None:
             super().__init__(report)
-            self.channels = {isomme: [[self.report.criterion_overall[isomme].criterion_neck.criterion_lower_neck.criterion_tension_fz.channel],
-                                      [self.report.criterion_overall[isomme].criterion_neck.criterion_lower_neck.criterion_lateral_flexion_mx.channel],
-                                      [self.report.criterion_overall[isomme].criterion_neck.criterion_lower_neck.criterion_extension_my_base.channel]] for isomme in self.report.isomme_list}
+            self.channels = {
+                isomme: [
+                    [
+                        self.report.criterion_overall[
+                            isomme
+                        ].criterion_neck.criterion_lower_neck.criterion_tension_fz.channel
+                    ],
+                    [
+                        self.report.criterion_overall[
+                            isomme
+                        ].criterion_neck.criterion_lower_neck.criterion_lateral_flexion_mx.channel
+                    ],
+                    [
+                        self.report.criterion_overall[
+                            isomme
+                        ].criterion_neck.criterion_lower_neck.criterion_extension_my_base.channel
+                    ],
+                ]
+                for isomme in self.report.isomme_list
+            }
 
-    class Page_Chest_Lateral_Compression(EuroNCAP_Side_Pole.Page_Chest_Lateral_Compression):
+    class Page_Chest_Lateral_Compression(
+        EuroNCAP_Side_Pole.Page_Chest_Lateral_Compression
+    ):
         pass
 
-    class Page_Abdomen_Lateral_Compression(EuroNCAP_Side_Pole.Page_Abdomen_Lateral_Compression):
+    class Page_Abdomen_Lateral_Compression(
+        EuroNCAP_Side_Pole.Page_Abdomen_Lateral_Compression
+    ):
         pass
 
     class Page_Lumbar_Force(Page_Plot_nxn):
@@ -533,9 +820,26 @@ class EuroNCAP_Side_FarSide(Report[Overall]):
 
         def __init__(self, report: EuroNCAP_Side_FarSide) -> None:
             super().__init__(report)
-            self.channels = {isomme: [[self.report.criterion_overall[isomme].criterion_pelvis_lumbar_modifier.criterion_lumbar_fy.channel],
-                                      [self.report.criterion_overall[isomme].criterion_pelvis_lumbar_modifier.criterion_lumbar_fz.channel],
-                                      [self.report.criterion_overall[isomme].criterion_pelvis_lumbar_modifier.criterion_lumbar_mx.channel]] for isomme in self.report.isomme_list}
+            self.channels = {
+                isomme: [
+                    [
+                        self.report.criterion_overall[
+                            isomme
+                        ].criterion_pelvis_lumbar_modifier.criterion_lumbar_fy.channel
+                    ],
+                    [
+                        self.report.criterion_overall[
+                            isomme
+                        ].criterion_pelvis_lumbar_modifier.criterion_lumbar_fz.channel
+                    ],
+                    [
+                        self.report.criterion_overall[
+                            isomme
+                        ].criterion_pelvis_lumbar_modifier.criterion_lumbar_mx.channel
+                    ],
+                ]
+                for isomme in self.report.isomme_list
+            }
 
     class Page_Pubic_Symphysis_Force(EuroNCAP_Side_Pole.Page_Pubic_Symphysis_Force):
         pass

@@ -23,6 +23,10 @@ def check_limit_symmetry(path: str, criterion: Criterion) -> Iterator[Issue]:
         left = sorted((row.rating, round(row.y, 9)) for row in positive)
         right = sorted((row.rating, round(-row.y, 9)) for row in negative)
         if left != right:
-            yield Issue("limit_symmetry", IssueSeverity.WARNING, path,
-                        f"limit block {list(patterns)} has rows on both sides of zero but they "
-                        f"are not mirrors: +{rows_text(positive)} vs -{rows_text(negative)}.")
+            yield Issue(
+                "limit_symmetry",
+                IssueSeverity.WARNING,
+                path,
+                f"limit block {list(patterns)} has rows on both sides of zero but they "
+                f"are not mirrors: +{rows_text(positive)} vs -{rows_text(negative)}.",
+            )

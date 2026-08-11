@@ -21,7 +21,16 @@ class USNCAP(MetaReport):
     _name = "US-NCAP"
     title = "US-NCAP"
 
-    def __init__(self, frontal_56kmh: list, frontal_mpdb: list, side_pole: list, side_barrier: list, side_farside: list, *args: Any, **kwargs: Any) -> None:
+    def __init__(
+        self,
+        frontal_56kmh: list,
+        frontal_mpdb: list,
+        side_pole: list,
+        side_barrier: list,
+        side_farside: list,
+        *args: Any,
+        **kwargs: Any,
+    ) -> None:
         raise NotImplementedError(
             "USNCAP is an unfinished stub: none of its load-case sub-reports are "
             "implemented (frontal_56kmh is a stub; side_mdb and side_pole define no "

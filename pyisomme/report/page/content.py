@@ -46,7 +46,9 @@ class Page_Content(Page, ABC):
         slide_width = presentation.slide_width
         slide_height = presentation.slide_height
 
-        text_box = slide.shapes.add_textbox(0, Inches(slide_height / Inches(1) - 0.3), slide_width, Inches(0.3))
+        text_box = slide.shapes.add_textbox(
+            0, Inches(slide_height / Inches(1) - 0.3), slide_width, Inches(0.3)
+        )
         text_frame = text_box.text_frame
         text_frame.margin_top = Inches(0.05)
         text_frame.margin_bottom = Inches(0.05)

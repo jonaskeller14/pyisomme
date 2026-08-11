@@ -25,20 +25,23 @@ class Page_Line_Table(Page_Figure, ABC):
     sharey: bool = False
     xlim: tuple[float | int, float | int] | None = None
     ylim: tuple[float | int, float | int] | None = None
+
     @override
     def figure(self, figsize: tuple[float, float]) -> Figure:
-        return Plot_Line_Table(channels=self.channels,
-                               cell_texts=self.cell_texts,
-                               row_labels=self.row_labels,
-                               col_labels=self.col_labels,
-                               cell_colors=self.cell_colors,
-                               col_labels_colors=self.col_labels_colors,
-                               col_labels_fontweight=self.col_labels_fontweight,
-                               nrows=self.nrows,
-                               ncols=self.ncols,
-                               sharex=self.sharex,
-                               sharey=self.sharey,
-                               xlim=self.xlim,
-                               ylim=self.ylim,
-                               limits=self.report.limits,
-                               figsize=figsize).fig
+        return Plot_Line_Table(
+            channels=self.channels,
+            cell_texts=self.cell_texts,
+            row_labels=self.row_labels,
+            col_labels=self.col_labels,
+            cell_colors=self.cell_colors,
+            col_labels_colors=self.col_labels_colors,
+            col_labels_fontweight=self.col_labels_fontweight,
+            nrows=self.nrows,
+            ncols=self.ncols,
+            sharex=self.sharex,
+            sharey=self.sharey,
+            xlim=self.xlim,
+            ylim=self.ylim,
+            limits=self.report.limits,
+            figsize=figsize,
+        ).fig

@@ -24,10 +24,12 @@ class TestIIHSBoundaries(unittest.TestCase):
 
     def test_symmetric_vc_and_shear_corridor_use_worst_side(self) -> None:
         isomme = Isomme(test_number="small")
-        isomme.channels.extend([
-            Channel("11VCCR0000H3VEXC", pd.DataFrame([1.1], index=[0.0]), "m/s"),
-            Channel("11NECKUP00H3FOXB", pd.DataFrame([4.0], index=[0.0]), "kN"),
-        ])
+        isomme.channels.extend(
+            [
+                Channel("11VCCR0000H3VEXC", pd.DataFrame([1.1], index=[0.0]), "m/s"),
+                Channel("11NECKUP00H3FOXB", pd.DataFrame([4.0], index=[0.0]), "kN"),
+            ]
+        )
         report = IIHS_Frontal_Small_Overlap([isomme])
         driver = report.overall(isomme).criterion_driver
 
@@ -36,25 +38,28 @@ class TestIIHSBoundaries(unittest.TestCase):
 
         self.assertEqual(driver.criterion_chest.criterion_vc.rating, -10.0)
         self.assertEqual(driver.criterion_chest.criterion_vc.color, Limit_M.color)
-        self.assertEqual(driver.criterion_head_neck.criterion_shear_corridor.rating, -2.0)
-        self.assertEqual(driver.criterion_head_neck.criterion_shear_corridor.color, Limit_A.color)
+        self.assertEqual(
+            driver.criterion_head_neck.criterion_shear_corridor.rating, -2.0
+        )
+        self.assertEqual(
+            driver.criterion_head_neck.criterion_shear_corridor.color, Limit_A.color
+        )
 
 
 class TestIIHSModerateOverlap(unittest.TestCase):
     def test_chest_index_corrects_high_belt_position_and_floors(self) -> None:
         isomme = Isomme(test_number="moderate")
-        isomme.channels.append(Channel(
-            "16CHST0000HFDSXC",
-            pd.DataFrame([-0.040], index=[0.0]),
-            "m",
-        ))
-        report = IIHS_Frontal_Moderate_Overlap([isomme])
-        criterion = (
-            report.overall(isomme)
-            .criterion_rear_passenger
-            .criterion_chest
-            .criterion_chest_index
+        isomme.channels.append(
+            Channel(
+                "16CHST0000HFDSXC",
+                pd.DataFrame([-0.040], index=[0.0]),
+                "m",
+            )
         )
+        report = IIHS_Frontal_Moderate_Overlap([isomme])
+        criterion = report.overall(
+            isomme
+        ).criterion_rear_passenger.criterion_chest.criterion_chest_index
 
         criterion.dynamic_belt_position_mm = 37.0
         criterion.calculation()
@@ -92,11 +97,13 @@ class TestIIHSSideImpact(unittest.TestCase):
         self.assertEqual(criterion.rating, -2.0)
 
     def test_pelvis_requires_both_force_channels(self) -> None:
-        self.isomme.channels.append(Channel(
-            "11ACTBLE00S2FOYB",
-            pd.DataFrame([3000.0], index=[0.0]),
-            "N",
-        ))
+        self.isomme.channels.append(
+            Channel(
+                "11ACTBLE00S2FOYB",
+                pd.DataFrame([3000.0], index=[0.0]),
+                "N",
+            )
+        )
         criterion = self.report.overall(self.isomme).criterion_driver.criterion_pelvis
 
         criterion.calculate()
@@ -104,7 +111,9 @@ class TestIIHSSideImpact(unittest.TestCase):
         self.assertIs(criterion.status, Status.NA)
 
     def test_head_protection_decision_logic(self) -> None:
-        criterion = self.report.overall(self.isomme).criterion_driver.criterion_head_protection
+        criterion = self.report.overall(
+            self.isomme
+        ).criterion_driver.criterion_head_protection
 
         criterion.interior_contact = True
         criterion.calculation()

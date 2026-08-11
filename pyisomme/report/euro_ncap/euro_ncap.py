@@ -24,18 +24,19 @@ class EuroNCAP(MetaReport):
       safety (§7, 2 points) are not modelled by pyisomme, so :attr:`rating` is
       deliberately *not* expressed as the Euro NCAP percentage.
     """
+
     _name = "Euro-NCAP"
     title = "Euro-NCAP"
 
     #: §5.3: "the individual scores ... for the side impact test (max. 16 points)
     #: and the pole test (max. 16 points) are summed and scaled down to 12 points".
-    MAX_SIDE_BARRIER_AND_POLE_RAW = 32.
-    MAX_SIDE_BARRIER_AND_POLE = 12.
+    MAX_SIDE_BARRIER_AND_POLE_RAW = 32.0
+    MAX_SIDE_BARRIER_AND_POLE = 12.0
     #: §5.3: "the total score for far side occupant protection is limited to 4 points".
-    MAX_FAR_SIDE = 4.
+    MAX_FAR_SIDE = 4.0
 
     #: 8 (§3.4) + 8 (§4.3) + 12 + 4 (§5.3). See the class docstring on the missing 6.
-    max_rating = 32.
+    max_rating = 32.0
 
     def __init__(
         self,
@@ -73,10 +74,15 @@ class EuroNCAP(MetaReport):
         # §5.3: barrier and pole (16 points each, after their modifiers) are summed
         # and scaled down to 12. `interp` clamps rather than extrapolates, so a
         # capped-to-zero test cannot drag the section negative.
-        side = float(np.interp(side_barrier + side_pole,
-                               [0., self.MAX_SIDE_BARRIER_AND_POLE_RAW],
-                               [0., self.MAX_SIDE_BARRIER_AND_POLE],
-                               left=0., right=self.MAX_SIDE_BARRIER_AND_POLE))
+        side = float(
+            np.interp(
+                side_barrier + side_pole,
+                [0.0, self.MAX_SIDE_BARRIER_AND_POLE_RAW],
+                [0.0, self.MAX_SIDE_BARRIER_AND_POLE],
+                left=0.0,
+                right=self.MAX_SIDE_BARRIER_AND_POLE,
+            )
+        )
         # §5.3: far side is limited to 4 points. EuroNCAP_Side_FarSide already
         # scales its own 12 down to 4, so this only guards the bound.
         far_side = float(np.min([far_side, self.MAX_FAR_SIDE]))

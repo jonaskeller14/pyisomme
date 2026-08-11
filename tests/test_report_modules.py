@@ -11,6 +11,7 @@ catches two distinct kinds of breakage the golden tests cannot see:
 
 Known breakage is listed explicitly below rather than silently tolerated.
 """
+
 from __future__ import annotations
 
 import importlib
@@ -54,7 +55,11 @@ class TestReportModuleImports(unittest.TestCase):
                 importlib.import_module(name)
             except Exception as error:
                 failures.append(f"{name}: {type(error).__name__}: {error}")
-        self.assertEqual([], failures, "modules under pyisomme/report/ failed to import:\n" + "\n".join(failures))
+        self.assertEqual(
+            [],
+            failures,
+            "modules under pyisomme/report/ failed to import:\n" + "\n".join(failures),
+        )
 
     def test_broken_modules_are_still_broken(self):
         """
@@ -69,13 +74,17 @@ class TestReportModuleImports(unittest.TestCase):
                 continue
             unexpectedly_fine.append(name)
         self.assertEqual(
-            [], unexpectedly_fine,
-            "these now import fine — remove them from BROKEN_MODULES:\n" + "\n".join(unexpectedly_fine),
+            [],
+            unexpectedly_fine,
+            "these now import fine — remove them from BROKEN_MODULES:\n"
+            + "\n".join(unexpectedly_fine),
         )
 
     def test_module_walk_found_something(self):
         names = iter_report_modules()
-        self.assertGreater(len(names), 20, f"pkgutil walk found suspiciously few modules: {names}")
+        self.assertGreater(
+            len(names), 20, f"pkgutil walk found suspiciously few modules: {names}"
+        )
 
 
 class TestReportSubpackageReexports(unittest.TestCase):
@@ -93,36 +102,54 @@ class TestReportSubpackageReexports(unittest.TestCase):
 
     def subpackages_on_disk(self) -> list[str]:
         return sorted(
-            entry for entry in os.listdir(REPORT_DIR)
-            if os.path.isdir(os.path.join(REPORT_DIR, entry)) and not entry.startswith("__")
+            entry
+            for entry in os.listdir(REPORT_DIR)
+            if os.path.isdir(os.path.join(REPORT_DIR, entry))
+            and not entry.startswith((".", "__"))
         )
 
     @staticmethod
     def reachable_in_fresh_interpreter(name: str) -> bool:
         result = subprocess.run(
-            [sys.executable, "-c", f"import pyisomme; print(hasattr(pyisomme.report, {name!r}))"],
-            capture_output=True, text=True,
+            [
+                sys.executable,
+                "-c",
+                f"import pyisomme; print(hasattr(pyisomme.report, {name!r}))",
+            ],
+            capture_output=True,
+            text=True,
         )
-        return result.stdout.strip().splitlines()[-1] == "True" if result.stdout.strip() else False
+        return (
+            result.stdout.strip().splitlines()[-1] == "True"
+            if result.stdout.strip()
+            else False
+        )
 
     def test_every_subpackage_is_reachable_as_an_attribute(self):
         missing = [
-            name for name in self.subpackages_on_disk()
-            if name not in MISSING_REEXPORTS and not self.reachable_in_fresh_interpreter(name)
+            name
+            for name in self.subpackages_on_disk()
+            if name not in MISSING_REEXPORTS
+            and not self.reachable_in_fresh_interpreter(name)
         ]
         self.assertEqual(
-            [], missing,
-            "subpackages not re-exported by pyisomme/report/__init__.py:\n" + "\n".join(missing),
+            [],
+            missing,
+            "subpackages not re-exported by pyisomme/report/__init__.py:\n"
+            + "\n".join(missing),
         )
 
     def test_missing_reexports_list_is_not_stale(self):
         now_present = [
-            name for name in sorted(MISSING_REEXPORTS)
+            name
+            for name in sorted(MISSING_REEXPORTS)
             if self.reachable_in_fresh_interpreter(name)
         ]
         self.assertEqual(
-            [], now_present,
-            "these are re-exported now — remove them from MISSING_REEXPORTS:\n" + "\n".join(now_present),
+            [],
+            now_present,
+            "these are re-exported now — remove them from MISSING_REEXPORTS:\n"
+            + "\n".join(now_present),
         )
 
 

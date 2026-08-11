@@ -49,17 +49,26 @@ class Overall(Criterion):
             while name in taken:
                 name += "'"
             taken.add(name)
-            self.add_child(name, self.Criterion_Curve_Correlation(
-                report=report,
-                isomme=isomme,
-                channel_r=isomme_r.get_channel(code),
-                channel_c=isomme_c.get_channel(code, calculate=False, integrate=False, differentiate=False)))
+            self.add_child(
+                name,
+                self.Criterion_Curve_Correlation(
+                    report=report,
+                    isomme=isomme,
+                    channel_r=isomme_r.get_channel(code),
+                    channel_c=isomme_c.get_channel(
+                        code, calculate=False, integrate=False, differentiate=False
+                    ),
+                ),
+            )
 
     @property
     def criteria(self) -> list[Overall.Criterion_Curve_Correlation]:
         """The per-channel criteria, in the order the reference test lists its channels."""
-        return [child for _, child in self.get_children()
-                if isinstance(child, Overall.Criterion_Curve_Correlation)]
+        return [
+            child
+            for _, child in self.get_children()
+            if isinstance(child, Overall.Criterion_Curve_Correlation)
+        ]
 
     def calculation(self) -> None:
         if not self.is_comparison:
@@ -72,7 +81,13 @@ class Overall(Criterion):
         channel_r: Channel | None = None
         channel_c: Channel | None = None
 
-        def __init__(self, report: Report, isomme: Isomme, channel_r: Channel | None, channel_c: Channel | None) -> None:
+        def __init__(
+            self,
+            report: Report,
+            isomme: Isomme,
+            channel_r: Channel | None,
+            channel_c: Channel | None,
+        ) -> None:
             self.name = f"{channel_c.code if channel_c is not None else np.nan}"
 
             super().__init__(report, isomme)
@@ -86,18 +101,33 @@ class Overall(Criterion):
                 # sit in `Overall.calculation()`, which skipped the whole loop; now that
                 # the framework owns the children it has to live where the work is.
                 return
-            if self.channel_r is not None and self.channel_c is not None and self.channel_r is not self.channel_c:
-                self.value = Correlation_ISO18571(reference_channel=self.channel_r,
-                                                  comparison_channel=self.channel_c).overall_rating()
-                self.color = "green" if self.value > 0.75 else "orange" if self.value > 0.5 else "red"
+            if (
+                self.channel_r is not None
+                and self.channel_c is not None
+                and self.channel_r is not self.channel_c
+            ):
+                self.value = Correlation_ISO18571(
+                    reference_channel=self.channel_r, comparison_channel=self.channel_c
+                ).overall_rating()
+                self.color = (
+                    "green"
+                    if self.value > 0.75
+                    else "orange"
+                    if self.value > 0.5
+                    else "red"
+                )
+
 
 PROTOCOL_ISO_18571_2024 = ReportProtocol(
     version="ISO-18571:2024",
     name="ISO/TS 18571:2024: Road vehicles — Objective rating metric for non-ambiguous signals",
     date=date(2024, 5, 1),
-    sources=("https://www.iso.org/standard/85791.html",
-             "https://openvt.eu/validation-metrics/ISO18571")
+    sources=(
+        "https://www.iso.org/standard/85791.html",
+        "https://openvt.eu/validation-metrics/ISO18571",
+    ),
 )
+
 
 class Correlation(Report[Overall]):
     _name = "Correlation"
@@ -124,6 +154,13 @@ class Correlation(Report[Overall]):
         def __init__(self, report: Correlation) -> None:
             super().__init__(report)
 
-            self.criteria = {isomme: cast("list[Criterion]",
-                                          sorted(self.report.criterion_overall[isomme].criteria, key=_curve_sort_key))
-                             for isomme in self.report.isomme_list}
+            self.criteria = {
+                isomme: cast(
+                    "list[Criterion]",
+                    sorted(
+                        self.report.criterion_overall[isomme].criteria,
+                        key=_curve_sort_key,
+                    ),
+                )
+                for isomme in self.report.isomme_list
+            }

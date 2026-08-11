@@ -23,9 +23,11 @@ def check_protocols(report: Report) -> list[Issue]:
 
     protocols = report.protocols
     if len(set(map(lambda r: r.version, protocols))) != len(protocols):
-        issues.append(Issue("protocols",
-                            IssueSeverity.ERROR, "",
-                            "Protocol versions are not unique"))
+        issues.append(
+            Issue(
+                "protocols", IssueSeverity.ERROR, "", "Protocol versions are not unique"
+            )
+        )
 
     for protocol in protocols:
         for source in protocol.sources:
@@ -39,7 +41,12 @@ def check_protocols(report: Report) -> list[Issue]:
             if Path(f"{source}.url").exists():
                 continue
 
-            issues.append(Issue("protocols",
-                                IssueSeverity.WARNING, "",
-                                f"Source path does not exist: '{source}'"))
+            issues.append(
+                Issue(
+                    "protocols",
+                    IssueSeverity.WARNING,
+                    "",
+                    f"Source path does not exist: '{source}'",
+                )
+            )
     return issues

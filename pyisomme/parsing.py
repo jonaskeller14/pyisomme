@@ -40,7 +40,13 @@ HEADER_LINE_PATTERN = re.compile(r"([^:]*[^:\s])\s*:(.*)")
 def get_normalization_notes(channel) -> list[str]:
     """Return the ingest-normalization assumptions recorded on ``channel`` (may be empty)."""
     n = len(NORMALIZATION_COMMENT_PREFIX)
-    return [value[n:] for name, value in channel.info if name == "Comments" and isinstance(value, str) and value.startswith(NORMALIZATION_COMMENT_PREFIX)]
+    return [
+        value[n:]
+        for name, value in channel.info
+        if name == "Comments"
+        and isinstance(value, str)
+        and value.startswith(NORMALIZATION_COMMENT_PREFIX)
+    ]
 
 
 def parse_mme(text: str) -> Info:
@@ -94,11 +100,15 @@ def parse_header_and_data(text: str) -> tuple[Info, np.ndarray]:
     try:
         array = np.array(array_str, dtype=float)
     except ValueError as error:
-        raise MalformedFileError(f"[{info.get('Channel code')}] non-numeric channel data: {error}") from error
+        raise MalformedFileError(
+            f"[{info.get('Channel code')}] non-numeric channel data: {error}"
+        ) from error
     return info, array
 
 
-def resolve_time_axis(info: Info, n: int, isomme) -> tuple[np.ndarray | None, str | None]:
+def resolve_time_axis(
+    info: Info, n: int, isomme
+) -> tuple[np.ndarray | None, str | None]:
     """
     Reconstruct a channel's time axis from its header, centralizing *every*
     reference-channel / timing convention in one place (the ingest normalization
@@ -127,30 +137,52 @@ def resolve_time_axis(info: Info, n: int, isomme) -> tuple[np.ndarray | None, st
     #    convention with missing/unresolvable timing is reported so it is not silent.
     if reference == "implicit":
         if time_of_first_sample is None:
-            return None, "declared 'implicit' but 'Time of first sample' missing; using sample index"
+            return (
+                None,
+                "declared 'implicit' but 'Time of first sample' missing; using sample index",
+            )
         if sampling_interval is None:
-            return None, "declared 'implicit' but 'Sampling interval' missing; using sample index"
+            return (
+                None,
+                "declared 'implicit' but 'Sampling interval' missing; using sample index",
+            )
         return implicit_axis(time_of_first_sample, sampling_interval), None
     if reference == "explicit":
         if reference_channel_code is None:
-            return None, "declared 'explicit' but 'Reference channel name' missing; using sample index"
+            return (
+                None,
+                "declared 'explicit' but 'Reference channel name' missing; using sample index",
+            )
         index = explicit_axis(reference_channel_code)
         if index is None:
-            return None, f"declared 'explicit' but reference channel '{reference_channel_code}' not available; using sample index"
+            return (
+                None,
+                f"declared 'explicit' but reference channel '{reference_channel_code}' not available; using sample index",
+            )
         return index, None
 
     # 2. Convention undeclared: infer it from whichever fields are present, and record it.
     if time_of_first_sample is not None and sampling_interval is not None:
-        return (implicit_axis(time_of_first_sample, sampling_interval),
-                "assumed 'Reference channel' = 'implicit' (timing present, convention undeclared)")
+        return (
+            implicit_axis(time_of_first_sample, sampling_interval),
+            "assumed 'Reference channel' = 'implicit' (timing present, convention undeclared)",
+        )
     if sampling_interval is not None:
-        return (implicit_axis(0, sampling_interval),
-                "assumed 'Reference channel' = 'implicit' with 'Time of first sample' = 0")
+        return (
+            implicit_axis(0, sampling_interval),
+            "assumed 'Reference channel' = 'implicit' with 'Time of first sample' = 0",
+        )
     if reference_channel_code is not None:
         index = explicit_axis(reference_channel_code)
         if index is not None:
-            return index, f"assumed 'Reference channel' = 'explicit' -> '{reference_channel_code}'"
-        return None, f"assumed 'explicit' but reference channel '{reference_channel_code}' not available; using sample index"
+            return (
+                index,
+                f"assumed 'Reference channel' = 'explicit' -> '{reference_channel_code}'",
+            )
+        return (
+            None,
+            f"assumed 'explicit' but reference channel '{reference_channel_code}' not available; using sample index",
+        )
 
     # 3. No timing information at all.
     return None, "no timing information; using sample index"
@@ -173,7 +205,7 @@ def parse_xxx(text: str, isomme) -> Channel:
             logger.warning(f"[{code}] {note}")
             info["Comments"] = NORMALIZATION_COMMENT_PREFIX + note
         data = pd.DataFrame(array)
-        data = data[~data.index.duplicated(keep='first')].sort_index()
+        data = data[~data.index.duplicated(keep="first")].sort_index()
         return Channel(code, data, unit=unit, info=info)
 
     if note is not None:

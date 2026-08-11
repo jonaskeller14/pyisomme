@@ -48,6 +48,7 @@ class Direction(enum.Enum):
 # limit blocks
 # --------------------------------------------------------------------------- #
 
+
 @dataclass(frozen=True)
 class Row:
     """One ``Limit`` of a block, sampled at one x."""
@@ -65,7 +66,13 @@ class Row:
         return self.limit.name or type(self.limit).__name__
 
     def __str__(self) -> str:
-        flag = "upper" if self.limit.upper else "lower" if self.limit.lower else "unflagged"
+        flag = (
+            "upper"
+            if self.limit.upper
+            else "lower"
+            if self.limit.lower
+            else "unflagged"
+        )
         return f"{self.label}({self.y:g}, {flag})"
 
 
@@ -151,16 +158,19 @@ def superseded(row: Row, side: Sequence[Row], direction: Direction) -> bool:
     That is the ``capped_at_poor`` case: the worse-rated row owns the flag, and
     this one is deliberately left unflagged so it cannot win the tie.
     """
-    return any(other is not row
-               and close(other.y, row.y)
-               and other.rating < row.rating
-               and flag(other.limit, direction.worse_flag)
-               for other in side)
+    return any(
+        other is not row
+        and close(other.y, row.y)
+        and other.rating < row.rating
+        and flag(other.limit, direction.worse_flag)
+        for other in side
+    )
 
 
 # --------------------------------------------------------------------------- #
 # rendering a finding
 # --------------------------------------------------------------------------- #
+
 
 def block_label(patterns: tuple[str, ...], side: Sequence[Row]) -> str:
     sign = "(+)" if side and side[0].y >= 0 else "(-)"
@@ -168,7 +178,9 @@ def block_label(patterns: tuple[str, ...], side: Sequence[Row]) -> str:
 
 
 def rows_text(rows: Sequence[Row]) -> str:
-    return "[" + ", ".join(str(row) for row in sorted(rows, key=lambda row: row.y)) + "]"
+    return (
+        "[" + ", ".join(str(row) for row in sorted(rows, key=lambda row: row.y)) + "]"
+    )
 
 
 # --------------------------------------------------------------------------- #

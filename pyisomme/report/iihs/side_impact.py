@@ -32,8 +32,10 @@ from pyisomme.report.report import Report
 P_DRIVER = manual(
     "1",
     source="test report",
-    doc=("Channel-code position of the driver SID-IIs dummy. Defaults to the "
-         "'Driver position object 1' test-info field when available."),
+    doc=(
+        "Channel-code position of the driver SID-IIs dummy. Defaults to the "
+        "'Driver position object 1' test-info field when available."
+    ),
 )
 P_REAR_PASSENGER = manual(
     "6",
@@ -81,7 +83,9 @@ class Criterion_Head_Neck(Criterion):
         def calculation(self) -> None:
             self.channel = self.require_channel(self.ctx.code("?{p}HICR0015??00RX"))
             self.value = float(self.channel.get_data()[0])
-            self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
+            self.rating = self.limits.get_limit_min_rating(
+                self.channel, interpolate=False
+            )
             self.color = self.limits.get_limit_min_color(self.channel)
 
     class Criterion_Neck_Tension(Criterion):
@@ -102,7 +106,9 @@ class Criterion_Head_Neck(Criterion):
         def calculation(self) -> None:
             self.channel = self.require_channel(self.ctx.code("?{p}NECKUP00??FOZB"))
             self.value = float(np.max(self.channel.get_data(unit="kN")))
-            self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
+            self.rating = self.limits.get_limit_min_rating(
+                self.channel, interpolate=False
+            )
             self.color = self.limits.get_limit_min_color(self.channel)
 
     class Criterion_Neck_Compression(Criterion):
@@ -120,7 +126,9 @@ class Criterion_Head_Neck(Criterion):
         def calculation(self) -> None:
             self.channel = self.require_channel(self.ctx.code("?{p}NECKUP00??FOZB"))
             self.value = float(-np.min(self.channel.get_data(unit="kN")))
-            self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
+            self.rating = self.limits.get_limit_min_rating(
+                self.channel, interpolate=False
+            )
             self.color = self.limits.get_limit_min_color(self.channel)
 
     def calculation(self) -> None:
@@ -141,11 +149,14 @@ class Criterion_Torso(Criterion):
     name = "Torso"
     role = Role.AGGREGATE
     aggregation = "min"
-    shoulder_bottoming: Manual[bool, manual(
-        False,
-        source="high-speed video and postcrash inspection",
-        doc="True when shoulder excursion exceeds 60 mm or the shoulder bottoms out.",
-    )]
+    shoulder_bottoming: Manual[
+        bool,
+        manual(
+            False,
+            source="high-speed video and postcrash inspection",
+            doc="True when shoulder excursion exceeds 60 mm or the shoulder bottoms out.",
+        ),
+    ]
 
     class Criterion_Rib_Deflection(Criterion):
         name = "Average peak rib deflection"
@@ -167,10 +178,15 @@ class Criterion_Torso(Criterion):
                 self.require_channel(code)
                 for code in self.ctx.codes(*RIB_DEFLECTION_CODES)
             ]
-            peaks = [float(np.max(np.abs(channel.get_data(unit="mm")))) for channel in channels]
+            peaks = [
+                float(np.max(np.abs(channel.get_data(unit="mm"))))
+                for channel in channels
+            ]
             self.value = float(np.mean(peaks))
             self.channel = Channel(channels[0].code, pd.DataFrame([self.value]), "mm")
-            self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
+            self.rating = self.limits.get_limit_min_rating(
+                self.channel, interpolate=False
+            )
             self.color = self.limits.get_limit_min_color(self.channel)
             peak = float(np.max(peaks))
             if peak > 55:
@@ -213,9 +229,12 @@ class Criterion_Torso(Criterion):
                 for channel in rate_channels
             ]
             self.channel = rate_channels[int(np.argmin(ratings))]
-            self.value = float(max(
-                np.max(np.abs(channel.get_data(unit="m/s"))) for channel in rate_channels
-            ))
+            self.value = float(
+                max(
+                    np.max(np.abs(channel.get_data(unit="m/s")))
+                    for channel in rate_channels
+                )
+            )
             self.rating = min(ratings)
             self.color = self.limits.get_limit_min_color(self.channel)
 
@@ -241,12 +260,16 @@ class Criterion_Torso(Criterion):
             ]
             vc_channels = []
             for channel in channels:
-                raw_vc = calculate_vc(channel, scaling_factor=1.0, defo_constant=0.138)[1]
-                vc_channels.append(Channel(
-                    raw_vc.code,
-                    pd.DataFrame(np.abs(raw_vc.data), index=raw_vc.data.index),
-                    "m/s",
-                ))
+                raw_vc = calculate_vc(channel, scaling_factor=1.0, defo_constant=0.138)[
+                    1
+                ]
+                vc_channels.append(
+                    Channel(
+                        raw_vc.code,
+                        pd.DataFrame(np.abs(raw_vc.data), index=raw_vc.data.index),
+                        "m/s",
+                    )
+                )
             if not vc_channels:
                 raise ValueError("No viscous criterion channels available")
             ratings = [
@@ -305,43 +328,66 @@ class Criterion_Pelvis(Criterion):
         ]
         time = time_intersect(*channels)
         if not len(time):
-            raise ValueError("acetabulum and ilium force channels have no common time samples")
-        combined = np.sum([
-            np.maximum(channel.get_data(t=time, unit="kN"), 0.0) for channel in channels
-        ], axis=0)
+            raise ValueError(
+                "acetabulum and ilium force channels have no common time samples"
+            )
+        combined = np.sum(
+            [
+                np.maximum(channel.get_data(t=time, unit="kN"), 0.0)
+                for channel in channels
+            ],
+            axis=0,
+        )
         self.value = float(np.max(combined))
-        self.channel = Channel(channels[0].code, pd.DataFrame(combined, index=time), "kN")
+        self.channel = Channel(
+            channels[0].code, pd.DataFrame(combined, index=time), "kN"
+        )
         self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
         self.color = self.limits.get_limit_min_color(self.channel)
 
 
 class Criterion_Head_Protection(Criterion):
     name = "Head protection"
-    head_protection_system_equipped: Manual[bool, manual(
-        True,
-        source="high-speed video and postcrash inspection",
-        doc="A side head-protection system is equipped for this seating position.",
-    )]
-    head_contained: Manual[bool, manual(
-        True,
-        source="high-speed video",
-        doc="The head remains contained and protected by the side head-protection system.",
-    )]
-    direct_mdb_contact: Manual[bool, manual(
-        False,
-        source="high-speed video and physical evidence",
-        doc="The head directly contacts the moving deformable barrier.",
-    )]
-    interior_contact: Manual[bool, manual(
-        False,
-        source="high-speed video and physical evidence",
-        doc="The head contacts vehicle interior hard structure or bottoms out the airbag.",
-    )]
-    head_acceleration_over_70g: Manual[bool, manual(
-        False,
-        source="head resultant acceleration",
-        doc="The resultant head acceleration exceeds 70 g during the relevant event.",
-    )]
+    head_protection_system_equipped: Manual[
+        bool,
+        manual(
+            True,
+            source="high-speed video and postcrash inspection",
+            doc="A side head-protection system is equipped for this seating position.",
+        ),
+    ]
+    head_contained: Manual[
+        bool,
+        manual(
+            True,
+            source="high-speed video",
+            doc="The head remains contained and protected by the side head-protection system.",
+        ),
+    ]
+    direct_mdb_contact: Manual[
+        bool,
+        manual(
+            False,
+            source="high-speed video and physical evidence",
+            doc="The head directly contacts the moving deformable barrier.",
+        ),
+    ]
+    interior_contact: Manual[
+        bool,
+        manual(
+            False,
+            source="high-speed video and physical evidence",
+            doc="The head contacts vehicle interior hard structure or bottoms out the airbag.",
+        ),
+    ]
+    head_acceleration_over_70g: Manual[
+        bool,
+        manual(
+            False,
+            source="head resultant acceleration",
+            doc="The resultant head acceleration exceeds 70 g during the relevant event.",
+        ),
+    ]
 
     def calculation(self) -> None:
         if self.direct_mdb_contact or not self.head_contained:
@@ -392,22 +438,31 @@ class Overall(Criterion):
 
     class Criterion_Structure(Criterion):
         name = "Vehicle structure"
-        b_pillar_to_seat_centerline_cm: Manual[float, manual(
-            float(np.nan),
-            unit="cm",
-            source="postcrash intrusion measurement",
-            doc="Minimum longitudinal B-pillar distance relative to the driver seat centerline.",
-        )]
-        door_opened: Manual[bool, manual(
-            False,
-            source="postcrash inspection",
-            doc="A door opening occurred during the impact and requires a one-category downgrade.",
-        )]
-        integrity_failure: Manual[bool, manual(
-            False,
-            source="postcrash inspection",
-            doc="Significant fuel leak, electrical compromise, smoke, fire, or battery thermal event.",
-        )]
+        b_pillar_to_seat_centerline_cm: Manual[
+            float,
+            manual(
+                float(np.nan),
+                unit="cm",
+                source="postcrash intrusion measurement",
+                doc="Minimum longitudinal B-pillar distance relative to the driver seat centerline.",
+            ),
+        ]
+        door_opened: Manual[
+            bool,
+            manual(
+                False,
+                source="postcrash inspection",
+                doc="A door opening occurred during the impact and requires a one-category downgrade.",
+            ),
+        ]
+        integrity_failure: Manual[
+            bool,
+            manual(
+                False,
+                source="postcrash inspection",
+                doc="Significant fuel leak, electrical compromise, smoke, fire, or battery thermal event.",
+            ),
+        ]
 
         def calculation(self) -> None:
             distance = self.b_pillar_to_seat_centerline_cm
@@ -510,7 +565,9 @@ class IIHS_Side_Impact(Report[Overall]):
                     report.overall(isomme).criterion_rear_passenger.criterion_head_neck,
                     report.overall(isomme).criterion_rear_passenger.criterion_torso,
                     report.overall(isomme).criterion_rear_passenger.criterion_pelvis,
-                    report.overall(isomme).criterion_rear_passenger.criterion_head_protection,
+                    report.overall(
+                        isomme
+                    ).criterion_rear_passenger.criterion_head_protection,
                     report.overall(isomme).criterion_structure,
                 ]
                 for isomme in report.isomme_list
@@ -543,12 +600,24 @@ class IIHS_Side_Impact(Report[Overall]):
             super().__init__(report)
             self.criteria = {
                 isomme: [
-                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_hic_15,
-                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_neck_tension,
-                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_neck_compression,
-                    report.overall(isomme).criterion_driver.criterion_torso.criterion_rib_deflection,
-                    report.overall(isomme).criterion_driver.criterion_torso.criterion_rib_deflection_rate,
-                    report.overall(isomme).criterion_driver.criterion_torso.criterion_viscous_criterion,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_head_neck.criterion_hic_15,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_head_neck.criterion_neck_tension,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_head_neck.criterion_neck_compression,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_torso.criterion_rib_deflection,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_torso.criterion_rib_deflection_rate,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_torso.criterion_viscous_criterion,
                     report.overall(isomme).criterion_driver.criterion_pelvis,
                 ]
                 for isomme in report.isomme_list
@@ -563,12 +632,24 @@ class IIHS_Side_Impact(Report[Overall]):
             super().__init__(report)
             self.criteria = {
                 isomme: [
-                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_hic_15,
-                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_neck_tension,
-                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_neck_compression,
-                    report.overall(isomme).criterion_driver.criterion_torso.criterion_rib_deflection,
-                    report.overall(isomme).criterion_driver.criterion_torso.criterion_rib_deflection_rate,
-                    report.overall(isomme).criterion_driver.criterion_torso.criterion_viscous_criterion,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_head_neck.criterion_hic_15,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_head_neck.criterion_neck_tension,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_head_neck.criterion_neck_compression,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_torso.criterion_rib_deflection,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_torso.criterion_rib_deflection_rate,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_torso.criterion_viscous_criterion,
                     report.overall(isomme).criterion_driver.criterion_pelvis,
                 ]
                 for isomme in report.isomme_list
@@ -586,7 +667,9 @@ class IIHS_Side_Impact(Report[Overall]):
                     report.overall(isomme).criterion_rear_passenger.criterion_head_neck,
                     report.overall(isomme).criterion_rear_passenger.criterion_torso,
                     report.overall(isomme).criterion_rear_passenger.criterion_pelvis,
-                    report.overall(isomme).criterion_rear_passenger.criterion_head_protection,
+                    report.overall(
+                        isomme
+                    ).criterion_rear_passenger.criterion_head_protection,
                     report.overall(isomme).criterion_rear_passenger,
                 ]
                 for isomme in report.isomme_list
@@ -601,12 +684,24 @@ class IIHS_Side_Impact(Report[Overall]):
             super().__init__(report)
             self.criteria = {
                 isomme: [
-                    report.overall(isomme).criterion_rear_passenger.criterion_head_neck.criterion_hic_15,
-                    report.overall(isomme).criterion_rear_passenger.criterion_head_neck.criterion_neck_tension,
-                    report.overall(isomme).criterion_rear_passenger.criterion_head_neck.criterion_neck_compression,
-                    report.overall(isomme).criterion_rear_passenger.criterion_torso.criterion_rib_deflection,
-                    report.overall(isomme).criterion_rear_passenger.criterion_torso.criterion_rib_deflection_rate,
-                    report.overall(isomme).criterion_rear_passenger.criterion_torso.criterion_viscous_criterion,
+                    report.overall(
+                        isomme
+                    ).criterion_rear_passenger.criterion_head_neck.criterion_hic_15,
+                    report.overall(
+                        isomme
+                    ).criterion_rear_passenger.criterion_head_neck.criterion_neck_tension,
+                    report.overall(
+                        isomme
+                    ).criterion_rear_passenger.criterion_head_neck.criterion_neck_compression,
+                    report.overall(
+                        isomme
+                    ).criterion_rear_passenger.criterion_torso.criterion_rib_deflection,
+                    report.overall(
+                        isomme
+                    ).criterion_rear_passenger.criterion_torso.criterion_rib_deflection_rate,
+                    report.overall(
+                        isomme
+                    ).criterion_rear_passenger.criterion_torso.criterion_viscous_criterion,
                     report.overall(isomme).criterion_rear_passenger.criterion_pelvis,
                 ]
                 for isomme in report.isomme_list
@@ -621,12 +716,24 @@ class IIHS_Side_Impact(Report[Overall]):
             super().__init__(report)
             self.criteria = {
                 isomme: [
-                    report.overall(isomme).criterion_rear_passenger.criterion_head_neck.criterion_hic_15,
-                    report.overall(isomme).criterion_rear_passenger.criterion_head_neck.criterion_neck_tension,
-                    report.overall(isomme).criterion_rear_passenger.criterion_head_neck.criterion_neck_compression,
-                    report.overall(isomme).criterion_rear_passenger.criterion_torso.criterion_rib_deflection,
-                    report.overall(isomme).criterion_rear_passenger.criterion_torso.criterion_rib_deflection_rate,
-                    report.overall(isomme).criterion_rear_passenger.criterion_torso.criterion_viscous_criterion,
+                    report.overall(
+                        isomme
+                    ).criterion_rear_passenger.criterion_head_neck.criterion_hic_15,
+                    report.overall(
+                        isomme
+                    ).criterion_rear_passenger.criterion_head_neck.criterion_neck_tension,
+                    report.overall(
+                        isomme
+                    ).criterion_rear_passenger.criterion_head_neck.criterion_neck_compression,
+                    report.overall(
+                        isomme
+                    ).criterion_rear_passenger.criterion_torso.criterion_rib_deflection,
+                    report.overall(
+                        isomme
+                    ).criterion_rear_passenger.criterion_torso.criterion_rib_deflection_rate,
+                    report.overall(
+                        isomme
+                    ).criterion_rear_passenger.criterion_torso.criterion_viscous_criterion,
                     report.overall(isomme).criterion_rear_passenger.criterion_pelvis,
                 ]
                 for isomme in report.isomme_list
@@ -641,7 +748,10 @@ class IIHS_Side_Impact(Report[Overall]):
         def __init__(self, report: IIHS_Side_Impact) -> None:
             super().__init__(report)
             self.channels = {
-                isomme: [[f"?{report.overall(isomme).p_driver}HEAD??????AC{axis}A"] for axis in "XYZR"]
+                isomme: [
+                    [f"?{report.overall(isomme).p_driver}HEAD??????AC{axis}A"]
+                    for axis in "XYZR"
+                ]
                 for isomme in report.isomme_list
             }
 

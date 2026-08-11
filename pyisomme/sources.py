@@ -93,7 +93,11 @@ class FolderSource(ArchiveSource):
         self.root = Path(root)
 
     def names(self) -> list[str]:
-        return [p.relative_to(self.root).as_posix() for p in self.root.rglob("*") if p.is_file()]
+        return [
+            p.relative_to(self.root).as_posix()
+            for p in self.root.rglob("*")
+            if p.is_file()
+        ]
 
     def read_bytes(self, name: str) -> bytes:
         return (self.root / name).read_bytes()
@@ -119,14 +123,21 @@ class ZipSource(ArchiveSource):
 class TarSource(ArchiveSource):
     """An ISO-MME container stored inside a ``.tar`` / ``.tar.gz`` archive."""
 
-    def __init__(self, tar_path: str | Path, mode: Literal['r', 'r:*', 'r:', 'r:gz', 'r:bz2', 'r:xz'] = 'r'):
+    def __init__(
+        self,
+        tar_path: str | Path,
+        mode: Literal["r", "r:*", "r:", "r:gz", "r:bz2", "r:xz"] = "r",
+    ):
         self.tar = tarfile.open(tar_path, mode)
+        self.members = {
+            member.name.removeprefix("./"): member for member in self.tar.getmembers()
+        }
 
     def names(self) -> list[str]:
-        return self.tar.getnames()
+        return list(self.members)
 
     def read_bytes(self, name: str) -> bytes:
-        member = self.tar.extractfile(name)
+        member = self.tar.extractfile(self.members[name])
         if member is None:
             raise FileNotFoundError(name)
         try:

@@ -24,19 +24,31 @@ class TestCLI(unittest.TestCase):
         self.second_root.mkdir()
         self.second_mme_path = self.second_root / "CLI2.mme"
         time = np.array([0.0, 0.001, 0.002])
+
         def fixture(test_number: str, scale: float) -> Isomme:
             return Isomme(
                 test_number=test_number,
                 test_info=[],
                 channel_info=[],
                 channels=[
-                Channel("11HEAD000000ACXP", pd.DataFrame([1.0, 2.0, 3.0], index=time), "g",
-                        info=[("Reference channel", "implicit")]),
-                Channel("13CHST000000DSXP",
-                        pd.DataFrame(np.array([4.0, 5.0, 6.0]) * scale, index=time), "m",
-                        info=[("Reference channel", "implicit")]),
-                Channel("14HEAD000000ACXP", pd.DataFrame([7.0, 8.0, 9.0], index=time), "g",
-                        info=[("Reference channel", "implicit")]),
+                    Channel(
+                        "11HEAD000000ACXP",
+                        pd.DataFrame([1.0, 2.0, 3.0], index=time),
+                        "g",
+                        info=[("Reference channel", "implicit")],
+                    ),
+                    Channel(
+                        "13CHST000000DSXP",
+                        pd.DataFrame(np.array([4.0, 5.0, 6.0]) * scale, index=time),
+                        "m",
+                        info=[("Reference channel", "implicit")],
+                    ),
+                    Channel(
+                        "14HEAD000000ACXP",
+                        pd.DataFrame([7.0, 8.0, 9.0], index=time),
+                        "g",
+                        info=[("Reference channel", "implicit")],
+                    ),
                 ],
             )
 
@@ -46,7 +58,8 @@ class TestCLI(unittest.TestCase):
     def snapshot(self) -> dict[str, bytes]:
         return {
             str(path.relative_to(self.root)): path.read_bytes()
-            for path in self.root.rglob("*") if path.is_file()
+            for path in self.root.rglob("*")
+            if path.is_file()
         }
 
     def run_cli(self, *arguments: str) -> str:
@@ -69,7 +82,9 @@ class TestCLI(unittest.TestCase):
             parser.parse_args(["convert", "--help"])
         self.assertIn("numerically convert", output.getvalue())
 
-    def test_code_fields_are_dispatched_and_unmatched_channel_is_unchanged(self) -> None:
+    def test_code_fields_are_dispatched_and_unmatched_channel_is_unchanged(
+        self,
+    ) -> None:
         values = {
             "main_location": "ABCD",
             "fine_location_1": "AA",
@@ -86,11 +101,23 @@ class TestCLI(unittest.TestCase):
             self.run_cli("set", str(self.mme_path), field, value, "-c", pattern)
 
         result = Isomme().read(self.mme_path)
-        changed = result.get_channel("22ABCDAABBCCDDRX", filter=False, calculate=False,
-                                     differentiate=False, integrate=False)
+        changed = result.get_channel(
+            "22ABCDAABBCCDDRX",
+            filter=False,
+            calculate=False,
+            differentiate=False,
+            integrate=False,
+        )
         self.assertIsNotNone(changed)
-        self.assertIsNotNone(result.get_channel("13CHST000000DSXP", filter=False, calculate=False,
-                                                differentiate=False, integrate=False))
+        self.assertIsNotNone(
+            result.get_channel(
+                "13CHST000000DSXP",
+                filter=False,
+                calculate=False,
+                differentiate=False,
+                integrate=False,
+            )
+        )
         self.assertEqual(set(values), set(CODE_FIELDS))
 
     def test_multiple_patterns_relabel_units_without_converting_values(self) -> None:
@@ -98,7 +125,9 @@ class TestCLI(unittest.TestCase):
             str(channel.code): channel.get_data().copy()
             for channel in Isomme().read(self.mme_path).channels
         }
-        output = self.run_cli("set", str(self.mme_path), "unit", "um", "-c", "11*", "13CHST*")
+        output = self.run_cli(
+            "set", str(self.mme_path), "unit", "um", "-c", "11*", "13CHST*"
+        )
 
         result = Isomme().read(self.mme_path)
         self.assertEqual(str(result.get_channel("11*").unit), "um")
@@ -108,11 +137,15 @@ class TestCLI(unittest.TestCase):
             np.testing.assert_array_equal(channel.get_data(), before[str(channel.code)])
         self.assertIn("Matched 2 channel(s); changed 2.", output)
 
-        output = self.run_cli("set", str(self.mme_path), "unit", "um", "-c", "11*", "13CHST*")
+        output = self.run_cli(
+            "set", str(self.mme_path), "unit", "um", "-c", "11*", "13CHST*"
+        )
         self.assertIn("Matched 2 channel(s); changed 0.", output)
 
     def test_round_trip_updates_chn_and_channel_header(self) -> None:
-        self.run_cli("set", str(self.mme_path), "fine_location_3", "H3", "-c", "13CHST*")
+        self.run_cli(
+            "set", str(self.mme_path), "fine_location_3", "H3", "-c", "13CHST*"
+        )
         chn = (self.root / "Channel" / "CLI.chn").read_text()
         channel_headers = "\n".join(
             path.read_text() for path in (self.root / "Channel").glob("CLI.0??")
@@ -121,13 +154,26 @@ class TestCLI(unittest.TestCase):
         self.assertIn("13CHST0000H3DSXP", channel_headers)
 
     def test_set_accepts_multiple_input_paths(self) -> None:
-        output = self.run_cli("set", str(self.mme_path), str(self.second_mme_path),
-                              "fine_location_3", "H3", "-c", "13CHST*")
+        output = self.run_cli(
+            "set",
+            str(self.mme_path),
+            str(self.second_mme_path),
+            "fine_location_3",
+            "H3",
+            "-c",
+            "13CHST*",
+        )
         for path in (self.mme_path, self.second_mme_path):
             result = Isomme().read(path)
-            self.assertIsNotNone(result.get_channel("13CHST0000H3DSXP", filter=False,
-                                                    calculate=False, differentiate=False,
-                                                    integrate=False))
+            self.assertIsNotNone(
+                result.get_channel(
+                    "13CHST0000H3DSXP",
+                    filter=False,
+                    calculate=False,
+                    differentiate=False,
+                    integrate=False,
+                )
+            )
             self.assertIn(str(path), output)
 
     def test_convert_unit_accepts_multiple_inputs_and_converts_values(self) -> None:
@@ -136,8 +182,15 @@ class TestCLI(unittest.TestCase):
             channel = Isomme().read(path).get_channel("13CHST*")
             before.append(channel.get_data().copy())
 
-        output = self.run_cli("convert", str(self.mme_path), str(self.second_mme_path),
-                              "unit", "mm", "-c", "13CHST*")
+        output = self.run_cli(
+            "convert",
+            str(self.mme_path),
+            str(self.second_mme_path),
+            "unit",
+            "mm",
+            "-c",
+            "13CHST*",
+        )
         for path, old_data in zip((self.mme_path, self.second_mme_path), before):
             result = Isomme().read(path)
             channel = result.get_channel("13CHST*")
@@ -146,8 +199,15 @@ class TestCLI(unittest.TestCase):
             self.assertEqual(str(result.get_channel("11*").unit), "g0")
         self.assertEqual(output.count("Matched 1 channel(s); changed 1."), 2)
 
-        output = self.run_cli("convert", str(self.mme_path), str(self.second_mme_path),
-                              "unit", "mm", "-c", "13CHST*")
+        output = self.run_cli(
+            "convert",
+            str(self.mme_path),
+            str(self.second_mme_path),
+            "unit",
+            "mm",
+            "-c",
+            "13CHST*",
+        )
         self.assertEqual(output.count("Matched 1 channel(s); changed 0."), 2)
 
     def test_incompatible_conversion_in_later_input_prevents_all_writes(self) -> None:
@@ -157,8 +217,17 @@ class TestCLI(unittest.TestCase):
         before = self.snapshot()
 
         with self.assertRaisesRegex(SystemExit, "2"), redirect_stderr(StringIO()):
-            main(["convert", str(self.mme_path), str(self.second_mme_path),
-                  "unit", "mm", "-c", "13CHST*"])
+            main(
+                [
+                    "convert",
+                    str(self.mme_path),
+                    str(self.second_mme_path),
+                    "unit",
+                    "mm",
+                    "-c",
+                    "13CHST*",
+                ]
+            )
         self.assertEqual(self.snapshot(), before)
 
     def test_no_match_and_invalid_value_do_not_write(self) -> None:
@@ -169,7 +238,10 @@ class TestCLI(unittest.TestCase):
         ):
             with self.subTest(arguments=arguments):
                 before = self.snapshot()
-                with self.assertRaisesRegex(SystemExit, "2"), redirect_stderr(StringIO()):
+                with (
+                    self.assertRaisesRegex(SystemExit, "2"),
+                    redirect_stderr(StringIO()),
+                ):
                     main(["set", str(self.mme_path), *arguments])
                 self.assertEqual(self.snapshot(), before)
 
@@ -194,8 +266,13 @@ class TestMetadataRepairScripts(unittest.TestCase):
         repository = Path(__file__).parents[1]
         for test_number, mappings in self.EXPECTED.items():
             with self.subTest(test_number=test_number):
-                script = (repository / "data" / "nhtsa" / test_number /
-                          "fix_channel_metadata.sh").read_text()
+                script = (
+                    repository
+                    / "data"
+                    / "nhtsa"
+                    / test_number
+                    / "fix_channel_metadata.sh"
+                ).read_text()
                 for pattern, dummy in mappings:
                     self.assertIn(f"fine_location_3 {dummy} -c '{pattern}'", script)
                 self.assertIn("unit um -c '??CHST??????DS??'", script)

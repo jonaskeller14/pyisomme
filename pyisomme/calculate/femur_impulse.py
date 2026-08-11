@@ -30,22 +30,30 @@ def calculate_femur_impulse(channel: Channel, y_end: float = -4050) -> Channel:
     before_peak = np.nonzero((y >= 0) & (np.arange(len(x)) < idx_min))[0]
     idx_start = int(before_peak[-1]) if len(before_peak) else 0
     if y[idx_min] >= y_end:
-        #FIXME: A pulse that never reaches the cutoff has no post-peak crossing. --> return zero impulse then might be more correct
+        # FIXME: A pulse that never reaches the cutoff has no post-peak crossing. --> return zero impulse then might be more correct
         idx_end = idx_min
     else:
         after_peak = np.nonzero((y > y_end) & (np.arange(len(x)) > idx_min))[0]
         idx_end = int(after_peak[0]) if len(after_peak) else len(x) - 1
 
-    data = trapezoid(y[idx_start:idx_end + 1], x[idx_start:idx_end + 1])
+    data = trapezoid(y[idx_start : idx_end + 1], x[idx_start : idx_end + 1])
 
-    return Channel(code=channel.code.set(main_location="KTHC", physical_dimension="IM", filter_class="X"),
-                   data=pd.DataFrame([data]),
-                   unit=channel.unit * Unit("s"),
-                   info=channel.info.update({
-                       "Data source": "calculation",
-                   }).add({
-                       ".Channel 001": channel.code,
-                       ".Filter": channel.code.filter_class,
-                       ".Start time": x[idx_start],
-                       ".End time": x[idx_end],
-                   }))
+    return Channel(
+        code=channel.code.set(
+            main_location="KTHC", physical_dimension="IM", filter_class="X"
+        ),
+        data=pd.DataFrame([data]),
+        unit=channel.unit * Unit("s"),
+        info=channel.info.update(
+            {
+                "Data source": "calculation",
+            }
+        ).add(
+            {
+                ".Channel 001": channel.code,
+                ".Filter": channel.code.filter_class,
+                ".Start time": x[idx_start],
+                ".End time": x[idx_end],
+            }
+        ),
+    )

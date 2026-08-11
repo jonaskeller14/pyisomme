@@ -39,11 +39,11 @@ class MetaReport(BaseReport):
         self.rating: float | None = None
         self.ratings: dict[str, float] = {}
 
-        own_pages: tuple[Page[Any], ...] = ((Page_Cover(self),) if include_cover else ()) + tuple(pages)
+        own_pages: tuple[Page[Any], ...] = (
+            (Page_Cover(self),) if include_cover else ()
+        ) + tuple(pages)
         child_pages = tuple(
-            page
-            for report in self._reports.values()
-            for page in report.available_pages
+            page for report in self._reports.values() for page in report.available_pages
         )
         self._own_pages = own_pages
         self._available_pages = own_pages + child_pages
@@ -60,16 +60,20 @@ class MetaReport(BaseReport):
 
     @property
     def coverage_labels(self) -> tuple[str, ...]:
-        return tuple(dict.fromkeys(
-            label
-            for report in self._reports.values()
-            for label in report.coverage_labels
-        ))
+        return tuple(
+            dict.fromkeys(
+                label
+                for report in self._reports.values()
+                for label in report.coverage_labels
+            )
+        )
 
     def _page_entries(self) -> tuple[tuple[str, Page[Any]], ...]:
         entries = [(page.name, page) for page in self._own_pages]
         for key, report in self._reports.items():
-            entries.extend((f"{key}/{path}", page) for path, page in report._page_entries())
+            entries.extend(
+                (f"{key}/{path}", page) for path, page in report._page_entries()
+            )
         return tuple(entries)
 
     def calculate(self) -> MetaReport:
@@ -83,7 +87,9 @@ class MetaReport(BaseReport):
 
     def sub_rating(self, report: Report[Any]) -> float:
         """Return the NaN-propagating mean overall rating of a criterion report."""
-        ratings = [report.criterion_overall[isomme].rating for isomme in report.isomme_list]
+        ratings = [
+            report.criterion_overall[isomme].rating for isomme in report.isomme_list
+        ]
         return float(np.mean(ratings)) if ratings else float(np.nan)
 
     def print_results(self) -> None:
@@ -114,7 +120,9 @@ class MetaReport(BaseReport):
     def describe(self) -> str:
         sections = [f"# {type(self).__name__}", ""]
         for key, report in self._reports.items():
-            sections.extend((f"## `{key}` — {report.name}", "", report.describe().rstrip(), ""))
+            sections.extend(
+                (f"## `{key}` — {report.name}", "", report.describe().rstrip(), "")
+            )
         return "\n".join(sections).rstrip() + "\n"
 
     def get_inputs(self) -> dict[str, Any]:
@@ -123,7 +131,9 @@ class MetaReport(BaseReport):
     def set_inputs(self, inputs: dict[str, Any]) -> MetaReport:
         for key, values in inputs.items():
             if key not in self._reports:
-                raise KeyError(f"{self}: no subreport {key!r}. Available: {sorted(self._reports)}")
+                raise KeyError(
+                    f"{self}: no subreport {key!r}. Available: {sorted(self._reports)}"
+                )
             self._reports[key].set_inputs(values)
         return self
 
@@ -136,8 +146,10 @@ class MetaReport(BaseReport):
     @property
     def subreport_protocols(self) -> Mapping[str, ReportProtocol]:
         """Protocols of criterion subreports; configure each subreport directly."""
-        return MappingProxyType({
-            key: report.protocol
-            for key, report in self._reports.items()
-            if isinstance(report, Report)
-        })
+        return MappingProxyType(
+            {
+                key: report.protocol
+                for key, report in self._reports.items()
+                if isinstance(report, Report)
+            }
+        )

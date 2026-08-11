@@ -5,6 +5,7 @@ import sys
 import typing
 from dataclasses import dataclass
 from difflib import get_close_matches
+
 # ``Manual[float, manual(0.0, unit="mm")]`` reads as ``float`` to mypy/pyright.
 # Imported under an alias rather than assigned (``Manual = Annotated``) because
 # only the import form is recognised as a type alias by mypy.
@@ -83,6 +84,7 @@ class InputSpec:
 # type checking
 # --------------------------------------------------------------------------- #
 
+
 def _accepts(value: Any, declared: Any) -> bool:
     """
     Is ``value`` acceptable for a field declared as ``declared``?
@@ -102,10 +104,13 @@ def _accepts(value: Any, declared: Any) -> bool:
     if declared is bool:
         return isinstance(value, (bool, np.bool_))
     if declared is int:
-        return isinstance(value, (int, np.integer)) and not isinstance(value, (bool, np.bool_))
+        return isinstance(value, (int, np.integer)) and not isinstance(
+            value, (bool, np.bool_)
+        )
     if declared is float:
-        return (isinstance(value, (int, float, np.integer, np.floating))
-                and not isinstance(value, (bool, np.bool_)))
+        return isinstance(
+            value, (int, float, np.integer, np.floating)
+        ) and not isinstance(value, (bool, np.bool_))
     try:
         return isinstance(value, declared)
     except TypeError:  # pragma: no cover - exotic typing construct
@@ -144,8 +149,10 @@ def _resolve_annotation(owner: type, annotation: Any) -> tuple[Any, manual] | No
         try:
             annotation = eval(annotation, globalns)  # noqa: S307 - our own annotations
         except Exception as error:
-            logger.warning(f"{owner.__qualname__}: cannot resolve manual input annotation "
-                           f"{annotation!r}: {error}")
+            logger.warning(
+                f"{owner.__qualname__}: cannot resolve manual input annotation "
+                f"{annotation!r}: {error}"
+            )
             return None
     for item in getattr(annotation, "__metadata__", ()):
         if isinstance(item, manual):

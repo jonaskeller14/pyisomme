@@ -40,14 +40,22 @@ class Report(BaseReport, Generic[C]):
     #: Concrete reports must rebind this to their module-level ``Overall`` tree.
     Criterion_Overall: type[Criterion]
 
-    def __init__(self, isomme_list: list[Isomme], title: str = "Unnamed Report", protocol_version: str | None = None) -> None:
+    def __init__(
+        self,
+        isomme_list: list[Isomme],
+        title: str = "Unnamed Report",
+        protocol_version: str | None = None,
+    ) -> None:
         super().__init__(title=title)
         self.isomme_list = isomme_list
 
         if protocol_version is not None:
             self.protocol_version = protocol_version
 
-        self._limits = {isomme: Limits(name=self._name or "Unnamed Limits", limit_list=[]) for isomme in isomme_list}
+        self._limits = {
+            isomme: Limits(name=self._name or "Unnamed Limits", limit_list=[])
+            for isomme in isomme_list
+        }
 
         overall_type = getattr(type(self), "Criterion_Overall", None)
         if overall_type is None:
@@ -96,7 +104,9 @@ class Report(BaseReport, Generic[C]):
         return {
             self._input_key(isomme): {
                 path: getattr(criterion, spec.name)
-                for path, criterion, spec in self.criterion_overall[isomme].iter_inputs()
+                for path, criterion, spec in self.criterion_overall[
+                    isomme
+                ].iter_inputs()
             }
             for isomme in self.isomme_list
         }
@@ -113,8 +123,12 @@ class Report(BaseReport, Generic[C]):
         for key, values in inputs.items():
             if key not in by_key:
                 raise KeyError(f"{self}: no test {key!r}. Available: {sorted(by_key)}")
-            criteria = {path: (criterion, spec)
-                        for path, criterion, spec in self.criterion_overall[by_key[key]].iter_inputs()}
+            criteria = {
+                path: (criterion, spec)
+                for path, criterion, spec in self.criterion_overall[
+                    by_key[key]
+                ].iter_inputs()
+            }
             for path, value in values.items():
                 if path not in criteria:
                     raise KeyError(
@@ -136,21 +150,29 @@ class Report(BaseReport, Generic[C]):
             print(isomme)
             for path, criterion, spec in self.criterion_overall[isomme].iter_inputs():
                 value = getattr(criterion, spec.name)
-                marker = "*" if criterion.input_is_set(spec.name) else (" " if value == spec.default else "~")
+                marker = (
+                    "*"
+                    if criterion.input_is_set(spec.name)
+                    else (" " if value == spec.default else "~")
+                )
                 unit = f" [{spec.unit}]" if spec.unit else ""
                 doc = f" — {spec.doc}" if spec.doc else ""
                 source = f" (source: {spec.source})" if spec.source else ""
-                print(f"\t{marker} {path}: {value!r}{unit} "
-                      f"(default {spec.default!r}, {spec.type_name()}){doc}{source}")
+                print(
+                    f"\t{marker} {path}: {value!r}{unit} "
+                    f"(default {spec.default!r}, {spec.type_name()}){doc}{source}"
+                )
 
     def print_results(self) -> None:
         for isomme in self.isomme_list:
             print(isomme)
             for path, criterion in self.criterion_overall[isomme].walk():
                 intend = "\t" * (path.count("/") + 2 if path else 1)
-                print(f"{intend}{criterion.name if criterion.name is not None else criterion.__class__.__name__}: "
-                      f"Value={criterion.value:.5g} [{criterion.channel.unit if criterion.channel is not None else ''}] "
-                      f"Rating={criterion.rating:.5g}")
+                print(
+                    f"{intend}{criterion.name if criterion.name is not None else criterion.__class__.__name__}: "
+                    f"Value={criterion.value:.5g} [{criterion.channel.unit if criterion.channel is not None else ''}] "
+                    f"Rating={criterion.rating:.5g}"
+                )
 
     def validate(self, errors_only: bool = False) -> list[Issue]:
         issues = validate_report(self)
@@ -173,7 +195,9 @@ class Report(BaseReport, Generic[C]):
             if protocol.version == protocol_version:
                 self._protocol = protocol
                 return
-        raise ValueError(f"Protocol {protocol_version} not available. Available protocols: {[p.version for p in self._protocols]}")
+        raise ValueError(
+            f"Protocol {protocol_version} not available. Available protocols: {[p.version for p in self._protocols]}"
+        )
 
     @property
     def protocol(self) -> ReportProtocol:
@@ -184,7 +208,9 @@ class Report(BaseReport, Generic[C]):
         if protocol in self._protocols:
             self._protocol = protocol
         else:
-            raise ValueError(f"Protocol {protocol.version} not available. Available protocols: {[p.version for p in self._protocols]}")
+            raise ValueError(
+                f"Protocol {protocol.version} not available. Available protocols: {[p.version for p in self._protocols]}"
+            )
 
     @property
     def protocols(self) -> tuple[ReportProtocol, ...]:

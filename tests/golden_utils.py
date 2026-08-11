@@ -12,6 +12,7 @@ same criterion/Limit definition in Markdown and JSON.
 
 Regenerate with ``.venv/Scripts/python.exe -m tests.golden_regen``.
 """
+
 from __future__ import annotations
 
 from contextlib import redirect_stdout
@@ -47,6 +48,7 @@ STATUS_RANK = {"ERROR": 0, "PENDING": 1, "NA": 2, "OK": 3}
 # --------------------------------------------------------------------------- #
 # scalar encoding
 # --------------------------------------------------------------------------- #
+
 
 def is_nan(value: Any) -> bool:
     return isinstance(value, float) and math.isnan(value)
@@ -100,6 +102,7 @@ def equal(a: Any, b: Any) -> bool:
 # tree walking
 # --------------------------------------------------------------------------- #
 
+
 def walk(criterion: Criterion, path: str = "") -> list[tuple[str, Criterion]]:
     """
     ``(path, criterion)`` for the whole tree, with the root named ``"Overall"``.
@@ -117,7 +120,9 @@ def serialise_limit(limit: Limit) -> dict:
     for x in LIMIT_SAMPLE_X:
         try:
             samples.append(encode(limit.func(x)))
-        except Exception as error:  # pragma: no cover - a limit func that cannot be sampled
+        except (
+            Exception
+        ) as error:  # pragma: no cover - a limit func that cannot be sampled
             samples.append(f"<error: {type(error).__name__}>")
     return {
         "name": limit.name,
@@ -144,7 +149,9 @@ def serialise_definition(report: Report) -> dict:
             path: {
                 "name": criterion.name,
                 "class": type(criterion).__name__,
-                "limits": [serialise_limit(limit) for limit in criterion.limits.limit_list],
+                "limits": [
+                    serialise_limit(limit) for limit in criterion.limits.limit_list
+                ],
             }
             for path, criterion in walk(report.criterion_overall[first])
         },
@@ -175,11 +182,19 @@ def serialise_results(report: Report) -> dict:
             for test, tree in _tree_results(subreport).items()
         }
         results[type(report).__name__] = {
-            "Overall": {"value": encode(report.rating), "rating": encode(report.rating),
-                        "color": None, "status": "OK"},
+            "Overall": {
+                "value": encode(report.rating),
+                "rating": encode(report.rating),
+                "color": None,
+                "status": "OK",
+            },
             **{
-                f"ratings/{label}": {"value": encode(points), "rating": encode(points),
-                                      "color": None, "status": "OK"}
+                f"ratings/{label}": {
+                    "value": encode(points),
+                    "rating": encode(points),
+                    "color": None,
+                    "status": "OK",
+                }
                 for label, points in report.ratings.items()
             },
         }
@@ -189,9 +204,11 @@ def serialise_results(report: Report) -> dict:
     output = StringIO()
     with redirect_stdout(output):
         report.print_results()
-    return {"report": type(report).__name__,
-            "results": results,
-            "print_results": output.getvalue().splitlines()}
+    return {
+        "report": type(report).__name__,
+        "results": results,
+        "print_results": output.getvalue().splitlines(),
+    }
 
 
 def serialise(report: Report) -> dict:
@@ -202,6 +219,7 @@ def serialise(report: Report) -> dict:
 # --------------------------------------------------------------------------- #
 # comparison
 # --------------------------------------------------------------------------- #
+
 
 def compare(golden: dict, current: dict) -> tuple[list[str], list[str]]:
     """
@@ -235,16 +253,24 @@ def compare(golden: dict, current: dict) -> tuple[list[str], list[str]]:
                 gold_val, cur_val = gold_node[field], cur_node[field]
                 if is_nan(decode(gold_val)):
                     if not is_nan(decode(cur_val)):
-                        improvements.append(f"results[{test}]: {path}.{field}: nan -> {cur_val}")
+                        improvements.append(
+                            f"results[{test}]: {path}.{field}: nan -> {cur_val}"
+                        )
                 elif not equal(gold_val, cur_val):
-                    regressions.append(f"results[{test}]: {path}.{field}: {gold_val} -> {cur_val}")
+                    regressions.append(
+                        f"results[{test}]: {path}.{field}: {gold_val} -> {cur_val}"
+                    )
 
             gold_color, cur_color = gold_node["color"], cur_node["color"]
             if gold_color is None:
                 if cur_color is not None:
-                    improvements.append(f"results[{test}]: {path}.color: None -> {cur_color}")
+                    improvements.append(
+                        f"results[{test}]: {path}.color: None -> {cur_color}"
+                    )
             elif not equal(gold_color, cur_color):
-                regressions.append(f"results[{test}]: {path}.color: {gold_color} -> {cur_color}")
+                regressions.append(
+                    f"results[{test}]: {path}.color: {gold_color} -> {cur_color}"
+                )
 
             gold_rank = STATUS_RANK.get(gold_node["status"], -1)
             cur_rank = STATUS_RANK.get(cur_node["status"], -1)
@@ -267,7 +293,9 @@ def compare(golden: dict, current: dict) -> tuple[list[str], list[str]]:
 # report builders
 # --------------------------------------------------------------------------- #
 
-BUILDERS = {stem: (lambda spec=spec: build_synthetic(spec)) for stem, spec in BY_STEM.items()}
+BUILDERS = {
+    stem: (lambda spec=spec: build_synthetic(spec)) for stem, spec in BY_STEM.items()
+}
 BUILDERS["euro_ncap"] = build_euro_ncap_synthetic
 
 

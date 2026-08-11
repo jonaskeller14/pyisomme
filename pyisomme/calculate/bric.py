@@ -13,13 +13,15 @@ logger = logging.getLogger("pyisomme.calculate")
 
 
 @debug_logging(logger)
-def calculate_bric(c_av_x: Channel,
-                   c_av_y: Channel,
-                   c_av_z: Channel,
-                   critical_av_x: float | None = None,
-                   critical_av_y: float | None = None,
-                   critical_av_z: float | None = None,
-                   method: Literal["MPS", "CSDM", "Average of CSDM and MPS"] = "MPS") -> Channel:
+def calculate_bric(
+    c_av_x: Channel,
+    c_av_y: Channel,
+    c_av_z: Channel,
+    critical_av_x: float | None = None,
+    critical_av_y: float | None = None,
+    critical_av_z: float | None = None,
+    method: Literal["MPS", "CSDM", "Average of CSDM and MPS"] = "MPS",
+) -> Channel:
     """
     References:
     - references/NHTSA/Stapp2013Takhounts.pdf
@@ -62,19 +64,36 @@ def calculate_bric(c_av_x: Channel,
     av_y = c_av_y.get_data()
     av_z = c_av_z.get_data()
 
-    bric = np.sqrt((np.max(np.abs(av_x))/critical_av_x)**2 + (np.max(np.abs(av_y))/critical_av_y)**2 + (np.max(np.abs(av_z))/critical_av_z)**2)
+    bric = np.sqrt(
+        (np.max(np.abs(av_x)) / critical_av_x) ** 2
+        + (np.max(np.abs(av_y)) / critical_av_y) ** 2
+        + (np.max(np.abs(av_z)) / critical_av_z) ** 2
+    )
 
     return Channel(
-        code=c_av_x.code.set(main_location="BRIC", physical_dimension="00", direction="0", filter_class="X"),
+        code=c_av_x.code.set(
+            main_location="BRIC",
+            physical_dimension="00",
+            direction="0",
+            filter_class="X",
+        ),
         data=pd.DataFrame([bric]),
-        info=[("Data source", "calculation"),
-              (".Analysis start time", np.min([c_av_x.data.index, c_av_y.data.index, c_av_z.data.index])),
-              (".Analysis end time", np.max([c_av_x.data.index, c_av_y.data.index, c_av_z.data.index])),
-              (".Channel 001", c_av_x.code),
-              (".Channel 002", c_av_y.code),
-              (".Channel 003", c_av_z.code),
-              (".Filter 001", c_av_x.code.filter_class),
-              (".Filter 002", c_av_y.code.filter_class),
-              (".Filter 003", c_av_z.code.filter_class),],
-        unit="1"
+        info=[
+            ("Data source", "calculation"),
+            (
+                ".Analysis start time",
+                np.min([c_av_x.data.index, c_av_y.data.index, c_av_z.data.index]),
+            ),
+            (
+                ".Analysis end time",
+                np.max([c_av_x.data.index, c_av_y.data.index, c_av_z.data.index]),
+            ),
+            (".Channel 001", c_av_x.code),
+            (".Channel 002", c_av_y.code),
+            (".Channel 003", c_av_z.code),
+            (".Filter 001", c_av_x.code.filter_class),
+            (".Filter 002", c_av_y.code.filter_class),
+            (".Filter 003", c_av_z.code.filter_class),
+        ],
+        unit="1",
     )

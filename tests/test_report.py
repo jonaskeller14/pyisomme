@@ -11,6 +11,7 @@ Each report is exported in a fresh process to avoid the known Windows stack
 overflow when all report trees are calculated in one interpreter. The generated
 file is reopened and its slide count is checked against the report's page count.
 """
+
 from __future__ import annotations
 
 import json
@@ -32,10 +33,15 @@ class TestReportPptx(unittest.TestCase):
         if PPTX_REQUEST.lower() in {"1", "all", "true"}:
             stems = sorted(golden_utils.BUILDERS)
         else:
-            requested = {stem.strip() for stem in PPTX_REQUEST.split(",") if stem.strip()}
+            requested = {
+                stem.strip() for stem in PPTX_REQUEST.split(",") if stem.strip()
+            }
             unknown = requested - set(golden_utils.BUILDERS)
-            self.assertEqual(set(), unknown,
-                             f"unknown report stem(s); available: {sorted(golden_utils.BUILDERS)}")
+            self.assertEqual(
+                set(),
+                unknown,
+                f"unknown report stem(s); available: {sorted(golden_utils.BUILDERS)}",
+            )
             stems = sorted(requested)
 
         output_dir = Path("out")

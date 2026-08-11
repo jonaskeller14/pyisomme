@@ -12,5 +12,9 @@ if TYPE_CHECKING:
 def check_name(path: str, criterion: Criterion) -> Iterator[Issue]:
     """Every criterion is named — the name is what the PPTX and the log print."""
     if criterion.name is None:
-        yield Issue("name", IssueSeverity.ERROR, path,
-                    f"{type(criterion).__name__} declares no name; it renders as its class name.")
+        yield Issue(
+            "name",
+            IssueSeverity.ERROR,
+            path,
+            f"{type(criterion).__name__} declares no name; it renders as its class name.",
+        )

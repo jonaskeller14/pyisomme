@@ -13,7 +13,14 @@ from pyisomme.report.euro_ncap.frontal_50kmh import (
 )
 from pyisomme.report.euro_ncap.side_pole import EuroNCAP_Side_Pole
 from pyisomme.report.euro_ncap.side_pole import Overall as Overall_Side_Pole
-from pyisomme.report.euro_ncap.limits import Limit_G, Limit_P, Limit_C, Limit_M, Limit_A, Limit_W
+from pyisomme.report.euro_ncap.limits import (
+    Limit_G,
+    Limit_P,
+    Limit_C,
+    Limit_M,
+    Limit_A,
+    Limit_W,
+)
 from pyisomme.report.euro_ncap.protocols import PROTOCOL_9_3
 
 import logging
@@ -23,16 +30,21 @@ from typing import Any
 
 logger = logging.getLogger(__name__)
 
-P = manual("1", source="test report", doc=(
-    "Channel-code position of the struck-side occupant — the only occupant "
-    "§5 assesses. Defaults to the 'Driver position object 1' test-info field "
-    "when the test carries it."))
+P = manual(
+    "1",
+    source="test report",
+    doc=(
+        "Channel-code position of the struck-side occupant — the only occupant "
+        "§5 assesses. Defaults to the 'Driver position object 1' test-info field "
+        "when the test carries it."
+    ),
+)
 
 
 class Overall(Criterion):
     name = "Overall"
     role = Role.AGGREGATE
-    max_rating = 16.
+    max_rating = 16.0
     source = "§5"
     p: Manual[str, P]
 
@@ -48,38 +60,45 @@ class Overall(Criterion):
             self.set_derived_input("p", str(p).strip())
 
     def calculation(self) -> None:
-        self.rating = np.sum([
-            self.criterion_head.rating,
-            self.criterion_chest.rating,
-            self.criterion_abdomen.rating,
-            self.criterion_pelvis.rating
-        ])
-        self.rating = float(np.interp(self.rating, [0, 16], [0, 16], left=0, right=np.nan))
+        self.rating = np.sum(
+            [
+                self.criterion_head.rating,
+                self.criterion_chest.rating,
+                self.criterion_abdomen.rating,
+                self.criterion_pelvis.rating,
+            ]
+        )
+        self.rating = float(
+            np.interp(self.rating, [0, 16], [0, 16], left=0, right=np.nan)
+        )
 
         # Modifier
 
-        self.rating += np.sum([
-            self.criterion_incorrect_airbag_deployment.rating,
-            self.criterion_door_opening_during_impact.rating,
-        ])
+        self.rating += np.sum(
+            [
+                self.criterion_incorrect_airbag_deployment.rating,
+                self.criterion_door_opening_during_impact.rating,
+            ]
+        )
 
         # A modifier must not drive the load case below zero.
-        self.rating = float(np.max([0., self.rating]))
+        self.rating = float(np.max([0.0, self.rating]))
 
     class Criterion_Head(Criterion):
         name = "Head"
-        max_rating = 4.
+        max_rating = 4.0
         #: Unlike the pole (§5.1.1.2) the barrier test scores HIC15 and the 3 ms
         #: exceedance on the same sliding scale as the frontal tests.
         source = "§5.1.1.1"
 
-
         def calculation(self) -> None:
 
-            self.rating = np.min([
-                self.criterion_hic_15.rating,
-                self.criterion_head_acceleration.rating,
-            ])
+            self.rating = np.min(
+                [
+                    self.criterion_hic_15.rating,
+                    self.criterion_head_acceleration.rating,
+                ]
+            )
 
         class Criterion_HIC_15(Criterion_HIC_15_F50):
             pass
@@ -92,17 +111,18 @@ class Overall(Criterion):
 
     class Criterion_Chest(Criterion):
         name = "Chest"
-        max_rating = 4.
+        max_rating = 4.0
         source = "§5.1.2"
-
 
         def calculation(self) -> None:
 
-            self.rating = np.min([
-                self.criterion_chest_lateral_compression.rating,
-                self.criterion_chest_lateral_vc.rating,
-                self.criterion_shoulder_lateral_force.rating,
-            ])
+            self.rating = np.min(
+                [
+                    self.criterion_chest_lateral_compression.rating,
+                    self.criterion_chest_lateral_vc.rating,
+                    self.criterion_shoulder_lateral_force.rating,
+                ]
+            )
 
         class Criterion_Chest_Lateral_Compression(Criterion):
             #: §5.1.2 caps the barrier test at 50 mm; the pole test at 55 mm. Only
@@ -120,17 +140,24 @@ class Overall(Criterion):
                     Limit_G(codes, func=lambda x: -28.000, y_unit="mm", lower=True),
                 ]
 
-
             def calculation(self) -> None:
-                self.channel = self.require_channel(self.ctx.code("?{p}TRRI??00??DSYC")).convert_unit("mm")
+                self.channel = self.require_channel(
+                    self.ctx.code("?{p}TRRI??00??DSYC")
+                ).convert_unit("mm")
                 self.value = np.min(self.channel.get_data())
-                self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=True)
+                self.rating = self.limits.get_limit_min_rating(
+                    self.channel, interpolate=True
+                )
                 self.color = self.limits.get_limit_min_color(self.channel)
 
-        class Criterion_Chest_Lateral_VC(Overall_Side_Pole.Criterion_Chest.Criterion_Chest_Lateral_VC):
+        class Criterion_Chest_Lateral_VC(
+            Overall_Side_Pole.Criterion_Chest.Criterion_Chest_Lateral_VC
+        ):
             pass
 
-        class Criterion_Shoulder_Lateral_Force(Overall_Side_Pole.Criterion_Chest.Criterion_Shoulder_Lateral_Force):
+        class Criterion_Shoulder_Lateral_Force(
+            Overall_Side_Pole.Criterion_Chest.Criterion_Shoulder_Lateral_Force
+        ):
             pass
 
         criterion_chest_lateral_compression = sub(Criterion_Chest_Lateral_Compression)
@@ -139,37 +166,45 @@ class Overall(Criterion):
 
     class Criterion_Abdomen(Criterion):
         name = "Abdomen"
-        max_rating = 4.
+        max_rating = 4.0
         source = "§5.1.3"
-
 
         def calculation(self) -> None:
 
-            self.rating = np.min([
-                self.criterion_abdomen_lateral_compression.rating,
-                self.criterion_abdomen_lateral_vc.rating
-            ])
+            self.rating = np.min(
+                [
+                    self.criterion_abdomen_lateral_compression.rating,
+                    self.criterion_abdomen_lateral_vc.rating,
+                ]
+            )
 
-        class Criterion_Abdomen_Lateral_Compression(Overall_Side_Pole.Criterion_Abdomen.Criterion_Abdomen_Lateral_Compression):
+        class Criterion_Abdomen_Lateral_Compression(
+            Overall_Side_Pole.Criterion_Abdomen.Criterion_Abdomen_Lateral_Compression
+        ):
             pass
 
-        class Criterion_Abdomen_Lateral_VC(Overall_Side_Pole.Criterion_Abdomen.Criterion_Abdomen_Lateral_VC):
+        class Criterion_Abdomen_Lateral_VC(
+            Overall_Side_Pole.Criterion_Abdomen.Criterion_Abdomen_Lateral_VC
+        ):
             pass
 
-        criterion_abdomen_lateral_compression = sub(Criterion_Abdomen_Lateral_Compression)
+        criterion_abdomen_lateral_compression = sub(
+            Criterion_Abdomen_Lateral_Compression
+        )
         criterion_abdomen_lateral_vc = sub(Criterion_Abdomen_Lateral_VC)
 
     class Criterion_Pelvis(Criterion):
         name = "Pelvis"
-        max_rating = 4.
+        max_rating = 4.0
         source = "§5.1.4"
-
 
         def calculation(self) -> None:
 
             self.rating = self.criterion_pubic_symphysis_force.rating
 
-        class Criterion_Pubic_Symphysis_Force(Overall_Side_Pole.Criterion_Pelvis.Criterion_Pubic_Symphysis_Force):
+        class Criterion_Pubic_Symphysis_Force(
+            Overall_Side_Pole.Criterion_Pelvis.Criterion_Pubic_Symphysis_Force
+        ):
             pass
 
         criterion_pubic_symphysis_force = sub(Criterion_Pubic_Symphysis_Force)
@@ -180,10 +215,12 @@ class Overall(Criterion):
     criterion_pelvis = sub(Criterion_Pelvis, at=from_input(P), role=Role.AGGREGATE)
     # §5.2.4 and §5.2.5 apply to side barrier and pole alike; §5.2.3's head
     # protection device penalty is pole-only and deliberately absent here.
-    criterion_incorrect_airbag_deployment = sub(Overall_Side_Pole.Criterion_IncorrectAirbagDeployment,
-                                                role=Role.MODIFIER)
-    criterion_door_opening_during_impact = sub(Overall_Side_Pole.Criterion_DoorOpeningDuringImpact,
-                                               role=Role.MODIFIER)
+    criterion_incorrect_airbag_deployment = sub(
+        Overall_Side_Pole.Criterion_IncorrectAirbagDeployment, role=Role.MODIFIER
+    )
+    criterion_door_opening_during_impact = sub(
+        Overall_Side_Pole.Criterion_DoorOpeningDuringImpact, role=Role.MODIFIER
+    )
 
 
 class EuroNCAP_Side_Barrier(Report[Overall]):
@@ -197,7 +234,6 @@ class EuroNCAP_Side_Barrier(Report[Overall]):
 
         self._available_pages = (
             Page_Cover(self),
-
             self.Page_Values_Chart(self),
             self.Page_Rating_Table(self),
             self.Page_Values_Table(self),
@@ -223,16 +259,20 @@ class EuroNCAP_Side_Barrier(Report[Overall]):
     class Page_Head_Acceleration(EuroNCAP_Side_Pole.Page_Head_Acceleration):
         pass
 
-    class Page_Shoulder_Lateral_Force (EuroNCAP_Side_Pole.Page_Shoulder_Lateral_Force):
+    class Page_Shoulder_Lateral_Force(EuroNCAP_Side_Pole.Page_Shoulder_Lateral_Force):
         pass
 
-    class Page_Chest_Lateral_Compression(EuroNCAP_Side_Pole.Page_Chest_Lateral_Compression):
+    class Page_Chest_Lateral_Compression(
+        EuroNCAP_Side_Pole.Page_Chest_Lateral_Compression
+    ):
         pass
 
     class Page_Chest_Lateral_VC(EuroNCAP_Side_Pole.Page_Chest_Lateral_VC):
         pass
 
-    class Page_Abdomen_Lateral_Compression(EuroNCAP_Side_Pole.Page_Abdomen_Lateral_Compression):
+    class Page_Abdomen_Lateral_Compression(
+        EuroNCAP_Side_Pole.Page_Abdomen_Lateral_Compression
+    ):
         pass
 
     class Page_Abdomen_Lateral_VC(EuroNCAP_Side_Pole.Page_Abdomen_Lateral_VC):

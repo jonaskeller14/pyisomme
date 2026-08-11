@@ -16,14 +16,23 @@ logger = logging.getLogger(__name__)
 
 class Plot:
     colors: list[str] = list(mcolors.TABLEAU_COLORS.values())
-    linestyles: list[str | tuple] = ["-", "--", "-.", ":", (0, (10, 3)), (0, (5, 1)), ]
+    linestyles: list[str | tuple] = [
+        "-",
+        "--",
+        "-.",
+        ":",
+        (0, (10, 3)),
+        (0, (5, 1)),
+    ]
     isomme_list: list
     figsize: tuple[float, float]
     fig: Figure
     nrows: int = 1
     ncols: int = 1
 
-    def __init__(self, figsize: tuple[float, float], nrows: int | None, ncols: int | None):
+    def __init__(
+        self, figsize: tuple[float, float], nrows: int | None, ncols: int | None
+    ):
         self.figsize = figsize
         if nrows is not None:
             self.nrows = nrows

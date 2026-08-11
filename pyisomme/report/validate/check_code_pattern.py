@@ -30,20 +30,32 @@ def check_code_pattern(path: str, criterion: Criterion) -> Iterator[Issue]:
     for limit in criterion.limits.limit_list:
         label = limit.name or type(limit).__name__
         if not limit.code_patterns:
-            yield Issue("code_pattern", IssueSeverity.WARNING, path,
-                        f"{label} declares no code_patterns, so `Limits.find_limits` can never "
-                        f"reach it — it only works if the criterion reads it out of "
-                        f"`self.limits.limit_list` directly.")
+            yield Issue(
+                "code_pattern",
+                IssueSeverity.WARNING,
+                path,
+                f"{label} declares no code_patterns, so `Limits.find_limits` can never "
+                f"reach it — it only works if the criterion reads it out of "
+                f"`self.limits.limit_list` directly.",
+            )
             continue
         for pattern in limit.code_patterns:
             invalid = _INVALID_PATTERN_CHARS.findall(_without_classes(pattern))
             if invalid:
-                yield Issue("code_pattern", IssueSeverity.ERROR, path,
-                            f"{label}: {pattern!r} contains {sorted(set(invalid))}, which no "
-                            f"channel code can hold (letters, digits and '?' only).")
+                yield Issue(
+                    "code_pattern",
+                    IssueSeverity.ERROR,
+                    path,
+                    f"{label}: {pattern!r} contains {sorted(set(invalid))}, which no "
+                    f"channel code can hold (letters, digits and '?' only).",
+                )
                 continue
             length = pattern_length(pattern)
             if length is not None and length != CODE_LENGTH:
-                yield Issue("code_pattern", IssueSeverity.ERROR, path,
-                            f"{label}: {pattern!r} matches codes of {length} characters, "
-                            f"but a channel code is {CODE_LENGTH}.")
+                yield Issue(
+                    "code_pattern",
+                    IssueSeverity.ERROR,
+                    path,
+                    f"{label}: {pattern!r} matches codes of {length} characters, "
+                    f"but a channel code is {CODE_LENGTH}.",
+                )

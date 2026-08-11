@@ -6,7 +6,12 @@ import logging
 import numpy as np
 
 from pyisomme.isomme import Isomme
-from pyisomme.errors import MissingData, PyisommeError, Status, UnsupportedCalculationError
+from pyisomme.errors import (
+    MissingData,
+    PyisommeError,
+    Status,
+    UnsupportedCalculationError,
+)
 from pyisomme.report.criterion import Criterion
 
 
@@ -15,6 +20,7 @@ logging.basicConfig(level=logging.CRITICAL)  # silence the expected ERROR traceb
 
 class _FakeReport:
     """Minimal stand-in for a Report (Criterion only needs `.name` at construction)."""
+
     name = "test-report"
 
 
@@ -49,6 +55,7 @@ class TestCriterionOutcomes(unittest.TestCase):
         def calculation(self):
             self.value = 1.0
             self.rating = 2.0
+
         c = self._make(calculation)
         c.calculate()
         self.assertIs(c.status, Status.OK)
@@ -57,6 +64,7 @@ class TestCriterionOutcomes(unittest.TestCase):
     def test_missing_data_via_require_channel(self):
         def calculation(self):
             self.require_channel("11HEAD??00??ACRA")  # not present in an empty Isomme
+
         c = self._make(calculation)
         c.calculate()
         self.assertIs(c.status, Status.NA)
@@ -66,6 +74,7 @@ class TestCriterionOutcomes(unittest.TestCase):
     def test_missing_data_via_require_test_info(self):
         def calculation(self):
             self.require_test_info("Driver position object 1")
+
         c = self._make(calculation)
         c.calculate()
         self.assertIs(c.status, Status.NA)
@@ -73,6 +82,7 @@ class TestCriterionOutcomes(unittest.TestCase):
     def test_require_returns_value_when_present(self):
         def calculation(self):
             self.value = self.require(42, "something")
+
         c = self._make(calculation)
         c.calculate()
         self.assertIs(c.status, Status.OK)
@@ -81,6 +91,7 @@ class TestCriterionOutcomes(unittest.TestCase):
     def test_unexpected_error(self):
         def calculation(self):
             raise RuntimeError("boom")
+
         c = self._make(calculation)
         c.calculate()
         self.assertIs(c.status, Status.ERROR)

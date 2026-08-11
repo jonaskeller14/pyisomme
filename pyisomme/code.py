@@ -38,6 +38,7 @@ CODE_COMPONENTS: tuple[tuple[str, slice], ...] = (
 
 class _ChannelDefinition(NamedTuple):
     """One '<Channel>' row of 'channel_codes.xml', with its code pattern pre-compiled."""
+
     pattern: re.Pattern[str]
     description: str | None
     default_unit: str | None
@@ -45,6 +46,7 @@ class _ChannelDefinition(NamedTuple):
 
 class _ElementDefinition(NamedTuple):
     """One '<Element>' group of 'channel_codes.xml', i.e. the definitions of one code component."""
+
     name: str
     channels: tuple[_ChannelDefinition, ...]
 
@@ -65,9 +67,11 @@ def _codification() -> tuple[_ElementDefinition, ...]:
         _ElementDefinition(
             name=element.get("name", ""),
             channels=tuple(
-                _ChannelDefinition(pattern=re.compile(translate(channel.get("code", ""))),
-                                   description=channel.get("description"),
-                                   default_unit=channel.get("default_unit"))
+                _ChannelDefinition(
+                    pattern=re.compile(translate(channel.get("code", ""))),
+                    description=channel.get("description"),
+                    default_unit=channel.get("default_unit"),
+                )
                 for channel in element.findall(".//Channel")
             ),
         )
@@ -107,7 +111,10 @@ def _lookup(code: str) -> tuple[_ChannelDefinition | None, ...]:
     :return: first matching definition per code component, None where the component is undefined
     """
     return tuple(
-        next((channel for channel in element.channels if channel.pattern.match(code)), None)
+        next(
+            (channel for channel in element.channels if channel.pattern.match(code)),
+            None,
+        )
         for element in _codification()
     )
 
@@ -120,6 +127,7 @@ class Code(str):
     itself, so they can never drift out of sync with it. Use set() to derive a new code
     with individual components replaced.
     """
+
     __slots__ = ()
 
     def __new__(cls, code: str) -> Code:
@@ -176,25 +184,38 @@ class Code(str):
         """
         return tuple(self[component_slice] for _, component_slice in CODE_COMPONENTS)
 
-    def set(self,
-            test_object: str | None = None,
-            position: str | None = None,
-            main_location: str | None = None,
-            fine_location_1: str | None = None,
-            fine_location_2: str | None = None,
-            fine_location_3: str | None = None,
-            physical_dimension: str | None = None,
-            direction: str | None = None,
-            filter_class: str | None = None) -> Code:
+    def set(
+        self,
+        test_object: str | None = None,
+        position: str | None = None,
+        main_location: str | None = None,
+        fine_location_1: str | None = None,
+        fine_location_2: str | None = None,
+        fine_location_3: str | None = None,
+        physical_dimension: str | None = None,
+        direction: str | None = None,
+        filter_class: str | None = None,
+    ) -> Code:
         """
         Derive a new code, replacing the given components and keeping all others.
         :return: new Code or InvalidCodeError is raised
         """
-        new_values = (test_object, position, main_location, fine_location_1, fine_location_2,
-                      fine_location_3, physical_dimension, direction, filter_class)
+        new_values = (
+            test_object,
+            position,
+            main_location,
+            fine_location_1,
+            fine_location_2,
+            fine_location_3,
+            physical_dimension,
+            direction,
+            filter_class,
+        )
 
         components = []
-        for new_value, current, (name, component_slice) in zip(new_values, self.components, CODE_COMPONENTS):
+        for new_value, current, (name, component_slice) in zip(
+            new_values, self.components, CODE_COMPONENTS
+        ):
             if new_value is None:
                 components.append(current)
                 continue
@@ -292,8 +313,10 @@ def combine_codes(*codes: str | Code) -> Code:
 
     combined_code = Code(codes[0])
     for code in codes[1:]:
-        combined_code = Code("".join(
-            combined_char if combined_char == code_char else "?"
-            for combined_char, code_char in zip(combined_code, Code(code))
-        ))
+        combined_code = Code(
+            "".join(
+                combined_char if combined_char == code_char else "?"
+                for combined_char, code_char in zip(combined_code, Code(code))
+            )
+        )
     return combined_code

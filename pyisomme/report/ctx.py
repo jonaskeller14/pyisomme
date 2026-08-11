@@ -61,7 +61,9 @@ class Ctx:
 
     report: Report
     isomme: Isomme
-    fields: Mapping[str, FieldValue] = field(default_factory=lambda: MappingProxyType({}))
+    fields: Mapping[str, FieldValue] = field(
+        default_factory=lambda: MappingProxyType({})
+    )
 
     def at(self, **fields: FieldValue) -> Ctx:
         """Derive a child context: ``ctx.at(p="3")``, ``ctx.at(object="M")``."""
@@ -78,7 +80,11 @@ class Ctx:
         try:
             return self.fields[name]
         except KeyError:
-            known = f"known fields: {sorted(self.fields)}" if self.fields else "no fields are set"
+            known = (
+                f"known fields: {sorted(self.fields)}"
+                if self.fields
+                else "no fields are set"
+            )
             wanted = f" of {wanted_for!r}" if wanted_for else ""
             raise MissingData(
                 name, message=f"no value for context field {name!r}{wanted} ({known})"
@@ -177,10 +183,13 @@ class FromInput:
     def resolve(self, parent: Ctx, criterion: Criterion) -> Ctx:
         spec = criterion.find_input_spec(self.input_name)
         if spec is None:
-            raise MissingData(str(self.input_name), message=(
-                f"no criterion at or above {criterion!r} declares {self._describe()}, "
-                f"so field {self.field!r} is unknown."
-            ))
+            raise MissingData(
+                str(self.input_name),
+                message=(
+                    f"no criterion at or above {criterion!r} declares {self._describe()}, "
+                    f"so field {self.field!r} is unknown."
+                ),
+            )
         owner = criterion.find_input_owner(self.input_name)
         assert owner is not None  # find_input_spec resolved, so the owner exists
         return parent.at(**{self.field: getattr(owner, spec.name)})

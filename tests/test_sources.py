@@ -14,7 +14,9 @@ class TestReadTextWithFallback(unittest.TestCase):
 
     def test_iso_8859_1_fallback(self):
         # 0xFC ("ü") is invalid UTF-8 but valid ISO-8859-1 -> must fall back, not raise.
-        self.assertEqual(read_text_with_fallback("Prüfung".encode("iso-8859-1")), "Prüfung")
+        self.assertEqual(
+            read_text_with_fallback("Prüfung".encode("iso-8859-1")), "Prüfung"
+        )
 
 
 class TestArchiveSources(unittest.TestCase):

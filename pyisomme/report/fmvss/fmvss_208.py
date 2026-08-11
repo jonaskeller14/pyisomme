@@ -51,17 +51,32 @@ class DummyType(str, Enum):
         }[self]
 
 
-P_DRIVER = manual("1", source="test report", doc=(
-    "Channel-code position of the driver. Defaults to the "
-    "'Driver position object 1' test-info field when the test carries it."))
-P_PASSENGER = manual("3", source="test report", doc=(
-    "Channel-code position of the front outboard passenger. Derived from p_driver "
-    "('1' for a right-hand-drive test) unless set explicitly."))
-DUMMY_TYPE = manual(DummyType.FEMALE_5TH.value, source="ISO-MME channel codes", doc=(
-    "ISO-MME dummy identifier for this occupant: 'H3' for a Hybrid III "
-    "50th-percentile male or 'HF' for a Hybrid III 5th-percentile female. Derived "
-    "from channels at the occupant position; conservatively defaults to 'HF' when "
-    "the channels are absent or ambiguous."))
+P_DRIVER = manual(
+    "1",
+    source="test report",
+    doc=(
+        "Channel-code position of the driver. Defaults to the "
+        "'Driver position object 1' test-info field when the test carries it."
+    ),
+)
+P_PASSENGER = manual(
+    "3",
+    source="test report",
+    doc=(
+        "Channel-code position of the front outboard passenger. Derived from p_driver "
+        "('1' for a right-hand-drive test) unless set explicitly."
+    ),
+)
+DUMMY_TYPE = manual(
+    DummyType.FEMALE_5TH.value,
+    source="ISO-MME channel codes",
+    doc=(
+        "ISO-MME dummy identifier for this occupant: 'H3' for a Hybrid III "
+        "50th-percentile male or 'HF' for a Hybrid III 5th-percentile female. Derived "
+        "from channels at the occupant position; conservatively defaults to 'HF' when "
+        "the channels are absent or ambiguous."
+    ),
+)
 
 
 class _FMVSSCriterion(Criterion):
@@ -85,16 +100,27 @@ class _FMVSSCriterion(Criterion):
         return tuple(self.dummy_code(template) for template in templates)
 
     def dummy_threshold(self, *, male_50th: float, female_5th: float) -> float:
-        return (female_5th if self.selected_dummy_type is DummyType.FEMALE_5TH
-                else male_50th)
+        return (
+            female_5th
+            if self.selected_dummy_type is DummyType.FEMALE_5TH
+            else male_50th
+        )
 
 
 class Criterion_Containment(_FMVSSCriterion):
     name = "Dummy Containment"
     source = "S6.1; S15.3.1"
-    contained: Manual[bool, manual(False, source="video / post-test inspection", doc=(
-        "Were all portions of the dummy contained within the outer surfaces of the "
-        "passenger compartment? Defaults to False until positively confirmed."))]
+    contained: Manual[
+        bool,
+        manual(
+            False,
+            source="video / post-test inspection",
+            doc=(
+                "Were all portions of the dummy contained within the outer surfaces of the "
+                "passenger compartment? Defaults to False until positively confirmed."
+            ),
+        ),
+    ]
 
     def calculation(self) -> None:
         self.value = float(self.contained)
@@ -156,10 +182,12 @@ class Criterion_Chest_Deflection(_FMVSSCriterion):
         ]
 
     def calculation(self) -> None:
-        self.channel = self.require_channel(*self.dummy_codes(
-            "?{p}CHST0003{dummy}DSXC",
-            "?{p}CHST0000{dummy}DSXC",
-        )).convert_unit("mm")
+        self.channel = self.require_channel(
+            *self.dummy_codes(
+                "?{p}CHST0003{dummy}DSXC",
+                "?{p}CHST0000{dummy}DSXC",
+            )
+        ).convert_unit("mm")
         self.value = float(np.min(self.channel.get_data()))
         self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
         self.color = self.limits.get_limit_min_color(self.channel)
@@ -295,7 +323,9 @@ class Criterion_Occupant(_FMVSSCriterion):
             if channel.code.position == position
             and channel.code.fine_location_3 in {dummy.value for dummy in DummyType}
         }
-        dummy_type = next(iter(detected)) if len(detected) == 1 else DummyType.FEMALE_5TH.value
+        dummy_type = (
+            next(iter(detected)) if len(detected) == 1 else DummyType.FEMALE_5TH.value
+        )
         self.set_derived_input("dummy_type", dummy_type)
 
     def calculation(self) -> None:
@@ -383,7 +413,6 @@ class FMVSS_208(Report[Overall]):
         self._available_pages = (
             Page_Cover(self),
             self.Page_Overall_Compliance(self),
-
             self.Page_Driver_Compliance(self),
             self.Page_Driver_Result_Values_Chart(self),
             self.Page_Driver_Values_Table(self),
@@ -392,7 +421,6 @@ class FMVSS_208(Report[Overall]):
             self.Page_Driver_Nij(self),
             self.Page_Driver_Chest(self),
             self.Page_Driver_Femur_Axial_Force(self),
-
             self.Page_Passenger_Compliance(self),
             self.Page_Passenger_Result_Values_Chart(self),
             self.Page_Passenger_Values_Table(self),
@@ -418,11 +446,14 @@ class FMVSS_208(Report[Overall]):
 
         def __init__(self, report: FMVSS_208) -> None:
             super().__init__(report)
-            self.criteria = {isomme: [
-                report.overall(isomme).criterion_driver,
-                report.overall(isomme).criterion_passenger,
-                report.overall(isomme),
-            ] for isomme in report.isomme_list}
+            self.criteria = {
+                isomme: [
+                    report.overall(isomme).criterion_driver,
+                    report.overall(isomme).criterion_passenger,
+                    report.overall(isomme),
+                ]
+                for isomme in report.isomme_list
+            }
 
     class Page_Driver_Compliance(Page_Compliance_Table):
         report: FMVSS_208
@@ -470,10 +501,16 @@ class FMVSS_208(Report[Overall]):
 
         def __init__(self, report: FMVSS_208) -> None:
             super().__init__(report)
-            self.channels = {isomme: [[
-                f"?{report.overall(isomme).p_driver}HEAD????"
-                f"{report.overall(isomme).criterion_driver.dummy_identifier}AC{axis}A"
-            ] for axis in "XYZR"] for isomme in report.isomme_list}
+            self.channels = {
+                isomme: [
+                    [
+                        f"?{report.overall(isomme).p_driver}HEAD????"
+                        f"{report.overall(isomme).criterion_driver.dummy_identifier}AC{axis}A"
+                    ]
+                    for axis in "XYZR"
+                ]
+                for isomme in report.isomme_list
+            }
 
     class Page_Driver_Neck_Load(Page_Plot_nxn):
         report: FMVSS_208
@@ -485,12 +522,19 @@ class FMVSS_208(Report[Overall]):
 
         def __init__(self, report: FMVSS_208) -> None:
             super().__init__(report)
-            self.channels = {isomme: [
-                [f"?{report.overall(isomme).p_driver}NECKUP00"
-                 f"{report.overall(isomme).criterion_driver.dummy_identifier}FOZB"],
-                [f"?{report.overall(isomme).p_driver}NECKUP00"
-                 f"{report.overall(isomme).criterion_driver.dummy_identifier}MOYB"],
-            ] for isomme in report.isomme_list}
+            self.channels = {
+                isomme: [
+                    [
+                        f"?{report.overall(isomme).p_driver}NECKUP00"
+                        f"{report.overall(isomme).criterion_driver.dummy_identifier}FOZB"
+                    ],
+                    [
+                        f"?{report.overall(isomme).p_driver}NECKUP00"
+                        f"{report.overall(isomme).criterion_driver.dummy_identifier}MOYB"
+                    ],
+                ]
+                for isomme in report.isomme_list
+            }
 
     class Page_Driver_Nij(Page_Plot_nxn):
         report: FMVSS_208
@@ -502,10 +546,16 @@ class FMVSS_208(Report[Overall]):
 
         def __init__(self, report: FMVSS_208) -> None:
             super().__init__(report)
-            self.channels = {isomme: [[
-                f"?{report.overall(isomme).p_driver}NIJCIP{mode}"
-                f"{report.overall(isomme).criterion_driver.dummy_identifier}00YB"
-            ] for mode in ("CF", "CE", "TF", "TE")] for isomme in report.isomme_list}
+            self.channels = {
+                isomme: [
+                    [
+                        f"?{report.overall(isomme).p_driver}NIJCIP{mode}"
+                        f"{report.overall(isomme).criterion_driver.dummy_identifier}00YB"
+                    ]
+                    for mode in ("CF", "CE", "TF", "TE")
+                ]
+                for isomme in report.isomme_list
+            }
 
     class Page_Driver_Chest(Page_Plot_nxn):
         report: FMVSS_208
@@ -517,12 +567,19 @@ class FMVSS_208(Report[Overall]):
 
         def __init__(self, report: FMVSS_208) -> None:
             super().__init__(report)
-            self.channels = {isomme: [
-                [f"?{report.overall(isomme).p_driver}CHST????"
-                 f"{report.overall(isomme).criterion_driver.dummy_identifier}ACRA"],
-                [f"?{report.overall(isomme).p_driver}CHST000?"
-                 f"{report.overall(isomme).criterion_driver.dummy_identifier}DSXC"],
-            ] for isomme in report.isomme_list}
+            self.channels = {
+                isomme: [
+                    [
+                        f"?{report.overall(isomme).p_driver}CHST????"
+                        f"{report.overall(isomme).criterion_driver.dummy_identifier}ACRA"
+                    ],
+                    [
+                        f"?{report.overall(isomme).p_driver}CHST000?"
+                        f"{report.overall(isomme).criterion_driver.dummy_identifier}DSXC"
+                    ],
+                ]
+                for isomme in report.isomme_list
+            }
 
     class Page_Driver_Femur_Axial_Force(Page_Plot_nxn):
         report: FMVSS_208
@@ -534,12 +591,19 @@ class FMVSS_208(Report[Overall]):
 
         def __init__(self, report: FMVSS_208) -> None:
             super().__init__(report)
-            self.channels = {isomme: [
-                [f"?{report.overall(isomme).p_driver}FEMRLE00"
-                 f"{report.overall(isomme).criterion_driver.dummy_identifier}FOZB"],
-                [f"?{report.overall(isomme).p_driver}FEMRRI00"
-                 f"{report.overall(isomme).criterion_driver.dummy_identifier}FOZB"],
-            ] for isomme in report.isomme_list}
+            self.channels = {
+                isomme: [
+                    [
+                        f"?{report.overall(isomme).p_driver}FEMRLE00"
+                        f"{report.overall(isomme).criterion_driver.dummy_identifier}FOZB"
+                    ],
+                    [
+                        f"?{report.overall(isomme).p_driver}FEMRRI00"
+                        f"{report.overall(isomme).criterion_driver.dummy_identifier}FOZB"
+                    ],
+                ]
+                for isomme in report.isomme_list
+            }
 
     class Page_Passenger_Compliance(Page_Compliance_Table):
         report: FMVSS_208
@@ -561,7 +625,9 @@ class FMVSS_208(Report[Overall]):
         def __init__(self, report: FMVSS_208) -> None:
             super().__init__(report)
             self.criteria = {
-                isomme: _measurement_criteria(report.overall(isomme).criterion_passenger)
+                isomme: _measurement_criteria(
+                    report.overall(isomme).criterion_passenger
+                )
                 for isomme in report.isomme_list
             }
 
@@ -573,7 +639,9 @@ class FMVSS_208(Report[Overall]):
         def __init__(self, report: FMVSS_208) -> None:
             super().__init__(report)
             self.criteria = {
-                isomme: _measurement_criteria(report.overall(isomme).criterion_passenger)
+                isomme: _measurement_criteria(
+                    report.overall(isomme).criterion_passenger
+                )
                 for isomme in report.isomme_list
             }
 
@@ -587,10 +655,16 @@ class FMVSS_208(Report[Overall]):
 
         def __init__(self, report: FMVSS_208) -> None:
             super().__init__(report)
-            self.channels = {isomme: [[
-                f"?{report.overall(isomme).p_passenger}HEAD????"
-                f"{report.overall(isomme).criterion_passenger.dummy_identifier}AC{axis}A"
-            ] for axis in "XYZR"] for isomme in report.isomme_list}
+            self.channels = {
+                isomme: [
+                    [
+                        f"?{report.overall(isomme).p_passenger}HEAD????"
+                        f"{report.overall(isomme).criterion_passenger.dummy_identifier}AC{axis}A"
+                    ]
+                    for axis in "XYZR"
+                ]
+                for isomme in report.isomme_list
+            }
 
     class Page_Passenger_Neck_Load(Page_Plot_nxn):
         report: FMVSS_208
@@ -602,12 +676,19 @@ class FMVSS_208(Report[Overall]):
 
         def __init__(self, report: FMVSS_208) -> None:
             super().__init__(report)
-            self.channels = {isomme: [
-                [f"?{report.overall(isomme).p_passenger}NECKUP00"
-                 f"{report.overall(isomme).criterion_passenger.dummy_identifier}FOZB"],
-                [f"?{report.overall(isomme).p_passenger}NECKUP00"
-                 f"{report.overall(isomme).criterion_passenger.dummy_identifier}MOYB"],
-            ] for isomme in report.isomme_list}
+            self.channels = {
+                isomme: [
+                    [
+                        f"?{report.overall(isomme).p_passenger}NECKUP00"
+                        f"{report.overall(isomme).criterion_passenger.dummy_identifier}FOZB"
+                    ],
+                    [
+                        f"?{report.overall(isomme).p_passenger}NECKUP00"
+                        f"{report.overall(isomme).criterion_passenger.dummy_identifier}MOYB"
+                    ],
+                ]
+                for isomme in report.isomme_list
+            }
 
     class Page_Passenger_Nij(Page_Plot_nxn):
         report: FMVSS_208
@@ -619,10 +700,16 @@ class FMVSS_208(Report[Overall]):
 
         def __init__(self, report: FMVSS_208) -> None:
             super().__init__(report)
-            self.channels = {isomme: [[
-                f"?{report.overall(isomme).p_passenger}NIJCIP{mode}"
-                f"{report.overall(isomme).criterion_passenger.dummy_identifier}00YB"
-            ] for mode in ("CF", "CE", "TF", "TE")] for isomme in report.isomme_list}
+            self.channels = {
+                isomme: [
+                    [
+                        f"?{report.overall(isomme).p_passenger}NIJCIP{mode}"
+                        f"{report.overall(isomme).criterion_passenger.dummy_identifier}00YB"
+                    ]
+                    for mode in ("CF", "CE", "TF", "TE")
+                ]
+                for isomme in report.isomme_list
+            }
 
     class Page_Passenger_Chest(Page_Plot_nxn):
         report: FMVSS_208
@@ -634,12 +721,19 @@ class FMVSS_208(Report[Overall]):
 
         def __init__(self, report: FMVSS_208) -> None:
             super().__init__(report)
-            self.channels = {isomme: [
-                [f"?{report.overall(isomme).p_passenger}CHST????"
-                 f"{report.overall(isomme).criterion_passenger.dummy_identifier}ACRA"],
-                [f"?{report.overall(isomme).p_passenger}CHST000?"
-                 f"{report.overall(isomme).criterion_passenger.dummy_identifier}DSXC"],
-            ] for isomme in report.isomme_list}
+            self.channels = {
+                isomme: [
+                    [
+                        f"?{report.overall(isomme).p_passenger}CHST????"
+                        f"{report.overall(isomme).criterion_passenger.dummy_identifier}ACRA"
+                    ],
+                    [
+                        f"?{report.overall(isomme).p_passenger}CHST000?"
+                        f"{report.overall(isomme).criterion_passenger.dummy_identifier}DSXC"
+                    ],
+                ]
+                for isomme in report.isomme_list
+            }
 
     class Page_Passenger_Femur_Axial_Force(Page_Plot_nxn):
         report: FMVSS_208
@@ -651,12 +745,19 @@ class FMVSS_208(Report[Overall]):
 
         def __init__(self, report: FMVSS_208) -> None:
             super().__init__(report)
-            self.channels = {isomme: [
-                [f"?{report.overall(isomme).p_passenger}FEMRLE00"
-                 f"{report.overall(isomme).criterion_passenger.dummy_identifier}FOZB"],
-                [f"?{report.overall(isomme).p_passenger}FEMRRI00"
-                 f"{report.overall(isomme).criterion_passenger.dummy_identifier}FOZB"],
-            ] for isomme in report.isomme_list}
+            self.channels = {
+                isomme: [
+                    [
+                        f"?{report.overall(isomme).p_passenger}FEMRLE00"
+                        f"{report.overall(isomme).criterion_passenger.dummy_identifier}FOZB"
+                    ],
+                    [
+                        f"?{report.overall(isomme).p_passenger}FEMRRI00"
+                        f"{report.overall(isomme).criterion_passenger.dummy_identifier}FOZB"
+                    ],
+                ]
+                for isomme in report.isomme_list
+            }
 
 
 __all__ = ["DummyType", "FMVSS_208", "Overall"]

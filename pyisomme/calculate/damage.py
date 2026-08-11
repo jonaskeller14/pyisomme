@@ -14,9 +14,9 @@ logger = logging.getLogger("pyisomme.calculate")
 
 
 @debug_logging(logger)
-def calculate_damage(c_aa_x: Channel,
-                     c_aa_y: Channel,
-                     c_aa_z: Channel) -> tuple[Channel, ...]:
+def calculate_damage(
+    c_aa_x: Channel, c_aa_y: Channel, c_aa_z: Channel
+) -> tuple[Channel, ...]:
     """
     :param c_aa_x: Angular Acceleration Channel
     :param c_aa_y: Angular Acceleration Channel
@@ -66,6 +66,7 @@ def calculate_damage(c_aa_x: Channel,
     beta = 2.9903  # [1/m]
 
     # Define the system of differential equations (reduction of order)
+    # fmt: off
     def dydt(t, y):
         return [y[3],
                 y[4],
@@ -73,6 +74,7 @@ def calculate_damage(c_aa_x: Channel,
                 1/m_x*(-(c_xx+c_xy+c_xz)*y[3] + c_xy*y[4]             + c_xz*y[5]             - (k_xx+k_xy+k_xz)*y[0] + k_xy*y[1]             + k_xz*y[2])             + c_aa_x.get_data(t),
                 1/m_y*(c_xy*y[3]              - (c_xy+c_yy+c_yz)*y[4] + c_yz*y[5]             + k_xy*y[0]             - (k_xy+k_yy+k_yz)*y[1] + k_yz*y[2])             + c_aa_y.get_data(t),
                 1/m_z*(c_xz*y[3]              + c_yz*y[4]             - (c_xz+c_yz+c_zz)*y[5] + k_xz*y[0]             + k_yz*y[1]             - (k_xz+k_yz+k_zz)*y[2]) + c_aa_z.get_data(t)]
+    # fmt: on
 
     # Define the initial conditions
     initial_conditions = [0, 0, 0, 0, 0, 0]
@@ -90,50 +92,91 @@ def calculate_damage(c_aa_x: Channel,
     #   report/euro_ncap/frontal_mpdb.py declare the same wrong unit, so the report is
     #   self-consistent today — fix both together or the 0.42/0.47 thresholds stop
     #   matching.
-    damage_x = Channel(code=c_aa_x.code.set(fine_location_1="DA", fine_location_2="MA", direction="X"),
-                       data=pd.DataFrame(beta * np.abs(sol.y[0]), index=sol.t),
-                       unit=c_aa_x.unit,
-                       info={"Data source": "calculation",
-                             ".Channel 001": c_aa_x.code,
-                             ".Channel 002": c_aa_y.code,
-                             ".Channel 003": c_aa_z.code,
-                             ".Filter 001": c_aa_x.code.filter_class,
-                             ".Filter 002": c_aa_y.code.filter_class,
-                             ".Filter 003": c_aa_z.code.filter_class,})
-    damage_y = Channel(code=c_aa_y.code.set(fine_location_1="DA", fine_location_2="MA", direction="Y"),
-                       data=pd.DataFrame(beta * np.abs(sol.y[1]), index=sol.t),
-                       unit=c_aa_y.unit,
-                       info=damage_x.info)
-    damage_z = Channel(code=c_aa_z.code.set(fine_location_1="DA", fine_location_2="MA", direction="Z"),
-                       data=pd.DataFrame(beta * np.abs(sol.y[2]), index=sol.t),
-                       unit=c_aa_z.unit,
-                       info=damage_x.info)
+    damage_x = Channel(
+        code=c_aa_x.code.set(fine_location_1="DA", fine_location_2="MA", direction="X"),
+        data=pd.DataFrame(beta * np.abs(sol.y[0]), index=sol.t),
+        unit=c_aa_x.unit,
+        info={
+            "Data source": "calculation",
+            ".Channel 001": c_aa_x.code,
+            ".Channel 002": c_aa_y.code,
+            ".Channel 003": c_aa_z.code,
+            ".Filter 001": c_aa_x.code.filter_class,
+            ".Filter 002": c_aa_y.code.filter_class,
+            ".Filter 003": c_aa_z.code.filter_class,
+        },
+    )
+    damage_y = Channel(
+        code=c_aa_y.code.set(fine_location_1="DA", fine_location_2="MA", direction="Y"),
+        data=pd.DataFrame(beta * np.abs(sol.y[1]), index=sol.t),
+        unit=c_aa_y.unit,
+        info=damage_x.info,
+    )
+    damage_z = Channel(
+        code=c_aa_z.code.set(fine_location_1="DA", fine_location_2="MA", direction="Z"),
+        data=pd.DataFrame(beta * np.abs(sol.y[2]), index=sol.t),
+        unit=c_aa_z.unit,
+        info=damage_x.info,
+    )
     damage_r = calculate_resultant(damage_x, damage_y, damage_z)
 
     # Create scalar channels
-    damage_x_max = Channel(code=damage_x.code.set(filter_class="X"),
-                           data=pd.DataFrame([damage_x.data.max()], index=[damage_x.data.idxmax()]),
-                           unit=damage_x.unit,
-                           info=damage_x.info.add({".Analysis start time": damage_x.data.index[0],
-                                                   ".Analysis end time": damage_x.data.index[-1],
-                                                   ".Time": damage_x.data.index[int(np.argmax(damage_x.get_data()))]}))
-    damage_y_max = Channel(code=damage_y.code.set(filter_class="X"),
-                           data=pd.DataFrame([damage_y.data.max()], index=[damage_y.data.idxmax()]),
-                           unit=damage_y.unit,
-                           info=damage_y.info.add({".Analysis start time": damage_y.data.index[0],
-                                                   ".Analysis end time": damage_y.data.index[-1],
-                                                   ".Time": damage_y.data.index[int(np.argmax(damage_y.get_data()))]}))
-    damage_z_max = Channel(code=damage_z.code.set(filter_class="X"),
-                           data=pd.DataFrame([damage_z.data.max()], index=[damage_z.data.idxmax()]),
-                           unit=damage_z.unit,
-                           info=damage_z.info.add({".Analysis start time": damage_z.data.index[0],
-                                                   ".Analysis end time": damage_z.data.index[-1],
-                                                   ".Time": damage_z.data.index[int(np.argmax(damage_z.get_data()))]}))
-    damage_r_max = Channel(code=damage_r.code.set(filter_class="X"),
-                           data=pd.DataFrame([damage_r.data.max()], index=[damage_r.data.idxmax()]),
-                           unit=damage_r.unit,
-                           info=damage_r.info.add({".Analysis start time": damage_r.data.index[0],
-                                                   ".Analysis end time": damage_r.data.index[-1],
-                                                   ".Time": damage_r.data.index[int(np.argmax(damage_r.get_data()))]}))
+    damage_x_max = Channel(
+        code=damage_x.code.set(filter_class="X"),
+        data=pd.DataFrame([damage_x.data.max()], index=[damage_x.data.idxmax()]),
+        unit=damage_x.unit,
+        info=damage_x.info.add(
+            {
+                ".Analysis start time": damage_x.data.index[0],
+                ".Analysis end time": damage_x.data.index[-1],
+                ".Time": damage_x.data.index[int(np.argmax(damage_x.get_data()))],
+            }
+        ),
+    )
+    damage_y_max = Channel(
+        code=damage_y.code.set(filter_class="X"),
+        data=pd.DataFrame([damage_y.data.max()], index=[damage_y.data.idxmax()]),
+        unit=damage_y.unit,
+        info=damage_y.info.add(
+            {
+                ".Analysis start time": damage_y.data.index[0],
+                ".Analysis end time": damage_y.data.index[-1],
+                ".Time": damage_y.data.index[int(np.argmax(damage_y.get_data()))],
+            }
+        ),
+    )
+    damage_z_max = Channel(
+        code=damage_z.code.set(filter_class="X"),
+        data=pd.DataFrame([damage_z.data.max()], index=[damage_z.data.idxmax()]),
+        unit=damage_z.unit,
+        info=damage_z.info.add(
+            {
+                ".Analysis start time": damage_z.data.index[0],
+                ".Analysis end time": damage_z.data.index[-1],
+                ".Time": damage_z.data.index[int(np.argmax(damage_z.get_data()))],
+            }
+        ),
+    )
+    damage_r_max = Channel(
+        code=damage_r.code.set(filter_class="X"),
+        data=pd.DataFrame([damage_r.data.max()], index=[damage_r.data.idxmax()]),
+        unit=damage_r.unit,
+        info=damage_r.info.add(
+            {
+                ".Analysis start time": damage_r.data.index[0],
+                ".Analysis end time": damage_r.data.index[-1],
+                ".Time": damage_r.data.index[int(np.argmax(damage_r.get_data()))],
+            }
+        ),
+    )
 
-    return damage_x, damage_y, damage_z, damage_r, damage_x_max, damage_y_max, damage_z_max, damage_r_max
+    return (
+        damage_x,
+        damage_y,
+        damage_z,
+        damage_r,
+        damage_x_max,
+        damage_y_max,
+        damage_z_max,
+        damage_r_max,
+    )

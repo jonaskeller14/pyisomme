@@ -43,7 +43,10 @@ def calculate_hic(channel: Channel, max_delta_t: float) -> Channel:
             upper_limit_idx = (t1 + max_delta_t <= time_array).argmax()
             idx_2 = upper_limit_idx - 1
             t2 = time_array[idx_2]
-            a_int = np.trapz(channel.get_data(time_array[idx_1:idx_2+1]), time_array[idx_1:idx_2+1])
+            a_int = np.trapz(
+                channel.get_data(time_array[idx_1 : idx_2 + 1]),
+                time_array[idx_1 : idx_2 + 1],
+            )
             new_res = (t2 - t1) * (1 / (t2 - t1) * a_int) ** 2.5
             if new_res > res:
                 res = new_res
@@ -53,9 +56,12 @@ def calculate_hic(channel: Channel, max_delta_t: float) -> Channel:
         # Integral can be negative -> extrema can occur for smaller timespan
         for idx_1, t1 in enumerate(time_array[:-1]):
             upper_limit_idx = (t1 + max_delta_t <= time_array).argmax()
-            for idx2_offset, t2 in enumerate(time_array[idx_1+1:upper_limit_idx]):
+            for idx2_offset, t2 in enumerate(time_array[idx_1 + 1 : upper_limit_idx]):
                 idx_2 = idx_1 + 1 + idx2_offset
-                a_int = np.trapz(channel.get_data(time_array[idx_1:idx_2+1]), time_array[idx_1:idx_2+1])
+                a_int = np.trapz(
+                    channel.get_data(time_array[idx_1 : idx_2 + 1]),
+                    time_array[idx_1 : idx_2 + 1],
+                )
                 if a_int < 0:
                     continue
                 new_res = (t2 - t1) * (1 / (t2 - t1) * a_int) ** 2.5
@@ -65,17 +71,22 @@ def calculate_hic(channel: Channel, max_delta_t: float) -> Channel:
                     res_t2 = t2
 
     return Channel(
-        code=channel.code.set(main_location="HICR",
-                              fine_location_1="00",
-                              fine_location_2=f"{(max_delta_t * 1e3):.0f}",
-                              physical_dimension="00",
-                              filter_class="X"),
+        code=channel.code.set(
+            main_location="HICR",
+            fine_location_1="00",
+            fine_location_2=f"{(max_delta_t * 1e3):.0f}",
+            physical_dimension="00",
+            filter_class="X",
+        ),
         data=pd.DataFrame([res]),
         unit="1",
-        info=[("Data source", "calculation"),
-              ("Name of the channel", f"HIC VALUE {max_delta_t * 1e3:.0f}"),
-              ("Number of samples", 1),
-              (".Start time", res_t1),
-              (".End time", res_t2),
-              (".Analysis start time", channel.data.index[0]),
-              (".Analysis end time", channel.data.index[-1]),])
+        info=[
+            ("Data source", "calculation"),
+            ("Name of the channel", f"HIC VALUE {max_delta_t * 1e3:.0f}"),
+            ("Number of samples", 1),
+            (".Start time", res_t1),
+            (".End time", res_t2),
+            (".Analysis start time", channel.data.index[0]),
+            (".Analysis end time", channel.data.index[-1]),
+        ],
+    )

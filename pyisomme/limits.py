@@ -25,9 +25,14 @@ class Limits:
     def __add__(self, other: Limits) -> Limits:
         if not isinstance(other, Limits):
             raise TypeError(f"Cannot add Limits and {type(other)}.")
-        return Limits(name=f"{self.name} + {other.name}", limit_list=self.limit_list + other.limit_list)
+        return Limits(
+            name=f"{self.name} + {other.name}",
+            limit_list=self.limit_list + other.limit_list,
+        )
 
-    def __init__(self, name: str | None = "Unnamed Limits", limit_list: list | None = None):
+    def __init__(
+        self, name: str | None = "Unnamed Limits", limit_list: list | None = None
+    ):
         self.name = name
         self.limit_list = [] if limit_list is None else limit_list
 
@@ -60,11 +65,20 @@ class Limits:
         channel_times = channel.data.index
         channel_values = channel.get_data()
 
-        limit_data = np.array([limit.get_data(channel_times, x_unit="s", y_unit=channel.unit) for limit in limits])
+        limit_data = np.array(
+            [
+                limit.get_data(channel_times, x_unit="s", y_unit=channel.unit)
+                for limit in limits
+            ]
+        )
         limit_matching = np.zeros_like(limit_data, dtype=bool)
 
         for idx, (limit, data) in enumerate(zip(limits, limit_data)):
-            limit_matching[idx, :] = (channel_values == data) + ((limit.upper is True) * (channel_values < data)) + ((limit.lower is True) * (channel_values > data))
+            limit_matching[idx, :] = (
+                (channel_values == data)
+                + ((limit.upper is True) * (channel_values < data))
+                + ((limit.lower is True) * (channel_values > data))
+            )
 
         diff = np.abs(limit_data - channel_values)
         diff[~limit_matching] = np.inf
@@ -88,7 +102,12 @@ class Limits:
         limits = limit_list_sort(self.find_limits(channel.code))
         if len(limits) == 0:
             raise ValueError(f"No limits found for channel '{channel.code}'.")
-        unrated = [limit for limit in limits if limit.rating is None or (isinstance(limit.rating, float) and np.isnan(limit.rating))]
+        unrated = [
+            limit
+            for limit in limits
+            if limit.rating is None
+            or (isinstance(limit.rating, float) and np.isnan(limit.rating))
+        ]
         if unrated:
             raise ValueError(
                 f"Cannot rate channel '{channel.code}': the matching limits "
@@ -103,13 +122,29 @@ class Limits:
 
         if interpolate:
             limit_ratings = []
-            limit_data = {limit: limit.get_data(channel_times, x_unit="s", y_unit=channel.unit) for limit in limits}
-            for idx, (_channel_time, channel_value) in enumerate(zip(channel_times, channel_values)):
-                limit_ratings.append(np.interp(channel_value, [limit_data[limit][idx] for limit in limits], [limit.rating for limit in limits]))
+            limit_data = {
+                limit: limit.get_data(channel_times, x_unit="s", y_unit=channel.unit)
+                for limit in limits
+            }
+            for idx, (_channel_time, channel_value) in enumerate(
+                zip(channel_times, channel_values)
+            ):
+                limit_ratings.append(
+                    np.interp(
+                        channel_value,
+                        [limit_data[limit][idx] for limit in limits],
+                        [limit.rating for limit in limits],
+                    )
+                )
         else:
             limit_ratings = []
-            limit_data = {limit: limit.get_data(channel_times, x_unit="s", y_unit=channel.unit) for limit in limits}
-            for idx, (_channel_time, channel_value) in enumerate(zip(channel_times, channel_values)):
+            limit_data = {
+                limit: limit.get_data(channel_times, x_unit="s", y_unit=channel.unit)
+                for limit in limits
+            }
+            for idx, (_channel_time, channel_value) in enumerate(
+                zip(channel_times, channel_values)
+            ):
                 for limit, data in limit_data.items():
                     if limit.upper and channel_value < data[idx]:
                         limit_ratings.append(limit.rating)
@@ -138,7 +173,9 @@ class Limits:
         limit_colors = self.get_limit_colors(channel)
         return limit_colors[np.nanargmax(limit_ratings)]
 
-    def _get_tie_break_idx(self, channel: Channel, idx_candidates: np.ndarray, find_max: bool) -> int:
+    def _get_tie_break_idx(
+        self, channel: Channel, idx_candidates: np.ndarray, find_max: bool
+    ) -> int:
         """
         Given several time indices tied at the same rating, pick the one that is most
         representative of that rating, using the distance to the nearest limit of a
@@ -159,13 +196,22 @@ class Limits:
         channel_times = channel.data.index[idx_candidates]
         channel_values = channel.get_data()[idx_candidates]
 
-        limit_data = np.array([limit.get_data(channel_times, x_unit="s", y_unit=channel.unit) for limit in limit_list])
+        limit_data = np.array(
+            [
+                limit.get_data(channel_times, x_unit="s", y_unit=channel.unit)
+                for limit in limit_list
+            ]
+        )
 
         limits_with_lower_rating = np.zeros_like(limit_data, dtype=bool)
         limits_with_higher_rating = np.zeros_like(limit_data, dtype=bool)
         for idx, (limit, _data) in enumerate(zip(limit_list, limit_data)):
-            limits_with_lower_rating[idx, :] = limit.rating < np.array([other_limit.rating for other_limit in limits])
-            limits_with_higher_rating[idx, :] = limit.rating > np.array([other_limit.rating for other_limit in limits])
+            limits_with_lower_rating[idx, :] = limit.rating < np.array(
+                [other_limit.rating for other_limit in limits]
+            )
+            limits_with_higher_rating[idx, :] = limit.rating > np.array(
+                [other_limit.rating for other_limit in limits]
+            )
 
         diff_limits_lower_rating = np.abs(limit_data - channel_values)
         diff_limits_lower_rating[~limits_with_lower_rating] = np.nan
@@ -175,26 +221,50 @@ class Limits:
 
         diff_limits_higher_rating_min = np.full(len(idx_candidates), np.nan)
         idx_isnotnan = ~np.all(np.isnan(diff_limits_higher_rating), axis=0)
-        diff_limits_higher_rating_min[idx_isnotnan] = np.nanmin(diff_limits_higher_rating[:, idx_isnotnan], axis=0)
+        diff_limits_higher_rating_min[idx_isnotnan] = np.nanmin(
+            diff_limits_higher_rating[:, idx_isnotnan], axis=0
+        )
 
         diff_limits_lower_rating_min = np.full(len(idx_candidates), np.nan)
         idx_isnotnan = ~np.all(np.isnan(diff_limits_lower_rating), axis=0)
-        diff_limits_lower_rating_min[idx_isnotnan] = np.nanmin(diff_limits_lower_rating[:, idx_isnotnan], axis=0)
+        diff_limits_lower_rating_min[idx_isnotnan] = np.nanmin(
+            diff_limits_lower_rating[:, idx_isnotnan], axis=0
+        )
 
         if not find_max:
-            diff_limits_higher_rating_min_max = np.nanmax(diff_limits_higher_rating_min) if not np.all(np.isnan(diff_limits_higher_rating_min)) else np.nan
-            diff_limits_lower_rating_min_min = np.nanmin(diff_limits_lower_rating_min) if not np.all(np.isnan(diff_limits_lower_rating_min)) else np.nan
+            diff_limits_higher_rating_min_max = (
+                np.nanmax(diff_limits_higher_rating_min)
+                if not np.all(np.isnan(diff_limits_higher_rating_min))
+                else np.nan
+            )
+            diff_limits_lower_rating_min_min = (
+                np.nanmin(diff_limits_lower_rating_min)
+                if not np.all(np.isnan(diff_limits_lower_rating_min))
+                else np.nan
+            )
 
-            idx_higher_lower = np.nanargmin([diff_limits_higher_rating_min_max, diff_limits_lower_rating_min_min])
+            idx_higher_lower = np.nanargmin(
+                [diff_limits_higher_rating_min_max, diff_limits_lower_rating_min_min]
+            )
             if idx_higher_lower == 0:
                 return idx_candidates[np.nanargmax(diff_limits_higher_rating_min)]
             else:
                 return idx_candidates[np.nanargmin(diff_limits_lower_rating_min)]
         else:
-            diff_limits_higher_rating_min_min = np.nanmin(diff_limits_higher_rating_min) if not np.all(np.isnan(diff_limits_higher_rating_min)) else np.nan
-            diff_limits_lower_rating_min_max = np.nanmax(diff_limits_lower_rating_min) if not np.all(np.isnan(diff_limits_lower_rating_min)) else np.nan
+            diff_limits_higher_rating_min_min = (
+                np.nanmin(diff_limits_higher_rating_min)
+                if not np.all(np.isnan(diff_limits_higher_rating_min))
+                else np.nan
+            )
+            diff_limits_lower_rating_min_max = (
+                np.nanmax(diff_limits_lower_rating_min)
+                if not np.all(np.isnan(diff_limits_lower_rating_min))
+                else np.nan
+            )
 
-            idx_higher_lower = np.nanargmin([diff_limits_higher_rating_min_min, diff_limits_lower_rating_min_max])
+            idx_higher_lower = np.nanargmin(
+                [diff_limits_higher_rating_min_min, diff_limits_lower_rating_min_max]
+            )
             if idx_higher_lower == 0:
                 return idx_candidates[np.nanargmin(diff_limits_higher_rating_min)]
             else:
@@ -239,9 +309,29 @@ def limit_list_sort(limit_list: list[Limit], x: list | None = None, sym=False) -
     # TODO: add argument x to evaluate at different position than 0 (default=0)
     # TODO: evaluate at multiple positions an only consider positions where values are not the same and take order with most counts
     if sym:
-        return sorted(limit_list, key=lambda limit: (np.abs(limit.func(0)), -1 if limit.upper and limit.func(0) >= 0 else 1 if limit.lower and limit.func(0) >= 0 else 1 if limit.upper and limit.func(0) < 0 else -1 if limit.lower and limit.func(0) < 0 else 0))
+        return sorted(
+            limit_list,
+            key=lambda limit: (
+                np.abs(limit.func(0)),
+                -1
+                if limit.upper and limit.func(0) >= 0
+                else 1
+                if limit.lower and limit.func(0) >= 0
+                else 1
+                if limit.upper and limit.func(0) < 0
+                else -1
+                if limit.lower and limit.func(0) < 0
+                else 0,
+            ),
+        )
     else:
-        return sorted(limit_list, key=lambda limit: (limit.func(0), -1 if limit.upper else 1 if limit.lower else 0))
+        return sorted(
+            limit_list,
+            key=lambda limit: (
+                limit.func(0),
+                -1 if limit.upper else 1 if limit.lower else 0,
+            ),
+        )
 
 
 def get_full_limits(limit_list: list[Limit]) -> list[Limit]:
@@ -273,26 +363,34 @@ def get_full_limits(limit_list: list[Limit]) -> list[Limit]:
     return full_limit_list
 
 
-def limit_list_unique(limit_list: list[Limit],
-                      x,
-                      x_unit,
-                      y_unit,
-                      compare_code_patterns: bool = False,
-                      compare_func: bool = True,
-                      compare_x_unit: bool = False,
-                      compare_y_unit: bool = False,
-                      compare_name: bool = True,
-                      compare_rating: bool = False,
-                      compare_upper: bool = True,
-                      compare_lower: bool = True) -> list[Limit]:
+def limit_list_unique(
+    limit_list: list[Limit],
+    x,
+    x_unit,
+    y_unit,
+    compare_code_patterns: bool = False,
+    compare_func: bool = True,
+    compare_x_unit: bool = False,
+    compare_y_unit: bool = False,
+    compare_name: bool = True,
+    compare_rating: bool = False,
+    compare_upper: bool = True,
+    compare_lower: bool = True,
+) -> list[Limit]:
     filtered_limit_list: list[Limit] = []
     for limit in limit_list:
         add = True
         for filtered_limit in filtered_limit_list:
-            if compare_code_patterns and limit.code_patterns != filtered_limit.code_patterns:
+            if (
+                compare_code_patterns
+                and limit.code_patterns != filtered_limit.code_patterns
+            ):
                 continue
 
-            if compare_func and not np.all(limit.get_data(x, x_unit=x_unit, y_unit=y_unit) == filtered_limit.get_data(x, x_unit=x_unit, y_unit=y_unit)):
+            if compare_func and not np.all(
+                limit.get_data(x, x_unit=x_unit, y_unit=y_unit)
+                == filtered_limit.get_data(x, x_unit=x_unit, y_unit=y_unit)
+            ):
                 continue
 
             if compare_x_unit and limit.x_unit != filtered_limit.x_unit:
@@ -320,7 +418,9 @@ def limit_list_unique(limit_list: list[Limit],
     return filtered_limit_list
 
 
-def get_limit_upper_data(x, limit: Limit, limit_list, x_unit, y_unit) -> np.ndarray | float:
+def get_limit_upper_data(
+    x, limit: Limit, limit_list, x_unit, y_unit
+) -> np.ndarray | float:
     if limit.lower and not limit.upper:
         limit_list = limit_list_sort(limit_list)
         limit_list = limit_list_unique(limit_list, x=x, x_unit=x_unit, y_unit=y_unit)
@@ -333,7 +433,9 @@ def get_limit_upper_data(x, limit: Limit, limit_list, x_unit, y_unit) -> np.ndar
         return limit.get_data(x=x, x_unit=x_unit, y_unit=y_unit)
 
 
-def get_limit_lower_data(x: float | np.ndarray, limit: Limit, limit_list, x_unit, y_unit) -> np.ndarray | float:
+def get_limit_lower_data(
+    x: float | np.ndarray, limit: Limit, limit_list, x_unit, y_unit
+) -> np.ndarray | float:
     if limit.upper and not limit.lower:
         limit_list = limit_list_sort(limit_list)
         limit_list = limit_list_unique(limit_list, x=x, x_unit=x_unit, y_unit=y_unit)
@@ -351,5 +453,5 @@ def get_limit_min_color_from_rating(rating, limit_list):
     for idx, limit in enumerate(limits):
         if rating == limit.rating:
             return limit.color
-        if idx >= 1 and limits[idx-1].rating < rating < limit.rating:
-            return limits[idx-1].color
+        if idx >= 1 and limits[idx - 1].rating < rating < limit.rating:
+            return limits[idx - 1].color

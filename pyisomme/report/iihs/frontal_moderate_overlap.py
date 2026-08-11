@@ -71,14 +71,24 @@ class Overall(Criterion):
         aggregation = "sum"
 
         class Criterion_Leg_Foot(Criterion_Leg_Foot_H350M):
-            class Criterion_Tibia_Femur_Displacement(Criterion_Tibia_Femur_Displacement_H350M):
+            class Criterion_Tibia_Femur_Displacement(
+                Criterion_Tibia_Femur_Displacement_H350M
+            ):
                 def define_limits(self) -> list[Limit]:
                     codes = self.ctx.codes("?{p}KNSL??00??DSX?")
                     return [
-                        Limit_G(codes, lambda x: -12, y_unit="mm", lower=True, rating=0),
-                        Limit_A(codes, lambda x: -12, y_unit="mm", upper=True, rating=-1),
-                        Limit_M(codes, lambda x: -15, y_unit="mm", upper=True, rating=-4),
-                        Limit_P(codes, lambda x: -18, y_unit="mm", upper=True, rating=-6),
+                        Limit_G(
+                            codes, lambda x: -12, y_unit="mm", lower=True, rating=0
+                        ),
+                        Limit_A(
+                            codes, lambda x: -12, y_unit="mm", upper=True, rating=-1
+                        ),
+                        Limit_M(
+                            codes, lambda x: -15, y_unit="mm", upper=True, rating=-4
+                        ),
+                        Limit_P(
+                            codes, lambda x: -18, y_unit="mm", upper=True, rating=-6
+                        ),
                     ]
 
             class Criterion_Tibia_Index(Criterion_Tibia_Index_H350M):
@@ -96,19 +106,33 @@ class Overall(Criterion):
                     codes = self.ctx.codes("?{p}TIBI??LO??FOZ?")
                     return [
                         Limit_G(codes, lambda x: -4, y_unit="kN", lower=True, rating=0),
-                        Limit_A(codes, lambda x: -4, y_unit="kN", upper=True, rating=-1),
-                        Limit_M(codes, lambda x: -6, y_unit="kN", upper=True, rating=-4),
-                        Limit_P(codes, lambda x: -8, y_unit="kN", upper=True, rating=-6),
+                        Limit_A(
+                            codes, lambda x: -4, y_unit="kN", upper=True, rating=-1
+                        ),
+                        Limit_M(
+                            codes, lambda x: -6, y_unit="kN", upper=True, rating=-4
+                        ),
+                        Limit_P(
+                            codes, lambda x: -8, y_unit="kN", upper=True, rating=-6
+                        ),
                     ]
 
             class Criterion_Foot_Acceleration(Criterion_Foot_Acceleration_H350M):
                 def define_limits(self) -> list[Limit]:
                     codes = self.ctx.codes("?{p}FOOT??00??ACR?")
                     return [
-                        Limit_G(codes, lambda x: 150, y_unit=Unit(g0), upper=True, rating=0),
-                        Limit_A(codes, lambda x: 200, y_unit=Unit(g0), upper=True, rating=-1),
-                        Limit_M(codes, lambda x: 260, y_unit=Unit(g0), upper=True, rating=-4),
-                        Limit_P(codes, lambda x: 260, y_unit=Unit(g0), lower=True, rating=-6),
+                        Limit_G(
+                            codes, lambda x: 150, y_unit=Unit(g0), upper=True, rating=0
+                        ),
+                        Limit_A(
+                            codes, lambda x: 200, y_unit=Unit(g0), upper=True, rating=-1
+                        ),
+                        Limit_M(
+                            codes, lambda x: 260, y_unit=Unit(g0), upper=True, rating=-4
+                        ),
+                        Limit_P(
+                            codes, lambda x: 260, y_unit=Unit(g0), lower=True, rating=-6
+                        ),
                     ]
 
             criterion_tibia_femur_displacement = sub(Criterion_Tibia_Femur_Displacement)
@@ -118,11 +142,14 @@ class Overall(Criterion):
 
         class Criterion_Restraints_Kinematics(Criterion):
             name = "Restraints and kinematics"
-            demerits: Manual[int, manual(
-                0,
-                source="video and postcrash inspection",
-                doc="Sum the H350M driver events in Table 3.",
-            )]
+            demerits: Manual[
+                int,
+                manual(
+                    0,
+                    source="video and postcrash inspection",
+                    doc="Sum the H350M driver events in Table 3.",
+                ),
+            ]
 
             def calculation(self) -> None:
                 self.value = float(self.demerits)
@@ -151,16 +178,22 @@ class Overall(Criterion):
             name = "Head and neck"
             role = Role.AGGREGATE
             aggregation = "min"
-            interior_contact: Manual[bool, manual(
-                False,
-                source="video",
-                doc="A primary-loading contact with the vehicle interior makes HIC-15 and Nij applicable.",
-            )]
-            hard_contact_over_70g: Manual[bool, manual(
-                False,
-                source="video and head acceleration",
-                doc="Contact produced a resultant head acceleration above 70 g; downgrade one level.",
-            )]
+            interior_contact: Manual[
+                bool,
+                manual(
+                    False,
+                    source="video",
+                    doc="A primary-loading contact with the vehicle interior makes HIC-15 and Nij applicable.",
+                ),
+            ]
+            hard_contact_over_70g: Manual[
+                bool,
+                manual(
+                    False,
+                    source="video and head acceleration",
+                    doc="Contact produced a resultant head acceleration above 70 g; downgrade one level.",
+                ),
+            ]
 
             def injury_values_apply(self) -> bool:
                 return self.interior_contact
@@ -189,9 +222,13 @@ class Overall(Criterion):
                         self.value = np.nan
                         self.rating, self.color = 0.0, Limit_G.color
                         return
-                    self.channel = self.require_channel(self.ctx.code("?{p}HICR0015??00RX"))
+                    self.channel = self.require_channel(
+                        self.ctx.code("?{p}HICR0015??00RX")
+                    )
                     self.value = float(self.channel.get_data()[0])
-                    self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
+                    self.rating = self.limits.get_limit_min_rating(
+                        self.channel, interpolate=False
+                    )
                     self.color = self.limits.get_limit_min_color(self.channel)
 
             class Criterion_Nij(Criterion):
@@ -218,9 +255,13 @@ class Overall(Criterion):
                         self.value = np.nan
                         self.rating, self.color = 0.0, Limit_G.color
                         return
-                    self.channel = self.require_channel(self.ctx.code("?{p}NIJCIP00??00YB"))
+                    self.channel = self.require_channel(
+                        self.ctx.code("?{p}NIJCIP00??00YB")
+                    )
                     self.value = float(np.max(self.channel.get_data()))
-                    self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
+                    self.rating = self.limits.get_limit_min_rating(
+                        self.channel, interpolate=False
+                    )
                     self.color = self.limits.get_limit_min_color(self.channel)
 
             class Criterion_Neck_Tension(Criterion):
@@ -232,16 +273,28 @@ class Overall(Criterion):
                 def define_limits(self) -> list[Limit]:
                     codes = self.ctx.codes("?{p}NECKUP00??FOZ?")
                     return [
-                        Limit_G(codes, lambda x: 2.0, y_unit="kN", upper=True, rating=0),
-                        Limit_A(codes, lambda x: 2.4, y_unit="kN", upper=True, rating=-2),
-                        Limit_M(codes, lambda x: 2.8, y_unit="kN", upper=True, rating=-10),
-                        Limit_P(codes, lambda x: 2.8, y_unit="kN", lower=True, rating=-20),
+                        Limit_G(
+                            codes, lambda x: 2.0, y_unit="kN", upper=True, rating=0
+                        ),
+                        Limit_A(
+                            codes, lambda x: 2.4, y_unit="kN", upper=True, rating=-2
+                        ),
+                        Limit_M(
+                            codes, lambda x: 2.8, y_unit="kN", upper=True, rating=-10
+                        ),
+                        Limit_P(
+                            codes, lambda x: 2.8, y_unit="kN", lower=True, rating=-20
+                        ),
                     ]
 
                 def calculation(self) -> None:
-                    self.channel = self.require_channel(self.ctx.code("?{p}NECKUP00??FOZB")).convert_unit("kN")
+                    self.channel = self.require_channel(
+                        self.ctx.code("?{p}NECKUP00??FOZB")
+                    ).convert_unit("kN")
                     self.value = float(np.max(self.channel.get_data()))
-                    self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
+                    self.rating = self.limits.get_limit_min_rating(
+                        self.channel, interpolate=False
+                    )
                     self.color = self.limits.get_limit_min_color(self.channel)
 
             class Criterion_Neck_Compression(Criterion):
@@ -250,16 +303,28 @@ class Overall(Criterion):
                 def define_limits(self) -> list[Limit]:
                     codes = self.ctx.codes("?{p}NECKUP00??FOZ?")
                     return [
-                        Limit_G(codes, lambda x: -2.0, y_unit="kN", lower=True, rating=0),
-                        Limit_A(codes, lambda x: -2.0, y_unit="kN", upper=True, rating=-2),
-                        Limit_M(codes, lambda x: -2.5, y_unit="kN", upper=True, rating=-10),
-                        Limit_P(codes, lambda x: -3.0, y_unit="kN", upper=True, rating=-20),
+                        Limit_G(
+                            codes, lambda x: -2.0, y_unit="kN", lower=True, rating=0
+                        ),
+                        Limit_A(
+                            codes, lambda x: -2.0, y_unit="kN", upper=True, rating=-2
+                        ),
+                        Limit_M(
+                            codes, lambda x: -2.5, y_unit="kN", upper=True, rating=-10
+                        ),
+                        Limit_P(
+                            codes, lambda x: -3.0, y_unit="kN", upper=True, rating=-20
+                        ),
                     ]
 
                 def calculation(self) -> None:
-                    self.channel = self.require_channel(self.ctx.code("?{p}NECKUP00??FOZB")).convert_unit("kN")
+                    self.channel = self.require_channel(
+                        self.ctx.code("?{p}NECKUP00??FOZB")
+                    ).convert_unit("kN")
                     self.value = float(np.min(self.channel.get_data()))
-                    self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
+                    self.rating = self.limits.get_limit_min_rating(
+                        self.channel, interpolate=False
+                    )
                     self.color = self.limits.get_limit_min_color(self.channel)
 
             criterion_hic_15 = sub(Criterion_HIC_15)
@@ -293,32 +358,47 @@ class Overall(Criterion):
                 validate_ignore = {
                     "limit_flags": "discrete demerits use successive upper bounds with interpolation disabled",
                 }
-                dynamic_belt_position_mm: Manual[float, manual(
-                    17.0,
-                    unit="mm",
-                    source="pressure mat",
-                    doc=("Vertical shoulder-belt centerline above the sternum potentiometer at "
-                         "maximum sternum deflection; Version III Appendix A automates this measurement."),
-                )]
+                dynamic_belt_position_mm: Manual[
+                    float,
+                    manual(
+                        17.0,
+                        unit="mm",
+                        source="pressure mat",
+                        doc=(
+                            "Vertical shoulder-belt centerline above the sternum potentiometer at "
+                            "maximum sternum deflection; Version III Appendix A automates this measurement."
+                        ),
+                    ),
+                ]
 
                 def define_limits(self) -> list[Limit]:
                     codes = self.ctx.codes("?{p}CHST0000??DSX?")
                     return [
                         Limit_G(codes, lambda x: 35, y_unit="mm", upper=True, rating=0),
-                        Limit_A(codes, lambda x: 40, y_unit="mm", upper=True, rating=-2),
-                        Limit_M(codes, lambda x: 45, y_unit="mm", upper=True, rating=-10),
-                        Limit_P(codes, lambda x: 45, y_unit="mm", lower=True, rating=-20),
+                        Limit_A(
+                            codes, lambda x: 40, y_unit="mm", upper=True, rating=-2
+                        ),
+                        Limit_M(
+                            codes, lambda x: 45, y_unit="mm", upper=True, rating=-10
+                        ),
+                        Limit_P(
+                            codes, lambda x: 45, y_unit="mm", lower=True, rating=-20
+                        ),
                     ]
 
                 def calculation(self) -> None:
-                    self.channel = self.require_channel(self.ctx.code("?{p}CHST0000??DSXC")).convert_unit("mm")
+                    self.channel = self.require_channel(
+                        self.ctx.code("?{p}CHST0000??DSXC")
+                    ).convert_unit("mm")
                     deflection = abs(float(np.min(self.channel.get_data())))
                     if self.dynamic_belt_position_mm <= 17:
                         chest_index = deflection
                     else:
                         denominator = 1 - 0.005 * (self.dynamic_belt_position_mm - 17)
                         if denominator <= 0:
-                            raise ValueError("dynamic belt position makes Chest Index denominator nonpositive")
+                            raise ValueError(
+                                "dynamic belt position makes Chest Index denominator nonpositive"
+                            )
                         chest_index = deflection / denominator
                     self.value = float(np.floor(chest_index))
                     self.channel = Channel(
@@ -326,7 +406,9 @@ class Overall(Criterion):
                         pd.DataFrame([self.value]),
                         "mm",
                     )
-                    self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
+                    self.rating = self.limits.get_limit_min_rating(
+                        self.channel, interpolate=False
+                    )
                     self.color = self.limits.get_limit_min_color(self.channel)
 
             class Criterion_Shoulder_Belt_Tension(Criterion):
@@ -335,14 +417,22 @@ class Overall(Criterion):
                 def define_limits(self) -> list[Limit]:
                     codes = self.ctx.codes("?{p}SEBE????B3FO[X0]?")
                     return [
-                        Limit_G(codes, lambda x: 5.9, y_unit="kN", upper=True, rating=0),
-                        Limit_M(codes, lambda x: 5.9, y_unit="kN", lower=True, rating=-10),
+                        Limit_G(
+                            codes, lambda x: 5.9, y_unit="kN", upper=True, rating=0
+                        ),
+                        Limit_M(
+                            codes, lambda x: 5.9, y_unit="kN", lower=True, rating=-10
+                        ),
                     ]
 
                 def calculation(self) -> None:
-                    self.channel = self.require_channel(self.ctx.code("?{p}SEBE????B3FO[X0]C")).convert_unit("kN")
+                    self.channel = self.require_channel(
+                        self.ctx.code("?{p}SEBE????B3FO[X0]C")
+                    ).convert_unit("kN")
                     self.value = float(np.max(self.channel.get_data()))
-                    self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
+                    self.rating = self.limits.get_limit_min_rating(
+                        self.channel, interpolate=False
+                    )
                     self.color = self.limits.get_limit_min_color(self.channel)
 
             criterion_chest_index = sub(Criterion_Chest_Index)
@@ -368,10 +458,18 @@ class Overall(Criterion):
                 def define_limits(self) -> list[Limit]:
                     codes = self.ctx.codes("?{p}FEMR??00??FOZ?")
                     return [
-                        Limit_G(codes, lambda x: -4.9, y_unit="kN", lower=True, rating=0),
-                        Limit_A(codes, lambda x: -4.9, y_unit="kN", upper=True, rating=-2),
-                        Limit_M(codes, lambda x: -6.2, y_unit="kN", upper=True, rating=-6),
-                        Limit_P(codes, lambda x: -7.4, y_unit="kN", upper=True, rating=-10),
+                        Limit_G(
+                            codes, lambda x: -4.9, y_unit="kN", lower=True, rating=0
+                        ),
+                        Limit_A(
+                            codes, lambda x: -4.9, y_unit="kN", upper=True, rating=-2
+                        ),
+                        Limit_M(
+                            codes, lambda x: -6.2, y_unit="kN", upper=True, rating=-6
+                        ),
+                        Limit_P(
+                            codes, lambda x: -7.4, y_unit="kN", upper=True, rating=-10
+                        ),
                     ]
 
                 def calculation(self) -> None:
@@ -379,7 +477,9 @@ class Overall(Criterion):
                         self.ctx.code("?{p}FEMR0000??FOZB")
                     ).convert_unit("kN")
                     self.value = abs(float(np.min(self.channel.get_data())))
-                    self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
+                    self.rating = self.limits.get_limit_min_rating(
+                        self.channel, interpolate=False
+                    )
                     self.color = self.limits.get_limit_min_color(self.channel)
 
             criterion_femur_compression = sub(Criterion_Femur_Compression)
@@ -395,11 +495,14 @@ class Overall(Criterion):
 
         class Criterion_Restraints_Kinematics(Criterion):
             name = "Restraints and kinematics"
-            demerits: Manual[int, manual(
-                0,
-                source="video, pressure mat, and postcrash inspection",
-                doc="Sum the H35F rear-occupant events in Table 8.",
-            )]
+            demerits: Manual[
+                int,
+                manual(
+                    0,
+                    source="video, pressure mat, and postcrash inspection",
+                    doc="Sum the H35F rear-occupant events in Table 8.",
+                ),
+            ]
 
             def calculation(self) -> None:
                 self.value = float(self.demerits)
@@ -423,27 +526,38 @@ class Overall(Criterion):
 
     class Criterion_Structure(Criterion):
         name = "Vehicle structure"
-        intrusion_rating: Manual[int, manual(
-            4,
-            source="intrusion measurements",
-            doc="Initial Figure 7 category: 4=Good, 3=Acceptable, 2=Marginal, 1=Poor.",
-        )]
-        qualitative_downgrades: Manual[int, manual(
-            0,
-            source="postcrash inspection",
-            doc="Number of one-category downgrades for adverse deformation observations.",
-        )]
-        integrity_failure: Manual[bool, manual(
-            False,
-            source="postcrash inspection",
-            doc="Significant fuel, electrical, smoke, fire, or battery thermal event.",
-        )]
+        intrusion_rating: Manual[
+            int,
+            manual(
+                4,
+                source="intrusion measurements",
+                doc="Initial Figure 7 category: 4=Good, 3=Acceptable, 2=Marginal, 1=Poor.",
+            ),
+        ]
+        qualitative_downgrades: Manual[
+            int,
+            manual(
+                0,
+                source="postcrash inspection",
+                doc="Number of one-category downgrades for adverse deformation observations.",
+            ),
+        ]
+        integrity_failure: Manual[
+            bool,
+            manual(
+                False,
+                source="postcrash inspection",
+                doc="Significant fuel, electrical, smoke, fire, or battery thermal event.",
+            ),
+        ]
 
         def calculation(self) -> None:
             if self.intrusion_rating not in (1, 2, 3, 4):
                 raise ValueError("intrusion_rating must be 1 (Poor) through 4 (Good)")
-            category = 1 if self.integrity_failure else max(
-                1, self.intrusion_rating - self.qualitative_downgrades
+            category = (
+                1
+                if self.integrity_failure
+                else max(1, self.intrusion_rating - self.qualitative_downgrades)
             )
             self.value = category
             self.rating, self.color = {
@@ -453,7 +567,9 @@ class Overall(Criterion):
                 1: (-20.0, Limit_P.color),
             }[category]
 
-    criterion_driver = sub(Criterion_Driver, at=from_input(P_DRIVER), role=Role.AGGREGATE)
+    criterion_driver = sub(
+        Criterion_Driver, at=from_input(P_DRIVER), role=Role.AGGREGATE
+    )
     criterion_rear_passenger = sub(
         Criterion_Rear_Passenger,
         at=from_input(P_REAR_PASSENGER),
@@ -524,11 +640,15 @@ class IIHS_Frontal_Moderate_Overlap(Report[Overall]):
                     report.overall(isomme).criterion_driver.criterion_chest,
                     report.overall(isomme).criterion_driver.criterion_thigh_hip,
                     report.overall(isomme).criterion_driver.criterion_leg_foot,
-                    report.overall(isomme).criterion_driver.criterion_restraints_kinematics,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_restraints_kinematics,
                     report.overall(isomme).criterion_rear_passenger.criterion_head_neck,
                     report.overall(isomme).criterion_rear_passenger.criterion_chest,
                     report.overall(isomme).criterion_rear_passenger.criterion_thigh,
-                    report.overall(isomme).criterion_rear_passenger.criterion_restraints_kinematics,
+                    report.overall(
+                        isomme
+                    ).criterion_rear_passenger.criterion_restraints_kinematics,
                 ]
                 for isomme in report.isomme_list
             }
@@ -546,7 +666,9 @@ class IIHS_Frontal_Moderate_Overlap(Report[Overall]):
                     report.overall(isomme).criterion_driver.criterion_chest,
                     report.overall(isomme).criterion_driver.criterion_thigh_hip,
                     report.overall(isomme).criterion_driver.criterion_leg_foot,
-                    report.overall(isomme).criterion_driver.criterion_restraints_kinematics,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_restraints_kinematics,
                     report.overall(isomme).criterion_driver,
                 ]
                 for isomme in report.isomme_list
@@ -561,21 +683,51 @@ class IIHS_Frontal_Moderate_Overlap(Report[Overall]):
             super().__init__(report)
             self.criteria = {
                 isomme: [
-                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_hic_15,
-                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_nij,
-                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_neck_tension,
-                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_neck_compression,
-                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_tension_corridor,
-                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_compression_corridor,
-                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_shear_corridor,
-                    report.overall(isomme).criterion_driver.criterion_chest.criterion_acceleration,
-                    report.overall(isomme).criterion_driver.criterion_chest.criterion_deflection,
-                    report.overall(isomme).criterion_driver.criterion_chest.criterion_deflection_rate,
-                    report.overall(isomme).criterion_driver.criterion_chest.criterion_vc,
-                    report.overall(isomme).criterion_driver.criterion_leg_foot.criterion_tibia_femur_displacement,
-                    report.overall(isomme).criterion_driver.criterion_leg_foot.criterion_tibia_index,
-                    report.overall(isomme).criterion_driver.criterion_leg_foot.criterion_tibia_axial_force,
-                    report.overall(isomme).criterion_driver.criterion_leg_foot.criterion_foot_acceleration,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_head_neck.criterion_hic_15,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_head_neck.criterion_nij,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_head_neck.criterion_neck_tension,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_head_neck.criterion_neck_compression,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_head_neck.criterion_tension_corridor,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_head_neck.criterion_compression_corridor,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_head_neck.criterion_shear_corridor,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_chest.criterion_acceleration,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_chest.criterion_deflection,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_chest.criterion_deflection_rate,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_chest.criterion_vc,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_leg_foot.criterion_tibia_femur_displacement,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_leg_foot.criterion_tibia_index,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_leg_foot.criterion_tibia_axial_force,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_leg_foot.criterion_foot_acceleration,
                 ]
                 for isomme in report.isomme_list
             }
@@ -589,23 +741,57 @@ class IIHS_Frontal_Moderate_Overlap(Report[Overall]):
             super().__init__(report)
             self.criteria = {
                 isomme: [
-                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_hic_15,
-                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_nij,
-                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_neck_tension,
-                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_neck_compression,
-                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_tension_corridor,
-                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_compression_corridor,
-                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_shear_corridor,
-                    report.overall(isomme).criterion_driver.criterion_chest.criterion_acceleration,
-                    report.overall(isomme).criterion_driver.criterion_chest.criterion_deflection,
-                    report.overall(isomme).criterion_driver.criterion_chest.criterion_deflection_rate,
-                    report.overall(isomme).criterion_driver.criterion_chest.criterion_vc,
-                    report.overall(isomme).criterion_driver.criterion_thigh_hip.criterion_left,
-                    report.overall(isomme).criterion_driver.criterion_thigh_hip.criterion_right,
-                    report.overall(isomme).criterion_driver.criterion_leg_foot.criterion_tibia_femur_displacement,
-                    report.overall(isomme).criterion_driver.criterion_leg_foot.criterion_tibia_index,
-                    report.overall(isomme).criterion_driver.criterion_leg_foot.criterion_tibia_axial_force,
-                    report.overall(isomme).criterion_driver.criterion_leg_foot.criterion_foot_acceleration,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_head_neck.criterion_hic_15,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_head_neck.criterion_nij,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_head_neck.criterion_neck_tension,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_head_neck.criterion_neck_compression,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_head_neck.criterion_tension_corridor,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_head_neck.criterion_compression_corridor,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_head_neck.criterion_shear_corridor,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_chest.criterion_acceleration,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_chest.criterion_deflection,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_chest.criterion_deflection_rate,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_chest.criterion_vc,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_thigh_hip.criterion_left,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_thigh_hip.criterion_right,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_leg_foot.criterion_tibia_femur_displacement,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_leg_foot.criterion_tibia_index,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_leg_foot.criterion_tibia_axial_force,
+                    report.overall(
+                        isomme
+                    ).criterion_driver.criterion_leg_foot.criterion_foot_acceleration,
                 ]
                 for isomme in report.isomme_list
             }
@@ -622,7 +808,9 @@ class IIHS_Frontal_Moderate_Overlap(Report[Overall]):
                     report.overall(isomme).criterion_rear_passenger.criterion_head_neck,
                     report.overall(isomme).criterion_rear_passenger.criterion_chest,
                     report.overall(isomme).criterion_rear_passenger.criterion_thigh,
-                    report.overall(isomme).criterion_rear_passenger.criterion_restraints_kinematics,
+                    report.overall(
+                        isomme
+                    ).criterion_rear_passenger.criterion_restraints_kinematics,
                     report.overall(isomme).criterion_rear_passenger,
                 ]
                 for isomme in report.isomme_list
@@ -637,11 +825,21 @@ class IIHS_Frontal_Moderate_Overlap(Report[Overall]):
             super().__init__(report)
             self.criteria = {
                 isomme: [
-                    report.overall(isomme).criterion_rear_passenger.criterion_head_neck.criterion_neck_tension,
-                    report.overall(isomme).criterion_rear_passenger.criterion_head_neck.criterion_neck_compression,
-                    report.overall(isomme).criterion_rear_passenger.criterion_chest.criterion_chest_index,
-                    report.overall(isomme).criterion_rear_passenger.criterion_chest.criterion_shoulder_belt_tension,
-                    report.overall(isomme).criterion_rear_passenger.criterion_thigh.criterion_femur_compression,
+                    report.overall(
+                        isomme
+                    ).criterion_rear_passenger.criterion_head_neck.criterion_neck_tension,
+                    report.overall(
+                        isomme
+                    ).criterion_rear_passenger.criterion_head_neck.criterion_neck_compression,
+                    report.overall(
+                        isomme
+                    ).criterion_rear_passenger.criterion_chest.criterion_chest_index,
+                    report.overall(
+                        isomme
+                    ).criterion_rear_passenger.criterion_chest.criterion_shoulder_belt_tension,
+                    report.overall(
+                        isomme
+                    ).criterion_rear_passenger.criterion_thigh.criterion_femur_compression,
                 ]
                 for isomme in report.isomme_list
             }
@@ -655,13 +853,27 @@ class IIHS_Frontal_Moderate_Overlap(Report[Overall]):
             super().__init__(report)
             self.criteria = {
                 isomme: [
-                    report.overall(isomme).criterion_rear_passenger.criterion_head_neck.criterion_hic_15,
-                    report.overall(isomme).criterion_rear_passenger.criterion_head_neck.criterion_nij,
-                    report.overall(isomme).criterion_rear_passenger.criterion_head_neck.criterion_neck_tension,
-                    report.overall(isomme).criterion_rear_passenger.criterion_head_neck.criterion_neck_compression,
-                    report.overall(isomme).criterion_rear_passenger.criterion_chest.criterion_chest_index,
-                    report.overall(isomme).criterion_rear_passenger.criterion_chest.criterion_shoulder_belt_tension,
-                    report.overall(isomme).criterion_rear_passenger.criterion_thigh.criterion_femur_compression,
+                    report.overall(
+                        isomme
+                    ).criterion_rear_passenger.criterion_head_neck.criterion_hic_15,
+                    report.overall(
+                        isomme
+                    ).criterion_rear_passenger.criterion_head_neck.criterion_nij,
+                    report.overall(
+                        isomme
+                    ).criterion_rear_passenger.criterion_head_neck.criterion_neck_tension,
+                    report.overall(
+                        isomme
+                    ).criterion_rear_passenger.criterion_head_neck.criterion_neck_compression,
+                    report.overall(
+                        isomme
+                    ).criterion_rear_passenger.criterion_chest.criterion_chest_index,
+                    report.overall(
+                        isomme
+                    ).criterion_rear_passenger.criterion_chest.criterion_shoulder_belt_tension,
+                    report.overall(
+                        isomme
+                    ).criterion_rear_passenger.criterion_thigh.criterion_femur_compression,
                 ]
                 for isomme in report.isomme_list
             }
@@ -675,7 +887,10 @@ class IIHS_Frontal_Moderate_Overlap(Report[Overall]):
         def __init__(self, report: IIHS_Frontal_Moderate_Overlap) -> None:
             super().__init__(report)
             self.channels = {
-                isomme: [[f"?{report.overall(isomme).p_driver}HEAD??????AC{axis}A"] for axis in "XYZR"]
+                isomme: [
+                    [f"?{report.overall(isomme).p_driver}HEAD??????AC{axis}A"]
+                    for axis in "XYZR"
+                ]
                 for isomme in report.isomme_list
             }
 
@@ -706,8 +921,10 @@ class IIHS_Frontal_Moderate_Overlap(Report[Overall]):
             driver = report.overall(report.isomme_list[0]).criterion_driver
             super().__init__(
                 report,
-                limits=(driver.criterion_head_neck.criterion_neck_tension.limits
-                        + driver.criterion_head_neck.criterion_neck_compression.limits),
+                limits=(
+                    driver.criterion_head_neck.criterion_neck_tension.limits
+                    + driver.criterion_head_neck.criterion_neck_compression.limits
+                ),
             )
             self.channels = {
                 isomme: [[f"?{report.overall(isomme).p_driver}NECKUP00??FOZB"]]
@@ -721,12 +938,16 @@ class IIHS_Frontal_Moderate_Overlap(Report[Overall]):
         nrows, ncols = 1, 2
 
         def __init__(self, report: IIHS_Frontal_Moderate_Overlap) -> None:
-            head_neck = report.overall(report.isomme_list[0]).criterion_driver.criterion_head_neck
+            head_neck = report.overall(
+                report.isomme_list[0]
+            ).criterion_driver.criterion_head_neck
             super().__init__(
                 report,
-                limits=(head_neck.criterion_tension_corridor.limits
-                        + head_neck.criterion_compression_corridor.limits
-                        + head_neck.criterion_shear_corridor.limits),
+                limits=(
+                    head_neck.criterion_tension_corridor.limits
+                    + head_neck.criterion_compression_corridor.limits
+                    + head_neck.criterion_shear_corridor.limits
+                ),
             )
             self.channels = {
                 isomme: [
@@ -879,8 +1100,10 @@ class IIHS_Frontal_Moderate_Overlap(Report[Overall]):
             rear = report.overall(report.isomme_list[0]).criterion_rear_passenger
             super().__init__(
                 report,
-                limits=(rear.criterion_head_neck.criterion_neck_tension.limits
-                        + rear.criterion_head_neck.criterion_neck_compression.limits),
+                limits=(
+                    rear.criterion_head_neck.criterion_neck_tension.limits
+                    + rear.criterion_head_neck.criterion_neck_compression.limits
+                ),
             )
             self.channels = {
                 isomme: [[f"?{report.overall(isomme).p_rear_passenger}NECKUP00??FOZB"]]
