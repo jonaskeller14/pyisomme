@@ -2,7 +2,6 @@ from datetime import date
 
 from pyisomme.report.report_protocol import ReportProtocol
 
-
 PROTOCOL_9_3 = ReportProtocol(
     version="9.3",
     name="Version 9.3 - Assessment Protocol Adult Occupant Protection",

@@ -1,17 +1,17 @@
 from __future__ import annotations
 
+import tempfile
+import unittest
 from contextlib import redirect_stderr, redirect_stdout
 from io import StringIO
 from pathlib import Path
-import tempfile
-import unittest
 
 import numpy as np
 import pandas as pd
 
+from pyisomme.__main__ import CODE_FIELDS, build_parser, main
 from pyisomme.channel import Channel
 from pyisomme.isomme import Isomme
-from pyisomme.__main__ import CODE_FIELDS, build_parser, main
 
 
 class TestCLI(unittest.TestCase):

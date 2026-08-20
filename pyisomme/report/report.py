@@ -1,20 +1,20 @@
 from __future__ import annotations
 
+import logging
+from typing import Any, Generic, TypeVar, cast
+
+from tqdm.auto import tqdm
+from tqdm.contrib.logging import logging_redirect_tqdm
+
 from pyisomme.isomme import Isomme
-from pyisomme.report.page import Page_Cover
 from pyisomme.limits import Limits
 from pyisomme.report.base_report import BaseReport
 from pyisomme.report.criterion import Criterion
 from pyisomme.report.describe import describe_report
 from pyisomme.report.manual import suggest
+from pyisomme.report.page import Page_Cover
 from pyisomme.report.report_protocol import ReportProtocol
 from pyisomme.report.validate import Issue, validate_report
-
-from tqdm.auto import tqdm
-from tqdm.contrib.logging import logging_redirect_tqdm
-import logging
-from typing import Any, Generic, TypeVar, cast
-
 
 logger = logging.getLogger(__name__)
 

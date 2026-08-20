@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Callable
 from collections.abc import Iterator
+from typing import TYPE_CHECKING, Callable
 
-from pyisomme.report.validate.check_protocols import check_protocols
 from pyisomme.report.validate.check_code_pattern import check_code_pattern
 from pyisomme.report.validate.check_limit_capping import check_limit_capping
 from pyisomme.report.validate.check_limit_flags import check_limit_flags
@@ -12,6 +11,7 @@ from pyisomme.report.validate.check_limit_symmetry import check_limit_symmetry
 from pyisomme.report.validate.check_limit_unit import check_limit_unit
 from pyisomme.report.validate.check_max_rating import check_max_rating
 from pyisomme.report.validate.check_name import check_name
+from pyisomme.report.validate.check_protocols import check_protocols
 from pyisomme.report.validate.check_unused_input import check_unused_input
 from pyisomme.report.validate.issue import Issue, IssueSeverity
 

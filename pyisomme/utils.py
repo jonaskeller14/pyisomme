@@ -1,7 +1,6 @@
 import logging
 from typing import Callable, TypeVar, overload
 
-
 intend = "\t"
 
 F = TypeVar("F", bound=Callable[..., object])

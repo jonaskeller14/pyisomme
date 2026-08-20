@@ -1,32 +1,34 @@
 from __future__ import annotations
 
-from pyisomme.isomme import Isomme
-from pyisomme.limit import Limit
-from pyisomme.report.page import (
-    Page_Cover,
-    Page_Plot_nxn,
-    Page_Criterion_Values_Chart,
-    Page_Criterion_Rating_Table,
-    Page_Criterion_Values_Table,
-)
-from pyisomme.report.report import Report
-from pyisomme.report.criterion import Criterion, Role, sub
-from pyisomme.report.ctx import from_input
-from pyisomme.report.manual import Manual, manual
-from pyisomme.report.euro_ncap.frontal_50kmh import (
-    Criterion_HIC_15 as Criterion_HIC_15_F50,
-    Criterion_Head_a3ms as Criterion_Head_a3ms_F50,
-)
-from pyisomme.report.euro_ncap.side_pole import EuroNCAP_Side_Pole
-from pyisomme.report.euro_ncap.side_pole import Overall as Overall_Side_Pole
-from pyisomme.report.euro_ncap.side_barrier import Overall as Overall_Side_Barrier
-from pyisomme.report.euro_ncap.limits import Limit_G, Limit_P, Limit_M, Limit_A, Limit_W
-from pyisomme.report.euro_ncap.protocols import PROTOCOL_FARSIDE_2_4
-
 import logging
-import numpy as np
 from typing import Any
 
+import numpy as np
+
+from pyisomme.isomme import Isomme
+from pyisomme.limit import Limit
+from pyisomme.report.criterion import Criterion, Role, sub
+from pyisomme.report.ctx import from_input
+from pyisomme.report.euro_ncap.frontal_50kmh import (
+    Criterion_Head_a3ms as Criterion_Head_a3ms_F50,
+    Criterion_HIC_15 as Criterion_HIC_15_F50,
+)
+from pyisomme.report.euro_ncap.limits import Limit_A, Limit_G, Limit_M, Limit_P, Limit_W
+from pyisomme.report.euro_ncap.protocols import PROTOCOL_FARSIDE_2_4
+from pyisomme.report.euro_ncap.side_barrier import Overall as Overall_Side_Barrier
+from pyisomme.report.euro_ncap.side_pole import (
+    EuroNCAP_Side_Pole,
+    Overall as Overall_Side_Pole,
+)
+from pyisomme.report.manual import Manual, manual
+from pyisomme.report.page import (
+    Page_Cover,
+    Page_Criterion_Rating_Table,
+    Page_Criterion_Values_Chart,
+    Page_Criterion_Values_Table,
+    Page_Plot_nxn,
+)
+from pyisomme.report.report import Report
 
 logger = logging.getLogger(__name__)
 

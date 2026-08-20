@@ -39,7 +39,6 @@ from pyisomme.report.manual import Manual, manual
 from pyisomme.report.report import Report
 from pyisomme.report.validate import validate_tree
 
-
 logging.basicConfig(level=logging.CRITICAL)
 
 

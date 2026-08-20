@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import argparse
+import logging
 from collections import Counter
 from fnmatch import fnmatch
-import logging
 from pathlib import Path
 
 import numpy as np
@@ -16,7 +16,6 @@ from pyisomme.isomme import Isomme
 from pyisomme.plotting import Plot_Line
 from pyisomme.report import REPORTS
 from pyisomme.unit import Unit
-
 
 logger = logging.getLogger(__name__)
 

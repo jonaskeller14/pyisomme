@@ -1,11 +1,10 @@
 from __future__ import annotations
 
+import tarfile
+import zipfile
 from abc import ABC, abstractmethod
 from pathlib import Path
-import tarfile
 from typing import Literal
-import zipfile
-
 
 #: Single-byte codecs tried, in order, once UTF-8 has been ruled out.
 #:

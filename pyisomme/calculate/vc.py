@@ -1,15 +1,15 @@
 from __future__ import annotations
 
+import copy
+import logging
+
+import numpy as np
+import pandas as pd
+
 from pyisomme.channel import Channel
 from pyisomme.errors import UnsupportedCalculationError
 from pyisomme.unit import Unit
 from pyisomme.utils import debug_logging
-
-import copy
-import logging
-import numpy as np
-import pandas as pd
-
 
 logger = logging.getLogger("pyisomme.calculate")
 

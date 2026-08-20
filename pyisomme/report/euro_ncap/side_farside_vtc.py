@@ -1,22 +1,22 @@
 from __future__ import annotations
 
-from pyisomme.isomme import Isomme
-from pyisomme.report.page import Page_Cover, Page_Criterion_Values_Table
-from pyisomme.report.report import Report
-from pyisomme.report.criterion import Criterion, Role, sub
-from pyisomme.report.ctx import from_input
-from pyisomme.report.manual import Manual, manual
-from pyisomme.correlation import Correlation_ISO18571
-from pyisomme.channel import Channel
-from pyisomme.unit import g0
-from pyisomme.limit import Limit
-from pyisomme.report.euro_ncap.side_pole import EuroNCAP_Side_Pole
-from pyisomme.report.euro_ncap.protocols import PROTOCOL_VTC_1_0
-
 import logging
-import numpy as np
 from typing import Any
 
+import numpy as np
+
+from pyisomme.channel import Channel
+from pyisomme.correlation import Correlation_ISO18571
+from pyisomme.isomme import Isomme
+from pyisomme.limit import Limit
+from pyisomme.report.criterion import Criterion, Role, sub
+from pyisomme.report.ctx import from_input
+from pyisomme.report.euro_ncap.protocols import PROTOCOL_VTC_1_0
+from pyisomme.report.euro_ncap.side_pole import EuroNCAP_Side_Pole
+from pyisomme.report.manual import Manual, manual
+from pyisomme.report.page import Page_Cover, Page_Criterion_Values_Table
+from pyisomme.report.report import Report
+from pyisomme.unit import g0
 
 logger = logging.getLogger(__name__)
 

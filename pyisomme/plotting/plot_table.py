@@ -5,15 +5,15 @@
 # pyright: reportArgumentType=false, reportAttributeAccessIssue=false
 from __future__ import annotations
 
-from pyisomme.plotting.plot import Plot
-
-from matplotlib.figure import Figure
-import matplotlib.pyplot as plt
-from matplotlib.axes import Axes
-import numpy as np
 import logging
 from typing import cast
 
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib.axes import Axes
+from matplotlib.figure import Figure
+
+from pyisomme.plotting.plot import Plot
 
 logger = logging.getLogger(__name__)
 

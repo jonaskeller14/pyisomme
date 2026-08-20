@@ -10,8 +10,8 @@ test setup and equipment provisions remain external checks.
 
 from __future__ import annotations
 
-from enum import Enum
 import logging
+from enum import Enum
 from typing import cast
 
 import numpy as np
@@ -32,7 +32,6 @@ from pyisomme.report.page import (
 )
 from pyisomme.report.report import Report
 from pyisomme.unit import Unit, g0
-
 
 logger = logging.getLogger(__name__)
 

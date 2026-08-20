@@ -1,18 +1,18 @@
 from __future__ import annotations
 
-from datetime import date
 import logging
-import numpy as np
+from datetime import date
 from typing import Any, cast
 
+import numpy as np
+
 from pyisomme import Channel
+from pyisomme.correlation import Correlation_ISO18571
 from pyisomme.isomme import Isomme
+from pyisomme.report.criterion import Criterion, Role
 from pyisomme.report.page import Page_Cover, Page_Criterion_Table
 from pyisomme.report.report import Report
-from pyisomme.report.criterion import Criterion, Role
-from pyisomme.correlation import Correlation_ISO18571
 from pyisomme.report.report_protocol import ReportProtocol
-
 
 logger = logging.getLogger(__name__)
 

@@ -1,27 +1,27 @@
 from __future__ import annotations
 
-from pyisomme.parsing import parse_mme, parse_chn, parse_xxx
-from pyisomme.channel import create_sample, Channel
-from pyisomme.code import Code
-from pyisomme.errors import InvalidCodeError
-from pyisomme.sources import ArchiveSource, FolderSource, ZipSource, TarSource
-from pyisomme.providers import PROVIDERS
-from pyisomme.utils import debug_logging
-from pyisomme.info import Info
-
+import copy
+import fnmatch
+import glob
+import logging
+import os
+import re
+import shutil
 from collections.abc import Iterable
+from pathlib import Path
+from typing import Literal
+
 from tqdm.auto import tqdm
 from tqdm.contrib.logging import logging_redirect_tqdm
-from typing import Literal
-import os
-import glob
-import re
-import copy
-from pathlib import Path
-import fnmatch
-import logging
-import shutil
 
+from pyisomme.channel import Channel, create_sample
+from pyisomme.code import Code
+from pyisomme.errors import InvalidCodeError
+from pyisomme.info import Info
+from pyisomme.parsing import parse_chn, parse_mme, parse_xxx
+from pyisomme.providers import PROVIDERS
+from pyisomme.sources import ArchiveSource, FolderSource, TarSource, ZipSource
+from pyisomme.utils import debug_logging
 
 logger = logging.getLogger(__name__)
 

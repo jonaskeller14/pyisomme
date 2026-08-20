@@ -10,7 +10,6 @@ from pptx import Presentation
 
 from tests import golden_utils
 
-
 if __name__ == "__main__":
     logging.basicConfig(level=logging.ERROR)
     report = golden_utils.BUILDERS[sys.argv[1]]()

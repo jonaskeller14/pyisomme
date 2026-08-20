@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
-from typing_extensions import override
+
 from matplotlib.figure import Figure
+from typing_extensions import override
 
 from pyisomme.channel import Channel
 from pyisomme.isomme import Isomme

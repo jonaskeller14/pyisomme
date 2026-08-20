@@ -1,11 +1,11 @@
-import unittest
 import io
 import tarfile
 import tempfile
+import unittest
 import zipfile
 from pathlib import Path
 
-from pyisomme.sources import read_text_with_fallback, FolderSource, ZipSource, TarSource
+from pyisomme.sources import FolderSource, TarSource, ZipSource, read_text_with_fallback
 
 
 class TestReadTextWithFallback(unittest.TestCase):

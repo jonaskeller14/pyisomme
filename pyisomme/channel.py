@@ -1,21 +1,21 @@
 from __future__ import annotations
 
-from pyisomme.unit import Unit, g0
-from pyisomme.info import Info
-from pyisomme.code import Code
-
-import re
-import pandas as pd
-import numpy as np
+import copy
 import logging
+import re
 import warnings
 from fnmatch import fnmatch
-from matplotlib import pyplot as plt
-from scipy.integrate import cumulative_trapezoid
-from scipy import interpolate as scipy_interpolate
-import copy
 from typing import Literal
 
+import numpy as np
+import pandas as pd
+from matplotlib import pyplot as plt
+from scipy import interpolate as scipy_interpolate
+from scipy.integrate import cumulative_trapezoid
+
+from pyisomme.code import Code
+from pyisomme.info import Info
+from pyisomme.unit import Unit, g0
 
 logger = logging.getLogger(__name__)
 

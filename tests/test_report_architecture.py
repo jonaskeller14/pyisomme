@@ -15,7 +15,6 @@ from pyisomme.report.page import Page
 from pyisomme.report.report import Report
 from pyisomme.report.report_protocol import ReportProtocol
 
-
 PROTOCOL = ReportProtocol(version="test", sources=())
 
 

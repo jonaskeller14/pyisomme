@@ -1,10 +1,10 @@
-import pyisomme
-
-import unittest
 import logging
-import pandas as pd
-import numpy as np
+import unittest
 
+import numpy as np
+import pandas as pd
+
+import pyisomme
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(

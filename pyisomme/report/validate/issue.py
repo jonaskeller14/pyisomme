@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import enum
-from dataclasses import dataclass
 from collections.abc import Sequence
+from dataclasses import dataclass
 
 
 class IssueSeverity(str, enum.Enum):

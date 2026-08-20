@@ -9,11 +9,9 @@ from difflib import get_close_matches
 # ``Manual[float, manual(0.0, unit="mm")]`` reads as ``float`` to mypy/pyright.
 # Imported under an alias rather than assigned (``Manual = Annotated``) because
 # only the import form is recognised as a type alias by mypy.
-from typing import Annotated as Manual
-from typing import Any, Union, get_args, get_origin
+from typing import Annotated as Manual, Any, Union, get_args, get_origin
 
 import numpy as np
-
 
 __all__ = [
     "InputSpec",

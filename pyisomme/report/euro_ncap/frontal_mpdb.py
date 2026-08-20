@@ -1,47 +1,45 @@
 from __future__ import annotations
 
-from pyisomme.isomme import Isomme
-from pyisomme.report.page import (
-    Page_Cover,
-    Page_OLC,
-    Page_Plot_nxn,
-    Page_Criterion_Values_Table,
-    Page_Criterion_Rating_Table,
-    Page_Criterion_Values_Chart,
-)
-from pyisomme.report.report import Report
-from pyisomme.limit import Limit
+import logging
+from typing import Any
+
+import numpy as np
+
 from pyisomme.calculate import calculate_olc
-from pyisomme.report.euro_ncap.frontal_50kmh import EuroNCAP_Frontal_50kmh
+from pyisomme.isomme import Isomme
+from pyisomme.limit import Limit
+from pyisomme.report.criterion import Criterion, Role, sub
+from pyisomme.report.ctx import from_input
 from pyisomme.report.euro_ncap.frontal_50kmh import (
     Criterion_Chest_VC,
     Criterion_Head_a3ms,
     Criterion_HIC_15,
     Criterion_ShoulderBeltLoad,
     Criterion_Submarining,
-)
-from pyisomme.report.euro_ncap.frontal_50kmh import (
     Criterion_UnstableAirbagContact as Criterion_UnstableAirbagContact_F50,
+    EuroNCAP_Frontal_50kmh,
+    Overall as Overall_Frontal_50kmh,
 )
-from pyisomme.report.euro_ncap.frontal_50kmh import Overall as Overall_Frontal_50kmh
-from pyisomme.report.criterion import Criterion, Role, sub
-from pyisomme.report.ctx import from_input
-from pyisomme.report.manual import Manual, manual
 from pyisomme.report.euro_ncap.limits import (
-    Limit_G,
-    Limit_P,
-    Limit_C,
-    Limit_M,
     Limit_A,
+    Limit_C,
+    Limit_G,
+    Limit_M,
+    Limit_P,
     Limit_W,
 )
 from pyisomme.report.euro_ncap.protocols import PROTOCOL_9_3
+from pyisomme.report.manual import Manual, manual
+from pyisomme.report.page import (
+    Page_Cover,
+    Page_Criterion_Rating_Table,
+    Page_Criterion_Values_Chart,
+    Page_Criterion_Values_Table,
+    Page_OLC,
+    Page_Plot_nxn,
+)
+from pyisomme.report.report import Report
 from pyisomme.unit import Unit, g0
-
-import logging
-import numpy as np
-from typing import Any
-
 
 logger = logging.getLogger(__name__)
 

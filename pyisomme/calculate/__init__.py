@@ -39,7 +39,6 @@ from pyisomme.calculate.tibia_index import (
 from pyisomme.calculate.vc import calculate_vc
 from pyisomme.calculate.xms import calculate_xms
 
-
 __all__ = [
     "calculate_adjusted_lower_tibia_moment_My",
     "calculate_adjusted_upper_tibia_moment_My",

@@ -1,14 +1,14 @@
 from __future__ import annotations
 
-from pyisomme.channel import Channel, time_intersect
-from pyisomme.utils import debug_logging
-from pyisomme.calculate.resultant import calculate_resultant
-
 import logging
+
 import numpy as np
 import pandas as pd
 from scipy.integrate import solve_ivp
 
+from pyisomme.calculate.resultant import calculate_resultant
+from pyisomme.channel import Channel, time_intersect
+from pyisomme.utils import debug_logging
 
 logger = logging.getLogger("pyisomme.calculate")
 

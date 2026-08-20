@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from dataclasses import FrozenInstanceError, dataclass, replace
 import unittest
+from dataclasses import FrozenInstanceError, dataclass, replace
 
 from pyisomme.limit import Limit
 

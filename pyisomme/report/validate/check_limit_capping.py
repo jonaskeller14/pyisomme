@@ -1,16 +1,16 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
 from collections.abc import Iterator
+from typing import TYPE_CHECKING
 
 from pyisomme.report.validate.issue import Issue, IssueSeverity
 from pyisomme.report.validate.util import (
     Direction,
     Row,
+    block_label,
     by_value,
     flag,
     per_side,
-    block_label,
     rows_text,
     superseded,
 )

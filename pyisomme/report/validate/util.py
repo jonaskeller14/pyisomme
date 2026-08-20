@@ -3,9 +3,9 @@ from __future__ import annotations
 import enum
 import math
 from collections import defaultdict
+from collections.abc import Iterator, Sequence
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Callable
-from collections.abc import Iterator, Sequence
 
 import numpy as np
 

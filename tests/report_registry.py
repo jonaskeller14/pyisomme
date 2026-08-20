@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
+import importlib
 from dataclasses import dataclass
 from fnmatch import fnmatch
-import importlib
 from pathlib import Path
 
 import pyisomme

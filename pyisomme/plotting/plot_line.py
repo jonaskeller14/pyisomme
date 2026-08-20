@@ -5,23 +5,24 @@
 # pyright: reportArgumentType=false, reportAttributeAccessIssue=false
 from __future__ import annotations
 
-from pyisomme.limit import Limit
-from pyisomme.limits import Limits, limit_list_unique, limit_list_sort
+import copy
+import logging
+from typing import TYPE_CHECKING, cast
+
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib.axes import Axes
+from matplotlib.figure import Figure
+
 from pyisomme.code import Code, combine_codes
+from pyisomme.limit import Limit
+from pyisomme.limits import Limits, limit_list_sort, limit_list_unique
 from pyisomme.plotting.plot import Plot
 from pyisomme.unit import Unit
 
-import copy
-from matplotlib.figure import Figure
-import matplotlib.pyplot as plt
-from matplotlib.axes import Axes
-import numpy as np
-import logging
-from typing import cast, TYPE_CHECKING
-
 if TYPE_CHECKING:
-    from pyisomme.isomme import Isomme
     from pyisomme.channel import Channel
+    from pyisomme.isomme import Isomme
 
 
 logger = logging.getLogger(__name__)

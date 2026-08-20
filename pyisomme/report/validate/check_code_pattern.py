@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING
 from collections.abc import Iterator
+from typing import TYPE_CHECKING
 
 from pyisomme.code import CODE_LENGTH, pattern_length
 from pyisomme.report.validate.issue import Issue, IssueSeverity

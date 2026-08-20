@@ -2,7 +2,6 @@ from datetime import date
 
 from pyisomme.report.report_protocol import ReportProtocol
 
-
 PROTOCOL_R94_2022 = ReportProtocol(
     version="2022",
     name="Regulation No. 94: Uniform provisions concerning the approval of vehicles with regard to the protection of the occupants in the event of a frontal collision",

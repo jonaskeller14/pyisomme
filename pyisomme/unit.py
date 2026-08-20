@@ -1,6 +1,9 @@
-import astropy.units as u
-from astropy.constants import g0 as ASTROPY_G0  # pyright: ignore[reportAttributeAccessIssue]
 from typing import Any
+
+import astropy.units as u
+from astropy.constants import (
+    g0 as ASTROPY_G0,  # pyright: ignore[reportAttributeAccessIssue]
+)
 
 u.set_enabled_aliases({"Nm": u.Unit("N*m"), "dimensionless": u.Unit("1")})
 

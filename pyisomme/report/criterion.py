@@ -1,10 +1,19 @@
 from __future__ import annotations
 
-from pyisomme.isomme import Isomme
+import itertools
+import logging
+from abc import abstractmethod
+from collections.abc import Iterator, Sequence
+from enum import Enum
+from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast, overload
+
+import numpy as np
+
 from pyisomme.channel import Channel
+from pyisomme.errors import MissingData, Status
+from pyisomme.isomme import Isomme
 from pyisomme.limit import Limit
 from pyisomme.limits import Limits
-from pyisomme.errors import MissingData, Status
 from pyisomme.report.ctx import Ctx, CtxSource
 from pyisomme.report.manual import (
     InputSpec,
@@ -13,14 +22,6 @@ from pyisomme.report.manual import (
     settable_names,
     suggest,
 )
-
-import numpy as np
-import itertools
-import logging
-from abc import abstractmethod
-from collections.abc import Iterator, Sequence
-from enum import Enum
-from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast, overload
 
 if TYPE_CHECKING:
     from pyisomme.report.report import Report

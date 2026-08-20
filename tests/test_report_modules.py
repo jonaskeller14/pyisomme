@@ -23,7 +23,6 @@ import unittest
 
 import pyisomme.report
 
-
 REPORT_DIR = os.path.dirname(pyisomme.report.__file__)
 
 # --------------------------------------------------------------------------- #

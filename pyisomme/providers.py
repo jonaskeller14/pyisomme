@@ -1,15 +1,13 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Callable, Literal, cast
-from collections.abc import Sequence
 import fnmatch
 import logging
+from collections.abc import Sequence
+from typing import TYPE_CHECKING, Callable, Literal, cast
+
 import numpy as np
 import pandas as pd
 
-from pyisomme.channel import Channel, time_intersect
-from pyisomme.code import Code
-from pyisomme.errors import UnsupportedCalculationError
 from pyisomme.calculate import (
     calculate_adjusted_lower_tibia_moment_My,
     calculate_adjusted_upper_tibia_moment_My,
@@ -30,6 +28,9 @@ from pyisomme.calculate import (
     calculate_vc,
     calculate_xms,
 )
+from pyisomme.channel import Channel, time_intersect
+from pyisomme.code import Code
+from pyisomme.errors import UnsupportedCalculationError
 
 if TYPE_CHECKING:
     from pyisomme.isomme import Isomme

@@ -3,7 +3,7 @@ from __future__ import annotations
 import unittest
 
 import pyisomme
-from pyisomme.report.fmvss import DummyType, FMVSS_208
+from pyisomme.report.fmvss import FMVSS_208, DummyType
 
 
 def threshold(criterion) -> float:

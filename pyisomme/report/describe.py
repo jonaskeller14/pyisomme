@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import math
-from typing import TYPE_CHECKING, Any
 from collections.abc import Sequence
+from typing import TYPE_CHECKING, Any
 
 from pyisomme.limit import Limit
 from pyisomme.report.validate import SAMPLE_X, blocks, derived_max_rating

@@ -2,7 +2,6 @@ from datetime import date
 
 from pyisomme.report.report_protocol import ReportProtocol
 
-
 PROTOCOL_MODERATE_VII = ReportProtocol(
     version="II",
     name="Moderate Overlap Crashworthiness Evaluation 2.0 Rating Guidelines",

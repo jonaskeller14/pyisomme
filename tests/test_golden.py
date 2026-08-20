@@ -14,7 +14,6 @@ import unittest
 
 from tests import golden_utils
 
-
 logging.basicConfig(level=logging.ERROR)
 
 

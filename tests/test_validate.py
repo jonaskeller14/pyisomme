@@ -25,8 +25,8 @@ import logging
 import os
 import sys
 import unittest
-from typing import Any
 from dataclasses import replace
+from typing import Any
 
 import pyisomme
 from pyisomme.limit import Limit
@@ -43,7 +43,6 @@ from pyisomme.report.manual import Manual, manual
 from pyisomme.report.report import Report
 from pyisomme.report.validate import validate_tree
 from tests.report_registry import BY_CLASS, REPORTS, build_empty
-
 
 logging.basicConfig(level=logging.ERROR)
 

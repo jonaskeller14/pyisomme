@@ -1,13 +1,13 @@
 from __future__ import annotations
 
+import logging
 from collections.abc import Iterable
 from dataclasses import dataclass
-import logging
 from typing import Callable
+
 import numpy as np
 
 from pyisomme.unit import Unit
-
 
 logger = logging.getLogger(__name__)
 

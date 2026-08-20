@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-from pyisomme.channel import Channel
-from pyisomme.utils import debug_logging
-
 import logging
 
+from pyisomme.channel import Channel
+from pyisomme.utils import debug_logging
 
 logger = logging.getLogger("pyisomme.calculate")
 

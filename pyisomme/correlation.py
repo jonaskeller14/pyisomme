@@ -1,8 +1,8 @@
-from pyisomme.channel import Channel, time_intersect
-
-import numpy as np
 import logging
 
+import numpy as np
+
+from pyisomme.channel import Channel, time_intersect
 
 logger = logging.getLogger(__name__)
 

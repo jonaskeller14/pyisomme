@@ -12,19 +12,20 @@ is out of scope for the report refactor (plan Step 2, review Appendix A5).
 """
 
 from __future__ import annotations
+
+import logging
+from typing import Any
+
+import numpy as np
+
 from pyisomme.calculate import calculate_p_head_hic15_ais_3plus
 from pyisomme.isomme import Isomme
 from pyisomme.limit import Limit
-from pyisomme.report.report import Report
 from pyisomme.report.criterion import Criterion, Role, sub
 from pyisomme.report.ctx import from_input
 from pyisomme.report.manual import Manual, manual
+from pyisomme.report.report import Report
 from pyisomme.report.us_ncap.limits import Limit_1, Limit_2, Limit_3, Limit_4, Limit_5
-
-import logging
-import numpy as np
-from typing import Any
-
 
 logger = logging.getLogger(__name__)
 

@@ -12,9 +12,9 @@ Out of scope for the report refactor (plan Step 2) — see the sibling module do
 
 from __future__ import annotations
 
-from pyisomme.report.meta_report import MetaReport
-
 from typing import Any
+
+from pyisomme.report.meta_report import MetaReport
 
 
 class USNCAP(MetaReport):

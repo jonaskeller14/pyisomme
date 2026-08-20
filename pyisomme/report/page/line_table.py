@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 from abc import ABC
-from typing_extensions import override
-from matplotlib.figure import Figure
+
 import numpy as np
+from matplotlib.figure import Figure
+from typing_extensions import override
 
 from pyisomme.channel import Channel
 from pyisomme.isomme import Isomme

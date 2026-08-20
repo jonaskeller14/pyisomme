@@ -9,7 +9,6 @@ from pyisomme.report.describe import NONE, resolve_sources
 from tests.report_registry import REPORTS, uncovered_report_modules
 from tests.test_validate import GOLDEN_DIR, attach, build, leaf
 
-
 logging.basicConfig(level=logging.ERROR)
 
 DESCRIBE_DIR = os.path.join(GOLDEN_DIR, "describe")

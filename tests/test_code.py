@@ -1,10 +1,9 @@
-from pyisomme.errors import InvalidCodeError
-from pyisomme.code import Code, combine_codes
-from pyisomme.unit import Unit
-
-import unittest
 import logging
+import unittest
 
+from pyisomme.code import Code, combine_codes
+from pyisomme.errors import InvalidCodeError
+from pyisomme.unit import Unit
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(

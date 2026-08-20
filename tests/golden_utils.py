@@ -15,13 +15,13 @@ Regenerate with ``.venv/Scripts/python.exe -m tests.golden_regen``.
 
 from __future__ import annotations
 
-from contextlib import redirect_stdout
-from io import StringIO
 import json
 import math
 import os
 import subprocess
 import sys
+from contextlib import redirect_stdout
+from io import StringIO
 from typing import Any
 
 import numpy as np
@@ -31,7 +31,6 @@ from pyisomme.report.criterion import Criterion
 from pyisomme.report.meta_report import MetaReport
 from pyisomme.report.report import Report
 from tests.report_registry import BY_STEM, build_euro_ncap_synthetic, build_synthetic
-
 
 GOLDEN_DIR = os.path.join(os.path.dirname(__file__), "golden")
 #: x positions at which every ``Limit.func`` is sampled to make it comparable.

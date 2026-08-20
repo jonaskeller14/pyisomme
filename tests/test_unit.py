@@ -2,9 +2,10 @@ import copy
 import logging
 import pickle
 import unittest
+
 import astropy.units as u
-from astropy.constants import g0 as ASTROPY_G0_CONSTANT  # type: ignore
 import pandas as pd
+from astropy.constants import g0 as ASTROPY_G0_CONSTANT  # type: ignore
 
 from pyisomme import Unit, g0
 from pyisomme.channel import Channel

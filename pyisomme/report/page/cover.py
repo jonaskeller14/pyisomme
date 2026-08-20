@@ -2,8 +2,9 @@
 # `lazyproperty` descriptor no checker can see through.
 # pyright: reportAttributeAccessIssue=false, reportIndexIssue=false
 from __future__ import annotations
-from typing_extensions import override
+
 from pptx.presentation import Presentation
+from typing_extensions import override
 
 from pyisomme.report.base_report import BaseReport
 from pyisomme.report.page.base import Page

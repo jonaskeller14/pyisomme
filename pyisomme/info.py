@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterable, Mapping
-from typing import Any, IO
+from typing import IO, Any
 
 
 class Info(list[tuple[str, Any]]):

@@ -1,18 +1,17 @@
-import unittest
-import logging
-import warnings
 import copy
+import logging
+import unittest
+import warnings
 from unittest.mock import patch
 
-from matplotlib import pyplot as plt
-import pandas as pd
-import numpy as np
 import astropy.units as u
+import numpy as np
+import pandas as pd
+from matplotlib import pyplot as plt
 
 from pyisomme.channel import Channel, create_sample
 from pyisomme.isomme import Isomme
 from pyisomme.unit import Unit, g0
-
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(

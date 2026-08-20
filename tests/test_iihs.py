@@ -8,9 +8,9 @@ from pyisomme.channel import Channel
 from pyisomme.errors import Status
 from pyisomme.isomme import Isomme
 from pyisomme.report.iihs.frontal import _kth_demerits
+from pyisomme.report.iihs.frontal_moderate_overlap import IIHS_Frontal_Moderate_Overlap
 from pyisomme.report.iihs.frontal_small_overlap import IIHS_Frontal_Small_Overlap
 from pyisomme.report.iihs.limits import Limit_A, Limit_G, Limit_M, Limit_P
-from pyisomme.report.iihs.frontal_moderate_overlap import IIHS_Frontal_Moderate_Overlap
 from pyisomme.report.iihs.side_impact import IIHS_Side_Impact
 
 

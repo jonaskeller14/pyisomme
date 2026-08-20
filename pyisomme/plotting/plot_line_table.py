@@ -3,20 +3,21 @@
 # pyright: reportArgumentType=false, reportAttributeAccessIssue=false
 from __future__ import annotations
 
+import logging
+from typing import TYPE_CHECKING, cast
+
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib.figure import Figure
+
 from pyisomme.limits import Limits
 from pyisomme.plotting.plot import Plot
 from pyisomme.plotting.plot_line import Plot_Line
 from pyisomme.plotting.plot_table import Plot_Table
 
-from matplotlib.figure import Figure
-import matplotlib.pyplot as plt
-import numpy as np
-import logging
-from typing import cast, TYPE_CHECKING
-
 if TYPE_CHECKING:
-    from pyisomme.isomme import Isomme
     from pyisomme.channel import Channel
+    from pyisomme.isomme import Isomme
 
 
 logger = logging.getLogger(__name__)

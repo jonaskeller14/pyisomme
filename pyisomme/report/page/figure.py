@@ -5,13 +5,13 @@ from __future__ import annotations
 
 import io
 from abc import ABC, abstractmethod
-from typing_extensions import override
+
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from pptx.presentation import Presentation
+from typing_extensions import override
 
 from pyisomme.report.page.content import Page_Content
-
 
 FIGSIZE_Y = 8.0
 

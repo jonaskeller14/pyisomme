@@ -16,13 +16,12 @@ from __future__ import annotations
 
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
 import unittest
+from pathlib import Path
 
 from tests import golden_utils
-
 
 PPTX_REQUEST = os.environ.get("PYISOMME_PPTX", "")
 

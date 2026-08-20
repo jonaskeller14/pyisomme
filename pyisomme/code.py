@@ -1,16 +1,15 @@
 from __future__ import annotations
 
-from pyisomme.errors import InvalidCodeError
-from pyisomme.unit import Unit
-
+import logging
 import re
+import xml.etree.ElementTree as ET
 from fnmatch import translate
 from functools import cache, lru_cache
 from pathlib import Path
 from typing import NamedTuple
-import logging
-import xml.etree.ElementTree as ET
 
+from pyisomme.errors import InvalidCodeError
+from pyisomme.unit import Unit
 
 logger = logging.getLogger(__name__)
 

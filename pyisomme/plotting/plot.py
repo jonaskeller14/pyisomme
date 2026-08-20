@@ -5,11 +5,11 @@
 # pyright: reportArgumentType=false, reportAttributeAccessIssue=false
 from __future__ import annotations
 
-from matplotlib.figure import Figure
-import matplotlib.pyplot as plt
-import matplotlib.colors as mcolors
 import logging
 
+import matplotlib.colors as mcolors
+import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
 
 logger = logging.getLogger(__name__)
 

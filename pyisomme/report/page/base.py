@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from typing import Generic, TypeVar
+
 from pptx.presentation import Presentation
 
 from pyisomme.report.base_report import BaseReport
-
 
 R = TypeVar("R", bound=BaseReport)
 

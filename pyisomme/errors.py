@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import enum
 
-
 __all__ = [
     "PyisommeError",
     "MalformedFileError",

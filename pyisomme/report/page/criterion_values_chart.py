@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
-from typing_extensions import override
+
 import matplotlib.pyplot as plt
-from matplotlib.figure import Figure
 import numpy as np
+from matplotlib.figure import Figure
+from typing_extensions import override
 
 from pyisomme.isomme import Isomme
 from pyisomme.limits import limit_list_sort

@@ -1,19 +1,18 @@
 """Fixture-free tests for the error taxonomy and the 3-state criterion outcome."""
 
-import unittest
 import logging
+import unittest
 
 import numpy as np
 
-from pyisomme.isomme import Isomme
 from pyisomme.errors import (
     MissingData,
     PyisommeError,
     Status,
     UnsupportedCalculationError,
 )
+from pyisomme.isomme import Isomme
 from pyisomme.report.criterion import Criterion
-
 
 logging.basicConfig(level=logging.CRITICAL)  # silence the expected ERROR traceback
 

@@ -1,20 +1,19 @@
-import pyisomme
-from pyisomme.errors import MalformedFileError
-from pyisomme.parsing import (
-    parse_mme,
-    parse_xxx,
-    resolve_time_axis,
-    get_normalization_notes,
-)
-from pyisomme.sources import read_text_with_fallback
-
-import unittest
 import logging
 import math
+import unittest
 from pathlib import Path
 
 import numpy as np
 
+import pyisomme
+from pyisomme.errors import MalformedFileError
+from pyisomme.parsing import (
+    get_normalization_notes,
+    parse_mme,
+    parse_xxx,
+    resolve_time_axis,
+)
+from pyisomme.sources import read_text_with_fallback
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(

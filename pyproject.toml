@@ -122,16 +122,39 @@ disallow_untyped_defs = false
 disallow_incomplete_defs = false
 
 [tool.ruff]
+# Modern Ruff uses target-version or relies on pyproject's requires-python
 target-version = "py39"
-extend-exclude = [".venv", "out", "data", "docs", "head-trajectory-calculation"]
+extend-exclude = [
+    ".venv",
+    "out",
+    "data",
+    "docs",
+    "head-trajectory-calculation",
+]
 
 [tool.ruff.lint]
-select = ["E", "F", "W", "B", "UP"]
-ignore = [
-    "E501",    # line length: channel-pattern expressions are deliberately one-liners here
-    "E741",    # ambiguous variable name (l/I/O) - used for physical symbols
-    "B008",    # function call in default argument
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # Pyflakes (unused imports, undefined variables)
+    "B",    # flake8-bugbear
+    "UP",   # pyupgrade
+    "I",    # isort (import sorting)
+    "TID",  # flake8-tidy-imports (ban relative imports)
 ]
+ignore = [
+    "E501", # Line too long (managed by ruff format or deliberate long lines)
+    "E741", # Ambiguous variable name (physical symbols like l, I, O)
+    "B008", # Function call in default argument
+]
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+known-first-party = ["pyisomme"]
+
+[tool.ruff.lint.flake8-tidy-imports]
+# Forces explicit, absolute imports across modules (e.g. from pyisomme.units import X)
+ban-relative-imports = "parents"
 
 [tool.ruff.lint.per-file-ignores]
 # Re-export modules: names are imported for their side effect of being bound.

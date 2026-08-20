@@ -18,7 +18,6 @@ from pyisomme.report.page import (
 )
 from pyisomme.report.report import Report
 
-
 P_DRIVER = manual(
     "1",
     source="test report",

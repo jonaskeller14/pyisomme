@@ -1,33 +1,33 @@
 from __future__ import annotations
 
+import logging
+from typing import Any
+
+import numpy as np
+
 from pyisomme.isomme import Isomme
-from pyisomme.report.page import (
-    Page_Cover,
-    Page_Plot_nxn,
-    Page_Criterion_Rating_Table,
-    Page_Criterion_Values_Chart,
-    Page_Criterion_Values_Table,
-)
-from pyisomme.unit import Unit, g0
 from pyisomme.limit import Limit
-from pyisomme.report.report import Report
 from pyisomme.report.criterion import Criterion, Role, sub
 from pyisomme.report.ctx import from_input
-from pyisomme.report.manual import Manual, manual
 from pyisomme.report.euro_ncap.limits import (
-    Limit_G,
-    Limit_P,
-    Limit_C,
-    Limit_M,
     Limit_A,
+    Limit_C,
+    Limit_G,
+    Limit_M,
+    Limit_P,
     Limit_W,
 )
 from pyisomme.report.euro_ncap.protocols import PROTOCOL_9_3
-
-import logging
-import numpy as np
-from typing import Any
-
+from pyisomme.report.manual import Manual, manual
+from pyisomme.report.page import (
+    Page_Cover,
+    Page_Criterion_Rating_Table,
+    Page_Criterion_Values_Chart,
+    Page_Criterion_Values_Table,
+    Page_Plot_nxn,
+)
+from pyisomme.report.report import Report
+from pyisomme.unit import Unit, g0
 
 logger = logging.getLogger(__name__)
 

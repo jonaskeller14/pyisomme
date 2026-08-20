@@ -10,7 +10,6 @@ from pyisomme.report.page.line_table import Page_Line_Table
 from pyisomme.report.page.olc import Page_OLC
 from pyisomme.report.page.plot_nxn import Page_Plot_nxn
 
-
 __all__ = [
     "Page",
     "Page_Content",

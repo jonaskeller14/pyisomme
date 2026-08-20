@@ -1,16 +1,16 @@
 from __future__ import annotations
 
-from pyisomme.channel import Channel
-from pyisomme.info import Info
-from pyisomme.errors import MalformedFileError
-
 import logging
-from datetime import datetime
-import numpy as np
-import pandas as pd
 import re
+from datetime import datetime
 from typing import Any
 
+import numpy as np
+import pandas as pd
+
+from pyisomme.channel import Channel
+from pyisomme.errors import MalformedFileError
+from pyisomme.info import Info
 
 logger = logging.getLogger(__name__)
 

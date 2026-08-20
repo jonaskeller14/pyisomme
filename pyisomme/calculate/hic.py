@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from pyisomme.channel import Channel
-from pyisomme.unit import Unit, g0
-from pyisomme.utils import debug_logging
-
 import logging
+
 import numpy as np
 import pandas as pd
 
+from pyisomme.channel import Channel
+from pyisomme.unit import Unit, g0
+from pyisomme.utils import debug_logging
 
 logger = logging.getLogger("pyisomme.calculate")
 

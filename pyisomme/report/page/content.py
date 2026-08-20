@@ -4,14 +4,14 @@
 # pyright: reportAttributeAccessIssue=false, reportIndexIssue=false, reportOptionalOperand=false
 from __future__ import annotations
 
-from abc import ABC
 import getpass
 import os
+from abc import ABC
 from datetime import datetime
-from typing_extensions import override
 
 from pptx.presentation import Presentation
 from pptx.util import Inches
+from typing_extensions import override
 
 from pyisomme.report.page.base import Page
 

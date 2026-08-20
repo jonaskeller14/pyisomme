@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Callable
-from typing_extensions import override
+
 from matplotlib.colors import to_rgb
 from matplotlib.figure import Figure
+from typing_extensions import override
 
 from pyisomme.isomme import Isomme
 from pyisomme.plotting import Plot, Plot_Table
