@@ -56,8 +56,12 @@ class TestArchiveSources:
         with TarSource(tar_path) as source:
             yield source
 
-    @pytest.mark.parametrize("source_fixture", ["folder_source", "zip_source", "tar_source"])
-    def test_archive_contents(self, request: pytest.FixtureRequest, source_fixture: str) -> None:
+    @pytest.mark.parametrize(
+        "source_fixture", ["folder_source", "zip_source", "tar_source"]
+    )
+    def test_archive_contents(
+        self, request: pytest.FixtureRequest, source_fixture: str
+    ) -> None:
         source = request.getfixturevalue(source_fixture)
         names = set(source.names())
 

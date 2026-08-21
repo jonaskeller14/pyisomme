@@ -50,9 +50,13 @@ class TestCalculateNeckNIJ:
         assert provided is not None
         assert provided.code.main_location == "NIJC"
 
-    def test_get_channel_returns_none_for_unsupported_nij_dummy(self, unsupported_isomme):
+    def test_get_channel_returns_none_for_unsupported_nij_dummy(
+        self, unsupported_isomme
+    ):
         assert unsupported_isomme.get_channel("11NIJCIPCF0000YB") is None
 
-    def test_get_channel_does_not_hide_inconsistent_nij_inputs(self, inconsistent_isomme):
+    def test_get_channel_does_not_hide_inconsistent_nij_inputs(
+        self, inconsistent_isomme
+    ):
         with pytest.raises(ValueError, match="Multiple dummy types"):
             inconsistent_isomme.get_channel("11NIJCIPCF??00YB")

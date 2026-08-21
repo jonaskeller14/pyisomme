@@ -154,11 +154,11 @@ def build_correlation() -> Correlation:
 
 def build_euroncap_frontal_mpdb() -> EuroNCAP_Frontal_MPDB:
     SCALES_Y = [0.5, 1, 2]
+    # fmt: off
     return EuroNCAP_Frontal_MPDB(
         isomme_list=[
             Isomme(
                 test_number=f"v{idx}",
-                # fmt: off
                 channels=[
                     create_sample(code="11HEAD0000H3ACRA", y_range=(0, 100)).scale_y(scale_y),
                     create_sample(code="11HICR0015H300RX", y_range=(0, 500)).scale_y(scale_y),
@@ -189,20 +189,20 @@ def build_euroncap_frontal_mpdb() -> EuroNCAP_Frontal_MPDB:
                     create_sample(code="13TIBI0000H3FOZB", y_range=(-2000, 0)).scale_y(scale_y),
                     create_sample(code="M1MBAR000000VEXA", mode="linear", y_range=(20, 0), unit="m/s").scale_y(scale_y),
                 ],
-                # fmt: on
             )
             for idx, scale_y in enumerate(SCALES_Y, 1)
         ]
     )
+    # fmt: on
 
 
 def build_euroncap_side_barrier() -> EuroNCAP_Side_Barrier:
     SCALES_Y = [0.5, 1, 2]
+    # fmt: off
     return EuroNCAP_Side_Barrier(
         isomme_list=[
             Isomme(
                 test_number=f"v{idx}",
-                # fmt: off
                 channels=[
                     create_sample(code="11HICR0015H300RX", y_range=(0, 500)).scale_y(scale_y),
                     create_sample(code="11HEAD003CH3ACRX", y_range=(0, 100)).scale_y(scale_y),
@@ -213,20 +213,20 @@ def build_euroncap_side_barrier() -> EuroNCAP_Side_Barrier:
                     create_sample(code="11VCAR0000H3VEYC", y_range=(-0.5, 0.5)).scale_y(scale_y),
                     create_sample(code="11PUBC0000H3FOYB", y_range=(0, 1000)).scale_y(scale_y),
                 ],
-                # fmt: on
             )
             for idx, scale_y in enumerate(SCALES_Y, 1)
         ]
     )
+    # fmt: on
 
 
 def build_euroncap_side_farside() -> EuroNCAP_Side_FarSide:
     SCALES_Y = [0.5, 1, 2]
+    # fmt: off
     return EuroNCAP_Side_FarSide(
         isomme_list=[
             Isomme(
                 test_number=f"v{idx}",
-                # fmt: off
                 channels=[
                     create_sample(code="11HICR0015H300RX", y_range=(0, 500)).scale_y(scale_y),
                     create_sample(code="11HEAD003CH3ACRX", y_range=(0, 100)).scale_y(scale_y),
@@ -243,20 +243,20 @@ def build_euroncap_side_farside() -> EuroNCAP_Side_FarSide:
                     create_sample(code="11LUSP0000H3FOZB", y_range=(-1000, 1000)).scale_y(scale_y),
                     create_sample(code="11LUSP0000H3MOXB", y_range=(-20, 20)).scale_y(scale_y),
                 ],
-                # fmt: on
             )
             for idx, scale_y in enumerate(SCALES_Y, 1)
         ]
     )
+    # fmt: on
 
 
 def build_euroncap_side_pole() -> EuroNCAP_Side_Pole:
     SCALES_Y = [0.5, 1, 2]
+    # fmt: off
     return EuroNCAP_Side_Pole(
         isomme_list=[
             Isomme(
                 test_number=f"v{idx}",
-                # fmt: off
                 channels=[
                     create_sample(code="11HICR0015H300RX", y_range=(0, 500)).scale_y(scale_y),
                     create_sample(code="11HEAD0000H3ACRA", y_range=(0, 100)).scale_y(scale_y),
@@ -267,20 +267,20 @@ def build_euroncap_side_pole() -> EuroNCAP_Side_Pole:
                     create_sample(code="11VCAR0000H3VEYC", y_range=(-0.5, 0.5)).scale_y(scale_y),
                     create_sample(code="11PUBC0000H3FOYB", y_range=(0, 1000)).scale_y(scale_y),
                 ],
-                # fmt: on
             )
             for idx, scale_y in enumerate(SCALES_Y, 1)
         ]
     )
+    # fmt: on
 
 
 def build_iihs_frontal_small_overlap() -> IIHS_Frontal_Small_Overlap:
     SCALES_Y = [0.5, 1, 2]
+    # fmt: off
     return IIHS_Frontal_Small_Overlap(
         isomme_list=[
             Isomme(
                 test_number=f"v{idx}",
-                # fmt: off
                 channels=[
                     create_sample(code="11HICR0015H300RX", y_range=(0, 500)).scale_y(scale_y),
                     create_sample(code="11NIJCIP00H300YB", y_range=(0, 0.5)).scale_y(scale_y),
@@ -297,20 +297,20 @@ def build_iihs_frontal_small_overlap() -> IIHS_Frontal_Small_Overlap:
                     create_sample(code="11TIBI00LOH3FOZB", y_range=(-2000, 0)).scale_y(scale_y),
                     create_sample(code="11FOOT0000H3ACRB", y_range=(0, 100)).scale_y(scale_y),
                 ],
-                # fmt: on
             )
             for idx, scale_y in enumerate(SCALES_Y, 1)
         ]
     )
+    # fmt: on
 
 
 def build_iihs_frontal_moderate_overlap() -> IIHS_Frontal_Moderate_Overlap:
     SCALES_Y = [0.5, 1, 2]
+    # fmt: off
     return IIHS_Frontal_Moderate_Overlap(
         isomme_list=[
             Isomme(
                 test_number=f"v{idx}",
-                # fmt: off
                 channels=[
                     create_sample(code="11HICR0015H300RX", y_range=(0, 500)).scale_y(scale_y),
                     create_sample(code="11NIJCIP00H300YB", y_range=(0, 0.5)).scale_y(scale_y),
@@ -331,20 +331,20 @@ def build_iihs_frontal_moderate_overlap() -> IIHS_Frontal_Moderate_Overlap:
                     create_sample(code="16SEBE0000B3FOXC", y_range=(0, 3000)).scale_y(scale_y),
                     create_sample(code="16FEMR0000H3FOZB", y_range=(-2000, 0)).scale_y(scale_y),
                 ],
-                # fmt: on
             )
             for idx, scale_y in enumerate(SCALES_Y, 1)
         ]
     )
+    # fmt: on
 
 
 def build_iihs_side_impact() -> IIHS_Side_Impact:
     SCALES_Y = [0.5, 1, 2]
+    # fmt: off
     report = IIHS_Side_Impact(
         isomme_list=[
             Isomme(
                 test_number=f"v{idx}",
-                # fmt: off
                 channels=[
                     create_sample(code="11HICR0015H300RX", y_range=(0, 500)).scale_y(scale_y),
                     create_sample(code="11NECKUP00H3FOZB", y_range=(-1000, 1000)).scale_y(scale_y),
@@ -365,25 +365,25 @@ def build_iihs_side_impact() -> IIHS_Side_Impact:
                     create_sample(code="16ACTBLE00H3FOYB", y_range=(0, 1000)).scale_y(scale_y),
                     create_sample(code="16ILUMLE00H3FOYB", y_range=(0, 1000)).scale_y(scale_y),
                 ],
-                # fmt: on
             )
             for idx, scale_y in enumerate(SCALES_Y, 1)
         ]
     )
-
+    # fmt: on
     for isomme in report.isomme_list:
         report.overall(isomme).criterion_structure.b_pillar_to_seat_centerline_cm = 20.0
 
     return report
+    # fmt: on
 
 
 def build_un_frontal_50kmh_r137() -> UN_Frontal_50kmh_R137:
     SCALES_Y = [0.5, 1, 2]
+    # fmt: off
     return UN_Frontal_50kmh_R137(
         isomme_list=[
             Isomme(
                 test_number=f"v{idx}",
-                # fmt: off
                 channels=[
                     create_sample(code="11HICR0036H300RX", y_range=(0, 500)).scale_y(scale_y),
                     create_sample(code="11HEAD003CH3ACRX", y_range=(0, 100)).scale_y(scale_y),
@@ -402,20 +402,20 @@ def build_un_frontal_50kmh_r137() -> UN_Frontal_50kmh_R137:
                     create_sample(code="13VCCR0003H3VEXC", y_range=(-0.5, 0.5)).scale_y(scale_y),
                     create_sample(code="13FEMR0000H3FOZB", y_range=(-2000, 0)).scale_y(scale_y),
                 ],
-                # fmt: on
             )
             for idx, scale_y in enumerate(SCALES_Y, 1)
         ]
     )
+    # fmt: on
 
 
 def build_un_frontal_56kmh_odb_r94() -> UN_Frontal_56kmh_ODB_R94:
     SCALES_Y = [0.5, 1, 2]
+    # fmt: off
     return UN_Frontal_56kmh_ODB_R94(
         isomme_list=[
             Isomme(
                 test_number=f"v{idx}",
-                # fmt: off
                 channels=[
                     create_sample(code="11HICR0036H300RX", y_range=(0, 500)).scale_y(scale_y),
                     create_sample(code="11HEAD003CH3ACRX", y_range=(0, 100)).scale_y(scale_y),
@@ -440,20 +440,20 @@ def build_un_frontal_56kmh_odb_r94() -> UN_Frontal_56kmh_ODB_R94:
                     create_sample(code="13TIIN0000H3000B", y_range=(0, 0.5)).scale_y(scale_y),
                     create_sample(code="13KNSL0000H3DSXC", y_range=(-0.01, 0)).scale_y(scale_y),
                 ],
-                # fmt: on
             )
             for idx, scale_y in enumerate(SCALES_Y, 1)
         ]
     )
+    # fmt: on
 
 
 def build_un_side_pole_r135() -> UN_Side_Pole_R135:
     SCALES_Y = [0.5, 1, 2]
+    # fmt: off
     return UN_Side_Pole_R135(
         isomme_list=[
             Isomme(
                 test_number=f"v{idx}",
-                # fmt: off
                 channels=[
                     create_sample(code="11HICR0036H300RX", y_range=(0, 500)).scale_y(scale_y),
                     create_sample(code="11SHLD0000H3FOYB", y_range=(0, 1000)).scale_y(scale_y),
@@ -462,20 +462,20 @@ def build_un_side_pole_r135() -> UN_Side_Pole_R135:
                     create_sample(code="11THSP123CH3ACRX", y_range=(0, 100)).scale_y(scale_y),
                     create_sample(code="11PUBC0000H3FOYB", y_range=(0, 1000)).scale_y(scale_y),
                 ],
-                # fmt: on
             )
             for idx, scale_y in enumerate(SCALES_Y, 1)
         ]
     )
+    # fmt: on
 
 
 def build_un_side_barrier_r95() -> UN_Side_Barrier_R95:
     SCALES_Y = [0.5, 1, 2]
+    # fmt: off
     return UN_Side_Barrier_R95(
         isomme_list=[
             Isomme(
                 test_number=f"v{idx}",
-                # fmt: off
                 channels=[
                     create_sample(code="11HICR0036H300RX", y_range=(0, 500)).scale_y(scale_y),
                     create_sample(code="11RIBSLE00H3DSYC", y_range=(-0.03, 0)).scale_y(scale_y),
@@ -483,11 +483,11 @@ def build_un_side_barrier_r95() -> UN_Side_Barrier_R95:
                     create_sample(code="11PUBC0000H3FOYB", y_range=(0, 1000)).scale_y(scale_y),
                     create_sample(code="11ABDOLE00H3FOYB", y_range=(0, 1000)).scale_y(scale_y),
                 ],
-                # fmt: on
             )
             for idx, scale_y in enumerate(SCALES_Y, 1)
         ]
     )
+    # fmt: on
 
 
 def build_euro_ncap() -> MetaReport:
@@ -530,8 +530,12 @@ def build_fmvss_208() -> FMVSS_208:
                 + build_h3_channels(position="1", seed=idx, scale_y=scale_y)
                 + build_h3_channels(position="3", seed=idx, scale_y=scale_y)
                 + [
-                    create_sample(code="11CHST003CH3ACRX", y_range=(0, 100)).scale_y(scale_y),
-                    create_sample(code="13CHST003CH3ACRX", y_range=(0, 100)).scale_y(scale_y),
+                    create_sample(code="11CHST003CH3ACRX", y_range=(0, 100)).scale_y(
+                        scale_y
+                    ),
+                    create_sample(code="13CHST003CH3ACRX", y_range=(0, 100)).scale_y(
+                        scale_y
+                    ),
                 ],
             )
             for idx, scale_y in enumerate(SCALES_Y, 1)

@@ -19,7 +19,11 @@ from pyisomme.report.validate import validate_tree
 
 def report_of(overall: type[Criterion], n: int = 1) -> tuple[Report, list[Isomme]]:
     """A minimal report around ``overall``, with ``n`` empty tests."""
-    sample_report = type("SampleReport", (Report,), {"name": "Sample Report", "Criterion_Overall": overall})
+    sample_report = type(
+        "SampleReport",
+        (Report,),
+        {"name": "Sample Report", "Criterion_Overall": overall},
+    )
     isomme_list = [Isomme(f"T{i}") for i in range(n)]
     return sample_report(isomme_list), isomme_list
 
@@ -35,7 +39,9 @@ class Rated(Criterion):
         self.value = self.rating
 
 
-def rated(value: float, role: Role = Role.RESULT, name: str = "Rated") -> type[Criterion]:
+def rated(
+    value: float, role: Role = Role.RESULT, name: str = "Rated"
+) -> type[Criterion]:
     return type("Rated_", (Rated,), {"name": name, "rating": value, "role": role})
 
 
@@ -53,7 +59,11 @@ class TestDeclarationOrder:
                 pass
 
         report, (v1,) = report_of(Overall)
-        assert [attr for attr, _ in report.overall(v1).get_children()] == ["zulu", "alpha", "mike"]
+        assert [attr for attr, _ in report.overall(v1).get_children()] == [
+            "zulu",
+            "alpha",
+            "mike",
+        ]
 
     def test_subclass_appends_and_overrides_without_touching_the_base(self) -> None:
         class Base(Criterion):
@@ -73,7 +83,10 @@ class TestDeclarationOrder:
         assert children["second"].name == "Replaced"
 
         base_report, (v2,) = report_of(Base)
-        assert [attr for attr, _ in base_report.overall(v2).get_children()] == ["first", "second"]
+        assert [attr for attr, _ in base_report.overall(v2).get_children()] == [
+            "first",
+            "second",
+        ]
 
     def test_declared_then_added_then_legacy(self) -> None:
         """Coexistence (D-5): all three wiring styles in one node, in that order."""
@@ -92,7 +105,12 @@ class TestDeclarationOrder:
         report, (v1,) = report_of(Overall)
         overall = report.overall(v1)
         overall.add_child("added", rated(4.0)(report, v1))
-        assert [attr for attr, _ in overall.get_children()] == ["declared", "added", "legacy_z", "legacy_a"]
+        assert [attr for attr, _ in overall.get_children()] == [
+            "declared",
+            "added",
+            "legacy_z",
+            "legacy_a",
+        ]
 
     def test_walk_is_depth_first_in_declaration_order(self) -> None:
         class Leaf(Criterion):
@@ -114,7 +132,13 @@ class TestDeclarationOrder:
                 pass
 
         report, (v1,) = report_of(Overall)
-        assert [path for path, _ in report.overall(v1).walk()] == ["", "second", "second/zulu", "second/alpha", "first"]
+        assert [path for path, _ in report.overall(v1).walk()] == [
+            "",
+            "second",
+            "second/zulu",
+            "second/alpha",
+            "first",
+        ]
 
     def test_print_results_follows_the_protocol_not_the_alphabet(self) -> None:
         class Overall(Criterion):
@@ -278,7 +302,6 @@ class TestAutoCalculation:
         assert report.overall(v1).rating == 0.0
 
 
-
 class Mixed(Criterion):
     """Two results and a modifier — the "min over results plus sum over modifiers" box."""
 
@@ -317,7 +340,10 @@ class TestAggregation:
     def test_explicit_roles_select_exactly_those(self) -> None:
         report, (v1,) = report_of(Mixed)
         overall = report.overall(v1)
-        assert [c.name for c in overall.children_by_role(Role.RESULT)] == ["Good", "Bad"]
+        assert [c.name for c in overall.children_by_role(Role.RESULT)] == [
+            "Good",
+            "Bad",
+        ]
         assert [c.name for c in overall.children_by_role(Role.MODIFIER)] == ["Penalty"]
         assert len(overall.children_by_role(Role.RESULT, Role.MODIFIER)) == 3
 
@@ -431,7 +457,7 @@ class Occupant(Criterion):
     name = "Occupant"
 
     def calculation(self) -> None:
-        self.value = self.ctx.field("p") # pyright: ignore[reportAttributeAccessIssue]
+        self.value = self.ctx.field("p")  # pyright: ignore[reportAttributeAccessIssue]
 
 
 class Seated(Criterion):
@@ -481,7 +507,9 @@ class TestContext:
         report.overall(v1).p_driver = "A"
         report.calculate()
         assert report.overall(v1).driver.value == "A"
-        assert report.overall(v1).driver.code("?{p}HEAD??00??ACRA") == "?AHEAD??00??ACRA"
+        assert (
+            report.overall(v1).driver.code("?{p}HEAD??00??ACRA") == "?AHEAD??00??ACRA"
+        )
 
     def test_children_inherit_the_context(self) -> None:
         class Leaf(Criterion):
@@ -512,7 +540,10 @@ class TestContext:
 
     def test_a_code_template_is_filled_from_the_context(self) -> None:
         report, (v1,) = report_of(Seated)
-        assert report.overall(v1).front_passenger.code("?{p}HEAD??00??ACRA") == "?3HEAD??00??ACRA"
+        assert (
+            report.overall(v1).front_passenger.code("?{p}HEAD??00??ACRA")
+            == "?3HEAD??00??ACRA"
+        )
 
     def test_a_template_without_a_placeholder_passes_through(self) -> None:
         report, (v1,) = report_of(Seated)
@@ -548,7 +579,9 @@ class TestContext:
         report, (v1,) = report_of(Overall)
         report.calculate()
         assert report.overall(v1).driver.status == Status.NA
-        assert "Channel-code position of the driver" in str(report.overall(v1).driver.na_reason)
+        assert "Channel-code position of the driver" in str(
+            report.overall(v1).driver.na_reason
+        )
 
     def test_from_input_still_accepts_a_name(self) -> None:
         """The string form is the escape hatch for a declaration in another module."""
@@ -600,7 +633,10 @@ class TestContext:
 
     def test_character_classes_count_as_one_character(self) -> None:
         report, (v1,) = report_of(Seated)
-        assert report.overall(v1).driver.code("?{p}CHST000[03]??DSX?") == "?1CHST000[03]??DSX?"
+        assert (
+            report.overall(v1).driver.code("?{p}CHST000[03]??DSX?")
+            == "?1CHST000[03]??DSX?"
+        )
 
     def test_at_derives_without_mutating(self) -> None:
         report, (v1,) = report_of(Seated)
@@ -738,8 +774,7 @@ class TestLimits:
         report.overall(v1).p_driver = "2"
         report.calculate()
         assert [
-            limit.code_patterns
-            for limit in report.overall(v1).driver.limits.limit_list
+            limit.code_patterns for limit in report.overall(v1).driver.limits.limit_list
         ] == [("?2HEAD??00??ACRA",)]
 
     def test_recalculating_does_not_duplicate_limits(self) -> None:

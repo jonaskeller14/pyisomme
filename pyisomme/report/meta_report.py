@@ -116,7 +116,7 @@ class MetaReport(BaseReport):
                     "status": "OK",
                 }
             },
-            **{name: report.json_results() for name, report in self._reports.items()}
+            **{name: report.json_results() for name, report in self._reports.items()},
         }
 
     def validate(self, errors_only: bool = False) -> list[Issue]:

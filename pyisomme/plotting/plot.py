@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class Plot(ABC):
-    colors: list[str] = list(mcolors.TABLEAU_COLORS.values()) # pyright: ignore[reportAttributeAccessIssue]
+    colors: list[str] = list(mcolors.TABLEAU_COLORS.values())  # pyright: ignore[reportAttributeAccessIssue]
     linestyles: list[str | tuple] = [
         "-",
         "--",
@@ -40,5 +40,4 @@ class Plot(ABC):
         return self
 
     @abstractmethod
-    def plot(self) -> Figure:
-        ...
+    def plot(self) -> Figure: ...

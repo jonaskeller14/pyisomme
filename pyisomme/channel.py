@@ -410,7 +410,7 @@ class Channel:
             time_array,
             value_array,
             kind=method,
-            fill_value=fill_value, # pyright: ignore[reportArgumentType]
+            fill_value=fill_value,  # pyright: ignore[reportArgumentType]
             bounds_error=False,
         )(t)  # pyright: ignore[reportArgumentType]
 
@@ -881,14 +881,16 @@ def create_sample(
 
     if noise_per:
         noise_from_per = noise_per * abs(peak - baseline)
-        value_array += np.random.default_rng(seed).normal(0.0, noise_from_per, sample_count)
+        value_array += np.random.default_rng(seed).normal(
+            0.0, noise_from_per, sample_count
+        )
 
     data = pd.DataFrame({"Time": time_array, "SAMPLE": value_array}).set_index("Time")
     return Channel(
         code=resolved_code,
         unit=resolved_unit,
         data=data,
-        info=[("Sampling interval", time_array[1] - time_array[0])]
+        info=[("Sampling interval", time_array[1] - time_array[0])],
     )
 
 

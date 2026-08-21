@@ -209,7 +209,9 @@ class Criterion_ShoulderBeltLoad(Criterion):
         ]
 
     def calculation(self) -> None:
-        self.channel = self.require_channel(self.ctx.code("?{p}SEBE????B3FO[X0]D")).convert_unit("kN")
+        self.channel = self.require_channel(
+            self.ctx.code("?{p}SEBE????B3FO[X0]D")
+        ).convert_unit("kN")
         self.value = np.max(self.channel.get_data())
         self.rating = self.limits.get_limit_min_rating(self.channel)
         self.color = self.limits.get_limit_min_color(self.channel)
@@ -233,7 +235,9 @@ class Criterion_Femur_Axial_Force(Criterion):
             ]
 
         def calculation(self) -> None:
-            self.channel = self.require_channel(self.ctx.code("?{p}FEMRLE00??FOZB")).convert_unit("kN")
+            self.channel = self.require_channel(
+                self.ctx.code("?{p}FEMRLE00??FOZB")
+            ).convert_unit("kN")
             self.value = np.min(self.channel.get_data())
             self.rating = self.limits.get_limit_min_rating(
                 self.channel, interpolate=True
@@ -254,7 +258,9 @@ class Criterion_Femur_Axial_Force(Criterion):
             ]
 
         def calculation(self) -> None:
-            self.channel = self.require_channel(self.ctx.code("?{p}FEMRRI00??FOZB")).convert_unit("kN")
+            self.channel = self.require_channel(
+                self.ctx.code("?{p}FEMRRI00??FOZB")
+            ).convert_unit("kN")
             self.value = np.min(self.channel.get_data())
             self.rating = self.limits.get_limit_min_rating(
                 self.channel, interpolate=True
@@ -601,7 +607,9 @@ class Overall(Criterion):
                     ]
 
                 def calculation(self) -> None:
-                    self.channel = self.require_channel(self.ctx.code("?{p}NECKUP00??MOYB")).convert_unit("Nm")
+                    self.channel = self.require_channel(
+                        self.ctx.code("?{p}NECKUP00??MOYB")
+                    ).convert_unit("Nm")
                     self.value = np.min(self.channel.get_data())
                     self.rating = self.limits.get_limit_min_rating(self.channel)
                     self.color = self.limits.get_limit_min_color(self.channel)

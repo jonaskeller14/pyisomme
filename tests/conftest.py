@@ -26,9 +26,7 @@ def pytest_collection_modifyitems(config, items):
     if config.getoption("--pptx"):
         return
 
-    skip_pptx = pytest.mark.skip(
-        reason="PPTX export is opt-in; pass --pptx to run"
-    )
+    skip_pptx = pytest.mark.skip(reason="PPTX export is opt-in; pass --pptx to run")
     for item in items:
         if "pptx" in item.keywords:
             item.add_marker(skip_pptx)
