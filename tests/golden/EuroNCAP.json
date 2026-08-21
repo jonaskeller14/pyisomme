@@ -1755,7 +1755,7 @@
         "criterion_olc_modifier": {
           "result": {
             "name": "Occupant Load Criterion (OLC) Modifier",
-            "value": 5.09683995922528,
+            "value": 6.841395918423194,
             "rating": 0.0,
             "color": null,
             "status": "OK"
@@ -2369,7 +2369,7 @@
         "criterion_olc_modifier": {
           "result": {
             "name": "Occupant Load Criterion (OLC) Modifier",
-            "value": 10.19367991845056,
+            "value": 13.020038175409585,
             "rating": 0.0,
             "color": null,
             "status": "OK"
@@ -2975,16 +2975,16 @@
       "criterion_compatibility_modifier": {
         "result": {
           "name": "Compatibility Modifier",
-          "value": 0.0,
-          "rating": 0.0,
+          "value": -0.13679284570247507,
+          "rating": -0.13679284570247496,
           "color": null,
           "status": "OK"
         },
         "criterion_olc_modifier": {
           "result": {
             "name": "Occupant Load Criterion (OLC) Modifier",
-            "value": 20.38735983690112,
-            "rating": 0.0,
+            "value": 26.025946342768563,
+            "rating": -0.13679284570247507,
             "color": null,
             "status": "OK"
           }
