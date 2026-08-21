@@ -1,10 +1,10 @@
 import copy
 import logging
 import pickle
-import unittest
 
 import astropy.units as u
 import pandas as pd
+import pytest
 from astropy.constants import g0 as ASTROPY_G0_CONSTANT  # type: ignore
 
 from pyisomme import Unit, g0
@@ -18,49 +18,48 @@ logging.basicConfig(
 )
 
 
-class TestUnitClassIdentity(unittest.TestCase):
+class TestUnitClassIdentity:
     """Verifies that custom Unit instantiation retains class identity."""
 
     def test_isinstance_check(self):
         unit_obj = Unit("m")
-        self.assertIsInstance(
-            unit_obj,
-            Unit,
-            msg="Unit('m') should be an instance of the custom Unit class, not u.UnitBase",
+        assert isinstance(unit_obj, Unit), (
+            "Unit('m') should be an instance of the custom Unit class, not u.UnitBase"
         )
 
     def test_passthrough_instantiation(self):
         unit1 = Unit("m")
         unit2 = Unit(unit1)
-        self.assertIsInstance(unit2, Unit)
-        self.assertEqual(unit1, unit2)
+        assert isinstance(unit2, Unit)
+        assert unit1 == unit2
 
 
-class TestStringSanitizationAndEdgeCases(unittest.TestCase):
+class TestStringSanitizationAndEdgeCases:
     """Tests custom string replacements, degree symbols, and shorthand symbols."""
 
-    def test_sanitization_mappings(self):
-        test_cases = [
+    @pytest.mark.parametrize(
+        "input_str, expected_astropy_str",
+        [
             ("°C", "deg_C"),
             ("°", "deg"),
             ("°/s", "deg / s"),
             ("-", "1"),
             ("Nm", "N m"),
             ("dimensionless", "1"),
-        ]
-        for input_str, expected_astropy_str in test_cases:
-            with self.subTest(input_str=input_str):
-                unit_obj = Unit(input_str)
-                self.assertEqual(unit_obj._astropy_unit, u.Unit(expected_astropy_str))
+        ],
+    )
+    def test_sanitization_mappings(self, input_str, expected_astropy_str):
+        unit_obj = Unit(input_str)
+        assert unit_obj._astropy_unit == u.Unit(expected_astropy_str)
 
     def test_compound_degree_edge_case(self):
         # Checks edge case when 'deg' and '°' appear in the same string ("deg°C" -> "degdeg_C")
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             Unit("deg°C")
 
     def test_whitespace_dash_sanitization(self):
         unit_obj = Unit(" - ")
-        self.assertEqual(unit_obj._astropy_unit, u.Unit("1"))
+        assert unit_obj._astropy_unit == u.Unit("1")
 
     def test_legacy(self):
         Unit("Nm")
@@ -83,86 +82,86 @@ class TestStringSanitizationAndEdgeCases(unittest.TestCase):
         assert channel.unit == Unit(g0)
 
 
-class TestGravityConstantHandling(unittest.TestCase):
+class TestGravityConstantHandling:
     """Tests Earth gravity (g0) unit integration and conversions."""
 
     def test_g0_object_behavior(self):
         unit_g0 = Unit(g0)
-        self.assertIsInstance(unit_g0, Unit)
-        self.assertTrue(unit_g0.is_equivalent(u.m / (u.s**2)))  # type: ignore
+        assert isinstance(unit_g0, Unit)
+        assert unit_g0.is_equivalent(u.m / (u.s**2))  # type: ignore
 
     def test_g0_scaling_equivalence(self):
         # 1 g0 must equal ~9.80665 m/s^2
         unit_g0 = Unit(g0)
         converted_val = (1 * unit_g0._astropy_unit).to(u.m / (u.s**2)).value  # type: ignore
-        self.assertAlmostEqual(converted_val, ASTROPY_G0_CONSTANT.value, places=5)
+        assert converted_val == pytest.approx(ASTROPY_G0_CONSTANT.value, abs=1e-5)
 
     def test_astropy_constant_quantity_passthrough(self):
         # Passing raw astropy Constant/Quantity directly
         unit_from_quantity = Unit(ASTROPY_G0_CONSTANT)
-        self.assertIsInstance(unit_from_quantity, Unit)
-        self.assertTrue(unit_from_quantity.is_equivalent(u.m / (u.s**2)))  # type: ignore
+        assert isinstance(unit_from_quantity, Unit)
+        assert unit_from_quantity.is_equivalent(u.m / (u.s**2))  # type: ignore
 
 
-class TestArithmeticAndDelegation(unittest.TestCase):
+class TestArithmeticAndDelegation:
     """Tests operator overloads (*, /) and attribute delegation to Astropy."""
 
     def test_multiplication(self):
         u1 = Unit("m")
         u2 = Unit("s")
         res = u1 * u2
-        self.assertIsInstance(res, Unit)
-        self.assertEqual(res, Unit("m * s"))
+        assert isinstance(res, Unit)
+        assert res == Unit("m * s")
 
     def test_division(self):
         u1 = Unit("m")
         u2 = Unit("s")
         res = u1 / u2
-        self.assertIsInstance(res, Unit)
-        self.assertEqual(res, Unit("m / s"))
+        assert isinstance(res, Unit)
+        assert res == Unit("m / s")
 
     def test_equality(self):
-        self.assertEqual(Unit("N*m"), Unit("Nm"))
-        self.assertEqual(Unit("m/s"), "m/s")  # Compare against string
-        self.assertNotEqual(Unit("m"), Unit("s"))
+        assert Unit("N*m") == Unit("Nm")
+        assert Unit("m/s") == "m/s"  # Compare against string
+        assert Unit("m") != Unit("s")
 
     def test_astropy_attribute_delegation(self):
         unit_obj = Unit("m/s")
         # .physical_type is delegated via __getattr__ to the underlying astropy unit
-        self.assertEqual(unit_obj.physical_type, "speed")
-        self.assertTrue(unit_obj.is_equivalent("km/h"))
+        assert unit_obj.physical_type == "speed"
+        assert unit_obj.is_equivalent("km/h")
 
 
-class TestCopyingAndHashing(unittest.TestCase):
+class TestCopyingAndHashing:
     """A copied Unit must stay a Unit -- see __getattr__ in pyisomme/unit.py."""
 
     def test_deepcopy_keeps_wrapper(self):
         unit_obj = Unit("m/s")
         copied = copy.deepcopy(unit_obj)
-        self.assertIsInstance(copied, Unit)
-        self.assertEqual(copied, unit_obj)
+        assert isinstance(copied, Unit)
+        assert copied == unit_obj
 
     def test_copy_keeps_wrapper(self):
         unit_obj = Unit("m/s")
         copied = copy.copy(unit_obj)
-        self.assertIsInstance(copied, Unit)
-        self.assertEqual(copied, unit_obj)
+        assert isinstance(copied, Unit)
+        assert copied == unit_obj
 
     def test_pickle_round_trip(self):
         unit_obj = Unit("m/s")
         restored = pickle.loads(pickle.dumps(unit_obj))
-        self.assertIsInstance(restored, Unit)
-        self.assertEqual(restored, unit_obj)
+        assert isinstance(restored, Unit)
+        assert restored == unit_obj
 
     def test_private_attributes_are_not_delegated(self):
         # Delegating dunder/private lookups is what handed out the bare astropy unit.
         private_name = "_not_an_attribute"
-        with self.assertRaises(AttributeError):
+        with pytest.raises(AttributeError):
             getattr(Unit("m"), private_name)
 
     def test_hashable(self):
-        self.assertEqual(len({Unit("m/s"), Unit("m/s"), Unit("m")}), 2)
-        self.assertEqual({Unit("m/s"): 1}[Unit("m/s")], 1)
+        assert len({Unit("m/s"), Unit("m/s"), Unit("m")}) == 2
+        assert {Unit("m/s"): 1}[Unit("m/s")] == 1
 
     def test_deepcopied_channel_can_still_convert(self):
         # Regression: calculate_olc() deep-copies its velocity channel, and the copy's
@@ -174,45 +173,41 @@ class TestCopyingAndHashing(unittest.TestCase):
             unit="m/s",
         )
         copied = copy.deepcopy(channel)
-        self.assertIsInstance(copied.unit, Unit)
+        assert isinstance(copied.unit, Unit)
         copied.convert_unit(Unit("m/s"))
-        self.assertEqual(copied.unit, Unit("m/s"))
+        assert copied.unit == Unit("m/s")
         copied.convert_unit("km/h")
-        self.assertAlmostEqual(float(copied.get_data()[0]), 3.6)
+        assert float(copied.get_data()[0]) == pytest.approx(3.6)
 
 
-class TestReflectedArithmetic(unittest.TestCase):
+class TestReflectedArithmetic:
     """`2 * Unit(...)` must not fall out of the wrapper either."""
 
     def test_reflected_multiplication(self):
         res = 2 * Unit("m")
-        self.assertIsInstance(res, Unit)
-        self.assertEqual(res, Unit("2 m"))
+        assert isinstance(res, Unit)
+        assert res == Unit("2 m")
 
     def test_reflected_division(self):
         res = 1 / Unit("s")
-        self.assertIsInstance(res, Unit)
-        self.assertEqual(res, Unit("1/s"))
+        assert isinstance(res, Unit)
+        assert res == Unit("1/s")
 
 
-class TestNumericAndInvalidInputs(unittest.TestCase):
+class TestNumericAndInvalidInputs:
     """Verifies numeric handling and proper failure modes for bad unit definitions."""
 
     def test_numeric_inputs_allowed(self):
         # Numbers like 1 or 12345 produce dimensionless scale units in Astropy
         unit_int = Unit(12345)
-        self.assertIsInstance(unit_int, Unit)
-        self.assertEqual(unit_int._astropy_unit, u.Unit(12345))  # type: ignore
+        assert isinstance(unit_int, Unit)
+        assert unit_int._astropy_unit == u.Unit(12345)  # type: ignore
 
     def test_invalid_unit_string(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             Unit("not_a_real_unit_xyz")
 
     def test_invalid_complex_type(self):
         # Unparseable object types (e.g. list or dict) should raise TypeError or ValueError
-        with self.assertRaises((TypeError, ValueError)):
+        with pytest.raises((TypeError, ValueError)):
             Unit([1, 2, 3])
-
-
-if __name__ == "__main__":
-    unittest.main()

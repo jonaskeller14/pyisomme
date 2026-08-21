@@ -125,7 +125,7 @@ vanish — invalid codes would sail straight through). And stop re-parsing the p
 - [x] `limits.py`: replace validation asserts with explicit raises — `Limit.__init__`
       func-arity check and the two `get_limits`/`get_limit_ratings` "No limits found" /
       "rating defined" checks → `ValueError`.
-- [x] `tests/test_code.py`: `assertRaises(AssertionError)` → `assertRaises(InvalidCodeError)`.
+- [x] `tests/test_code.py`: `pytest.raises(AssertionError)` → `pytest.raises(InvalidCodeError)`.
 
 ### Design notes
 - **`InvalidCodeError` subclasses `ValueError`** (see `errors.py`), so any latent

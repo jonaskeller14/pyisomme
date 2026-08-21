@@ -10,7 +10,7 @@ u.set_enabled_aliases({"Nm": u.Unit("N*m"), "dimensionless": u.Unit("1")})
 # Register standard earth gravity as an official custom Astropy unit
 g0_unit = u.def_unit(
     "g0",
-    represents=ASTROPY_G0.value * u.m / (u.s**2),
+    represents=ASTROPY_G0.value * u.m / (u.s**2), # pyright: ignore[reportAttributeAccessIssue]
     doc="Standard gravity acceleration",
 )  # pyright: ignore[reportAttributeAccessIssue]
 u.add_enabled_units([g0_unit])

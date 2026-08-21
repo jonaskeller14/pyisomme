@@ -1,6 +1,8 @@
 from pyisomme.report import correlation, euro_ncap, fmvss, iihs, un, us_ncap
 from pyisomme.report.base_report import BaseReport
+from pyisomme.report.correlation import Correlation
 from pyisomme.report.euro_ncap import (
+    EuroNCAP,
     EuroNCAP_Frontal_50kmh,
     EuroNCAP_Frontal_MPDB,
     EuroNCAP_Side_Barrier,
@@ -22,7 +24,8 @@ from pyisomme.report.un import (
     UN_Side_Pole_R135,
 )
 
-REPORTS = [
+REPORTS: list[type[Report]] = [
+    Correlation,
     EuroNCAP_Frontal_MPDB,
     EuroNCAP_Frontal_50kmh,
     EuroNCAP_Side_Barrier,
@@ -37,3 +40,9 @@ REPORTS = [
     UN_Side_Pole_R135,
     UN_Side_Barrier_R95,
 ]
+
+META_REPORTS: list[type[MetaReport]] = [
+    EuroNCAP,
+]
+
+ALL_REPORTS = REPORTS + META_REPORTS

@@ -410,7 +410,7 @@ class Channel:
             time_array,
             value_array,
             kind=method,
-            fill_value=fill_value,
+            fill_value=fill_value, # pyright: ignore[reportArgumentType]
             bounds_error=False,
         )(t)  # pyright: ignore[reportArgumentType]
 
@@ -797,12 +797,13 @@ class Channel:
 
 def create_sample(
     code: str = "SAMPLE??????????",
-    t_range: tuple[float, float, int] = (0, 0.1, 1000),
+    t_range: tuple[float, float, int] = (0, 0.2, 2001),
     y_range: tuple[float, float] = (0, 10),
     mode: Literal["linear", "sin", "pulse"] = "sin",
-    unit: str | Unit = "1",
+    unit: str | Unit | None = None,
     frequency: float | None = None,
     noise: float = 0.0,
+    noise_per: float = 0.0,
     seed: int | None = 0,
 ) -> Channel:
     """Create a deterministic sample channel for examples and tests.
@@ -823,9 +824,18 @@ def create_sample(
     :param frequency: Frequency in Hz. A sine defaults to one cycle over the
         time range; a pulse has no modulation unless a frequency is supplied.
     :param noise: Standard deviation of additive Gaussian noise.
+    :param noise_per: Standard deviation of additive Gaussian noise given as percentage from y-range
     :param seed: Random seed used for noise. The default is reproducible.
     :return: Sample channel.
     """
+    resolved_code = Code(code)
+
+    if unit is None:
+        default_unit = resolved_code.get_default_unit()
+        resolved_unit = default_unit if default_unit is not None else Unit("1")
+    else:
+        resolved_unit = unit
+
     t_start, t_end, sample_count = t_range
     if sample_count < 2:
         raise ValueError("t_range must request at least two samples")
@@ -845,7 +855,7 @@ def create_sample(
     elif mode == "sin":
         sine_frequency = 1 / duration if frequency is None else frequency
         phase = 2 * np.pi * sine_frequency * (time_array - t_start)
-        value_array = abs(peak - baseline) / 2 * np.sin(phase) + sum(y_range) / 2
+        value_array = (peak - baseline) / 2 * np.sin(phase) + sum(y_range) / 2
     elif mode == "pulse":
         # A raised-cosine pulse occupies the middle 40 % of the sample. It is
         # smooth at both ends, so filtering and differentiation do not see
@@ -867,13 +877,18 @@ def create_sample(
         raise ValueError(f"mode={mode} does not exist.")
 
     if noise:
-        value_array = value_array + np.random.default_rng(seed).normal(
-            0.0, noise, sample_count
-        )
+        value_array += np.random.default_rng(seed).normal(0.0, noise, sample_count)
+
+    if noise_per:
+        noise_from_per = noise_per * abs(peak - baseline)
+        value_array += np.random.default_rng(seed).normal(0.0, noise_from_per, sample_count)
 
     data = pd.DataFrame({"Time": time_array, "SAMPLE": value_array}).set_index("Time")
     return Channel(
-        code, data, unit, info=[("Sampling interval", time_array[1] - time_array[0])]
+        code=resolved_code,
+        unit=resolved_unit,
+        data=data,
+        info=[("Sampling interval", time_array[1] - time_array[0])]
     )
 
 

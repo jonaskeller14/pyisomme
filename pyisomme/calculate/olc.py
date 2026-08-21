@@ -37,7 +37,7 @@ def calculate_olc(
     # Free flight phase
     is_not_free_flight_phase = c_s_rel.data.iloc[:, 0] >= free_flight_phase_displacement
     if is_not_free_flight_phase.any():
-        t_1 = int(is_not_free_flight_phase.idxmax())
+        t_1 = float(is_not_free_flight_phase.idxmax())
     else:
         raise ArithmeticError(
             "OLC: Could not calculate t_1. Free flight phase too short."
@@ -65,7 +65,7 @@ def calculate_olc(
 
     c_olc_visual.data.iloc[
         np.logical_xor(is_not_free_flight_phase, after_restraining_phase), 0
-    ] = -olc * c_olc_visual.data[
+    ] = -olc * c_olc_visual.data[ # pyright: ignore[reportOperatorIssue]
         np.logical_xor(is_not_free_flight_phase, after_restraining_phase)
     ].index + (v_0 + olc * t_1)  # pyright: ignore[reportOperatorIssue]
     c_olc_visual.data.iloc[

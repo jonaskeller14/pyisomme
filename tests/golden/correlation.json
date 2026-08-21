@@ -1,250 +1,142 @@
 {
-  "print_results": [
-    "correlation-0",
-    "\tOverall: Value=nan [] Rating=nan",
-    "\t\t11HEAD0000H3ACXD: Value=nan [] Rating=nan",
-    "\t\t11CHST0000H3DSXD: Value=nan [] Rating=nan",
-    "\t\t11NECKUP00H3FOZD: Value=nan [] Rating=nan",
-    "\t\t11HEAD000000ACRD: Value=nan [] Rating=nan",
-    "\t\t13HEAD000000ACRD: Value=nan [] Rating=nan",
-    "\t\t16HEAD000000ACRD: Value=nan [] Rating=nan",
-    "\t\t11HEAD003C00ACRD: Value=nan [] Rating=nan",
-    "\t\t13HEAD003C00ACRD: Value=nan [] Rating=nan",
-    "\t\t16HEAD003C00ACRD: Value=nan [] Rating=nan",
-    "\t\t11CHST003C00ACRD: Value=nan [] Rating=nan",
-    "\t\t11FOOT000000ACRD: Value=nan [] Rating=nan",
-    "\t\t11RIBSLE0000DSYD: Value=nan [] Rating=nan",
-    "\t\t11ABDOLE0000FOYD: Value=nan [] Rating=nan",
-    "\t\t11THSP123C00ACRD: Value=nan [] Rating=nan",
-    "\t\tM1MBAR000000VEXD: Value=nan [] Rating=nan",
-    "\t\t11HICR00150000RD: Value=nan [] Rating=nan",
-    "correlation-1",
-    "\tOverall: Value=0.993 [] Rating=nan",
-    "\t\t11HEAD0000H3ACXD: Value=0.993 [] Rating=nan",
-    "\t\t11CHST0000H3DSXD: Value=0.993 [] Rating=nan",
-    "\t\t11NECKUP00H3FOZD: Value=0.993 [] Rating=nan",
-    "\t\t11HEAD000000ACRD: Value=0.993 [] Rating=nan",
-    "\t\t13HEAD000000ACRD: Value=0.993 [] Rating=nan",
-    "\t\t16HEAD000000ACRD: Value=0.993 [] Rating=nan",
-    "\t\t11HEAD003C00ACRD: Value=0.993 [] Rating=nan",
-    "\t\t13HEAD003C00ACRD: Value=0.993 [] Rating=nan",
-    "\t\t16HEAD003C00ACRD: Value=0.993 [] Rating=nan",
-    "\t\t11CHST003C00ACRD: Value=0.993 [] Rating=nan",
-    "\t\t11FOOT000000ACRD: Value=0.993 [] Rating=nan",
-    "\t\t11RIBSLE0000DSYD: Value=0.993 [] Rating=nan",
-    "\t\t11ABDOLE0000FOYD: Value=0.993 [] Rating=nan",
-    "\t\t11THSP123C00ACRD: Value=0.993 [] Rating=nan",
-    "\t\tM1MBAR000000VEXD: Value=0.993 [] Rating=nan",
-    "\t\t11HICR00150000RD: Value=0.993 [] Rating=nan"
-  ],
-  "report": "Correlation",
-  "results": {
-    "correlation-0": {
-      "11ABDOLE0000FOYB": {
-        "color": null,
+  "1: v1": {
+    "Overall": {
+      "result": {
+        "name": "Overall",
+        "value": "nan",
         "rating": "nan",
-        "status": "OK",
-        "value": "nan"
-      },
-      "11CHST0000H3DSXD": {
         "color": null,
-        "rating": "nan",
-        "status": "OK",
-        "value": "nan"
-      },
-      "11CHST003C00ACRX": {
-        "color": null,
-        "rating": "nan",
-        "status": "OK",
-        "value": "nan"
-      },
-      "11FOOT000000ACRA": {
-        "color": null,
-        "rating": "nan",
-        "status": "OK",
-        "value": "nan"
-      },
-      "11HEAD000000ACRA": {
-        "color": null,
-        "rating": "nan",
-        "status": "OK",
-        "value": "nan"
-      },
-      "11HEAD0000H3ACXD": {
-        "color": null,
-        "rating": "nan",
-        "status": "OK",
-        "value": "nan"
-      },
-      "11HEAD003C00ACRX": {
-        "color": null,
-        "rating": "nan",
-        "status": "OK",
-        "value": "nan"
-      },
-      "11HICR00150000RX": {
-        "color": null,
-        "rating": "nan",
-        "status": "OK",
-        "value": "nan"
-      },
-      "11NECKUP00H3FOZD": {
-        "color": null,
-        "rating": "nan",
-        "status": "OK",
-        "value": "nan"
-      },
-      "11RIBSLE0000DSYC": {
-        "color": null,
-        "rating": "nan",
-        "status": "OK",
-        "value": "nan"
-      },
-      "11THSP123C00ACRX": {
-        "color": null,
-        "rating": "nan",
-        "status": "OK",
-        "value": "nan"
-      },
-      "13HEAD000000ACRA": {
-        "color": null,
-        "rating": "nan",
-        "status": "OK",
-        "value": "nan"
-      },
-      "13HEAD003C00ACRX": {
-        "color": null,
-        "rating": "nan",
-        "status": "OK",
-        "value": "nan"
-      },
-      "16HEAD000000ACRA": {
-        "color": null,
-        "rating": "nan",
-        "status": "OK",
-        "value": "nan"
-      },
-      "16HEAD003C00ACRX": {
-        "color": null,
-        "rating": "nan",
-        "status": "OK",
-        "value": "nan"
-      },
-      "M1MBAR000000VEXA": {
-        "color": null,
-        "rating": "nan",
-        "status": "OK",
-        "value": "nan"
-      },
-      "Overall": {
-        "color": null,
-        "rating": "nan",
-        "status": "OK",
-        "value": "nan"
+        "status": "OK"
       }
     },
-    "correlation-1": {
-      "11ABDOLE0000FOYB": {
-        "color": "green",
+    "11HEAD0000H3ACXA": {
+      "result": {
+        "name": "11HEAD0000H3ACXD",
+        "value": "nan",
         "rating": "nan",
-        "status": "OK",
-        "value": 0.993
-      },
-      "11CHST0000H3DSXD": {
-        "color": "green",
-        "rating": "nan",
-        "status": "OK",
-        "value": 0.993
-      },
-      "11CHST003C00ACRX": {
-        "color": "green",
-        "rating": "nan",
-        "status": "OK",
-        "value": 0.993
-      },
-      "11FOOT000000ACRA": {
-        "color": "green",
-        "rating": "nan",
-        "status": "OK",
-        "value": 0.993
-      },
-      "11HEAD000000ACRA": {
-        "color": "green",
-        "rating": "nan",
-        "status": "OK",
-        "value": 0.993
-      },
-      "11HEAD0000H3ACXD": {
-        "color": "green",
-        "rating": "nan",
-        "status": "OK",
-        "value": 0.993
-      },
-      "11HEAD003C00ACRX": {
-        "color": "green",
-        "rating": "nan",
-        "status": "OK",
-        "value": 0.993
-      },
-      "11HICR00150000RX": {
-        "color": "green",
-        "rating": "nan",
-        "status": "OK",
-        "value": 0.993
-      },
-      "11NECKUP00H3FOZD": {
-        "color": "green",
-        "rating": "nan",
-        "status": "OK",
-        "value": 0.993
-      },
-      "11RIBSLE0000DSYC": {
-        "color": "green",
-        "rating": "nan",
-        "status": "OK",
-        "value": 0.993
-      },
-      "11THSP123C00ACRX": {
-        "color": "green",
-        "rating": "nan",
-        "status": "OK",
-        "value": 0.993
-      },
-      "13HEAD000000ACRA": {
-        "color": "green",
-        "rating": "nan",
-        "status": "OK",
-        "value": 0.993
-      },
-      "13HEAD003C00ACRX": {
-        "color": "green",
-        "rating": "nan",
-        "status": "OK",
-        "value": 0.993
-      },
-      "16HEAD000000ACRA": {
-        "color": "green",
-        "rating": "nan",
-        "status": "OK",
-        "value": 0.993
-      },
-      "16HEAD003C00ACRX": {
-        "color": "green",
-        "rating": "nan",
-        "status": "OK",
-        "value": 0.993
-      },
-      "M1MBAR000000VEXA": {
-        "color": "green",
-        "rating": "nan",
-        "status": "OK",
-        "value": 0.993
-      },
-      "Overall": {
         "color": null,
+        "status": "OK"
+      }
+    },
+    "11HEAD0000H3ACYA": {
+      "result": {
+        "name": "11HEAD0000H3ACYD",
+        "value": "nan",
         "rating": "nan",
-        "status": "OK",
-        "value": 0.993
+        "color": null,
+        "status": "OK"
+      }
+    },
+    "11HEAD0000H3ACZA": {
+      "result": {
+        "name": "11HEAD0000H3ACZD",
+        "value": "nan",
+        "rating": "nan",
+        "color": null,
+        "status": "OK"
+      }
+    },
+    "11CHST0000H3DSX1": {
+      "result": {
+        "name": "11CHST0000H3DSXD",
+        "value": "nan",
+        "rating": "nan",
+        "color": null,
+        "status": "OK"
+      }
+    }
+  },
+  "2: v2": {
+    "Overall": {
+      "result": {
+        "name": "Overall",
+        "value": 0.853,
+        "rating": "nan",
+        "color": null,
+        "status": "OK"
+      }
+    },
+    "11HEAD0000H3ACXA": {
+      "result": {
+        "name": "11HEAD0000H3ACXD",
+        "value": 0.853,
+        "rating": "nan",
+        "color": "green",
+        "status": "OK"
+      }
+    },
+    "11HEAD0000H3ACYA": {
+      "result": {
+        "name": "11HEAD0000H3ACYD",
+        "value": 0.885,
+        "rating": "nan",
+        "color": "green",
+        "status": "OK"
+      }
+    },
+    "11HEAD0000H3ACZA": {
+      "result": {
+        "name": "11HEAD0000H3ACZD",
+        "value": 0.89,
+        "rating": "nan",
+        "color": "green",
+        "status": "OK"
+      }
+    },
+    "11CHST0000H3DSX1": {
+      "result": {
+        "name": "11CHST0000H3DSXD",
+        "value": 1.0,
+        "rating": "nan",
+        "color": "green",
+        "status": "OK"
+      }
+    }
+  },
+  "3: v3": {
+    "Overall": {
+      "result": {
+        "name": "Overall",
+        "value": 0.563,
+        "rating": "nan",
+        "color": null,
+        "status": "OK"
+      }
+    },
+    "11HEAD0000H3ACXA": {
+      "result": {
+        "name": "11HEAD0000H3ACXD",
+        "value": 0.563,
+        "rating": "nan",
+        "color": "orange",
+        "status": "OK"
+      }
+    },
+    "11HEAD0000H3ACYA": {
+      "result": {
+        "name": "11HEAD0000H3ACYD",
+        "value": 0.577,
+        "rating": "nan",
+        "color": "orange",
+        "status": "OK"
+      }
+    },
+    "11HEAD0000H3ACZA": {
+      "result": {
+        "name": "11HEAD0000H3ACZD",
+        "value": 0.588,
+        "rating": "nan",
+        "color": "orange",
+        "status": "OK"
+      }
+    },
+    "11CHST0000H3DSX1": {
+      "result": {
+        "name": "11CHST0000H3DSXD",
+        "value": 1.0,
+        "rating": "nan",
+        "color": "green",
+        "status": "OK"
       }
     }
   }

@@ -20,16 +20,10 @@ class Page_OLC(Page_Line_Table):
 
     @staticmethod
     def _olc_cell_text(isomme: Isomme) -> str:
-        # NOTE: the availability check deliberately uses a *narrower* pattern set than the
-        # lookup it guards — a test carrying only "10VEH0OLC??VEXX" renders as nan. Kept
-        # as-is; see the progress log (deferred item D7).
         channel = isomme.get_channel(
-            "10VEH0OLC??VEXX", "14BPIL0OLC??VEXX", "10SEAT0OLC??VEXX"
+            "10VEHC0OLC??VEXX", "14BPIL0OLC??VEXX", "10SEAT0OLC??VEXX"
         )
-        if (
-            channel is None
-            or isomme.get_channel("14BPIL0OLC??VEXX", "10SEAT0OLC??VEXX") is None
-        ):
+        if channel is None:
             return f"{np.nan:.2f}"
         return f"{channel.get_data(unit=Unit(g0))[0]:.2f}"
 
@@ -43,7 +37,7 @@ class Page_OLC(Page_Line_Table):
                         "10VEHCCG00??VEXA", "14BPIL??????VEXA", "10SEATLERE??VEXA"
                     ),
                     isomme.get_channel(
-                        "10VEH0OLC??VEXA", "14BPIL0OLC??VEXA", "10SEAT0OLC??VEXA"
+                        "10VEHC0OLC??VEXA", "14BPIL0OLC??VEXA", "10SEAT0OLC??VEXA"
                     ),
                 ]
             ]

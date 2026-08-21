@@ -1,5 +1,6 @@
 import logging
-import unittest
+
+import pytest
 
 from pyisomme.code import Code, combine_codes
 from pyisomme.errors import InvalidCodeError
@@ -13,47 +14,44 @@ logging.basicConfig(
 )
 
 
-class TestCode(unittest.TestCase):
+class TestCode:
     def test_init(self):
         Code("11HEAD0000H3ACXA")
 
-        self.assertEqual(Code("11HEAD0000H3ACXA"), Code("11HEAD0000H3ACXA"))
-        self.assertNotEqual(Code("11HEAD0000H3ACXA"), Code("11HEAD0000H3ACXB"))
-        self.assertNotEqual(Code("11HEAD0000H3ACXA"), Code("11HEAD0000H3ACX?"))
+        assert Code("11HEAD0000H3ACXA") == Code("11HEAD0000H3ACXA")
+        assert Code("11HEAD0000H3ACXA") != Code("11HEAD0000H3ACXB")
+        assert Code("11HEAD0000H3ACXA") != Code("11HEAD0000H3ACX?")
 
         # 15 chars
-        with self.assertRaises(InvalidCodeError):
+        with pytest.raises(InvalidCodeError):
             Code("11HEAD0000H3ACX")
         # 17 chars
-        with self.assertRaises(InvalidCodeError):
+        with pytest.raises(InvalidCodeError):
             Code("11HEAD0000H3ACXA?")
         # invalid chars
-        with self.assertRaises(InvalidCodeError):
+        with pytest.raises(InvalidCodeError):
             Code("11HEAD0000H3ACX*")
 
     def test_is_valid(self):
-        self.assertTrue(Code("11HEAD0000H3ACXA").is_valid())
-        self.assertFalse(Code("11HEAD0000??ACXA").is_valid())
+        assert Code("11HEAD0000H3ACXA").is_valid()
+        assert not Code("11HEAD0000??ACXA").is_valid()
 
     def test_get_default_unit(self):
-        self.assertEqual(Code("11HEAD0000H3ACXA").get_default_unit(), Unit("m/s^2"))
+        assert Code("11HEAD0000H3ACXA").get_default_unit() == Unit("m/s^2")
 
     def test_get_info(self):
         info = Code("11HEAD0000H3ACXA").get_info()
-        self.assertDictEqual(
-            info,
-            {
-                "Test Object": "Vehicle 1",
-                "Position": "Front left",
-                "Main Location": "Head",
-                "Fine Location 1": "Not defined",
-                "Fine Location 2": "Not defined",
-                "Fine Location 3": "Hybrid III Mid-Sized Adult Male Dummy",
-                "Physical Dimension": "Acceleration",
-                "Direction": "Longitudinal",
-                "Filter Class": "CFC 1000",
-            },
-        )
+        assert info == {
+            "Test Object": "Vehicle 1",
+            "Position": "Front left",
+            "Main Location": "Head",
+            "Fine Location 1": "Not defined",
+            "Fine Location 2": "Not defined",
+            "Fine Location 3": "Hybrid III Mid-Sized Adult Male Dummy",
+            "Physical Dimension": "Acceleration",
+            "Direction": "Longitudinal",
+            "Filter Class": "CFC 1000",
+        }
 
     def test_combine_codes(self):
         assert (
@@ -68,7 +66,3 @@ class TestCode(unittest.TestCase):
             )
             == "11HEAD0000H3??X?"
         )
-
-
-if __name__ == "__main__":
-    unittest.main()

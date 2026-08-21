@@ -1,184 +1,682 @@
 {
-  "print_results": [
-    "iihs_frontal_small_overlap-0",
-    "\tOverall: Value=44 [] Rating=-44",
-    "\t\tDriver: Value=44 [] Rating=-44",
-    "\t\t\tHead and neck: Value=nan [] Rating=-20",
-    "\t\t\t\tHIC 15: Value=600 [] Rating=-10",
-    "\t\t\t\tNij: Value=1.1 [] Rating=-10",
-    "\t\t\t\tNeck axial tension: Value=4.9999 [kN] Rating=-20",
-    "\t\t\t\tNeck compression: Value=-4.9999 [kN] Rating=-20",
-    "\t\t\t\tNeck tension duration corridor: Value=4.9944 [kN] Rating=-2",
-    "\t\t\t\tNeck compression duration corridor: Value=-4.9999 [kN] Rating=-2",
-    "\t\t\t\tNeck shear duration corridor: Value=-4.9999 [kN] Rating=-2",
-    "\t\t\tChest: Value=nan [] Rating=-20",
-    "\t\t\t\tThoracic spine acceleration (3 ms): Value=35.69 [g0] Rating=-10",
-    "\t\t\t\tSternum deflection: Value=-60 [mm] Rating=-2",
-    "\t\t\t\tSternum deflection rate: Value=-1.5 [m / s] Rating=0",
-    "\t\t\t\tViscous criterion: Value=1.5 [m / s] Rating=-20",
-    "\t\t\tThigh and hip: Value=nan [] Rating=0",
-    "\t\t\t\tLeft knee-thigh-hip injury risk: Value=4.9999 [kN] Rating=0",
-    "\t\t\t\tRight knee-thigh-hip injury risk: Value=4.9999 [kN] Rating=0",
-    "\t\t\tLeg and foot: Value=nan [] Rating=-4",
-    "\t\t\t\tTibia-femur displacement: Value=60 [mm] Rating=-4",
-    "\t\t\t\tTibia index: Value=1.1 [] Rating=-2",
-    "\t\t\t\tTibia axial force: Value=4.9999 [kN] Rating=-1",
-    "\t\t\t\tFoot acceleration: Value=81.577 [g0] Rating=0",
-    "\t\tRestraints and dummy kinematics: Value=0 [] Rating=0",
-    "\t\tVehicle structure: Value=4 [] Rating=0"
-  ],
-  "report": "IIHS_Frontal_Small_Overlap",
-  "results": {
-    "iihs_frontal_small_overlap-0": {
-      "Overall": {
-        "color": "red",
-        "rating": -44.0,
-        "status": "OK",
-        "value": 44.0
-      },
-      "criterion_driver": {
+  "1: v1": {
+    "Overall": {
+      "result": {
+        "name": "Overall",
+        "value": -0.0,
+        "rating": 0.0,
+        "color": "green",
+        "status": "OK"
+      }
+    },
+    "criterion_driver": {
+      "result": {
+        "name": "Driver",
+        "value": -0.0,
+        "rating": 0.0,
         "color": null,
-        "rating": -44.0,
-        "status": "OK",
-        "value": 44.0
+        "status": "OK"
       },
-      "criterion_driver/criterion_chest": {
-        "color": "red",
-        "rating": -20.0,
-        "status": "OK",
-        "value": "nan"
+      "criterion_head_neck": {
+        "result": {
+          "name": "Head and neck",
+          "value": "nan",
+          "rating": 0.0,
+          "color": "green",
+          "status": "OK"
+        },
+        "criterion_hic_15": {
+          "result": {
+            "name": "HIC 15",
+            "value": 125.0,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_nij": {
+          "result": {
+            "name": "Nij",
+            "value": 0.25,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_neck_tension": {
+          "result": {
+            "name": "Neck axial tension",
+            "value": 0.5,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_neck_compression": {
+          "result": {
+            "name": "Neck compression",
+            "value": -0.5,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_tension_corridor": {
+          "result": {
+            "name": "Neck tension duration corridor",
+            "value": 0.5,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_compression_corridor": {
+          "result": {
+            "name": "Neck compression duration corridor",
+            "value": -0.5,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_shear_corridor": {
+          "result": {
+            "name": "Neck shear duration corridor",
+            "value": 0.5,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        }
       },
-      "criterion_driver/criterion_chest/criterion_acceleration": {
-        "color": "orange",
-        "rating": -10,
-        "status": "OK",
-        "value": 35.69006745422749
+      "criterion_chest": {
+        "result": {
+          "name": "Chest",
+          "value": "nan",
+          "rating": 0.0,
+          "color": "green",
+          "status": "OK"
+        },
+        "criterion_acceleration": {
+          "result": {
+            "name": "Thoracic spine acceleration (3 ms)",
+            "value": 2.5492905324448207,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_deflection": {
+          "result": {
+            "name": "Sternum deflection",
+            "value": -15.0,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_deflection_rate": {
+          "result": {
+            "name": "Sternum deflection rate",
+            "value": -0.25,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_vc": {
+          "result": {
+            "name": "Viscous criterion",
+            "value": 0.25,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        }
       },
-      "criterion_driver/criterion_chest/criterion_deflection": {
-        "color": "yellow",
-        "rating": -2,
-        "status": "OK",
-        "value": -59.999514038351805
+      "criterion_thigh_hip": {
+        "result": {
+          "name": "Thigh and hip",
+          "value": "nan",
+          "rating": 0.0,
+          "color": "green",
+          "status": "OK"
+        },
+        "criterion_left": {
+          "result": {
+            "name": "Left knee-thigh-hip injury risk",
+            "value": 1.0,
+            "rating": 0.0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_right": {
+          "result": {
+            "name": "Right knee-thigh-hip injury risk",
+            "value": 1.0,
+            "rating": 0.0,
+            "color": "green",
+            "status": "OK"
+          }
+        }
       },
-      "criterion_driver/criterion_chest/criterion_deflection_rate": {
-        "color": "green",
-        "rating": 0,
-        "status": "OK",
-        "value": -1.499986115381481
-      },
-      "criterion_driver/criterion_chest/criterion_vc": {
-        "color": "red",
-        "rating": -20,
-        "status": "OK",
-        "value": 1.499986115381481
-      },
-      "criterion_driver/criterion_head_neck": {
-        "color": "red",
-        "rating": -20.0,
-        "status": "OK",
-        "value": "nan"
-      },
-      "criterion_driver/criterion_head_neck/criterion_compression_corridor": {
-        "color": "yellow",
-        "rating": -2,
-        "status": "OK",
-        "value": -4.9999310020182826
-      },
-      "criterion_driver/criterion_head_neck/criterion_hic_15": {
-        "color": "orange",
-        "rating": -10,
-        "status": "OK",
-        "value": 600.0
-      },
-      "criterion_driver/criterion_head_neck/criterion_neck_compression": {
-        "color": "red",
-        "rating": -20,
-        "status": "OK",
-        "value": -4.9999310020182826
-      },
-      "criterion_driver/criterion_head_neck/criterion_neck_tension": {
-        "color": "red",
-        "rating": -20,
-        "status": "OK",
-        "value": 4.9999310020182826
-      },
-      "criterion_driver/criterion_head_neck/criterion_nij": {
-        "color": "orange",
-        "rating": -10,
-        "status": "OK",
-        "value": 1.0999937901816454
-      },
-      "criterion_driver/criterion_head_neck/criterion_shear_corridor": {
-        "color": "yellow",
-        "rating": -2,
-        "status": "OK",
-        "value": -4.9999310020182826
-      },
-      "criterion_driver/criterion_head_neck/criterion_tension_corridor": {
-        "color": "yellow",
-        "rating": -2,
-        "status": "OK",
-        "value": 4.994412191723887
-      },
-      "criterion_driver/criterion_leg_foot": {
-        "color": "red",
-        "rating": -4.0,
-        "status": "OK",
-        "value": "nan"
-      },
-      "criterion_driver/criterion_leg_foot/criterion_foot_acceleration": {
-        "color": "green",
-        "rating": 0,
-        "status": "OK",
-        "value": 81.57666381298868
-      },
-      "criterion_driver/criterion_leg_foot/criterion_tibia_axial_force": {
-        "color": "yellow",
-        "rating": -1,
-        "status": "OK",
-        "value": 4.9999310020182826
-      },
-      "criterion_driver/criterion_leg_foot/criterion_tibia_femur_displacement": {
-        "color": "red",
-        "rating": -4,
-        "status": "OK",
-        "value": 59.999514038351805
-      },
-      "criterion_driver/criterion_leg_foot/criterion_tibia_index": {
-        "color": "orange",
-        "rating": -2,
-        "status": "OK",
-        "value": 1.0999937901816454
-      },
-      "criterion_driver/criterion_thigh_hip": {
-        "color": "green",
+      "criterion_leg_foot": {
+        "result": {
+          "name": "Leg and foot",
+          "value": "nan",
+          "rating": 0.0,
+          "color": "green",
+          "status": "OK"
+        },
+        "criterion_tibia_femur_displacement": {
+          "result": {
+            "name": "Tibia-femur displacement",
+            "value": 5.0,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_tibia_index": {
+          "result": {
+            "name": "Tibia index",
+            "value": 0.25,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_tibia_axial_force": {
+          "result": {
+            "name": "Tibia axial force",
+            "value": 1.0,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_foot_acceleration": {
+          "result": {
+            "name": "Foot acceleration",
+            "value": 5.0985810648896415,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        }
+      }
+    },
+    "criterion_restraints_kinematics": {
+      "result": {
+        "name": "Restraints and dummy kinematics",
+        "value": 0.0,
         "rating": 0.0,
-        "status": "OK",
-        "value": "nan"
-      },
-      "criterion_driver/criterion_thigh_hip/criterion_left": {
         "color": "green",
+        "status": "OK"
+      }
+    },
+    "criterion_structure": {
+      "result": {
+        "name": "Vehicle structure",
+        "value": 4,
         "rating": 0.0,
-        "status": "OK",
-        "value": 4.9999310020182826
-      },
-      "criterion_driver/criterion_thigh_hip/criterion_right": {
         "color": "green",
+        "status": "OK"
+      }
+    }
+  },
+  "2: v2": {
+    "Overall": {
+      "result": {
+        "name": "Overall",
+        "value": -0.0,
         "rating": 0.0,
-        "status": "OK",
-        "value": 4.9999310020182826
-      },
-      "criterion_restraints_kinematics": {
         "color": "green",
+        "status": "OK"
+      }
+    },
+    "criterion_driver": {
+      "result": {
+        "name": "Driver",
+        "value": -0.0,
         "rating": 0.0,
-        "status": "OK",
-        "value": 0.0
+        "color": null,
+        "status": "OK"
       },
-      "criterion_structure": {
-        "color": "green",
+      "criterion_head_neck": {
+        "result": {
+          "name": "Head and neck",
+          "value": "nan",
+          "rating": 0.0,
+          "color": "green",
+          "status": "OK"
+        },
+        "criterion_hic_15": {
+          "result": {
+            "name": "HIC 15",
+            "value": 250.0,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_nij": {
+          "result": {
+            "name": "Nij",
+            "value": 0.5,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_neck_tension": {
+          "result": {
+            "name": "Neck axial tension",
+            "value": 1.0,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_neck_compression": {
+          "result": {
+            "name": "Neck compression",
+            "value": -1.0,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_tension_corridor": {
+          "result": {
+            "name": "Neck tension duration corridor",
+            "value": 1.0,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_compression_corridor": {
+          "result": {
+            "name": "Neck compression duration corridor",
+            "value": -1.0,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_shear_corridor": {
+          "result": {
+            "name": "Neck shear duration corridor",
+            "value": 1.0,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        }
+      },
+      "criterion_chest": {
+        "result": {
+          "name": "Chest",
+          "value": "nan",
+          "rating": 0.0,
+          "color": "green",
+          "status": "OK"
+        },
+        "criterion_acceleration": {
+          "result": {
+            "name": "Thoracic spine acceleration (3 ms)",
+            "value": 5.0985810648896415,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_deflection": {
+          "result": {
+            "name": "Sternum deflection",
+            "value": -30.0,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_deflection_rate": {
+          "result": {
+            "name": "Sternum deflection rate",
+            "value": -0.5,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_vc": {
+          "result": {
+            "name": "Viscous criterion",
+            "value": 0.5,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        }
+      },
+      "criterion_thigh_hip": {
+        "result": {
+          "name": "Thigh and hip",
+          "value": "nan",
+          "rating": 0.0,
+          "color": "green",
+          "status": "OK"
+        },
+        "criterion_left": {
+          "result": {
+            "name": "Left knee-thigh-hip injury risk",
+            "value": 2.0,
+            "rating": 0.0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_right": {
+          "result": {
+            "name": "Right knee-thigh-hip injury risk",
+            "value": 2.0,
+            "rating": 0.0,
+            "color": "green",
+            "status": "OK"
+          }
+        }
+      },
+      "criterion_leg_foot": {
+        "result": {
+          "name": "Leg and foot",
+          "value": "nan",
+          "rating": 0.0,
+          "color": "green",
+          "status": "OK"
+        },
+        "criterion_tibia_femur_displacement": {
+          "result": {
+            "name": "Tibia-femur displacement",
+            "value": 10.0,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_tibia_index": {
+          "result": {
+            "name": "Tibia index",
+            "value": 0.5,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_tibia_axial_force": {
+          "result": {
+            "name": "Tibia axial force",
+            "value": 2.0,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_foot_acceleration": {
+          "result": {
+            "name": "Foot acceleration",
+            "value": 10.197162129779283,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        }
+      }
+    },
+    "criterion_restraints_kinematics": {
+      "result": {
+        "name": "Restraints and dummy kinematics",
+        "value": 0.0,
         "rating": 0.0,
-        "status": "OK",
-        "value": 4
+        "color": "green",
+        "status": "OK"
+      }
+    },
+    "criterion_structure": {
+      "result": {
+        "name": "Vehicle structure",
+        "value": 4,
+        "rating": 0.0,
+        "color": "green",
+        "status": "OK"
+      }
+    }
+  },
+  "3: v3": {
+    "Overall": {
+      "result": {
+        "name": "Overall",
+        "value": 34.0,
+        "rating": -34.0,
+        "color": "red",
+        "status": "OK"
+      }
+    },
+    "criterion_driver": {
+      "result": {
+        "name": "Driver",
+        "value": 34.0,
+        "rating": -34.0,
+        "color": null,
+        "status": "OK"
+      },
+      "criterion_head_neck": {
+        "result": {
+          "name": "Head and neck",
+          "value": "nan",
+          "rating": -20.0,
+          "color": "red",
+          "status": "OK"
+        },
+        "criterion_hic_15": {
+          "result": {
+            "name": "HIC 15",
+            "value": 500.0,
+            "rating": -20,
+            "color": "red",
+            "status": "OK"
+          }
+        },
+        "criterion_nij": {
+          "result": {
+            "name": "Nij",
+            "value": 1.0,
+            "rating": -10,
+            "color": "yellow",
+            "status": "OK"
+          }
+        },
+        "criterion_neck_tension": {
+          "result": {
+            "name": "Neck axial tension",
+            "value": 2.0,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_neck_compression": {
+          "result": {
+            "name": "Neck compression",
+            "value": -2.0,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_tension_corridor": {
+          "result": {
+            "name": "Neck tension duration corridor",
+            "value": 2.0,
+            "rating": -2,
+            "color": "yellow",
+            "status": "OK"
+          }
+        },
+        "criterion_compression_corridor": {
+          "result": {
+            "name": "Neck compression duration corridor",
+            "value": -2.0,
+            "rating": -2,
+            "color": "yellow",
+            "status": "OK"
+          }
+        },
+        "criterion_shear_corridor": {
+          "result": {
+            "name": "Neck shear duration corridor",
+            "value": 2.0,
+            "rating": -2,
+            "color": "yellow",
+            "status": "OK"
+          }
+        }
+      },
+      "criterion_chest": {
+        "result": {
+          "name": "Chest",
+          "value": "nan",
+          "rating": -10.0,
+          "color": "orange",
+          "status": "OK"
+        },
+        "criterion_acceleration": {
+          "result": {
+            "name": "Thoracic spine acceleration (3 ms)",
+            "value": 10.197162129779283,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_deflection": {
+          "result": {
+            "name": "Sternum deflection",
+            "value": -60.0,
+            "rating": -2,
+            "color": "orange",
+            "status": "OK"
+          }
+        },
+        "criterion_deflection_rate": {
+          "result": {
+            "name": "Sternum deflection rate",
+            "value": -1.0,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_vc": {
+          "result": {
+            "name": "Viscous criterion",
+            "value": 1.0,
+            "rating": -10,
+            "color": "yellow",
+            "status": "OK"
+          }
+        }
+      },
+      "criterion_thigh_hip": {
+        "result": {
+          "name": "Thigh and hip",
+          "value": "nan",
+          "rating": 0.0,
+          "color": "green",
+          "status": "OK"
+        },
+        "criterion_left": {
+          "result": {
+            "name": "Left knee-thigh-hip injury risk",
+            "value": 4.0,
+            "rating": 0.0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_right": {
+          "result": {
+            "name": "Right knee-thigh-hip injury risk",
+            "value": 4.0,
+            "rating": 0.0,
+            "color": "green",
+            "status": "OK"
+          }
+        }
+      },
+      "criterion_leg_foot": {
+        "result": {
+          "name": "Leg and foot",
+          "value": "nan",
+          "rating": -4.0,
+          "color": "red",
+          "status": "OK"
+        },
+        "criterion_tibia_femur_displacement": {
+          "result": {
+            "name": "Tibia-femur displacement",
+            "value": 20.0,
+            "rating": -4,
+            "color": "red",
+            "status": "OK"
+          }
+        },
+        "criterion_tibia_index": {
+          "result": {
+            "name": "Tibia index",
+            "value": 1.0,
+            "rating": -2,
+            "color": "yellow",
+            "status": "OK"
+          }
+        },
+        "criterion_tibia_axial_force": {
+          "result": {
+            "name": "Tibia axial force",
+            "value": 4.0,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_foot_acceleration": {
+          "result": {
+            "name": "Foot acceleration",
+            "value": 20.394324259558566,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        }
+      }
+    },
+    "criterion_restraints_kinematics": {
+      "result": {
+        "name": "Restraints and dummy kinematics",
+        "value": 0.0,
+        "rating": 0.0,
+        "color": "green",
+        "status": "OK"
+      }
+    },
+    "criterion_structure": {
+      "result": {
+        "name": "Vehicle structure",
+        "value": 4,
+        "rating": 0.0,
+        "color": "green",
+        "status": "OK"
       }
     }
   }

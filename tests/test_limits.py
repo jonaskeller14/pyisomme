@@ -1,5 +1,4 @@
 import logging
-import unittest
 
 import numpy as np
 import pandas as pd
@@ -14,7 +13,7 @@ logging.basicConfig(
 )
 
 
-class TestLimits(unittest.TestCase):
+class TestLimits:
     def test_find_limits(self):
         limits = pyisomme.Limits(
             limit_list=[
@@ -122,7 +121,3 @@ class TestLimits(unittest.TestCase):
         idx4_max = limits.get_limit_max_idx(c4)
         assert idx4_min == 4
         assert idx4_max == 1
-
-
-if __name__ == "__main__":
-    unittest.main()

@@ -103,8 +103,10 @@ class Criterion_Head_Neck(Criterion):
             ]
 
         def calculation(self) -> None:
-            self.channel = self.require_channel(self.ctx.code("?{p}NECKUP00??FOZB"))
-            self.value = float(np.max(self.channel.get_data(unit="kN")))
+            self.channel = self.require_channel(
+                self.ctx.code("?{p}NECKUP00??FOZB")
+            ).convert_unit("kN")
+            self.value = float(np.max(self.channel.get_data()))
             self.rating = self.limits.get_limit_min_rating(
                 self.channel, interpolate=False
             )
@@ -123,8 +125,10 @@ class Criterion_Head_Neck(Criterion):
             ]
 
         def calculation(self) -> None:
-            self.channel = self.require_channel(self.ctx.code("?{p}NECKUP00??FOZB"))
-            self.value = float(-np.min(self.channel.get_data(unit="kN")))
+            self.channel = self.require_channel(
+                self.ctx.code("?{p}NECKUP00??FOZB")
+            ).convert_unit("kN")
+            self.value = float(-np.min(self.channel.get_data()))
             self.rating = self.limits.get_limit_min_rating(
                 self.channel, interpolate=False
             )
@@ -277,7 +281,8 @@ class Criterion_Torso(Criterion):
             ]
             self.channel = vc_channels[int(np.argmin(ratings))]
             assert self.channel is not None
-            self.value = float(np.max(np.abs(self.channel.get_data(unit="m/s"))))
+            self.channel = self.channel.convert_unit("m/s")
+            self.value = float(np.max(np.abs(self.channel.get_data())))
             self.rating = min(ratings)
             self.color = self.limits.get_limit_min_color(self.channel)
 

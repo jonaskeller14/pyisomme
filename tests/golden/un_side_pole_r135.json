@@ -1,65 +1,223 @@
 {
-  "print_results": [
-    "un_side_pole_r135-0",
-    "\tOverall: Value=nan [] Rating=0",
-    "\t\tDummy: Value=nan [] Rating=0",
-    "\t\t\tHIC 36: Value=600 [] Rating=1",
-    "\t\t\tShoulder Lateral Force: Value=4.9999 [kN] Rating=0",
-    "\t\t\tChest Resultant Compression: Value=-60 [mm] Rating=0",
-    "\t\t\tAbdomen Resultant Compression: Value=-60 [mm] Rating=1",
-    "\t\t\tSpine T12 Acceleration a3ms: Value=81.577 [g0] Rating=0",
-    "\t\t\tPubic Symphysis Force: Value=4.9999 [kN] Rating=0"
-  ],
-  "report": "UN_Side_Pole_R135",
-  "results": {
-    "un_side_pole_r135-0": {
-      "Overall": {
+  "1: v1": {
+    "Overall": {
+      "result": {
+        "name": "Overall",
+        "value": "nan",
+        "rating": 1.0,
         "color": null,
-        "rating": 0.0,
-        "status": "OK",
-        "value": "nan"
-      },
-      "criterion_dummy": {
+        "status": "OK"
+      }
+    },
+    "criterion_dummy": {
+      "result": {
+        "name": "Dummy",
+        "value": "nan",
+        "rating": 1.0,
         "color": null,
+        "status": "OK"
+      },
+      "criterion_hic_36": {
+        "result": {
+          "name": "HIC 36",
+          "value": 125.0,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_shoulder_lateral_force": {
+        "result": {
+          "name": "Shoulder Lateral Force",
+          "value": 0.5,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_chest_resultant_compression": {
+        "result": {
+          "name": "Chest Resultant Compression",
+          "value": -15.0,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_abdomen_resultant_compression": {
+        "result": {
+          "name": "Abdomen Resultant Compression",
+          "value": -15.0,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_spine_t12_a3ms": {
+        "result": {
+          "name": "Spine T12 Acceleration a3ms",
+          "value": 5.0985810648896415,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_pubic_symphysis_force": {
+        "result": {
+          "name": "Pubic Symphysis Force",
+          "value": 0.5,
+          "rating": 1.0,
+          "color": "green",
+          "status": "OK"
+        }
+      }
+    }
+  },
+  "2: v2": {
+    "Overall": {
+      "result": {
+        "name": "Overall",
+        "value": "nan",
+        "rating": 1.0,
+        "color": null,
+        "status": "OK"
+      }
+    },
+    "criterion_dummy": {
+      "result": {
+        "name": "Dummy",
+        "value": "nan",
+        "rating": 1.0,
+        "color": null,
+        "status": "OK"
+      },
+      "criterion_hic_36": {
+        "result": {
+          "name": "HIC 36",
+          "value": 250.0,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_shoulder_lateral_force": {
+        "result": {
+          "name": "Shoulder Lateral Force",
+          "value": 1.0,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_chest_resultant_compression": {
+        "result": {
+          "name": "Chest Resultant Compression",
+          "value": -30.0,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_abdomen_resultant_compression": {
+        "result": {
+          "name": "Abdomen Resultant Compression",
+          "value": -30.0,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_spine_t12_a3ms": {
+        "result": {
+          "name": "Spine T12 Acceleration a3ms",
+          "value": 10.197162129779283,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_pubic_symphysis_force": {
+        "result": {
+          "name": "Pubic Symphysis Force",
+          "value": 1.0,
+          "rating": 1.0,
+          "color": "green",
+          "status": "OK"
+        }
+      }
+    }
+  },
+  "3: v3": {
+    "Overall": {
+      "result": {
+        "name": "Overall",
+        "value": "nan",
         "rating": 0.0,
-        "status": "OK",
-        "value": "nan"
-      },
-      "criterion_dummy/criterion_abdomen_resultant_compression": {
-        "color": "green",
-        "rating": true,
-        "status": "OK",
-        "value": -59.99951701412797
-      },
-      "criterion_dummy/criterion_chest_resultant_compression": {
-        "color": "red",
-        "rating": false,
-        "status": "OK",
-        "value": -59.99951701412797
-      },
-      "criterion_dummy/criterion_hic_36": {
-        "color": "green",
-        "rating": true,
-        "status": "OK",
-        "value": 600.0
-      },
-      "criterion_dummy/criterion_pubic_symphysis_force": {
-        "color": "red",
+        "color": null,
+        "status": "OK"
+      }
+    },
+    "criterion_dummy": {
+      "result": {
+        "name": "Dummy",
+        "value": "nan",
         "rating": 0.0,
-        "status": "OK",
-        "value": 4.9999310020182826
+        "color": null,
+        "status": "OK"
       },
-      "criterion_dummy/criterion_shoulder_lateral_force": {
-        "color": "red",
-        "rating": false,
-        "status": "OK",
-        "value": 4.9999310020182826
+      "criterion_hic_36": {
+        "result": {
+          "name": "HIC 36",
+          "value": 500.0,
+          "rating": false,
+          "color": "green",
+          "status": "OK"
+        }
       },
-      "criterion_dummy/criterion_spine_t12_a3ms": {
-        "color": "red",
-        "rating": false,
-        "status": "OK",
-        "value": 81.57666381298868
+      "criterion_shoulder_lateral_force": {
+        "result": {
+          "name": "Shoulder Lateral Force",
+          "value": 2.0,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_chest_resultant_compression": {
+        "result": {
+          "name": "Chest Resultant Compression",
+          "value": -60.0,
+          "rating": false,
+          "color": "red",
+          "status": "OK"
+        }
+      },
+      "criterion_abdomen_resultant_compression": {
+        "result": {
+          "name": "Abdomen Resultant Compression",
+          "value": -60.0,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_spine_t12_a3ms": {
+        "result": {
+          "name": "Spine T12 Acceleration a3ms",
+          "value": 20.394324259558566,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_pubic_symphysis_force": {
+        "result": {
+          "name": "Pubic Symphysis Force",
+          "value": 2.0,
+          "rating": 1.0,
+          "color": "green",
+          "status": "OK"
+        }
       }
     }
   }

@@ -52,7 +52,7 @@ Manual inputs:
 | --- | --- | --- | --- |
 | `Criterion_HIC15` | S6.2(b); S15.3.2 | 1 (from limits) | — |
 
-Limits for `?1HICR0015HF00R?`:
+Limits for `?1HICR0015H300R?`:
 
 | row | threshold | rating | color | flag | y_unit | linestyle |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -65,7 +65,7 @@ Limits for `?1HICR0015HF00R?`:
 | --- | --- | --- | --- |
 | `Criterion_Chest_a3ms` | S6.3; S15.3.3 | 1 (from limits) | — |
 
-Limits for `?1CHST003CHFACR?`, `?1CHST????HFACR?`:
+Limits for `?1CHST003CH3ACR?`, `?1CHST????H3ACR?`:
 
 | row | threshold | rating | color | flag | y_unit | linestyle |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -78,12 +78,12 @@ Limits for `?1CHST003CHFACR?`, `?1CHST????HFACR?`:
 | --- | --- | --- | --- |
 | `Criterion_Chest_Deflection` | S6.4(b); S15.3.4 | 1 (from limits) | — |
 
-Limits for `?1CHST000[03]HFDSX?`:
+Limits for `?1CHST000[03]H3DSX?`:
 
 | row | threshold | rating | color | flag | y_unit | linestyle |
 | --- | --- | --- | --- | --- | --- | --- |
-| Fail | -52 | False | red | upper | mm | - |
-| Pass | -52 | True | green | lower | mm | - |
+| Fail | -63 | False | red | upper | mm | - |
+| Pass | -63 | True | green | lower | mm | - |
 
 ## `criterion_driver/criterion_nij` — Nij
 
@@ -91,7 +91,7 @@ Limits for `?1CHST000[03]HFDSX?`:
 | --- | --- | --- | --- |
 | `Criterion_Nij` | S6.6(a); S15.3.6(a) | 1 (from limits) | — |
 
-Limits for `?1NIJCIP00HF00Y?`, `?1NIJCIPCFHF00Y?`, `?1NIJCIPCEHF00Y?`, `?1NIJCIPTFHF00Y?`, `?1NIJCIPTEHF00Y?`:
+Limits for `?1NIJCIP00H300Y?`, `?1NIJCIPCFH300Y?`, `?1NIJCIPCEH300Y?`, `?1NIJCIPTFH300Y?`, `?1NIJCIPTEH300Y?`:
 
 | row | threshold | rating | color | flag | y_unit | linestyle |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -104,12 +104,12 @@ Limits for `?1NIJCIP00HF00Y?`, `?1NIJCIPCFHF00Y?`, `?1NIJCIPCEHF00Y?`, `?1NIJCIP
 | --- | --- | --- | --- |
 | `Criterion_Neck_Tension` | S6.6(b); S15.3.6(b) | 1 (from limits) | — |
 
-Limits for `?1NECKUP00HFFOZ?`:
+Limits for `?1NECKUP00H3FOZ?`:
 
 | row | threshold | rating | color | flag | y_unit | linestyle |
 | --- | --- | --- | --- | --- | --- | --- |
-| Pass | 2620 | True | green | upper | N | - |
-| Fail | 2620 | False | red | lower | N | - |
+| Pass | 4170 | True | green | upper | N | - |
+| Fail | 4170 | False | red | lower | N | - |
 
 ## `criterion_driver/criterion_neck_compression` — Neck Compression Force
 
@@ -117,12 +117,12 @@ Limits for `?1NECKUP00HFFOZ?`:
 | --- | --- | --- | --- |
 | `Criterion_Neck_Compression` | S6.6(c); S15.3.6(c) | 1 (from limits) | — |
 
-Limits for `?1NECKUP00HFFOZ?`:
+Limits for `?1NECKUP00H3FOZ?`:
 
 | row | threshold | rating | color | flag | y_unit | linestyle |
 | --- | --- | --- | --- | --- | --- | --- |
-| Fail | -2520 | False | red | upper | N | - |
-| Pass | -2520 | True | green | lower | N | - |
+| Fail | -4000 | False | red | upper | N | - |
+| Pass | -4000 | True | green | lower | N | - |
 
 ## `criterion_driver/criterion_femur_axial_force` — Femur Axial Force
 
@@ -136,12 +136,12 @@ Limits for `?1NECKUP00HFFOZ?`:
 | --- | --- | --- | --- |
 | `Criterion_Left` | S6.5; S15.3.5 (inherited) | 1 (from limits) | — |
 
-Limits for `?1FEMRLE00HFFOZ?`:
+Limits for `?1FEMRLE00H3FOZ?`:
 
 | row | threshold | rating | color | flag | y_unit | linestyle |
 | --- | --- | --- | --- | --- | --- | --- |
-| Fail | -6805 | False | red | upper | N | - |
-| Pass | -6805 | True | green | lower | N | - |
+| Fail | -10008 | False | red | upper | N | - |
+| Pass | -10008 | True | green | lower | N | - |
 
 ## `criterion_driver/criterion_femur_axial_force/criterion_right` — Right Femur Axial Force
 
@@ -149,12 +149,12 @@ Limits for `?1FEMRLE00HFFOZ?`:
 | --- | --- | --- | --- |
 | `Criterion_Right` | S6.5; S15.3.5 (inherited) | 1 (from limits) | — |
 
-Limits for `?1FEMRRI00HFFOZ?`:
+Limits for `?1FEMRRI00H3FOZ?`:
 
 | row | threshold | rating | color | flag | y_unit | linestyle |
 | --- | --- | --- | --- | --- | --- | --- |
-| Fail | -6805 | False | red | upper | N | - |
-| Pass | -6805 | True | green | lower | N | - |
+| Fail | -10008 | False | red | upper | N | - |
+| Pass | -10008 | True | green | lower | N | - |
 
 ## `criterion_passenger` — Front Passenger
 
@@ -186,7 +186,7 @@ Manual inputs:
 | --- | --- | --- | --- |
 | `Criterion_HIC15` | S6.2(b); S15.3.2 | 1 (from limits) | — |
 
-Limits for `?3HICR0015HF00R?`:
+Limits for `?3HICR0015H300R?`:
 
 | row | threshold | rating | color | flag | y_unit | linestyle |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -199,7 +199,7 @@ Limits for `?3HICR0015HF00R?`:
 | --- | --- | --- | --- |
 | `Criterion_Chest_a3ms` | S6.3; S15.3.3 | 1 (from limits) | — |
 
-Limits for `?3CHST003CHFACR?`, `?3CHST????HFACR?`:
+Limits for `?3CHST003CH3ACR?`, `?3CHST????H3ACR?`:
 
 | row | threshold | rating | color | flag | y_unit | linestyle |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -212,12 +212,12 @@ Limits for `?3CHST003CHFACR?`, `?3CHST????HFACR?`:
 | --- | --- | --- | --- |
 | `Criterion_Chest_Deflection` | S6.4(b); S15.3.4 | 1 (from limits) | — |
 
-Limits for `?3CHST000[03]HFDSX?`:
+Limits for `?3CHST000[03]H3DSX?`:
 
 | row | threshold | rating | color | flag | y_unit | linestyle |
 | --- | --- | --- | --- | --- | --- | --- |
-| Fail | -52 | False | red | upper | mm | - |
-| Pass | -52 | True | green | lower | mm | - |
+| Fail | -63 | False | red | upper | mm | - |
+| Pass | -63 | True | green | lower | mm | - |
 
 ## `criterion_passenger/criterion_nij` — Nij
 
@@ -225,7 +225,7 @@ Limits for `?3CHST000[03]HFDSX?`:
 | --- | --- | --- | --- |
 | `Criterion_Nij` | S6.6(a); S15.3.6(a) | 1 (from limits) | — |
 
-Limits for `?3NIJCIP00HF00Y?`, `?3NIJCIPCFHF00Y?`, `?3NIJCIPCEHF00Y?`, `?3NIJCIPTFHF00Y?`, `?3NIJCIPTEHF00Y?`:
+Limits for `?3NIJCIP00H300Y?`, `?3NIJCIPCFH300Y?`, `?3NIJCIPCEH300Y?`, `?3NIJCIPTFH300Y?`, `?3NIJCIPTEH300Y?`:
 
 | row | threshold | rating | color | flag | y_unit | linestyle |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -238,12 +238,12 @@ Limits for `?3NIJCIP00HF00Y?`, `?3NIJCIPCFHF00Y?`, `?3NIJCIPCEHF00Y?`, `?3NIJCIP
 | --- | --- | --- | --- |
 | `Criterion_Neck_Tension` | S6.6(b); S15.3.6(b) | 1 (from limits) | — |
 
-Limits for `?3NECKUP00HFFOZ?`:
+Limits for `?3NECKUP00H3FOZ?`:
 
 | row | threshold | rating | color | flag | y_unit | linestyle |
 | --- | --- | --- | --- | --- | --- | --- |
-| Pass | 2620 | True | green | upper | N | - |
-| Fail | 2620 | False | red | lower | N | - |
+| Pass | 4170 | True | green | upper | N | - |
+| Fail | 4170 | False | red | lower | N | - |
 
 ## `criterion_passenger/criterion_neck_compression` — Neck Compression Force
 
@@ -251,12 +251,12 @@ Limits for `?3NECKUP00HFFOZ?`:
 | --- | --- | --- | --- |
 | `Criterion_Neck_Compression` | S6.6(c); S15.3.6(c) | 1 (from limits) | — |
 
-Limits for `?3NECKUP00HFFOZ?`:
+Limits for `?3NECKUP00H3FOZ?`:
 
 | row | threshold | rating | color | flag | y_unit | linestyle |
 | --- | --- | --- | --- | --- | --- | --- |
-| Fail | -2520 | False | red | upper | N | - |
-| Pass | -2520 | True | green | lower | N | - |
+| Fail | -4000 | False | red | upper | N | - |
+| Pass | -4000 | True | green | lower | N | - |
 
 ## `criterion_passenger/criterion_femur_axial_force` — Femur Axial Force
 
@@ -270,12 +270,12 @@ Limits for `?3NECKUP00HFFOZ?`:
 | --- | --- | --- | --- |
 | `Criterion_Left` | S6.5; S15.3.5 (inherited) | 1 (from limits) | — |
 
-Limits for `?3FEMRLE00HFFOZ?`:
+Limits for `?3FEMRLE00H3FOZ?`:
 
 | row | threshold | rating | color | flag | y_unit | linestyle |
 | --- | --- | --- | --- | --- | --- | --- |
-| Fail | -6805 | False | red | upper | N | - |
-| Pass | -6805 | True | green | lower | N | - |
+| Fail | -10008 | False | red | upper | N | - |
+| Pass | -10008 | True | green | lower | N | - |
 
 ## `criterion_passenger/criterion_femur_axial_force/criterion_right` — Right Femur Axial Force
 
@@ -283,9 +283,9 @@ Limits for `?3FEMRLE00HFFOZ?`:
 | --- | --- | --- | --- |
 | `Criterion_Right` | S6.5; S15.3.5 (inherited) | 1 (from limits) | — |
 
-Limits for `?3FEMRRI00HFFOZ?`:
+Limits for `?3FEMRRI00H3FOZ?`:
 
 | row | threshold | rating | color | flag | y_unit | linestyle |
 | --- | --- | --- | --- | --- | --- | --- |
-| Fail | -6805 | False | red | upper | N | - |
-| Pass | -6805 | True | green | lower | N | - |
+| Fail | -10008 | False | red | upper | N | - |
+| Pass | -10008 | True | green | lower | N | - |

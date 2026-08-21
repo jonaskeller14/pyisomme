@@ -1,18 +1,19 @@
 from __future__ import annotations
 
-import unittest
 from dataclasses import FrozenInstanceError, dataclass, replace
+
+import pytest
 
 from pyisomme.limit import Limit
 
 
-class TestLimit(unittest.TestCase):
+class TestLimit:
     def test_is_frozen_and_keeps_code_patterns_as_tuple(self) -> None:
         code_patterns = ("?1HEAD0000??ACR?",)
         limit = Limit(code_patterns, func=lambda x: x)
 
-        self.assertIs(limit.code_patterns, code_patterns)
-        with self.assertRaises(FrozenInstanceError):
+        assert limit.code_patterns is code_patterns
+        with pytest.raises(FrozenInstanceError):
             limit.color = "green"  # type: ignore[misc]
 
     def test_equality_and_hash_use_identity(self) -> None:
@@ -22,22 +23,22 @@ class TestLimit(unittest.TestCase):
         first = Limit((), func=func)
         second = Limit((), func=func)
 
-        self.assertEqual(first, first)
-        self.assertNotEqual(first, second)
-        self.assertEqual(len({first, second}), 2)
+        assert first == first
+        assert first != second
+        assert len({first, second}) == 2
 
     def test_replace_returns_modified_copy(self) -> None:
         original = Limit((), func=lambda x: x, color="green", upper=True)
 
         modified = replace(original, color="red", upper=False, lower=True)
 
-        self.assertIsNot(modified, original)
-        self.assertEqual(modified.color, "red")
-        self.assertFalse(modified.upper)
-        self.assertTrue(modified.lower)
-        self.assertEqual(original.color, "green")
-        self.assertTrue(original.upper)
-        self.assertIsNone(original.lower)
+        assert modified is not original
+        assert modified.color == "red"
+        assert not modified.upper
+        assert modified.lower
+        assert original.color == "green"
+        assert original.upper
+        assert original.lower is None
 
     def test_decorated_subclass_defaults_and_replace(self) -> None:
         @dataclass(frozen=True, eq=False)
@@ -49,12 +50,8 @@ class TestLimit(unittest.TestCase):
         original = Limit_G((), func=lambda x: x)
         modified = replace(original, color="blue")
 
-        self.assertEqual(original.name, "Good")
-        self.assertEqual(original.color, "green")
-        self.assertEqual(original.rating, 4.0)
-        self.assertIsInstance(modified, Limit_G)
-        self.assertEqual(modified.color, "blue")
-
-
-if __name__ == "__main__":
-    unittest.main()
+        assert original.name == "Good"
+        assert original.color == "green"
+        assert original.rating == 4.0
+        assert isinstance(modified, Limit_G)
+        assert modified.color == "blue"

@@ -1,9 +1,10 @@
-"""Fixture-free tests for the error taxonomy and the 3-state criterion outcome."""
+"""Tests for the error taxonomy and the 3-state criterion outcome."""
 
-import logging
-import unittest
+import types
+import typing
 
 import numpy as np
+import pytest
 
 from pyisomme.errors import (
     MissingData,
@@ -14,8 +15,6 @@ from pyisomme.errors import (
 from pyisomme.isomme import Isomme
 from pyisomme.report.criterion import Criterion
 
-logging.basicConfig(level=logging.CRITICAL)  # silence the expected ERROR traceback
-
 
 class _FakeReport:
     """Minimal stand-in for a Report (Criterion only needs `.name` at construction)."""
@@ -23,78 +22,93 @@ class _FakeReport:
     name = "test-report"
 
 
-class TestErrorTaxonomy(unittest.TestCase):
-    def test_missing_data_is_pyisomme_error(self):
-        self.assertTrue(issubclass(MissingData, PyisommeError))
+class TestErrorTaxonomy:
+    def test_missing_data_is_pyisomme_error(self) -> None:
+        assert issubclass(MissingData, PyisommeError)
 
-    def test_missing_data_records_what_was_missing(self):
+    def test_missing_data_records_what_was_missing(self) -> None:
         err = MissingData("11HEAD??00??ACRA", "fallback")
-        self.assertEqual(err.what, ("11HEAD??00??ACRA", "fallback"))
-        self.assertIn("11HEAD??00??ACRA", str(err))
+        assert err.what == ("11HEAD??00??ACRA", "fallback")
+        assert "11HEAD??00??ACRA" in str(err)
 
-    def test_unsupported_calculation_is_not_implemented_error(self):
-        self.assertTrue(issubclass(UnsupportedCalculationError, PyisommeError))
-        self.assertTrue(issubclass(UnsupportedCalculationError, NotImplementedError))
+    def test_unsupported_calculation_is_not_implemented_error(self) -> None:
+        assert issubclass(UnsupportedCalculationError, PyisommeError)
+        assert issubclass(UnsupportedCalculationError, NotImplementedError)
 
 
-class TestCriterionOutcomes(unittest.TestCase):
-    def setUp(self):
-        self.report = _FakeReport()
-        self.isomme = Isomme("T1")  # empty: no channels, no test info
+class TestCriterionOutcomes:
+    @pytest.fixture
+    def empty_isomme(self) -> Isomme:
+        return Isomme("T1")
 
-    def _make(self, calculation):
-        criterion = Criterion(self.report, self.isomme)
-        criterion.calculation = calculation.__get__(criterion, Criterion)
-        return criterion
+    @pytest.fixture
+    def fake_report(self) -> _FakeReport:
+        return _FakeReport()
 
-    def test_default_status_is_pending(self):
-        self.assertIs(Criterion(self.report, self.isomme).status, Status.PENDING)
+    @pytest.fixture
+    def make_criterion(
+        self, fake_report: _FakeReport, empty_isomme: Isomme
+    ) -> typing.Callable[[typing.Callable[..., None]], Criterion]:
+        """Factory fixture that binds a custom calculation method to a fresh Criterion."""
 
-    def test_ok(self):
-        def calculation(self):
+        def _factory(calculation_func: typing.Callable[..., None]) -> Criterion:
+            criterion = Criterion(fake_report, empty_isomme)
+            criterion.calculation = types.MethodType(calculation_func, criterion)
+            return criterion
+
+        return _factory
+
+    def test_default_status_is_pending(
+        self, fake_report: _FakeReport, empty_isomme: Isomme
+    ) -> None:
+        assert Criterion(fake_report, empty_isomme).status is Status.PENDING
+
+    def test_ok(self, make_criterion) -> None:
+        def calculation(self: Criterion) -> None:
             self.value = 1.0
             self.rating = 2.0
 
-        c = self._make(calculation)
+        c = make_criterion(calculation)
         c.calculate()
-        self.assertIs(c.status, Status.OK)
-        self.assertEqual(c.value, 1.0)
 
-    def test_missing_data_via_require_channel(self):
-        def calculation(self):
+        assert c.status is Status.OK
+        assert c.value == 1.0
+
+    def test_missing_data_via_require_channel(self, make_criterion) -> None:
+        def calculation(self: Criterion) -> None:
             self.require_channel("11HEAD??00??ACRA")  # not present in an empty Isomme
 
-        c = self._make(calculation)
+        c = make_criterion(calculation)
         c.calculate()
-        self.assertIs(c.status, Status.NA)
-        self.assertIsInstance(c.na_reason, MissingData)
-        self.assertTrue(np.isnan(c.value))  # unchanged -> pages still render as before
 
-    def test_missing_data_via_require_test_info(self):
-        def calculation(self):
+        assert c.status is Status.NA
+        assert isinstance(c.na_reason, MissingData)
+        assert np.isnan(c.value)
+
+    def test_missing_data_via_require_test_info(self, make_criterion) -> None:
+        def calculation(self: Criterion) -> None:
             self.require_test_info("Driver position object 1")
 
-        c = self._make(calculation)
+        c = make_criterion(calculation)
         c.calculate()
-        self.assertIs(c.status, Status.NA)
 
-    def test_require_returns_value_when_present(self):
-        def calculation(self):
+        assert c.status is Status.NA
+
+    def test_require_returns_value_when_present(self, make_criterion) -> None:
+        def calculation(self: Criterion) -> None:
             self.value = self.require(42, "something")
 
-        c = self._make(calculation)
+        c = make_criterion(calculation)
         c.calculate()
-        self.assertIs(c.status, Status.OK)
-        self.assertEqual(c.value, 42)
 
-    def test_unexpected_error(self):
-        def calculation(self):
+        assert c.status is Status.OK
+        assert c.value == 42
+
+    def test_unexpected_error(self, make_criterion) -> None:
+        def calculation(self: Criterion) -> None:
             raise RuntimeError("boom")
 
-        c = self._make(calculation)
+        c = make_criterion(calculation)
         c.calculate()
-        self.assertIs(c.status, Status.ERROR)
 
-
-if __name__ == "__main__":
-    unittest.main()
+        assert c.status is Status.ERROR

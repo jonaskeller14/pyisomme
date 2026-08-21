@@ -222,8 +222,8 @@ class Overall(Criterion):
                 def calculation(self) -> None:
                     self.channel = self.require_channel(
                         self.ctx.code("?{p}TMONUP00??MOYB")
-                    )
-                    self.value = np.min(self.channel.get_data(unit="N*m"))
+                        ).convert_unit("N*m")
+                    self.value = np.min(self.channel.get_data())
                     self.rating = self.limits.get_limit_min_rating(self.channel)
                     self.color = self.limits.get_limit_min_color(self.channel)
 
@@ -293,8 +293,8 @@ class Overall(Criterion):
                 def calculation(self) -> None:
                     self.channel = self.require_channel(
                         self.ctx.code("?{p}TMONLO00??MOXB")
-                    )
-                    self.value = self.channel.get_data(unit="N*m")[
+                        ).convert_unit("N*m")
+                    self.value = self.channel.get_data()[
                         np.argmax(np.abs(self.channel.get_data()))
                     ]
                     self.rating = self.limits.get_limit_min_rating(self.channel)
@@ -313,8 +313,8 @@ class Overall(Criterion):
                 def calculation(self) -> None:
                     self.channel = self.require_channel(
                         self.ctx.code("?{p}TMONLO00??MOYB")
-                    )
-                    self.value = np.min(self.channel.get_data(unit="N*m"))
+                        ).convert_unit("N*m")
+                    self.value = np.min(self.channel.get_data())
                     self.rating = self.limits.get_limit_min_rating(self.channel)
                     self.color = self.limits.get_limit_min_color(self.channel)
 

@@ -29,9 +29,9 @@ unrelated work. When a listed project is completed, remove or update its entry i
 
 ```powershell
 uv sync --group dev
-uv run python -m unittest discover -s tests
-uv run python -m unittest tests.test_module
-uv run python -m unittest tests.test_module.TestClass.test_method
+uv run python -m pytest tests
+uv run python -m pytest tests/test_module.py
+uv run python -m pytest tests/test_module.py::TestClass::test_method
 
 uv run nox -s lint type_check
 uv run nox -s tests-3.9
@@ -45,8 +45,8 @@ Some tests require untracked fixtures under `data/`; report exports write to `ou
 tests are opt-in:
 
 ```powershell
-$env:PYISOMME_PPTX='1'; uv run python -m unittest tests.test_report
-$env:PYISOMME_PPTX='euro_ncap_side_pole'; uv run python -m unittest tests.test_report
+$env:PYISOMME_PPTX='1'; uv run pytest tests/test_report.py
+$env:PYISOMME_PPTX='euro_ncap_side_pole'; uv run pytest tests/test_report.py
 ```
 
 ## Continuous integration
@@ -89,7 +89,10 @@ Other main areas:
 - Import public report-page and plotting classes from their package re-exports, not implementation
   modules.
 - Handle units through [pyisomme/unit.py](pyisomme/unit.py). Convert with `Channel.convert_unit()`;
-  never assign raw Astropy units to `Channel.unit` or mutate channel data to convert units.
+  never assign raw Astropy units to `Channel.unit` or mutate channel data to convert units. In
+  report criteria, convert `self.channel` to the desired unit before reading its data, then use
+  `self.channel.get_data()` without a `unit=` override. Otherwise `criterion.value` is in a
+  different unit from the `criterion.channel.unit` shown by `Report.print_results()`.
 - Keep `ruff` and `mypy` clean. `mypy` is intentionally scoped in [pyproject.toml](pyproject.toml).
 - Supported measurement inputs are `.mme`, `.chn`, channel-data files such as `.001`, directories, and
   supported archives; unrelated media files are ignored.

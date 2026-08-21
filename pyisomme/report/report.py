@@ -15,6 +15,7 @@ from pyisomme.report.manual import suggest
 from pyisomme.report.page import Page_Cover
 from pyisomme.report.report_protocol import ReportProtocol
 from pyisomme.report.validate import Issue, validate_report
+from pyisomme.utils import json_encode
 
 logger = logging.getLogger(__name__)
 
@@ -173,6 +174,27 @@ class Report(BaseReport, Generic[C]):
                     f"Value={criterion.value:.5g} [{criterion.channel.unit if criterion.channel is not None else ''}] "
                     f"Rating={criterion.rating:.5g}"
                 )
+
+    def json_results(self) -> dict:
+        results: dict[str, Any] = {}
+        for isomme_idx, isomme in enumerate(self.isomme_list, 1):
+            test_results: dict[str, Any] = {}
+            for path, criterion in self.criterion_overall[isomme].walk():
+                node = test_results
+                path_parts = path.split("/") if path else ("Overall",)
+                for part in path_parts:
+                    node = node.setdefault(part, {})
+                node["result"] = {
+                    "name": criterion.name
+                    if criterion.name is not None
+                    else criterion.__class__.__name__,
+                    "value": json_encode(criterion.value),
+                    "rating": json_encode(criterion.rating),
+                    "color": json_encode(criterion.color),
+                    "status": criterion.status.name,
+                }
+            results[f"{isomme_idx}: {isomme.test_number}"] = test_results
+        return results
 
     def validate(self, errors_only: bool = False) -> list[Issue]:
         issues = validate_report(self)

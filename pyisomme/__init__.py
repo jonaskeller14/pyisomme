@@ -1,4 +1,3 @@
-import pyisomme.report
 from pyisomme.calculate import *
 from pyisomme.channel import *
 from pyisomme.code import *
@@ -9,3 +8,4 @@ from pyisomme.limit import *
 from pyisomme.limits import *
 from pyisomme.plotting import *
 from pyisomme.unit import *
+from . import report

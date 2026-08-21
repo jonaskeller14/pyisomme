@@ -97,8 +97,8 @@ class Criterion_Head_a3ms(Criterion):
     def calculation(self) -> None:
         self.channel = self.require_channel(
             self.ctx.code("?{p}HEAD003C??ACRX"), self.ctx.code("?{p}HEADCG3C??ACRX")
-        )
-        self.value = self.channel.get_data(unit=g0)[0]
+        ).convert_unit(Unit(g0))
+        self.value = self.channel.get_data()[0]
         self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
         self.color = self.limits.get_limit_min_color(self.channel)
 
@@ -114,8 +114,10 @@ class Criterion_Neck_My_extension(Criterion):
         ]
 
     def calculation(self) -> None:
-        self.channel = self.require_channel(self.ctx.code("?{p}NECKUP00??MOYB"))
-        self.value = np.min(self.channel.get_data(unit="Nm"))
+        self.channel = self.require_channel(
+            self.ctx.code("?{p}NECKUP00??MOYB")
+        ).convert_unit("Nm")
+        self.value = np.min(self.channel.get_data())
         self.rating = self.limits.get_limit_min_rating(self.channel)
         self.color = self.limits.get_limit_min_color(self.channel)
 
@@ -217,7 +219,7 @@ class Overall(Criterion):
                 self.channel = self.require_channel(
                     self.ctx.code("?{p}NECKUP00??FOXA")
                 ).convert_unit("kN")
-                self.value = self.channel.get_data(unit="kN")[
+                self.value = self.channel.get_data()[
                     np.argmax(np.abs(self.channel.get_data()))
                 ]
                 self.rating = self.limits.get_limit_min_rating(self.channel)
@@ -339,7 +341,7 @@ class Overall(Criterion):
                 self.channel = self.require_channel(
                     self.ctx.code("?{p}NECKUP00??FOXA")
                 ).convert_unit("kN")
-                self.value = self.channel.get_data(unit="kN")[
+                self.value = self.channel.get_data()[
                     np.argmax(np.abs(self.channel.get_data()))
                 ]
                 self.rating = self.limits.get_limit_min_rating(

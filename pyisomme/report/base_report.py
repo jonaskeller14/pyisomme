@@ -60,6 +60,10 @@ class BaseReport(ABC):
         """Print the calculated results."""
 
     @abstractmethod
+    def json_results(self) -> dict:
+        """Return the results in json dictionary format"""
+
+    @abstractmethod
     def validate(self, errors_only: bool = False) -> list[Issue]:
         """Validate the report definition."""
 

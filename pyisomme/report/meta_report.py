@@ -11,6 +11,7 @@ from pyisomme.report.page import Page, Page_Cover
 from pyisomme.report.report import Report
 from pyisomme.report.report_protocol import ReportProtocol
 from pyisomme.report.validate import Issue
+from pyisomme.utils import json_encode
 
 
 class MetaReport(BaseReport):
@@ -103,6 +104,20 @@ class MetaReport(BaseReport):
             rating = "n/a" if self.rating is None else f"{self.rating:.5g}"
             maximum = "n/a" if self.max_rating is None else f"{self.max_rating:.5g}"
             print(f"  {'TOTAL':<34}{rating:>8} / {maximum}")
+
+    def json_results(self) -> dict:
+        return {
+            "Overall": {
+                "result": {
+                    "name": "Overall",
+                    "value": json_encode(self.rating),
+                    "rating": json_encode(self.rating),
+                    "color": None,
+                    "status": "OK",
+                }
+            },
+            **{name: report.json_results() for name, report in self._reports.items()}
+        }
 
     def validate(self, errors_only: bool = False) -> list[Issue]:
         """Return every child issue with its stable subreport key prefixed."""

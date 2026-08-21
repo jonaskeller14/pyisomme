@@ -5,7 +5,6 @@ from typing import Any
 
 import numpy as np
 
-from pyisomme import Unit, g0
 from pyisomme.isomme import Isomme
 from pyisomme.limit import Limit
 from pyisomme.report.criterion import Criterion, Role, sub
@@ -21,6 +20,7 @@ from pyisomme.report.page import (
 from pyisomme.report.report import Report
 from pyisomme.report.un.limits import Limit_Fail, Limit_Pass
 from pyisomme.report.un.protocols import PROTOCOL_R135_2016
+from pyisomme.unit import Unit, g0
 
 logger = logging.getLogger(__name__)
 

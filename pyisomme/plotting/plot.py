@@ -1,10 +1,6 @@
-# matplotlib 3.7.5 ships no stubs, so Pylance falls back on its own bundled ones, which are stricter
-# than (and lag behind) the runtime API this module targets — e.g. mcolors.TABLEAU_COLORS is absent
-# from them although it exists at runtime. None of that is a real defect here, so the two rule
-# families it produces are switched off rather than papered over at every call site.
-# pyright: reportArgumentType=false, reportAttributeAccessIssue=false
 from __future__ import annotations
 
+from abc import ABC, abstractmethod
 import logging
 
 import matplotlib.colors as mcolors
@@ -14,8 +10,8 @@ from matplotlib.figure import Figure
 logger = logging.getLogger(__name__)
 
 
-class Plot:
-    colors: list[str] = list(mcolors.TABLEAU_COLORS.values())
+class Plot(ABC):
+    colors: list[str] = list(mcolors.TABLEAU_COLORS.values()) # pyright: ignore[reportAttributeAccessIssue]
     linestyles: list[str | tuple] = [
         "-",
         "--",
@@ -42,3 +38,7 @@ class Plot:
     def show(self, *args, **kwargs) -> Plot:
         plt.show(*args, **kwargs)
         return self
+
+    @abstractmethod
+    def plot(self) -> Figure:
+        ...

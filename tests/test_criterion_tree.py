@@ -1,36 +1,13 @@
-"""
-The ``sub()`` + ``Ctx`` framework — plan step 7.
-
-Framework only: no report is migrated in step 7, so everything here is built from
-synthetic criteria and empty ``Isomme`` objects. That is deliberate — the point of the
-step is that the machinery works *before* a protocol depends on it, and that it coexists
-with the 13 reports still wired by hand.
-
-The invariants under test, in the order the plan lists them:
-
-* :class:`TestDeclarationOrder` — children come out in the order the protocol declares
-  them, mixed with dynamically attached and not-yet-migrated ones.
-* :class:`TestAutoCalculation` — declared children are calculated by the framework, and
-  a not-yet-migrated parent's own children are *not* calculated twice.
-* :class:`TestAggregation` — NaN propagates (G9), and modifiers stay out of the headline.
-* :class:`TestContext` — the ``p`` threading, lazily resolved; a position set *after*
-  construction is honoured (F15).
-* :class:`TestNoOccupant` — a tree with no occupant anywhere in it builds, calculates and
-  validates. ``Ctx`` is not an occupant object.
-* :class:`TestLimits` — ``define_limits()`` rebuilds rows from the resolved context.
-"""
-
 from __future__ import annotations
 
 import io
-import logging
-import unittest
 from contextlib import redirect_stdout
 from dataclasses import replace
 
 import numpy as np
+import pytest
 
-import pyisomme
+from pyisomme import Channel, Isomme, create_sample
 from pyisomme.errors import InvalidCodeError, MissingData, Status
 from pyisomme.limit import Limit
 from pyisomme.report.criterion import Criterion, Role, sub
@@ -39,20 +16,12 @@ from pyisomme.report.manual import Manual, manual
 from pyisomme.report.report import Report
 from pyisomme.report.validate import validate_tree
 
-logging.basicConfig(level=logging.CRITICAL)
 
-
-def isomme(test_number: str = "T0") -> pyisomme.Isomme:
-    return pyisomme.Isomme(test_number=test_number)
-
-
-def report_of(
-    overall: type[Criterion], n: int = 1
-) -> tuple[Report, list[pyisomme.Isomme]]:
+def report_of(overall: type[Criterion], n: int = 1) -> tuple[Report, list[Isomme]]:
     """A minimal report around ``overall``, with ``n`` empty tests."""
-    made = type("MadeReport", (Report,), {"name": "made", "Criterion_Overall": overall})
-    isomme_list = [isomme(f"T{i}") for i in range(n)]
-    return made(isomme_list), isomme_list
+    sample_report = type("SampleReport", (Report,), {"name": "Sample Report", "Criterion_Overall": overall})
+    isomme_list = [Isomme(f"T{i}") for i in range(n)]
+    return sample_report(isomme_list), isomme_list
 
 
 class Rated(Criterion):
@@ -66,18 +35,11 @@ class Rated(Criterion):
         self.value = self.rating
 
 
-def rated(
-    value: float, role: Role = Role.RESULT, name: str = "Rated"
-) -> type[Criterion]:
+def rated(value: float, role: Role = Role.RESULT, name: str = "Rated") -> type[Criterion]:
     return type("Rated_", (Rated,), {"name": name, "rating": value, "role": role})
 
 
-# --------------------------------------------------------------------------- #
-# declaration order
-# --------------------------------------------------------------------------- #
-
-
-class TestDeclarationOrder(unittest.TestCase):
+class TestDeclarationOrder:
     def test_declared_children_keep_protocol_order(self) -> None:
         """Not alphabetical: `zulu` is declared first and must come out first."""
 
@@ -91,10 +53,7 @@ class TestDeclarationOrder(unittest.TestCase):
                 pass
 
         report, (v1,) = report_of(Overall)
-        self.assertEqual(
-            [attr for attr, _ in report.overall(v1).get_children()],
-            ["zulu", "alpha", "mike"],
-        )
+        assert [attr for attr, _ in report.overall(v1).get_children()] == ["zulu", "alpha", "mike"]
 
     def test_subclass_appends_and_overrides_without_touching_the_base(self) -> None:
         class Base(Criterion):
@@ -110,14 +69,11 @@ class TestDeclarationOrder(unittest.TestCase):
 
         report, (v1,) = report_of(Derived)
         children = dict(report.overall(v1).get_children())
-        self.assertEqual(list(children), ["first", "second", "third"])
-        self.assertEqual(children["second"].name, "Replaced")
+        assert list(children) == ["first", "second", "third"]
+        assert children["second"].name == "Replaced"
 
         base_report, (v2,) = report_of(Base)
-        self.assertEqual(
-            [attr for attr, _ in base_report.overall(v2).get_children()],
-            ["first", "second"],
-        )
+        assert [attr for attr, _ in base_report.overall(v2).get_children()] == ["first", "second"]
 
     def test_declared_then_added_then_legacy(self) -> None:
         """Coexistence (D-5): all three wiring styles in one node, in that order."""
@@ -125,7 +81,7 @@ class TestDeclarationOrder(unittest.TestCase):
         class Overall(Criterion):
             declared = sub(rated(1.0))
 
-            def __init__(self, report: Report, isomme: pyisomme.Isomme) -> None:
+            def __init__(self, report: Report, isomme: Isomme) -> None:
                 super().__init__(report, isomme)
                 self.legacy_z = rated(2.0)(report, isomme)
                 self.legacy_a = rated(3.0)(report, isomme)
@@ -136,10 +92,7 @@ class TestDeclarationOrder(unittest.TestCase):
         report, (v1,) = report_of(Overall)
         overall = report.overall(v1)
         overall.add_child("added", rated(4.0)(report, v1))
-        self.assertEqual(
-            [attr for attr, _ in overall.get_children()],
-            ["declared", "added", "legacy_z", "legacy_a"],
-        )
+        assert [attr for attr, _ in overall.get_children()] == ["declared", "added", "legacy_z", "legacy_a"]
 
     def test_walk_is_depth_first_in_declaration_order(self) -> None:
         class Leaf(Criterion):
@@ -161,10 +114,7 @@ class TestDeclarationOrder(unittest.TestCase):
                 pass
 
         report, (v1,) = report_of(Overall)
-        self.assertEqual(
-            [path for path, _ in report.overall(v1).walk()],
-            ["", "second", "second/zulu", "second/alpha", "first"],
-        )
+        assert [path for path, _ in report.overall(v1).walk()] == ["", "second", "second/zulu", "second/alpha", "first"]
 
     def test_print_results_follows_the_protocol_not_the_alphabet(self) -> None:
         class Overall(Criterion):
@@ -182,15 +132,10 @@ class TestDeclarationOrder(unittest.TestCase):
         printed = [
             line.strip().split(":")[0] for line in buffer.getvalue().splitlines()[1:]
         ]
-        self.assertEqual(printed, ["Overall", "Zulu", "Alpha"])
+        assert printed == ["Overall", "Zulu", "Alpha"]
 
 
-# --------------------------------------------------------------------------- #
-# automatic calculation
-# --------------------------------------------------------------------------- #
-
-
-class TestAutoCalculation(unittest.TestCase):
+class TestAutoCalculation:
     def test_declared_children_are_calculated_by_the_framework(self) -> None:
         class Overall(Criterion):
             child = sub(rated(3.0))
@@ -201,9 +146,9 @@ class TestAutoCalculation(unittest.TestCase):
 
         report, (v1,) = report_of(Overall)
         report.calculate()
-        self.assertEqual(report.overall(v1).child.calls, 1)
-        self.assertEqual(report.overall(v1).child.status, Status.OK)
-        self.assertEqual(report.overall(v1).rating, 3.0)
+        assert report.overall(v1).child.calls == 1
+        assert report.overall(v1).child.status == Status.OK
+        assert report.overall(v1).rating == 3.0
 
     def test_children_are_calculated_before_the_parent(self) -> None:
         order: list[str] = []
@@ -223,7 +168,7 @@ class TestAutoCalculation(unittest.TestCase):
 
         report, _ = report_of(Overall)
         report.calculate()
-        self.assertEqual(order, ["prepare", "child", "parent"])
+        assert order == ["prepare", "child", "parent"]
 
     def test_grandchildren_are_calculated_too(self) -> None:
         class Branch(Criterion):
@@ -240,8 +185,8 @@ class TestAutoCalculation(unittest.TestCase):
 
         report, (v1,) = report_of(Overall)
         report.calculate()
-        self.assertEqual(report.overall(v1).rating, 2.0)
-        self.assertEqual(report.overall(v1).branch.leaf.calls, 1)
+        assert report.overall(v1).rating == 2.0
+        assert report.overall(v1).branch.leaf.calls == 1
 
     def test_added_children_are_calculated(self) -> None:
         class Overall(Criterion):
@@ -253,14 +198,14 @@ class TestAutoCalculation(unittest.TestCase):
         overall.add_child("one", rated(1.0)(report, v1))
         overall.add_child("two", rated(2.0)(report, v1))
         report.calculate()
-        self.assertEqual(overall.rating, 3.0)
-        self.assertEqual([child.calls for _, child in overall.get_children()], [1, 1])
+        assert overall.rating == 3.0
+        assert [child.calls for _, child in overall.get_children()] == [1, 1]
 
     def test_legacy_children_are_not_calculated_twice(self) -> None:
         """A not-yet-migrated parent calculates its own children; the framework must not."""
 
         class Overall(Criterion):
-            def __init__(self, report: Report, isomme: pyisomme.Isomme) -> None:
+            def __init__(self, report: Report, isomme: Isomme) -> None:
                 super().__init__(report, isomme)
                 self.criterion_legacy = rated(1.0)(report, isomme)
 
@@ -269,7 +214,7 @@ class TestAutoCalculation(unittest.TestCase):
 
         report, (v1,) = report_of(Overall)
         report.calculate()
-        self.assertEqual(report.overall(v1).criterion_legacy.calls, 1)
+        assert report.overall(v1).criterion_legacy.calls == 1
 
     def test_a_failing_child_does_not_stop_its_siblings(self) -> None:
         class Broken(Criterion):
@@ -286,9 +231,9 @@ class TestAutoCalculation(unittest.TestCase):
         report, (v1,) = report_of(Overall)
         report.calculate()
         overall = report.overall(v1)
-        self.assertEqual(overall.broken.status, Status.NA)
-        self.assertEqual(overall.fine.status, Status.OK)
-        self.assertEqual(overall.status, Status.OK)
+        assert overall.broken.status == Status.NA
+        assert overall.fine.status == Status.OK
+        assert overall.status == Status.OK
 
     def test_add_child_sets_the_parent_link(self) -> None:
         class Overall(Criterion):
@@ -299,7 +244,7 @@ class TestAutoCalculation(unittest.TestCase):
         overall = report.overall(v1)
         child = rated(1.0)(report, v1)
         overall.add_child("child", child)
-        self.assertIs(child.parent, overall)
+        assert child.parent is overall
 
     def test_sub_sets_the_parent_link(self) -> None:
         class Overall(Criterion):
@@ -309,8 +254,8 @@ class TestAutoCalculation(unittest.TestCase):
                 pass
 
         report, (v1,) = report_of(Overall)
-        self.assertIs(report.overall(v1).child.parent, report.overall(v1))
-        self.assertIsNone(report.overall(v1).parent)
+        assert report.overall(v1).child.parent is report.overall(v1)
+        assert report.overall(v1).parent is None
 
     def test_the_tree_exists_before_calculate(self) -> None:
         """G8: eager construction — manual inputs are set between build and calculate."""
@@ -330,12 +275,8 @@ class TestAutoCalculation(unittest.TestCase):
         report, (v1,) = report_of(Overall)
         report.overall(v1).leaf.hard_contact = False
         report.calculate()
-        self.assertEqual(report.overall(v1).rating, 0.0)
+        assert report.overall(v1).rating == 0.0
 
-
-# --------------------------------------------------------------------------- #
-# aggregation
-# --------------------------------------------------------------------------- #
 
 
 class Mixed(Criterion):
@@ -350,15 +291,15 @@ class Mixed(Criterion):
         self.rating = self.min_of_children() + self.modifiers_sum()
 
 
-class TestAggregation(unittest.TestCase):
+class TestAggregation:
     def test_modifiers_are_excluded_from_the_headline(self) -> None:
         report, (v1,) = report_of(Mixed)
         report.calculate()
         overall = report.overall(v1)
-        self.assertEqual(overall.min_of_children(), 2.0)
-        self.assertEqual(overall.sum_of_children(), 6.0)
-        self.assertEqual(overall.modifiers_sum(), -1.0)
-        self.assertEqual(overall.rating, 1.0)
+        assert overall.min_of_children() == 2.0
+        assert overall.sum_of_children() == 6.0
+        assert overall.modifiers_sum() == -1.0
+        assert overall.rating == 1.0
 
     def test_aggregate_children_count_towards_the_headline(self) -> None:
         class Overall(Criterion):
@@ -370,19 +311,15 @@ class TestAggregation(unittest.TestCase):
                 pass
 
         report, (v1,) = report_of(Overall)
-        self.assertEqual(sorted(report.overall(v1).ratings_of_children()), [1.0, 4.0])
-        self.assertEqual(report.overall(v1).ratings_of_children(Role.MODIFIER), [-2.0])
+        assert sorted(report.overall(v1).ratings_of_children()) == [1.0, 4.0]
+        assert report.overall(v1).ratings_of_children(Role.MODIFIER) == [-2.0]
 
     def test_explicit_roles_select_exactly_those(self) -> None:
         report, (v1,) = report_of(Mixed)
         overall = report.overall(v1)
-        self.assertEqual(
-            [c.name for c in overall.children_by_role(Role.RESULT)], ["Good", "Bad"]
-        )
-        self.assertEqual(
-            [c.name for c in overall.children_by_role(Role.MODIFIER)], ["Penalty"]
-        )
-        self.assertEqual(len(overall.children_by_role(Role.RESULT, Role.MODIFIER)), 3)
+        assert [c.name for c in overall.children_by_role(Role.RESULT)] == ["Good", "Bad"]
+        assert [c.name for c in overall.children_by_role(Role.MODIFIER)] == ["Penalty"]
+        assert len(overall.children_by_role(Role.RESULT, Role.MODIFIER)) == 3
 
     def test_nan_propagates_through_every_helper(self) -> None:
         """G9: a missing measurement must never look like a good score."""
@@ -396,10 +333,10 @@ class TestAggregation(unittest.TestCase):
 
         report, (v1,) = report_of(Overall)
         overall = report.overall(v1)
-        self.assertTrue(np.isnan(overall.min_of_children()))
-        self.assertTrue(np.isnan(overall.max_of_children()))
-        self.assertTrue(np.isnan(overall.sum_of_children()))
-        self.assertTrue(np.isnan(overall.mean_of_children()))
+        assert np.isnan(overall.min_of_children())
+        assert np.isnan(overall.max_of_children())
+        assert np.isnan(overall.sum_of_children())
+        assert np.isnan(overall.mean_of_children())
 
     def test_a_nan_tolerant_mean_needs_a_reason_and_records_it(self) -> None:
         class Overall(Criterion):
@@ -414,8 +351,8 @@ class TestAggregation(unittest.TestCase):
         report, (v1,) = report_of(Overall)
         report.calculate()
         overall = report.overall(v1)
-        self.assertEqual(overall.rating, 4.0)
-        self.assertEqual(overall.skip_missing, "no rear occupant in this test")
+        assert overall.rating == 4.0
+        assert overall.skip_missing == "no rear occupant in this test"
 
     def test_skip_missing_stays_unset_when_nothing_was_skipped(self) -> None:
         class Overall(Criterion):
@@ -427,8 +364,8 @@ class TestAggregation(unittest.TestCase):
 
         report, (v1,) = report_of(Overall)
         report.calculate()
-        self.assertEqual(report.overall(v1).rating, 3.0)
-        self.assertIsNone(report.overall(v1).skip_missing)
+        assert report.overall(v1).rating == 3.0
+        assert report.overall(v1).skip_missing is None
 
     def test_all_missing_stays_nan_even_when_tolerated(self) -> None:
         class Overall(Criterion):
@@ -439,7 +376,7 @@ class TestAggregation(unittest.TestCase):
 
         report, (v1,) = report_of(Overall)
         report.calculate()
-        self.assertTrue(np.isnan(report.overall(v1).rating))
+        assert np.isnan(report.overall(v1).rating)
 
     def test_modifiers_sum_is_zero_without_modifiers(self) -> None:
         class Overall(Criterion):
@@ -450,7 +387,7 @@ class TestAggregation(unittest.TestCase):
 
         report, (v1,) = report_of(Overall)
         report.calculate()
-        self.assertEqual(report.overall(v1).rating, 4.0)
+        assert report.overall(v1).rating == 4.0
 
     def test_min_over_no_children_is_nan_not_an_exception(self) -> None:
         class Overall(Criterion):
@@ -459,14 +396,14 @@ class TestAggregation(unittest.TestCase):
 
         report, (v1,) = report_of(Overall)
         report.calculate()
-        self.assertTrue(np.isnan(report.overall(v1).rating))
-        self.assertEqual(report.overall(v1).status, Status.OK)
+        assert np.isnan(report.overall(v1).rating)
+        assert report.overall(v1).status == Status.OK
 
     def test_legacy_children_are_aggregated_too(self) -> None:
         """The helpers read `get_children()`, so they work before a report is migrated."""
 
         class Overall(Criterion):
-            def __init__(self, report: Report, isomme: pyisomme.Isomme) -> None:
+            def __init__(self, report: Report, isomme: Isomme) -> None:
                 super().__init__(report, isomme)
                 self.criterion_a = rated(4.0)(report, isomme)
                 self.criterion_b = rated(2.0)(report, isomme)
@@ -478,12 +415,8 @@ class TestAggregation(unittest.TestCase):
 
         report, (v1,) = report_of(Overall)
         report.calculate()
-        self.assertEqual(report.overall(v1).rating, 2.0)
+        assert report.overall(v1).rating == 2.0
 
-
-# --------------------------------------------------------------------------- #
-# context
-# --------------------------------------------------------------------------- #
 
 #: Declared once and referenced twice — by the ``Manual[...]`` annotation and by the
 #: ``at=`` that reads it. That is the point: the wiring names the declaration, not a
@@ -498,7 +431,7 @@ class Occupant(Criterion):
     name = "Occupant"
 
     def calculation(self) -> None:
-        self.value = self.ctx.field("p")
+        self.value = self.ctx.field("p") # pyright: ignore[reportAttributeAccessIssue]
 
 
 class Seated(Criterion):
@@ -516,7 +449,7 @@ class Seated(Criterion):
         pass
 
 
-class TestContext(unittest.TestCase):
+class TestContext:
     def test_a_root_has_an_empty_context(self) -> None:
         class Overall(Criterion):
             def calculation(self) -> None:
@@ -524,33 +457,31 @@ class TestContext(unittest.TestCase):
 
         report, (v1,) = report_of(Overall)
         ctx = report.overall(v1).ctx
-        self.assertIs(ctx.report, report)
-        self.assertIs(ctx.isomme, v1)
-        self.assertEqual(dict(ctx.fields), {})
+        assert ctx.report is report
+        assert ctx.isomme is v1
+        assert dict(ctx.fields) == {}
 
     def test_from_input_reads_the_manual_input_of_the_nearest_ancestor(self) -> None:
         report, (v1,) = report_of(Seated)
         report.calculate()
         overall = report.overall(v1)
-        self.assertEqual(overall.driver.value, "1")
-        self.assertEqual(overall.front_passenger.value, "3")
+        assert overall.driver.value == "1"
+        assert overall.front_passenger.value == "3"
 
     def test_a_position_set_after_construction_is_honoured(self) -> None:
         """F15, properly: no rebuild_child(), no sync_positions()."""
         report, (v1,) = report_of(Seated)
         report.overall(v1).p_driver = "2"
         report.calculate()
-        self.assertEqual(report.overall(v1).driver.value, "2")
+        assert report.overall(v1).driver.value == "2"
 
     def test_a_lettered_seat_is_a_position_like_any_other(self) -> None:
         """``?A…`` is a valid channel code — the reason a position is a `str`, not an `int`."""
         report, (v1,) = report_of(Seated)
         report.overall(v1).p_driver = "A"
         report.calculate()
-        self.assertEqual(report.overall(v1).driver.value, "A")
-        self.assertEqual(
-            report.overall(v1).driver.code("?{p}HEAD??00??ACRA"), "?AHEAD??00??ACRA"
-        )
+        assert report.overall(v1).driver.value == "A"
+        assert report.overall(v1).driver.code("?{p}HEAD??00??ACRA") == "?AHEAD??00??ACRA"
 
     def test_children_inherit_the_context(self) -> None:
         class Leaf(Criterion):
@@ -573,24 +504,19 @@ class TestContext(unittest.TestCase):
         report, (v1,) = report_of(Overall)
         report.overall(v1).p_driver = "4"
         report.calculate()
-        self.assertEqual(report.overall(v1).driver.leaf.value, 4.0)
+        assert report.overall(v1).driver.leaf.value == 4.0
 
     def test_where_is_a_second_source_needing_no_framework_change(self) -> None:
         report, (v1,) = report_of(Seated)
-        self.assertEqual(dict(report.overall(v1).trolley.ctx.fields), {"p": "M"})
+        assert dict(report.overall(v1).trolley.ctx.fields) == {"p": "M"}
 
     def test_a_code_template_is_filled_from_the_context(self) -> None:
         report, (v1,) = report_of(Seated)
-        self.assertEqual(
-            report.overall(v1).front_passenger.code("?{p}HEAD??00??ACRA"),
-            "?3HEAD??00??ACRA",
-        )
+        assert report.overall(v1).front_passenger.code("?{p}HEAD??00??ACRA") == "?3HEAD??00??ACRA"
 
     def test_a_template_without_a_placeholder_passes_through(self) -> None:
         report, (v1,) = report_of(Seated)
-        self.assertEqual(
-            report.overall(v1).code("M?MBAR0OLC??VEX?"), "M?MBAR0OLC??VEX?"
-        )
+        assert report.overall(v1).code("M?MBAR0OLC??VEX?") == "M?MBAR0OLC??VEX?"
 
     def test_a_missing_field_is_n_a_naming_it(self) -> None:
         class Leaf(Criterion):
@@ -607,9 +533,9 @@ class TestContext(unittest.TestCase):
         report, (v1,) = report_of(Overall)
         report.calculate()
         leaf = report.overall(v1).leaf
-        self.assertEqual(leaf.status, Status.NA)
-        self.assertIn("p", str(leaf.na_reason))
-        self.assertTrue(np.isnan(leaf.value))
+        assert leaf.status == Status.NA
+        assert "p" in str(leaf.na_reason)
+        assert np.isnan(leaf.value)
 
     def test_a_missing_seat_input_is_n_a_not_a_silent_default(self) -> None:
         class Overall(Criterion):
@@ -621,11 +547,8 @@ class TestContext(unittest.TestCase):
 
         report, (v1,) = report_of(Overall)
         report.calculate()
-        self.assertEqual(report.overall(v1).driver.status, Status.NA)
-        self.assertIn(
-            "Channel-code position of the driver",
-            str(report.overall(v1).driver.na_reason),
-        )
+        assert report.overall(v1).driver.status == Status.NA
+        assert "Channel-code position of the driver" in str(report.overall(v1).driver.na_reason)
 
     def test_from_input_still_accepts_a_name(self) -> None:
         """The string form is the escape hatch for a declaration in another module."""
@@ -640,7 +563,7 @@ class TestContext(unittest.TestCase):
         report, (v1,) = report_of(Overall)
         report.overall(v1).p_driver = "5"
         report.calculate()
-        self.assertEqual(report.overall(v1).driver.value, "5")
+        assert report.overall(v1).driver.value == "5"
 
     def test_a_declaration_is_an_identity_not_a_value(self) -> None:
         """
@@ -653,8 +576,8 @@ class TestContext(unittest.TestCase):
         annotation object and its ``at=`` would resolve to the wrong module's input.
         """
         twin = manual("1", doc="Channel-code position of the driver.")
-        self.assertNotEqual(twin, P_DRIVER)
-        self.assertIsNot(Manual[str, twin], Manual[str, P_DRIVER])
+        assert twin != P_DRIVER
+        assert Manual[str, twin] is not Manual[str, P_DRIVER]
 
         class Overall(Criterion):
             p_driver: Manual[str, P_DRIVER]
@@ -665,37 +588,34 @@ class TestContext(unittest.TestCase):
 
         report, (v1,) = report_of(Overall)
         report.calculate()
-        self.assertEqual(report.overall(v1).driver.status, Status.NA)
+        assert report.overall(v1).driver.status == Status.NA
 
     def test_a_resolved_code_of_the_wrong_length_is_an_error(self) -> None:
         ctx = Ctx.__new__(Ctx)
         object.__setattr__(ctx, "report", None)
         object.__setattr__(ctx, "isomme", None)
         object.__setattr__(ctx, "fields", {"p": "12"})
-        with self.assertRaises(InvalidCodeError):
+        with pytest.raises(InvalidCodeError):
             ctx.code("?{p}HEAD??00??ACRA")
 
     def test_character_classes_count_as_one_character(self) -> None:
         report, (v1,) = report_of(Seated)
-        self.assertEqual(
-            report.overall(v1).driver.code("?{p}CHST000[03]??DSX?"),
-            "?1CHST000[03]??DSX?",
-        )
+        assert report.overall(v1).driver.code("?{p}CHST000[03]??DSX?") == "?1CHST000[03]??DSX?"
 
     def test_at_derives_without_mutating(self) -> None:
         report, (v1,) = report_of(Seated)
         overall = report.overall(v1)
         derived = overall.ctx.at(p="1").at(object="M")
-        self.assertEqual(dict(derived.fields), {"p": "1", "object": "M"})
-        self.assertEqual(dict(overall.ctx.fields), {})
+        assert dict(derived.fields) == {"p": "1", "object": "M"}
+        assert dict(overall.ctx.fields) == {}
 
     def test_manual_input_api_is_unchanged(self) -> None:
         """Step 4's public API keeps working: the context source is not a second truth."""
         report, (v1,) = report_of(Seated)
         report.set_inputs({"T0": {"p_driver": "2", "p_front_passenger": "5"}})
         report.calculate()
-        self.assertEqual(report.overall(v1).front_passenger.value, "5")
-        self.assertEqual(report.get_inputs()["T0"]["p_driver"], "2")
+        assert report.overall(v1).front_passenger.value == "5"
+        assert report.get_inputs()["T0"]["p_driver"] == "2"
 
     def test_a_saved_int_position_is_refused(self) -> None:
         """
@@ -706,10 +626,10 @@ class TestContext(unittest.TestCase):
         all a user needs to fix the file.
         """
         report, _ = report_of(Seated)
-        with self.assertRaises(TypeError) as caught:
+        with pytest.raises(TypeError) as caught:
             report.set_inputs({"T0": {"p_driver": 2}})
-        self.assertIn("p_driver", str(caught.exception))
-        self.assertIn("str", str(caught.exception))
+        assert "p_driver" in str(caught.value)
+        assert "str" in str(caught.value)
 
 
 # --------------------------------------------------------------------------- #
@@ -737,8 +657,8 @@ class Correlation(Criterion):
     def __init__(
         self,
         report: Report,
-        isomme: pyisomme.Isomme,
-        channel: pyisomme.Channel | None = None,
+        isomme: Isomme,
+        channel: Channel | None = None,
     ) -> None:
         super().__init__(report, isomme)
         self._channel = channel
@@ -758,22 +678,20 @@ class Structural(Criterion):
         self.rating = self.modifiers_sum()
 
 
-class TestNoOccupant(unittest.TestCase):
+class TestNoOccupant:
     """`Ctx` is not an occupant object — constructing or calculating must never need one."""
 
     def test_a_vehicle_level_tree_builds_calculates_and_validates(self) -> None:
         report, (v1,) = report_of(Structural)
         report.calculate()
         overall = report.overall(v1)
-        self.assertEqual(overall.status, Status.OK)
-        self.assertEqual(dict(overall.vehicle.ctx.fields), {})
-        self.assertEqual(
-            [issue for issue in validate_tree(overall) if issue.is_error], []
-        )
+        assert overall.status == Status.OK
+        assert dict(overall.vehicle.ctx.fields) == {}
+        assert [issue for issue in validate_tree(overall) if issue.is_error] == []
         # The empty Isomme carries no channel, so the modifier is n/a and its nan
         # propagates into the aggregate (G9) — nothing here ever asked for an occupant.
-        self.assertEqual(overall.vehicle.status, Status.NA)
-        self.assertTrue(np.isnan(overall.rating))
+        assert overall.vehicle.status == Status.NA
+        assert np.isnan(overall.rating)
 
     def test_a_correlation_style_criterion_needs_no_context(self) -> None:
         class Overall(Criterion):
@@ -782,16 +700,11 @@ class TestNoOccupant(unittest.TestCase):
 
         report, (v1,) = report_of(Overall)
         overall = report.overall(v1)
-        channel = pyisomme.Channel("11HEAD0000THACXA", pyisomme.create_sample().data)
+        channel = Channel("11HEAD0000THACXA", create_sample().data)
         overall.add_child("curve_1", Correlation(report, v1, channel))
         overall.add_child("curve_2", Correlation(report, v1, channel))
         report.calculate()
-        self.assertEqual(overall.rating, 2.0)
-
-
-# --------------------------------------------------------------------------- #
-# limits
-# --------------------------------------------------------------------------- #
+        assert overall.rating == 2.0
 
 
 def constant(value: float) -> Limit:
@@ -800,7 +713,7 @@ def constant(value: float) -> Limit:
     )
 
 
-class TestLimits(unittest.TestCase):
+class TestLimits:
     def test_define_limits_is_built_from_the_resolved_context(self) -> None:
         class Leaf(Criterion):
             name = "Leaf"
@@ -824,13 +737,10 @@ class TestLimits(unittest.TestCase):
         report, (v1,) = report_of(Overall)
         report.overall(v1).p_driver = "2"
         report.calculate()
-        self.assertEqual(
-            [
-                limit.code_patterns
-                for limit in report.overall(v1).driver.limits.limit_list
-            ],
-            [("?2HEAD??00??ACRA",)],
-        )
+        assert [
+            limit.code_patterns
+            for limit in report.overall(v1).driver.limits.limit_list
+        ] == [("?2HEAD??00??ACRA",)]
 
     def test_recalculating_does_not_duplicate_limits(self) -> None:
         class Overall(Criterion):
@@ -842,8 +752,8 @@ class TestLimits(unittest.TestCase):
 
         report, (v1,) = report_of(Overall)
         report.calculate().calculate()
-        self.assertEqual(len(report.overall(v1).limits.limit_list), 1)
-        self.assertEqual(len(report.limits[v1].limit_list), 1)
+        assert len(report.overall(v1).limits.limit_list) == 1
+        assert len(report.limits[v1].limit_list) == 1
 
     def test_limits_reach_the_report_level_list(self) -> None:
         class Overall(Criterion):
@@ -855,13 +765,13 @@ class TestLimits(unittest.TestCase):
 
         report, (v1,) = report_of(Overall)
         report.calculate()
-        self.assertEqual(len(report.limits[v1].limit_list), 2)
+        assert len(report.limits[v1].limit_list) == 2
 
     def test_a_criterion_without_the_hook_keeps_its_hand_built_limits(self) -> None:
         """Coexistence: the 13 unmigrated reports build their rows in ``__init__``."""
 
         class Overall(Criterion):
-            def __init__(self, report: Report, isomme: pyisomme.Isomme) -> None:
+            def __init__(self, report: Report, isomme: Isomme) -> None:
                 super().__init__(report, isomme)
                 self.extend_limit_list([constant(1.0)])
 
@@ -870,9 +780,5 @@ class TestLimits(unittest.TestCase):
 
         report, (v1,) = report_of(Overall)
         report.calculate()
-        self.assertEqual(len(report.overall(v1).limits.limit_list), 1)
-        self.assertEqual(len(report.limits[v1].limit_list), 1)
-
-
-if __name__ == "__main__":
-    unittest.main()
+        assert len(report.overall(v1).limits.limit_list) == 1
+        assert len(report.limits[v1].limit_list) == 1

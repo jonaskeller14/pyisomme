@@ -1,12 +1,12 @@
 import copy
 import logging
-import unittest
 import warnings
 from unittest.mock import patch
 
 import astropy.units as u
 import numpy as np
 import pandas as pd
+import pytest
 from matplotlib import pyplot as plt
 
 from pyisomme.channel import Channel, create_sample
@@ -21,7 +21,7 @@ logging.basicConfig(
 )
 
 
-class TestChannel(unittest.TestCase):
+class TestChannel:
     def test_init(self):
         Channel(code="11HEAD0000H3ACXP", data=pd.DataFrame([]))
         # < 16 chars
@@ -42,10 +42,10 @@ class TestChannel(unittest.TestCase):
         )
 
         values = channel.get_data()
-        self.assertEqual(values[0], 2.0)
-        self.assertEqual(values[-1], 2.0)
-        self.assertAlmostEqual(np.min(values), -12.0)
-        self.assertGreater(len(np.unique(values)), 20)
+        assert values[0] == 2.0
+        assert values[-1] == 2.0
+        assert np.min(values) == pytest.approx(-12.0)
+        assert len(np.unique(values)) > 20
 
     def test_create_sample_noise_is_seeded_and_optional(self):
         kwargs = {
@@ -59,16 +59,16 @@ class TestChannel(unittest.TestCase):
         different = create_sample(seed=43, **kwargs)
 
         np.testing.assert_array_equal(first.get_data(), repeated.get_data())
-        self.assertFalse(np.array_equal(first.get_data(), different.get_data()))
+        assert not np.array_equal(first.get_data(), different.get_data())
 
     def test_create_sample_rejects_invalid_signal_parameters(self):
-        with self.assertRaisesRegex(ValueError, "at least two samples"):
+        with pytest.raises(ValueError, match="at least two samples"):
             create_sample(t_range=(0.0, 1.0, 1))
-        with self.assertRaisesRegex(ValueError, "greater than its start"):
+        with pytest.raises(ValueError, match="greater than its start"):
             create_sample(t_range=(1.0, 1.0, 10))
-        with self.assertRaisesRegex(ValueError, "frequency"):
+        with pytest.raises(ValueError, match="frequency"):
             create_sample(frequency=0.0)
-        with self.assertRaisesRegex(ValueError, "noise"):
+        with pytest.raises(ValueError, match="noise"):
             create_sample(noise=-0.1)
 
     def test_get_info(self):
@@ -88,57 +88,53 @@ class TestChannel(unittest.TestCase):
         c_1 = Channel(code="????????????????", data=pd.DataFrame([1]), unit="m")
         c_2 = Channel(code="????????????????", data=pd.DataFrame([1000]), unit="mm")
 
-        self.assertTrue(c_1 == c_2)
+        assert c_1 == c_2
 
     def test_ne(self):
         c_1 = Channel(code="????????????????", data=pd.DataFrame([1]), unit="m")
         c_2 = Channel(code="????????????????", data=pd.DataFrame([1]), unit="mm")
 
-        self.assertTrue(c_1 != c_2)
+        assert c_1 != c_2
 
     def test_add(self):
         c_1 = Channel(code="????????????????", data=pd.DataFrame([1]), unit="m")
         c_2 = Channel(code="????????????????", data=pd.DataFrame([1000]), unit="mm")
 
-        self.assertEqual((c_1 + c_2).get_data(unit="m"), 2)
-        self.assertEqual((c_1 + 1).get_data(unit="m"), 2)
+        assert (c_1 + c_2).get_data(unit="m") == 2
+        assert (c_1 + 1).get_data(unit="m") == 2
 
     def test_sub(self):
         c_1 = Channel(code="????????????????", data=pd.DataFrame([1]), unit="m")
         c_2 = Channel(code="????????????????", data=pd.DataFrame([1000]), unit="mm")
 
-        self.assertEqual((c_1 - c_2).get_data(unit="m"), 0)
-        self.assertEqual((c_1 - 1).get_data(unit="m"), 0)
+        assert (c_1 - c_2).get_data(unit="m") == 0
+        assert (c_1 - 1).get_data(unit="m") == 0
 
     def test_calculation_history_add_mul(self):
         c_1 = Channel(code="11HEAD0000H3ACXA", data=pd.DataFrame([1]), unit="m")
         c_2 = Channel(code="11HEAD0000H3ACYA", data=pd.DataFrame([1]), unit="m")
 
         # __add__ must record "+", not "-"
-        self.assertEqual(
-            (c_1 + c_2).info[-1],
-            ("Calculation History", "11HEAD0000H3ACXA + 11HEAD0000H3ACYA"),
+        assert (c_1 + c_2).info[-1] == (
+            "Calculation History",
+            "11HEAD0000H3ACXA + 11HEAD0000H3ACYA",
         )
-        self.assertEqual(
-            (c_1 + 1).info[-1], ("Calculation History", "11HEAD0000H3ACXA + 1")
-        )
+        assert (c_1 + 1).info[-1] == ("Calculation History", "11HEAD0000H3ACXA + 1")
         # __sub__ records "-"
-        self.assertEqual(
-            (c_1 - c_2).info[-1],
-            ("Calculation History", "11HEAD0000H3ACXA - 11HEAD0000H3ACYA"),
+        assert (c_1 - c_2).info[-1] == (
+            "Calculation History",
+            "11HEAD0000H3ACXA - 11HEAD0000H3ACYA",
         )
         # __mul__ must record "*", not "/"
-        self.assertEqual(
-            (c_1 * c_2).info[-1],
-            ("Calculation History", "11HEAD0000H3ACXA * 11HEAD0000H3ACYA"),
+        assert (c_1 * c_2).info[-1] == (
+            "Calculation History",
+            "11HEAD0000H3ACXA * 11HEAD0000H3ACYA",
         )
-        self.assertEqual(
-            (c_1 * 2).info[-1], ("Calculation History", "11HEAD0000H3ACXA * 2")
-        )
+        assert (c_1 * 2).info[-1], ("Calculation History", "11HEAD0000H3ACXA * 2")
         # __truediv__ records "/"
-        self.assertEqual(
-            (c_1 / c_2).info[-1],
-            ("Calculation History", "11HEAD0000H3ACXA / 11HEAD0000H3ACYA"),
+        assert (c_1 / c_2).info[-1] == (
+            "Calculation History",
+            "11HEAD0000H3ACXA / 11HEAD0000H3ACYA",
         )
 
     def test_differentiate_does_not_mutate_source_info(self):
@@ -148,9 +144,9 @@ class TestChannel(unittest.TestCase):
         derived = source.differentiate()
 
         # The source channel's info must be untouched by the derivation.
-        self.assertEqual(list(source.info), before)
+        assert list(source.info) == before
         # The derived channel gets its own updated Dimension.
-        self.assertEqual(derived.info.get("Dimension"), derived.code.physical_dimension)
+        assert derived.info.get("Dimension") == derived.code.physical_dimension
 
     def test_integrate_does_not_mutate_source_info(self):
         source = create_sample(code="11HEAD0000H3ACXA", mode="linear")
@@ -158,8 +154,8 @@ class TestChannel(unittest.TestCase):
 
         derived = source.integrate()
 
-        self.assertEqual(list(source.info), before)
-        self.assertEqual(derived.info.get("Dimension"), derived.code.physical_dimension)
+        assert list(source.info) == before
+        assert derived.info.get("Dimension") == derived.code.physical_dimension
 
     def test_cfc_and_cfc_hz_equivalence(self):
         # Filter class "B" and its cutoff frequency 600 Hz must produce identical results,
@@ -168,17 +164,17 @@ class TestChannel(unittest.TestCase):
         by_class = copy.deepcopy(source).cfc("B")
         by_freq = copy.deepcopy(source).cfc_hz(600)
 
-        self.assertTrue(np.allclose(by_class.get_data(), by_freq.get_data()))
-        self.assertEqual(by_class.code.filter_class, "B")
-        self.assertEqual(by_freq.code.filter_class, "B")
+        assert np.allclose(by_class.get_data(), by_freq.get_data())
+        assert by_class.code.filter_class == "B"
+        assert by_freq.code.filter_class == "B"
 
     def test_cfc_hz_non_standard_frequency_records_S(self):
         source = create_sample(code="11HEAD0000H3ACXP", mode="sin")
-        self.assertEqual(copy.deepcopy(source).cfc_hz(123.0).code.filter_class, "S")
+        assert copy.deepcopy(source).cfc_hz(123.0).code.filter_class == "S"
 
     def test_cfc_unknown_filter_class_raises(self):
         source = create_sample(code="11HEAD0000H3ACXP", mode="sin")
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             source.cfc("Z")
 
     def test_cfc_numeric_is_deprecated_and_delegates(self):
@@ -188,8 +184,8 @@ class TestChannel(unittest.TestCase):
         with warnings.catch_warnings(record=True) as caught:
             warnings.simplefilter("always")
             result = copy.deepcopy(source).cfc(600)  # type: ignore
-        self.assertTrue(any(issubclass(w.category, DeprecationWarning) for w in caught))
-        self.assertTrue(np.allclose(result.get_data(), expected.get_data()))
+        assert any(issubclass(w.category, DeprecationWarning) for w in caught)
+        assert np.allclose(result.get_data(), expected.get_data())
 
     def test_cfc_does_not_mutate_source_info(self):
         # Both filter methods must leave the source channel's info untouched.
@@ -197,13 +193,13 @@ class TestChannel(unittest.TestCase):
             source = create_sample(code="11HEAD0000H3ACXP", mode="sin")
             before = list(source.info)
             copy.deepcopy(source).cfc("B", method=method)
-            self.assertEqual(list(source.info), before, msg=method)
+            assert list(source.info) == before, method
 
     def test_get_value_is_float_get_data_is_ndarray(self):
         source = create_sample(code="11HEAD0000H3ACXP", mode="sin")
-        self.assertIsInstance(source.get_value(t=0.0), float)
-        self.assertIsInstance(source.get_data(t=0.0), np.ndarray)
-        self.assertIsInstance(source.get_data(), np.ndarray)
+        assert isinstance(source.get_value(t=0.0), float)
+        assert isinstance(source.get_data(t=0.0), np.ndarray)
+        assert isinstance(source.get_data(), np.ndarray)
 
     def test_getitem_index_types(self):
         c0 = create_sample(code="11HEAD0000H3ACXP", mode="sin")
@@ -211,15 +207,15 @@ class TestChannel(unittest.TestCase):
         iso = Isomme(test_number="TEST", channels=[c0, c1])
 
         # int -> single Channel, slice -> list
-        self.assertIs(iso[0], c0)
-        self.assertEqual(iso[0:2], [c0, c1])
+        assert iso[0] is c0
+        assert iso[0:2] == [c0, c1]
 
         # str -> code-pattern shorthand for get_channels (a list)
-        self.assertEqual(iso["11HEAD0000H3ACXP"], [c0])
-        self.assertEqual(iso["11HEAD0000H3AC?P"], [c0, c1])
+        assert iso["11HEAD0000H3ACXP"] == [c0]
+        assert iso["11HEAD0000H3AC?P"] == [c0, c1]
 
         # unsupported key type -> explicit TypeError (was a silent None)
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             iso[1.5]  # type: ignore
 
     def test_plot_uses_channel_metadata_defaults(self):
@@ -235,12 +231,12 @@ class TestChannel(unittest.TestCase):
                 channel.plot()
 
             ax = plt.gca()
-            self.assertEqual(ax.get_title(), str(channel.code))
-            self.assertEqual(ax.get_xlabel(), "Time [ms]")
-            self.assertEqual(ax.get_ylabel(), f"Acceleration [{channel.unit}]")
+            assert ax.get_title() == str(channel.code)
+            assert ax.get_xlabel() == "Time [ms]"
+            assert ax.get_ylabel() == f"Acceleration [{channel.unit}]"
             np.testing.assert_array_equal(ax.lines[0].get_xdata(), [0.0, 10.0])
-            self.assertIsNone(ax.get_legend())
-            self.assertTrue(any(line.get_visible() for line in ax.get_xgridlines()))
+            assert ax.get_legend() is None
+            assert any(line.get_visible() for line in ax.get_xgridlines())
             np.testing.assert_array_equal(ax.figure.get_size_inches(), [10.0, 6.0])
             show.assert_called_once_with()
         finally:
@@ -262,55 +258,54 @@ class TestChannel(unittest.TestCase):
                 )
 
             ax = plt.gca()
-            self.assertEqual(ax.get_title(), "Custom title")
-            self.assertEqual(ax.get_xlabel(), "Custom x")
-            self.assertEqual(ax.get_ylabel(), "Custom y")
-            self.assertEqual(
-                [text.get_text() for text in ax.get_legend().get_texts()],
-                ["Custom series"],
-            )
-            self.assertFalse(any(line.get_visible() for line in ax.get_xgridlines()))
+            assert ax.get_title() == "Custom title"
+            assert ax.get_xlabel() == "Custom x"
+            assert ax.get_ylabel() == "Custom y"
+            assert [text.get_text() for text in ax.get_legend().get_texts()] == [
+                "Custom series"
+            ]
+
+            assert not any(line.get_visible() for line in ax.get_xgridlines())
             np.testing.assert_array_equal(ax.figure.get_size_inches(), [4.0, 3.0])
         finally:
             plt.close("all")
 
 
-class TestChannelConvertUnit(unittest.TestCase):
+class TestChannelConvertUnit:
     """Test suite enforcing edge cases for Channel.convert_unit and Unit.to integration."""
 
-    def setUp(self):
+    @pytest.fixture
+    def sample_channel(self):
         # Sample channel: 1 meter at t=0, t=1, t=2
-        self.data = pd.DataFrame([1.0, 2.0, 3.0], index=[0, 1, 2])
-        self.channel = Channel(code="11HEAD0000H3ACXA", data=self.data.copy(), unit="m")
+        data = pd.DataFrame([1.0, 2.0, 3.0], index=[0, 1, 2])
+        return Channel(code="11HEAD0000H3ACXA", data=data.copy(), unit="m")
 
-    def test_convert_unit_with_string_input(self):
+    def test_convert_unit_with_string_input(self, sample_channel):
         """Conversion using a plain string target unit (e.g., 'mm')."""
-        result = self.channel.convert_unit("mm")
+        result = sample_channel.convert_unit("mm")
 
         # 1 m, 2 m, 3 m -> 1000 mm, 2000 mm, 3000 mm
         expected = np.array([[1000.0], [2000.0], [3000.0]])
-        np.testing.assert_allclose(self.channel.data.to_numpy(), expected)
-        self.assertEqual(self.channel.unit, Unit("mm"))
-        self.assertIs(
-            result, self.channel, msg="convert_unit should return self for chaining"
-        )
+        np.testing.assert_allclose(sample_channel.data.to_numpy(), expected)
+        assert sample_channel.unit == Unit("mm")
+        assert result is sample_channel, "convert_unit should return self for chaining"
 
-    def test_convert_unit_with_custom_unit_instance(self):
+    def test_convert_unit_with_custom_unit_instance(self, sample_channel):
         """Conversion using a custom Unit instance."""
         target_unit = Unit("km")
-        self.channel.convert_unit(target_unit)
+        sample_channel.convert_unit(target_unit)
 
         expected = np.array([[0.001], [0.002], [0.003]])
-        np.testing.assert_allclose(self.channel.data.to_numpy(), expected)
-        self.assertEqual(self.channel.unit, Unit("km"))
+        np.testing.assert_allclose(sample_channel.data.to_numpy(), expected)
+        assert sample_channel.unit == Unit("km")
 
-    def test_convert_unit_with_native_astropy_unit(self):
+    def test_convert_unit_with_native_astropy_unit(self, sample_channel):
         """Conversion using a native Astropy unit object (u.cm)."""
-        self.channel.convert_unit(u.cm)
+        sample_channel.convert_unit(u.cm)
 
         expected = np.array([[100.0], [200.0], [300.0]])
-        np.testing.assert_allclose(self.channel.data.to_numpy(), expected)
-        self.assertEqual(self.channel.unit, Unit("cm"))
+        np.testing.assert_allclose(sample_channel.data.to_numpy(), expected)
+        assert sample_channel.unit == Unit("cm")
 
     def test_convert_unit_with_scaled_custom_unit(self):
         """Conversion involving scaled units like Earth gravity (g0 -> m/s^2)."""
@@ -320,40 +315,37 @@ class TestChannelConvertUnit(unittest.TestCase):
         g_channel.convert_unit("m/s^2")
 
         # 1 g0 = ~9.80665 m/s^2
-        self.assertAlmostEqual(g_channel.data.iloc[0, 0], 9.80665, places=4)  # type: ignore
-        self.assertEqual(g_channel.unit, Unit("m/s^2"))
+        assert g_channel.data.iloc[0, 0] == pytest.approx(9.80665, 1e-4)
+        assert g_channel.unit == Unit("m/s^2")
 
-    def test_convert_unit_raises_attribute_error_when_unit_is_none(self):
+    def test_convert_unit_raises_attribute_error_when_unit_is_none(
+        self, sample_channel
+    ):
         """Edge Case: Channel.unit is None should raise AttributeError."""
-        self.channel.unit = None  # type: ignore
-        with self.assertRaises(AttributeError) as ctx:
-            self.channel.convert_unit("mm")
+        sample_channel.unit = None  # type: ignore
+        with pytest.raises(AttributeError) as ctx:
+            sample_channel.convert_unit("mm")
 
-        self.assertIn(
-            "Not possible to convert units when current unit is None",
-            str(ctx.exception),
+        assert "Not possible to convert units when current unit is None" in str(
+            ctx.exconly
         )
 
-    def test_convert_unit_raises_error_for_incompatible_dimensions(self):
+    def test_convert_unit_raises_error_for_incompatible_dimensions(
+        self, sample_channel
+    ):
         """Edge Case: Converting meters ('m') to seconds ('s') must fail."""
-        with self.assertRaises(u.UnitConversionError):
-            self.channel.convert_unit("s")
+        with pytest.raises(u.UnitConversionError):
+            sample_channel.convert_unit("s")
 
-    def test_convert_unit_in_place_dataframe_mutation(self):
+    def test_convert_unit_in_place_dataframe_mutation(self, sample_channel):
         """Verifies that the underlying DataFrame is mutated in-place and retains index/shape."""
-        original_df_id = id(self.channel.data)
-        self.channel.convert_unit("mm")
+        original_df_id = id(sample_channel.data)
+        sample_channel.convert_unit("mm")
 
-        self.assertEqual(
-            id(self.channel.data),
-            original_df_id,
-            "DataFrame instance should not be replaced",
+        assert id(sample_channel.data) == original_df_id, (
+            "DataFrame instance should not be replaced"
         )
-        self.assertEqual(self.channel.data.shape, (3, 1))
+        assert sample_channel.data.shape == (3, 1)
         np.testing.assert_array_equal(
-            self.channel.data.index.to_numpy(), np.array([0, 1, 2])
+            sample_channel.data.index.to_numpy(), np.array([0, 1, 2])
         )
-
-
-if __name__ == "__main__":
-    unittest.main()

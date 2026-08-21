@@ -20,12 +20,16 @@ def calculate_iliac_force_drop(channel: Channel, delta_t: float = 0.001) -> Chan
     :return:
     """
     time_array = channel.data.index
+    future_time = time_array + delta_t
+    valid = future_time <= time_array[-1]
+    valid_time = time_array[valid]
+    valid_future_time = future_time[valid]
 
-    ifd = channel.get_data(t=time_array + delta_t) - channel.get_data(t=time_array)
+    ifd = channel.get_data(t=valid_future_time) - channel.get_data(t=valid_time)
 
     return Channel(
         code="????????????????",
-        data=pd.DataFrame(ifd, index=time_array),
+        data=pd.DataFrame(ifd, index=valid_time),
         unit=channel.unit,
         info=channel.info.update(
             {

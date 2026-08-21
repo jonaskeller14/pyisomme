@@ -8,6 +8,7 @@ import numpy as np
 from pyisomme.calculate import calculate_olc
 from pyisomme.isomme import Isomme
 from pyisomme.limit import Limit
+from pyisomme.limits import Limits
 from pyisomme.report.criterion import Criterion, Role, sub
 from pyisomme.report.ctx import from_input
 from pyisomme.report.euro_ncap.frontal_50kmh import (
@@ -536,8 +537,8 @@ class Overall(Criterion):
                     def calculation(self) -> None:
                         self.channel = self.require_channel(
                             self.ctx.code("?{p}NECKUP00??MOYB")
-                        )
-                        self.value = np.min(self.channel.get_data(unit="Nm"))
+                        ).convert_unit("Nm")
+                        self.value = np.min(self.channel.get_data())
                         self.rating = self.limits.get_limit_min_rating(self.channel)
                         self.color = self.limits.get_limit_min_color(self.channel)
 
@@ -1568,8 +1569,8 @@ class Overall(Criterion):
             def calculation(self) -> None:
                 self.channel = calculate_olc(
                     self.require_channel("M?MBAR0000??VEXA", "M?MBARCG00??VEXA")
-                )[0]
-                self.value = self.channel.get_data(unit=g0)[0]
+                )[0].convert_unit(Unit(g0))
+                self.value = self.channel.get_data()[0]
                 self.rating = self.limits.get_limit_min_rating(
                     self.channel, interpolate=True
                 )
@@ -2301,7 +2302,10 @@ class EuroNCAP_Frontal_MPDB(Report[Overall]):
         ncols: int = 1
 
         def __init__(self, report: EuroNCAP_Frontal_MPDB) -> None:
-            super().__init__(report)
+            # This page plots the trolley velocity and its OLC velocity
+            # construction. The report-level OLC limits are accelerations (g0),
+            # so they cannot be applied to this m/s plot.
+            super().__init__(report, limits=Limits())
             self.channels = {}
             for isomme in self.report.isomme_list:
                 channel = isomme.get_channel("M?MBAR0000??VEXA", "M?MBARCG00??VEXA")

@@ -213,8 +213,8 @@ class Overall(Criterion):
                 self.channel = self.require_channel(
                     self.ctx.code("?{p}HEAD??00??ACRA"),
                     self.ctx.code("?{p}HEADCG00??ACRA"),
-                )
-                self.value = np.max(self.channel.get_data(unit=g0))
+                ).convert_unit(Unit(g0))
+                self.value = np.max(self.channel.get_data())
                 self.rating = self.limits.get_limit_min_rating(
                     self.channel, interpolate=False
                 )

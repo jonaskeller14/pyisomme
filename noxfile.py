@@ -8,11 +8,9 @@ PYTHON_VERSIONS = ["3.9", "3.10", "3.11", "3.12"]
 @nox.session(python=PYTHON_VERSIONS)
 def tests(session: nox.Session) -> None:
     """Run the unit test suite across Python versions."""
-    session.install(".")
-    if session.posargs:
-        session.run("python", "-m", "unittest", *session.posargs)
-    else:
-        session.run("python", "-m", "unittest", "discover", "-s", "tests")
+    # Installs your package in editable mode + pytest using uv under the hood
+    session.install("-e", ".", "pytest")
+    session.run("pytest", *session.posargs)
 
 
 @nox.session(python="3.12")

@@ -1,5 +1,8 @@
 import logging
-from typing import Callable, TypeVar, overload
+import math
+from typing import Any, Callable, TypeVar, overload
+
+import numpy as np
 
 intend = "\t"
 
@@ -37,3 +40,33 @@ def debug_logging(logger_or_func):
         return wrapper
 
     return decorator(logger_or_func) if callable(logger_or_func) else decorator
+
+
+def json_encode(value: Any) -> Any:
+    """Make a criterion/limit scalar JSON-safe without losing nan/inf identity."""
+    # TODO: add tests
+    if isinstance(value, np.generic):
+        value = value.item()
+    if isinstance(value, bool) or value is None or isinstance(value, (int, str)):
+        return value
+    if isinstance(value, float):
+        if math.isnan(value):
+            return "nan"
+        if math.isinf(value):
+            return "inf" if value > 0 else "-inf"
+        return value
+    if isinstance(value, (tuple, list, np.ndarray)):
+        return [json_encode(item) for item in value]
+    return repr(value)
+
+
+def json_decode(value: Any) -> Any:
+    """Inverse of :func:`encode` for the three special float spellings."""
+    # TODO: add tests
+    if value == "nan":
+        return float("nan")
+    if value == "inf":
+        return float("inf")
+    if value == "-inf":
+        return float("-inf")
+    return value

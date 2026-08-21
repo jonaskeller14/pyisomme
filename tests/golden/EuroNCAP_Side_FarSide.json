@@ -1,0 +1,602 @@
+{
+  "1: v1": {
+    "Overall": {
+      "result": {
+        "name": "Overall",
+        "value": "nan",
+        "rating": 4.0,
+        "color": null,
+        "status": "OK"
+      }
+    },
+    "criterion_head_excursion": {
+      "result": {
+        "name": "Head Excursion",
+        "value": "nan",
+        "rating": "nan",
+        "color": null,
+        "status": "OK"
+      }
+    },
+    "criterion_head": {
+      "result": {
+        "name": "Head",
+        "value": 4.0,
+        "rating": 4.0,
+        "color": null,
+        "status": "OK"
+      },
+      "criterion_hic_15": {
+        "result": {
+          "name": "HIC 15",
+          "value": 125.0,
+          "rating": 4.0,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_head_a3ms": {
+        "result": {
+          "name": "Head a3ms",
+          "value": 2.5492905324448207,
+          "rating": 4.0,
+          "color": "green",
+          "status": "OK"
+        }
+      }
+    },
+    "criterion_neck": {
+      "result": {
+        "name": "Neck",
+        "value": "nan",
+        "rating": 4.0,
+        "color": null,
+        "status": "OK"
+      },
+      "criterion_upper_neck": {
+        "result": {
+          "name": "Upper_Neck",
+          "value": "nan",
+          "rating": 4.0,
+          "color": null,
+          "status": "OK"
+        },
+        "criterion_tension_fz": {
+          "result": {
+            "name": "Upper Neck Fz tension",
+            "value": 0.5,
+            "rating": 4.0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_lateral_flexion_mxoc": {
+          "result": {
+            "name": "Lateral flexion MxOC",
+            "value": 10.0,
+            "rating": 4.0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_extension_myoc": {
+          "result": {
+            "name": "Upper Neck Extension MyOC",
+            "value": -10.0,
+            "rating": 4.0,
+            "color": "green",
+            "status": "OK"
+          }
+        }
+      },
+      "criterion_lower_neck": {
+        "result": {
+          "name": "Lower_Neck",
+          "value": "nan",
+          "rating": 4.0,
+          "color": null,
+          "status": "OK"
+        },
+        "criterion_tension_fz": {
+          "result": {
+            "name": "Lower Neck Fz tension",
+            "value": 0.5,
+            "rating": 4.0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_lateral_flexion_mx": {
+          "result": {
+            "name": "Lateral flexion Mx (base of neck)",
+            "value": 10.0,
+            "rating": 4.0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_extension_my_base": {
+          "result": {
+            "name": "Lower Neck Extension My Base",
+            "value": -10.0,
+            "rating": 4.0,
+            "color": "green",
+            "status": "OK"
+          }
+        }
+      }
+    },
+    "criterion_chest_abdomen": {
+      "result": {
+        "name": "Chest & Abdomen",
+        "value": "nan",
+        "rating": 4.0,
+        "color": null,
+        "status": "OK"
+      },
+      "criterion_chest_lateral_compression": {
+        "result": {
+          "name": "Chest Lateral Compression",
+          "value": -15.0,
+          "rating": 4.0,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_abdomen_lateral_compression": {
+        "result": {
+          "name": "Abdomen Lateral Compression",
+          "value": -15.0,
+          "rating": 4.0,
+          "color": "green",
+          "status": "OK"
+        }
+      }
+    },
+    "criterion_pelvis_lumbar_modifier": {
+      "result": {
+        "name": "Pelvis and Lumbar Modifier",
+        "value": "nan",
+        "rating": 0,
+        "color": null,
+        "status": "OK"
+      },
+      "criterion_pubic_symphysis": {
+        "result": {
+          "name": "Modifier Pubic Symphysis",
+          "value": 0.0,
+          "rating": 0,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_lumbar_fy": {
+        "result": {
+          "name": "Modifier Lumbar Fy",
+          "value": -0.5,
+          "rating": 0,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_lumbar_fz": {
+        "result": {
+          "name": "Modifier Lumbar Fz",
+          "value": -0.5,
+          "rating": 0,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_lumbar_mx": {
+        "result": {
+          "name": "Modifier Lumbar Mx",
+          "value": -10.0,
+          "rating": 0,
+          "color": "green",
+          "status": "OK"
+        }
+      }
+    }
+  },
+  "2: v2": {
+    "Overall": {
+      "result": {
+        "name": "Overall",
+        "value": "nan",
+        "rating": 3.878994499749988,
+        "color": null,
+        "status": "OK"
+      }
+    },
+    "criterion_head_excursion": {
+      "result": {
+        "name": "Head Excursion",
+        "value": "nan",
+        "rating": "nan",
+        "color": null,
+        "status": "OK"
+      }
+    },
+    "criterion_head": {
+      "result": {
+        "name": "Head",
+        "value": 4.0,
+        "rating": 4.0,
+        "color": null,
+        "status": "OK"
+      },
+      "criterion_hic_15": {
+        "result": {
+          "name": "HIC 15",
+          "value": 250.0,
+          "rating": 4.0,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_head_a3ms": {
+        "result": {
+          "name": "Head a3ms",
+          "value": 5.0985810648896415,
+          "rating": 4.0,
+          "color": "green",
+          "status": "OK"
+        }
+      }
+    },
+    "criterion_neck": {
+      "result": {
+        "name": "Neck",
+        "value": "nan",
+        "rating": 4.0,
+        "color": null,
+        "status": "OK"
+      },
+      "criterion_upper_neck": {
+        "result": {
+          "name": "Upper_Neck",
+          "value": "nan",
+          "rating": 4.0,
+          "color": null,
+          "status": "OK"
+        },
+        "criterion_tension_fz": {
+          "result": {
+            "name": "Upper Neck Fz tension",
+            "value": 1.0,
+            "rating": 4.0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_lateral_flexion_mxoc": {
+          "result": {
+            "name": "Lateral flexion MxOC",
+            "value": 20.0,
+            "rating": 4.0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_extension_myoc": {
+          "result": {
+            "name": "Upper Neck Extension MyOC",
+            "value": -20.0,
+            "rating": 4.0,
+            "color": "green",
+            "status": "OK"
+          }
+        }
+      },
+      "criterion_lower_neck": {
+        "result": {
+          "name": "Lower_Neck",
+          "value": "nan",
+          "rating": 4.0,
+          "color": null,
+          "status": "OK"
+        },
+        "criterion_tension_fz": {
+          "result": {
+            "name": "Lower Neck Fz tension",
+            "value": 1.0,
+            "rating": 4.0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_lateral_flexion_mx": {
+          "result": {
+            "name": "Lateral flexion Mx (base of neck)",
+            "value": 20.0,
+            "rating": 4.0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_extension_my_base": {
+          "result": {
+            "name": "Lower Neck Extension My Base",
+            "value": -20.0,
+            "rating": 4.0,
+            "color": "green",
+            "status": "OK"
+          }
+        }
+      }
+    },
+    "criterion_chest_abdomen": {
+      "result": {
+        "name": "Chest & Abdomen",
+        "value": "nan",
+        "rating": 3.6369834992499657,
+        "color": null,
+        "status": "OK"
+      },
+      "criterion_chest_lateral_compression": {
+        "result": {
+          "name": "Chest Lateral Compression",
+          "value": -30.0,
+          "rating": 3.6369834992499657,
+          "color": "yellow",
+          "status": "OK"
+        }
+      },
+      "criterion_abdomen_lateral_compression": {
+        "result": {
+          "name": "Abdomen Lateral Compression",
+          "value": -30.0,
+          "rating": 4.0,
+          "color": "green",
+          "status": "OK"
+        }
+      }
+    },
+    "criterion_pelvis_lumbar_modifier": {
+      "result": {
+        "name": "Pelvis and Lumbar Modifier",
+        "value": "nan",
+        "rating": 0,
+        "color": null,
+        "status": "OK"
+      },
+      "criterion_pubic_symphysis": {
+        "result": {
+          "name": "Modifier Pubic Symphysis",
+          "value": 0.0,
+          "rating": 0,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_lumbar_fy": {
+        "result": {
+          "name": "Modifier Lumbar Fy",
+          "value": -1.0,
+          "rating": 0,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_lumbar_fz": {
+        "result": {
+          "name": "Modifier Lumbar Fz",
+          "value": -1.0,
+          "rating": 0,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_lumbar_mx": {
+        "result": {
+          "name": "Modifier Lumbar Mx",
+          "value": -20.0,
+          "rating": 0,
+          "color": "green",
+          "status": "OK"
+        }
+      }
+    }
+  },
+  "3: v3": {
+    "Overall": {
+      "result": {
+        "name": "Overall",
+        "value": "nan",
+        "rating": "-inf",
+        "color": null,
+        "status": "OK"
+      }
+    },
+    "criterion_head_excursion": {
+      "result": {
+        "name": "Head Excursion",
+        "value": "nan",
+        "rating": "nan",
+        "color": null,
+        "status": "OK"
+      }
+    },
+    "criterion_head": {
+      "result": {
+        "name": "Head",
+        "value": "-inf",
+        "rating": "-inf",
+        "color": null,
+        "status": "OK"
+      },
+      "criterion_hic_15": {
+        "result": {
+          "name": "HIC 15",
+          "value": 500.0,
+          "rating": "-inf",
+          "color": "gray",
+          "status": "OK"
+        }
+      },
+      "criterion_head_a3ms": {
+        "result": {
+          "name": "Head a3ms",
+          "value": 10.197162129779283,
+          "rating": 4.0,
+          "color": "green",
+          "status": "OK"
+        }
+      }
+    },
+    "criterion_neck": {
+      "result": {
+        "name": "Neck",
+        "value": "nan",
+        "rating": 4.0,
+        "color": null,
+        "status": "OK"
+      },
+      "criterion_upper_neck": {
+        "result": {
+          "name": "Upper_Neck",
+          "value": "nan",
+          "rating": 4.0,
+          "color": null,
+          "status": "OK"
+        },
+        "criterion_tension_fz": {
+          "result": {
+            "name": "Upper Neck Fz tension",
+            "value": 2.0,
+            "rating": 4.0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_lateral_flexion_mxoc": {
+          "result": {
+            "name": "Lateral flexion MxOC",
+            "value": 40.0,
+            "rating": 4.0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_extension_myoc": {
+          "result": {
+            "name": "Upper Neck Extension MyOC",
+            "value": -40.0,
+            "rating": 4.0,
+            "color": "green",
+            "status": "OK"
+          }
+        }
+      },
+      "criterion_lower_neck": {
+        "result": {
+          "name": "Lower_Neck",
+          "value": "nan",
+          "rating": 4.0,
+          "color": null,
+          "status": "OK"
+        },
+        "criterion_tension_fz": {
+          "result": {
+            "name": "Lower Neck Fz tension",
+            "value": 2.0,
+            "rating": 4.0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_lateral_flexion_mx": {
+          "result": {
+            "name": "Lateral flexion Mx (base of neck)",
+            "value": 40.0,
+            "rating": 4.0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_extension_my_base": {
+          "result": {
+            "name": "Lower Neck Extension My Base",
+            "value": -40.0,
+            "rating": 4.0,
+            "color": "green",
+            "status": "OK"
+          }
+        }
+      }
+    },
+    "criterion_chest_abdomen": {
+      "result": {
+        "name": "Chest & Abdomen",
+        "value": "nan",
+        "rating": "-inf",
+        "color": null,
+        "status": "OK"
+      },
+      "criterion_chest_lateral_compression": {
+        "result": {
+          "name": "Chest Lateral Compression",
+          "value": -60.0,
+          "rating": "-inf",
+          "color": "gray",
+          "status": "OK"
+        }
+      },
+      "criterion_abdomen_lateral_compression": {
+        "result": {
+          "name": "Abdomen Lateral Compression",
+          "value": -60.0,
+          "rating": 1.1075,
+          "color": "brown",
+          "status": "OK"
+        }
+      }
+    },
+    "criterion_pelvis_lumbar_modifier": {
+      "result": {
+        "name": "Pelvis and Lumbar Modifier",
+        "value": "nan",
+        "rating": -4,
+        "color": null,
+        "status": "OK"
+      },
+      "criterion_pubic_symphysis": {
+        "result": {
+          "name": "Modifier Pubic Symphysis",
+          "value": 0.0,
+          "rating": 0,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_lumbar_fy": {
+        "result": {
+          "name": "Modifier Lumbar Fy",
+          "value": 2.0,
+          "rating": -4,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_lumbar_fz": {
+        "result": {
+          "name": "Modifier Lumbar Fz",
+          "value": -2.0,
+          "rating": 0,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_lumbar_mx": {
+        "result": {
+          "name": "Modifier Lumbar Mx",
+          "value": -40.0,
+          "rating": 0,
+          "color": "green",
+          "status": "OK"
+        }
+      }
+    }
+  }
+}

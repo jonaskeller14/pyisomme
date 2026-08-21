@@ -1,5 +1,4 @@
 import logging
-import unittest
 
 import numpy as np
 import pandas as pd
@@ -14,7 +13,7 @@ logging.basicConfig(
 )
 
 
-class TestCorrelation(unittest.TestCase):
+class TestCorrelation:
     def test_correlation(self):
         reference_channel = pyisomme.create_sample(
             t_range=(0, 0.1, 1000), y_range=(0, 10)
@@ -45,7 +44,3 @@ class TestCorrelation(unittest.TestCase):
         overall_rating = correlation.overall_rating()
         assert np.abs(overall_rating - 0.713) < 1e-6
         logger.info(f"Correlation Overall Rating {correlation.overall_rating()}")
-
-
-if __name__ == "__main__":
-    unittest.main()

@@ -178,7 +178,7 @@ class Overall(Criterion):
                 self.channel = self.require_channel(
                     self.ctx.code("?{p}NECKUP00??FOXA")
                 ).convert_unit("kN")
-                self.value = self.channel.get_data(unit="kN")[
+                self.value = self.channel.get_data()[
                     np.argmax(np.abs(self.channel.get_data()))
                 ]
                 self.rating = self.limits.get_limit_min_rating(
@@ -406,7 +406,7 @@ class Overall(Criterion):
                 self.channel = self.require_channel(
                     self.ctx.code("?{p}NECKUP00??FOXA")
                 ).convert_unit("kN")
-                self.value = self.channel.get_data(unit="kN")[
+                self.value = self.channel.get_data()[
                     np.argmax(np.abs(self.channel.get_data()))
                 ]
                 self.rating = self.limits.get_limit_min_rating(
