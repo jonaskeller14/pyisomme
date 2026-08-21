@@ -834,7 +834,7 @@ def create_sample(
         default_unit = resolved_code.get_default_unit()
         resolved_unit = default_unit if default_unit is not None else Unit("1")
     else:
-        resolved_unit = unit
+        resolved_unit = Unit(unit)
 
     t_start, t_end, sample_count = t_range
     if sample_count < 2:

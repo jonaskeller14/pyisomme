@@ -487,8 +487,8 @@ def main(argv: list[str] | None = None) -> None:
         report = {report.__name__: report for report in REPORTS}[options.report_name](
             isomme_list
         )
-        report.calculate()  # type: ignore[attr-defined]
-        report.export_pptx(options.report_path, template=options.template)  # type: ignore[attr-defined]
+        report.calculate()
+        report.export_pptx(options.report_path, template=options.template)
 
     elif options.command == "plot":
         if options.calculate:

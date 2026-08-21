@@ -18,7 +18,7 @@ SAMPLE_MEMBERS = {
 @pytest.mark.parametrize(
     "encoded_bytes, expected",
     [
-        ("Prüfung".encode("utf-8"), "Prüfung"),
+        ("Prüfung".encode(), "Prüfung"),
         # 0xFC ("ü") is invalid UTF-8 but valid ISO-8859-1 -> must fall back, not raise.
         ("Prüfung".encode("iso-8859-1"), "Prüfung"),
     ],
