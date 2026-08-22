@@ -40,9 +40,6 @@ jobs:
       - name: Run mypy type checker
         run: nox -s type_check
 
-      - name: Fixture-free report tests
-        run: uv run python -m unittest tests.test_report_modules tests.test_describe tests.test_validate tests.test_manual_inputs
-
   test:
     name: Test (py${{ matrix.python-version }})
     runs-on: ubuntu-latest
@@ -90,7 +87,7 @@ jobs:
           python-version: "3.12"
 
       - name: Measure test coverage
-        run: uv run coverage run --source=pyisomme -m unittest discover -s tests
+        run: uv run coverage run --source=pyisomme -m pytest
 
       - name: Generate XML coverage report
         run: uv run coverage xml
