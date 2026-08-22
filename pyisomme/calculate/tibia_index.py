@@ -20,14 +20,14 @@ def calculate_tibia_index(
     channel_FOZ: Channel,
 ) -> Channel:
     """
-    References: references/Euro-NCAP/tb-021-data-acquisition-and-injury-calculation-v402.pdf
-    :param channel_MOX:
-    :param channel_MOY:
-    :param channel_FOZ:
-    :return:
+    References: references/Euro-NCAP/CP_005_Data_Acquisition_and_Injury_Calculation_v1_4_1_015875ff46.pdf
+    :param channel_MOX: Filtered tibia bending moment about the x-axis.
+    :param channel_MOY: Filtered tibia bending moment about the y-axis.
+    :param channel_FOZ: Filtered tibia axial force.
+    :return: Tibia index channel.
     """
     dummy = channel_MOX.code.fine_location_3
-    if dummy not in ("H3", "HF", "TH", "T3"):
+    if dummy not in ("H3", "HF", "HM", "TH", "T3"):
         raise UnsupportedCalculationError(
             f"Dummy {dummy} not supported by {calculate_tibia_index.__name__}"
         )
@@ -51,13 +51,23 @@ def calculate_tibia_index(
         raise ValueError("Channel with different positions found.")
 
     channel_m_r = calculate_resultant(channel_MOX, channel_MOY)
-    m_r_c = 225 if dummy in ("H3", "TH", "T3") else 115  # [Nm]
-    f_z_c = 35.9 if dummy in ("H3", "TH", "T3") else 22.9  # [kN]
+    critical_values = {
+        "H3": (225, 35.9),  # HIII-50
+        "HF": (114, 22.9),  # HIII-05
+        "HM": (306, 44.1),  # HIII-95
+        "TH": (225, 35.9),  # THOR
+        "T3": (225, 35.9),  # THOR with HIII legs
+    }
+    m_r_c, f_z_c = critical_values[dummy]
 
     time = time_intersect(channel_m_r, channel_FOZ)
 
-    t_i = np.abs(channel_m_r.get_data(t=time, unit="Nm") / m_r_c) + np.abs(
-        channel_FOZ.get_data(t=time, unit="kN") / f_z_c
+    m_r = channel_m_r.get_data(t=time, unit="Nm")
+    f_z = channel_FOZ.get_data(t=time, unit="kN")
+    t_i = np.where(
+        (f_z < 0) & (m_r != 0),
+        np.abs(m_r / m_r_c) + np.abs(f_z / f_z_c),
+        0,
     )
 
     initial_fine_location_1 = channel_MOX.code.fine_location_1

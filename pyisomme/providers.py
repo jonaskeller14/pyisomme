@@ -877,7 +877,8 @@ def _build_tibia_index(isomme: Isomme, code: Code) -> Channel | None:
 
     channels = (channel_MOX, channel_MOY, channel_FOZ)
     if not all(
-        channel.code.fine_location_3 in ("H3", "HF", "TH", "T3") for channel in channels
+        channel.code.fine_location_3 in ("H3", "HF", "HM", "TH", "T3")
+        for channel in channels
     ):
         return None
 

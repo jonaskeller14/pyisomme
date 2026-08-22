@@ -54,8 +54,13 @@ class TestCalculateTibiaIndex:
 
         assert tibia_index is not None
         assert mx is not None and my is not None and fz is not None
-        expected = np.hypot(mx.get_data(unit="N*m"), my.get_data(unit="N*m")) / 225.0
-        expected += np.abs(fz.get_data(unit="kN")) / 35.9
+        m_r = np.hypot(mx.get_data(unit="N*m"), my.get_data(unit="N*m"))
+        f_z = fz.get_data(unit="kN")
+        expected = np.where(
+            (f_z < 0) & (m_r != 0),
+            m_r / 225.0 + np.abs(f_z) / 35.9,
+            0,
+        )
         np.testing.assert_allclose(tibia_index.get_data(), expected)
 
     def test_tibia_index_aggregate_providers(self, isomme):
