@@ -1108,14 +1108,12 @@ class Overall(Criterion):
                     ).convert_unit("Nm")
                     self.value = np.min(self.channel.get_data())
                     # Rescale the 4 pt. block onto the rear passenger's 2 pt. budget.
-                    # TODO(test): the rear passenger's neck is nan in both golden
-                    #   fixtures, so this rescaling has no regression test. Verified by
-                    #   hand (Fx 1.5 kN -> 0.6002 against a 0.6 linear expectation).
                     self.rating = (
                         self.limits.get_limit_min_rating(self.channel)
                         * self.max_rating
                         / 4
                     )
+                    self.color = self.limits.get_limit_min_color(self.channel)
 
             class Criterion_Fz_tension(Criterion):
                 name = "Neck Fz tension"
@@ -1145,6 +1143,7 @@ class Overall(Criterion):
                         * self.max_rating
                         / 4
                     )
+                    self.color = self.limits.get_limit_min_color(self.channel)
 
             class Criterion_Fx_shear(Criterion):
                 name = "Neck Fx shear"
@@ -1181,6 +1180,7 @@ class Overall(Criterion):
                         * self.max_rating
                         / 4
                     )
+                    self.color = self.limits.get_limit_min_color(self.channel)
 
             criterion_my_extension = sub(Criterion_My_extension)
             criterion_fz_tension = sub(Criterion_Fz_tension)

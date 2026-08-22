@@ -90,6 +90,14 @@ pyisomme report EuroNCAP_Frontal_MPDB report.pptx data/nhtsa/09203 --crop 0 0.2
 
 - [Report](docs/report.ipynb)
 
+## Example Report
+
+Animated preview of a Euro NCAP PowerPoint report generated with pyisomme (using synthetic data):
+
+<p align="center">
+  <img src="docs/EuroNCAP_Frontal_50kmh.gif" alt="Animated preview of a Euro NCAP PowerPoint report" width="600" height="450">
+</p>
+
 ## Limitations
 - Only test-info (.mme), channel-info (.chn) and channel data files (.001/.002/...) are supported. All other files (videos, photos, txt-files) will be ignored when reading and writing.
 - Writing methods do not ask before overwriting. In particular, `set` and `convert` rewrite every

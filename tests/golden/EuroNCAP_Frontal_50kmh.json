@@ -91,7 +91,7 @@
         "criterion_my_extension": {
           "result": {
             "name": "Neck My extension",
-            "value": -15.768185376193966,
+            "value": -15.0,
             "rating": 4.0,
             "color": "green",
             "status": "OK"
@@ -100,7 +100,7 @@
         "criterion_fz_tension": {
           "result": {
             "name": "Neck Fz tension",
-            "value": 1.2221254808431545,
+            "value": 1.2,
             "rating": 4.0,
             "color": "green",
             "status": "OK"
@@ -109,7 +109,7 @@
         "criterion_fx_shear": {
           "result": {
             "name": "Neck Fx shear",
-            "value": 0.41304457377605214,
+            "value": 0.4,
             "rating": 4.0,
             "color": "green",
             "status": "OK"
@@ -271,7 +271,7 @@
         "criterion_my_extension": {
           "result": {
             "name": "Neck My extension",
-            "value": -15.768185376193966,
+            "value": -15.0,
             "rating": 4.0,
             "color": "green",
             "status": "OK"
@@ -280,7 +280,7 @@
         "criterion_fz_tension": {
           "result": {
             "name": "Neck Fz tension",
-            "value": 1.2221254808431545,
+            "value": 1.2,
             "rating": 4.0,
             "color": "green",
             "status": "OK"
@@ -289,7 +289,7 @@
         "criterion_fx_shear": {
           "result": {
             "name": "Neck Fx shear",
-            "value": 0.41304457377605214,
+            "value": 0.4,
             "rating": 4.0,
             "color": "green",
             "status": "OK"
@@ -451,27 +451,27 @@
         "criterion_my_extension": {
           "result": {
             "name": "Neck My extension",
-            "value": -15.768185376193966,
+            "value": -15.0,
             "rating": 2.0,
-            "color": null,
+            "color": "green",
             "status": "OK"
           }
         },
         "criterion_fz_tension": {
           "result": {
             "name": "Neck Fz tension",
-            "value": 1.2221254808431545,
+            "value": 1.2,
             "rating": 1.0,
-            "color": null,
+            "color": "green",
             "status": "OK"
           }
         },
         "criterion_fx_shear": {
           "result": {
             "name": "Neck Fx shear",
-            "value": 0.41304457377605214,
+            "value": 0.4,
             "rating": 1.0,
-            "color": null,
+            "color": "green",
             "status": "OK"
           }
         }
@@ -653,14 +653,14 @@
         "result": {
           "name": "Neck",
           "value": "nan",
-          "rating": 3.422561815949974,
+          "rating": 3.566449511400651,
           "color": null,
           "status": "OK"
         },
         "criterion_my_extension": {
           "result": {
             "name": "Neck My extension",
-            "value": -23.652278064290947,
+            "value": -22.5,
             "rating": 4.0,
             "color": "green",
             "status": "OK"
@@ -669,8 +669,8 @@
         "criterion_fz_tension": {
           "result": {
             "name": "Neck Fz tension",
-            "value": 1.8331882212647317,
-            "rating": 3.422561815949974,
+            "value": 1.8,
+            "rating": 3.566449511400651,
             "color": "yellow",
             "status": "OK"
           }
@@ -678,7 +678,7 @@
         "criterion_fx_shear": {
           "result": {
             "name": "Neck Fx shear",
-            "value": 0.6195668606640782,
+            "value": 0.6,
             "rating": 4.0,
             "color": "green",
             "status": "OK"
@@ -833,14 +833,14 @@
         "result": {
           "name": "Neck",
           "value": "nan",
-          "rating": 3.422561815949974,
+          "rating": 3.566449511400651,
           "color": null,
           "status": "OK"
         },
         "criterion_my_extension": {
           "result": {
             "name": "Neck My extension",
-            "value": -23.652278064290947,
+            "value": -22.5,
             "rating": 4.0,
             "color": "green",
             "status": "OK"
@@ -849,8 +849,8 @@
         "criterion_fz_tension": {
           "result": {
             "name": "Neck Fz tension",
-            "value": 1.8331882212647317,
-            "rating": 3.422561815949974,
+            "value": 1.8,
+            "rating": 3.566449511400651,
             "color": "yellow",
             "status": "OK"
           }
@@ -858,7 +858,7 @@
         "criterion_fx_shear": {
           "result": {
             "name": "Neck Fx shear",
-            "value": 0.6195668606640782,
+            "value": 0.6,
             "rating": 4.0,
             "color": "green",
             "status": "OK"
@@ -1013,34 +1013,34 @@
         "result": {
           "name": "Neck",
           "value": "nan",
-          "rating": 3.8556404539874936,
+          "rating": 3.891612377850163,
           "color": null,
           "status": "OK"
         },
         "criterion_my_extension": {
           "result": {
             "name": "Neck My extension",
-            "value": -23.652278064290947,
+            "value": -22.5,
             "rating": 2.0,
-            "color": null,
+            "color": "green",
             "status": "OK"
           }
         },
         "criterion_fz_tension": {
           "result": {
             "name": "Neck Fz tension",
-            "value": 1.8331882212647317,
-            "rating": 0.8556404539874936,
-            "color": null,
+            "value": 1.8,
+            "rating": 0.8916123778501628,
+            "color": "yellow",
             "status": "OK"
           }
         },
         "criterion_fx_shear": {
           "result": {
             "name": "Neck Fx shear",
-            "value": 0.6195668606640782,
+            "value": 0.6,
             "rating": 1.0,
-            "color": null,
+            "color": "green",
             "status": "OK"
           }
         }

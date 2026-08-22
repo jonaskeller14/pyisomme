@@ -607,7 +607,7 @@
           "name": "Occupant Load Criterion (OLC) Modifier",
           "value": 6.841395918423194,
           "rating": 0.0,
-          "color": null,
+          "color": "green",
           "status": "OK"
         }
       }
@@ -1221,7 +1221,7 @@
           "name": "Occupant Load Criterion (OLC) Modifier",
           "value": 13.020038175409585,
           "rating": 0.0,
-          "color": null,
+          "color": "green",
           "status": "OK"
         }
       }
@@ -1835,7 +1835,7 @@
           "name": "Occupant Load Criterion (OLC) Modifier",
           "value": 26.025946342768563,
           "rating": -0.13679284570247507,
-          "color": null,
+          "color": "red",
           "status": "OK"
         }
       }

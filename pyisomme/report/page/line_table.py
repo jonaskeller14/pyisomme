@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 from matplotlib.figure import Figure
@@ -8,8 +9,12 @@ from typing_extensions import override
 
 from pyisomme.channel import Channel
 from pyisomme.isomme import Isomme
+from pyisomme.limits import Limits
 from pyisomme.plotting import Plot_Line_Table
 from pyisomme.report.page.figure import Page_Figure
+
+if TYPE_CHECKING:
+    from pyisomme.report.report import Report
 
 
 class Page_Line_Table(Page_Figure, ABC):
@@ -26,6 +31,13 @@ class Page_Line_Table(Page_Figure, ABC):
     sharey: bool = False
     xlim: tuple[float | int, float | int] | None = None
     ylim: tuple[float | int, float | int] | None = None
+    limits: Limits | dict[Isomme, Limits] | None = None
+
+    def __init__(
+        self, report: Report[Any], limits: Limits | dict[Isomme, Limits] | None = None
+    ) -> None:
+        super().__init__(report)
+        self.limits = limits if limits is not None else report.limits
 
     @override
     def figure(self, figsize: tuple[float, float]) -> Figure:
@@ -43,6 +55,6 @@ class Page_Line_Table(Page_Figure, ABC):
             sharey=self.sharey,
             xlim=self.xlim,
             ylim=self.ylim,
-            limits=self.report.limits,
+            limits=self.limits,
             figsize=figsize,
         ).fig

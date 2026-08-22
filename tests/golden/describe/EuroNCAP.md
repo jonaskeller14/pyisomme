@@ -1628,9 +1628,9 @@ Limits for `M?MBAR0OLC??VEX?`:
 
 | row | threshold | rating | color | flag | y_unit | linestyle |
 | --- | --- | --- | --- | --- | --- | --- |
-| 0 pt. Modifier | 25 | 0 | black | upper | g0 | - |
-| -2..0 pt. Modifier | 25 | 0 | black | lower | g0 | - |
-| -2 pt. Modifier | 40 | -2 | black | lower | g0 | - |
+| 0 pt. Modifier | 25 | 0 | green | upper | g0 | - |
+| -2..0 pt. Modifier | 25 | 0 | red | lower | g0 | - |
+| -2 pt. Modifier | 40 | -2 | red | lower | g0 | - |
 
 ## `side_pole` — Euro NCAP | Pole Side Impact at 32 km/h
 

@@ -4,6 +4,8 @@ import logging
 from typing import Any
 
 import numpy as np
+from matplotlib.colors import to_rgb
+from matplotlib.figure import Figure
 
 from pyisomme.calculate import calculate_olc
 from pyisomme.isomme import Isomme
@@ -36,6 +38,7 @@ from pyisomme.report.page import (
     Page_Criterion_Rating_Table,
     Page_Criterion_Values_Chart,
     Page_Criterion_Values_Table,
+    Page_Line_Table,
     Page_OLC,
     Page_Plot_nxn,
 )
@@ -1544,6 +1547,7 @@ class Overall(Criterion):
                         ("M?MBAR0OLC??VEX?",),
                         func=lambda x: 25,
                         y_unit=Unit(g0),
+                        color=Limit_G.color,
                         name="0 pt. Modifier",
                         rating=0,
                         upper=True,
@@ -1552,6 +1556,7 @@ class Overall(Criterion):
                         ("M?MBAR0OLC??VEX?",),
                         func=lambda x: 25,
                         y_unit=Unit(g0),
+                        color=Limit_P.color,
                         name="-2..0 pt. Modifier",
                         rating=0,
                         lower=True,
@@ -1560,6 +1565,7 @@ class Overall(Criterion):
                         ("M?MBAR0OLC??VEX?",),
                         func=lambda x: 40,
                         y_unit=Unit(g0),
+                        color=Limit_P.color,
                         name="-2 pt. Modifier",
                         rating=-2,
                         lower=True,
@@ -1574,6 +1580,7 @@ class Overall(Criterion):
                 self.rating = self.limits.get_limit_min_rating(
                     self.channel, interpolate=True
                 )
+                self.color = self.limits.get_limits(self.channel)[0].color
 
         # TODO(protocol): §3.3 bases the compatibility penalty on three parameters;
         #   only OLC (§3.3.2) is implemented. Missing: §3.3.1 barrier deformation,
@@ -2294,12 +2301,12 @@ class EuroNCAP_Frontal_MPDB(Report[Overall]):
                 for isomme in self.report.isomme_list
             }
 
-    class Page_OLC_Trolley(Page_Plot_nxn):
+    class Page_OLC_Trolley(Page_Line_Table):
         name: str = "OLC Trolley"
         title: str = "Occupant Load Criterion (OLC) of Trolley"
         channels: dict
         nrows: int = 1
-        ncols: int = 1
+        ncols: int = 2
 
         def __init__(self, report: EuroNCAP_Frontal_MPDB) -> None:
             # This page plots the trolley velocity and its OLC velocity
@@ -2307,6 +2314,10 @@ class EuroNCAP_Frontal_MPDB(Report[Overall]):
             # so they cannot be applied to this m/s plot.
             super().__init__(report, limits=Limits())
             self.channels = {}
+            cell_texts = []
+            cell_colors = []
+            row_labels = []
+            self.col_labels = [["OLC [g]"]]
             for isomme in self.report.isomme_list:
                 channel = isomme.get_channel("M?MBAR0000??VEXA", "M?MBARCG00??VEXA")
                 if channel is None:
@@ -2314,5 +2325,43 @@ class EuroNCAP_Frontal_MPDB(Report[Overall]):
                         f"No trolley velocity channel in {isomme}. OLC trolley plot left empty."
                     )
                     self.channels[isomme] = [[]]
+                    cell_texts.append([f"{np.nan:.2f}"])
+                    cell_colors.append([(0.0, 0.0, 0.0, 0.0)])
+                    row_labels.append(isomme.test_number)
                     continue
-                self.channels[isomme] = [[channel, calculate_olc(channel)[1]]]
+                olc, olc_visual = calculate_olc(channel)
+                criterion = self.report.criterion_overall[
+                    isomme
+                ].criterion_compatibility_modifier.criterion_olc_modifier
+                self.channels[isomme] = [[channel, olc_visual]]
+                cell_texts.append([f"{olc.get_data(unit=Unit(g0))[0]:.2f}"])
+                cell_colors.append([
+                    (*to_rgb(criterion.color), 0.5)
+                    if criterion.color is not None
+                    else (0.0, 0.0, 0.0, 0.0)
+                ])
+                row_labels.append(isomme.test_number)
+            self.cell_texts = [cell_texts]
+            self._cell_colors = cell_colors
+            self.row_labels = [row_labels]
+
+        def figure(self, figsize: tuple[float, float]) -> Figure:
+            self.cell_colors = [
+                [
+                    [
+                        (*to_rgb(
+                            self.report.criterion_overall[
+                                isomme
+                            ]
+                            .criterion_compatibility_modifier.criterion_olc_modifier.color
+                        ), 0.5)
+                        if self.report.criterion_overall[
+                            isomme
+                        ].criterion_compatibility_modifier.criterion_olc_modifier.color
+                        is not None
+                        else self._cell_colors[idx][0]
+                    ]
+                    for idx, isomme in enumerate(self.report.isomme_list)
+                ]
+            ]
+            return super().figure(figsize)

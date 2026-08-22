@@ -56,7 +56,7 @@
       "criterion_nij": {
         "result": {
           "name": "Nij",
-          "value": 0.09529459534298614,
+          "value": 0.09363854240013876,
           "rating": true,
           "color": "green",
           "status": "OK"
@@ -65,7 +65,7 @@
       "criterion_neck_tension": {
         "result": {
           "name": "Neck Tension Force",
-          "value": 602.1585598992197,
+          "value": 599.9999975763357,
           "rating": true,
           "color": "green",
           "status": "OK"
@@ -74,7 +74,7 @@
       "criterion_neck_compression": {
         "result": {
           "name": "Neck Compression Force",
-          "value": -9.846657376840152,
+          "value": -0.004493558497780574,
           "rating": true,
           "color": "green",
           "status": "OK"
@@ -155,7 +155,7 @@
       "criterion_nij": {
         "result": {
           "name": "Nij",
-          "value": 0.09529459534298614,
+          "value": 0.09363854240013876,
           "rating": true,
           "color": "green",
           "status": "OK"
@@ -164,7 +164,7 @@
       "criterion_neck_tension": {
         "result": {
           "name": "Neck Tension Force",
-          "value": 602.1585598992197,
+          "value": 599.9999975763357,
           "rating": true,
           "color": "green",
           "status": "OK"
@@ -173,7 +173,7 @@
       "criterion_neck_compression": {
         "result": {
           "name": "Neck Compression Force",
-          "value": -9.846657376840152,
+          "value": -0.004493558497780574,
           "rating": true,
           "color": "green",
           "status": "OK"
@@ -265,7 +265,7 @@
       "criterion_nij": {
         "result": {
           "name": "Nij",
-          "value": 0.38117838137194454,
+          "value": 0.37455416960055504,
           "rating": true,
           "color": "green",
           "status": "OK"
@@ -274,7 +274,7 @@
       "criterion_neck_tension": {
         "result": {
           "name": "Neck Tension Force",
-          "value": 2408.6342395968786,
+          "value": 2399.9999903053426,
           "rating": true,
           "color": "green",
           "status": "OK"
@@ -283,7 +283,7 @@
       "criterion_neck_compression": {
         "result": {
           "name": "Neck Compression Force",
-          "value": -39.38662950736061,
+          "value": -0.017974233991122295,
           "rating": true,
           "color": "green",
           "status": "OK"
@@ -364,7 +364,7 @@
       "criterion_nij": {
         "result": {
           "name": "Nij",
-          "value": 0.38117838137194454,
+          "value": 0.37455416960055504,
           "rating": true,
           "color": "green",
           "status": "OK"
@@ -373,7 +373,7 @@
       "criterion_neck_tension": {
         "result": {
           "name": "Neck Tension Force",
-          "value": 2408.6342395968786,
+          "value": 2399.9999903053426,
           "rating": true,
           "color": "green",
           "status": "OK"
@@ -382,7 +382,7 @@
       "criterion_neck_compression": {
         "result": {
           "name": "Neck Compression Force",
-          "value": -39.38662950736061,
+          "value": -0.017974233991122295,
           "rating": true,
           "color": "green",
           "status": "OK"
@@ -474,7 +474,7 @@
       "criterion_nij": {
         "result": {
           "name": "Nij",
-          "value": 1.9058919068597227,
+          "value": 1.8727708480027754,
           "rating": false,
           "color": "red",
           "status": "OK"
@@ -483,7 +483,7 @@
       "criterion_neck_tension": {
         "result": {
           "name": "Neck Tension Force",
-          "value": 12043.17119798439,
+          "value": 11999.999951526712,
           "rating": false,
           "color": "red",
           "status": "OK"
@@ -492,7 +492,7 @@
       "criterion_neck_compression": {
         "result": {
           "name": "Neck Compression Force",
-          "value": -196.933147536803,
+          "value": -0.08987116995561133,
           "rating": true,
           "color": "green",
           "status": "OK"
@@ -573,7 +573,7 @@
       "criterion_nij": {
         "result": {
           "name": "Nij",
-          "value": 1.9058919068597227,
+          "value": 1.8727708480027754,
           "rating": false,
           "color": "red",
           "status": "OK"
@@ -582,7 +582,7 @@
       "criterion_neck_tension": {
         "result": {
           "name": "Neck Tension Force",
-          "value": 12043.17119798439,
+          "value": 11999.999951526712,
           "rating": false,
           "color": "red",
           "status": "OK"
@@ -591,7 +591,7 @@
       "criterion_neck_compression": {
         "result": {
           "name": "Neck Compression Force",
-          "value": -196.933147536803,
+          "value": -0.08987116995561133,
           "rating": true,
           "color": "green",
           "status": "OK"
