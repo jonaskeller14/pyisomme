@@ -25,7 +25,9 @@ CODE_COMPONENT_HELP = "\n".join(
 )
 
 
-def add_parser_convert(command_parsers: argparse._SubParsersAction) -> None:
+def add_parser_convert(
+    command_parsers: argparse._SubParsersAction[argparse.ArgumentParser],
+) -> None:
     convert_parser = command_parsers.add_parser(
         "convert",
         help="Convert selected channel data to another unit in place",

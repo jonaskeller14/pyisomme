@@ -14,7 +14,7 @@ from scipy import interpolate as scipy_interpolate
 from scipy.integrate import cumulative_trapezoid
 
 from pyisomme.code import Code
-from pyisomme.info import Info
+from pyisomme.info import Info, InfoInput, InfoValue
 from pyisomme.unit import Unit, g0
 
 logger = logging.getLogger(__name__)
@@ -37,18 +37,12 @@ class Channel:
         code: str | Code,
         data: pd.DataFrame,
         unit: str | Unit | None = None,
-        info: list | dict | None = None,
+        info: InfoInput | None = None,
     ):
         self.set_code(code)
         self.data = data
         self.set_unit(unit)
-        self.info = (
-            Info([])
-            if info is None
-            else Info(info)
-            if isinstance(info, list)
-            else Info([(n, v) for n, v in info.items()])
-        )
+        self.info = Info(info) if info is not None else Info()
 
     def __str__(self):
         return self.code
@@ -199,15 +193,17 @@ class Channel:
             samples = self.get_data()
             number_of_samples = len(samples)
             sample_rate = self.info.get("Sampling interval")
-            if sample_rate is None:
+            if isinstance(sample_rate, bool) or not isinstance(
+                sample_rate, (int, float)
+            ):
                 sample_rate = np.diff(self.data.index).mean()
                 logger.debug(
                     f"Sampling interval not found in channel info. Set sampling interval to mean diff: {sample_rate}."
                 )
 
             number_of_add_points = 0.01 * sample_rate
-            number_of_add_points = min(
-                [max([number_of_add_points, 100]), number_of_samples - 1]
+            number_of_add_points = int(
+                min([max([number_of_add_points, 100]), number_of_samples - 1])
             )
             index_last_point = number_of_samples + 2 * number_of_add_points - 1
 
@@ -308,7 +304,9 @@ class Channel:
         elif method == "SAE-J211-1":
             input_values = self.get_data()
             sample_interval = self.info.get("Sampling interval")
-            if sample_interval is None:
+            if isinstance(sample_interval, bool) or not isinstance(
+                sample_interval, (int, float)
+            ):
                 sample_interval = np.diff(self.data.index).mean()
                 logger.debug(
                     f"Sampling interval not found in channel info. Set sampling interval to mean diff: {sample_interval}."
@@ -429,7 +427,7 @@ class Channel:
             self.get_data(t=t, unit=unit, method=method, fill_value=fill_value)
         )
 
-    def get_info(self, *labels: str) -> str | None:
+    def get_info(self, *labels: str) -> InfoValue:
         """
         Get channel info by giving one or multiple label(s) to identify information.
         Regex or fnmatch patterns possible.
@@ -518,8 +516,8 @@ class Channel:
                 # TODO: Check if implicit if valid instead and create unique time channel otherwise?
                 self.info.update(
                     {
-                        "Time of first sample": self.data.index[0],
-                        "Sampling interval": np.mean(np.diff(self.data.index)),
+                        "Time of first sample": float(self.data.index[0]),
+                        "Sampling interval": float(np.mean(np.diff(self.data.index))),
                     }
                 )
             if len(self.get_data()) > 1:

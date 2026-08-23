@@ -3,7 +3,9 @@ import argparse
 from pyisomme.isomme import Isomme
 
 
-def add_parser_list(command_parsers: argparse._SubParsersAction) -> None:
+def add_parser_list(
+    command_parsers: argparse._SubParsersAction[argparse.ArgumentParser],
+) -> None:
     list_parser = command_parsers.add_parser(
         "list",
         help="List channel codes",

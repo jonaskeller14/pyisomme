@@ -3,7 +3,9 @@ import argparse
 from pyisomme.code import Code
 
 
-def add_parser_code(command_parsers: argparse._SubParsersAction) -> None:
+def add_parser_code(
+    command_parsers: argparse._SubParsersAction[argparse.ArgumentParser],
+) -> None:
     code_parser = command_parsers.add_parser(
         "code",
         help="Describe a 16-character channel code",

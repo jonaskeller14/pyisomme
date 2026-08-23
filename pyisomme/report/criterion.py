@@ -11,6 +11,7 @@ import numpy as np
 
 from pyisomme.channel import Channel
 from pyisomme.errors import MissingData, Status
+from pyisomme.info import InfoValue
 from pyisomme.isomme import Isomme
 from pyisomme.limit import Limit
 from pyisomme.limits import Limits
@@ -431,7 +432,7 @@ class Criterion:
             raise MissingData(*code_patterns)
         return channel
 
-    def require_test_info(self, *labels: str) -> str:
+    def require_test_info(self, *labels: str) -> InfoValue:
         """Fetch a test-info field, raising :class:`MissingData` if it is absent."""
         value = self.isomme.get_test_info(*labels)
         if value is None:

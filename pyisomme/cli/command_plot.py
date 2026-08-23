@@ -8,7 +8,9 @@ if TYPE_CHECKING:
     from pyisomme.channel import Channel
 
 
-def add_parser_plot(command_parsers: argparse._SubParsersAction) -> None:
+def add_parser_plot(
+    command_parsers: argparse._SubParsersAction[argparse.ArgumentParser],
+) -> None:
     plot_parser = command_parsers.add_parser(
         "plot",
         help="Plot Channels",

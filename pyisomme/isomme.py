@@ -17,7 +17,7 @@ from tqdm.contrib.logging import logging_redirect_tqdm
 from pyisomme.channel import Channel, create_sample
 from pyisomme.code import Code
 from pyisomme.errors import InvalidCodeError
-from pyisomme.info import Info
+from pyisomme.info import Info, InfoInput, InfoValue
 from pyisomme.parsing import parse_chn, parse_mme, parse_xxx
 from pyisomme.providers import PROVIDERS
 from pyisomme.sources import ArchiveSource, FolderSource, TarSource, ZipSource
@@ -35,19 +35,19 @@ class Isomme:
     def __init__(
         self,
         test_number: str | None = None,
-        test_info: list[tuple[str, Any]] | None = None,
+        test_info: InfoInput | None = None,
         channels: list[Channel] | None = None,
-        channel_info: list[tuple[str, Any]] | None = None,
+        channel_info: InfoInput | None = None,
     ):
         """
         Create empty Isomme object.
         """
         self.test_number = test_number
-        self.test_info = Info([]) if test_info is None else Info(test_info)
+        self.test_info = Info() if test_info is None else Info(test_info)
         self.channels = [] if channels is None else channels
-        self.channel_info = Info([]) if channel_info is None else Info(channel_info)
+        self.channel_info = Info() if channel_info is None else Info(channel_info)
 
-    def get_test_info(self, *labels) -> Any | None:
+    def get_test_info(self, *labels) -> InfoValue:
         """
         Get test info by giving one or multiple label(s) to identify information.
         Regex or fnmatch patterns possible.
@@ -172,7 +172,13 @@ class Isomme:
                 fnmatch.filter(self.channel_info.keys(), "Name of channel *"),
                 desc=f"Read Channel of {self.test_number}",
             ):
-                code = self.channel_info[key].split()[0].split("/")[0]
+                channel_reference = self.channel_info[key]
+                if not isinstance(channel_reference, str):
+                    raise ValueError(
+                        f"Invalid channel reference in CHN data for {key!r}: "
+                        f"expected a string, got {channel_reference!r}"
+                    )
+                code = channel_reference.split()[0].split("/")[0]
                 if len(channel_code_patterns) != 0:
                     skip = True
                     for channel_code_pattern in channel_code_patterns:

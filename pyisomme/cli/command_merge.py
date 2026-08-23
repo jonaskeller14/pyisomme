@@ -7,7 +7,9 @@ from pyisomme.info import Info
 from pyisomme.isomme import Isomme
 
 
-def add_parser_merge(command_parsers: argparse._SubParsersAction) -> None:
+def add_parser_merge(
+    command_parsers: argparse._SubParsersAction[argparse.ArgumentParser],
+) -> None:
     merge_parser = command_parsers.add_parser(
         "merge",
         help="Merge ISO-MMEs",
@@ -143,10 +145,10 @@ def execute_merge_command(options: argparse.Namespace) -> None:
     if options.crop:
         merged_isomme.crop(*options.crop)
     if options.delete_info:
-        merged_isomme.test_info = Info([])
-        merged_isomme.channel_info = Info([])
+        merged_isomme.test_info = Info()
+        merged_isomme.channel_info = Info()
         for channel in merged_isomme.channels:
-            channel.info = Info([])
+            channel.info = Info()
     if options.set_test_number:
         merged_isomme.test_number = options.set_test_number
 

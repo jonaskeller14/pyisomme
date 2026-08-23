@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 class Plot(ABC):
     colors: list[str] = list(mcolors.TABLEAU_COLORS.values())  # pyright: ignore[reportAttributeAccessIssue]
-    linestyles: list[str | tuple] = [
+    linestyles: list[str | tuple[int, tuple[int, ...]]] = [
         "-",
         "--",
         "-.",
@@ -20,7 +20,6 @@ class Plot(ABC):
         (0, (10, 3)),
         (0, (5, 1)),
     ]
-    isomme_list: list
     figsize: tuple[float, float]
     fig: Figure
     nrows: int = 1

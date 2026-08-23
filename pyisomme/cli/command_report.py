@@ -4,7 +4,9 @@ from pyisomme.isomme import Isomme
 from pyisomme.report import REPORTS
 
 
-def add_parser_report(command_parsers: argparse._SubParsersAction) -> None:
+def add_parser_report(
+    command_parsers: argparse._SubParsersAction[argparse.ArgumentParser],
+) -> None:
     report_parser = command_parsers.add_parser(
         "report",
         help="Create a Report",

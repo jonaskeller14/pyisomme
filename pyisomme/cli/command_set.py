@@ -24,7 +24,9 @@ CODE_COMPONENT_HELP = "\n".join(
 )
 
 
-def add_parser_set(command_parsers: argparse._SubParsersAction) -> None:
+def add_parser_set(
+    command_parsers: argparse._SubParsersAction[argparse.ArgumentParser],
+) -> None:
     set_parser = command_parsers.add_parser(
         "set",
         help="Set metadata fields on selected channels in place",

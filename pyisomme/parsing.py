@@ -3,14 +3,13 @@ from __future__ import annotations
 import logging
 import re
 from datetime import datetime
-from typing import Any
 
 import numpy as np
 import pandas as pd
 
 from pyisomme.channel import Channel
 from pyisomme.errors import MalformedFileError
-from pyisomme.info import Info
+from pyisomme.info import Info, InfoValue
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +50,7 @@ def get_normalization_notes(channel) -> list[str]:
 
 def parse_mme(text: str) -> Info:
     lines = text.splitlines()
-    info = Info([])
+    info = Info()
     for line in lines:
         line = line.strip()
 
@@ -80,7 +79,7 @@ def parse_header_and_data(text: str) -> tuple[Info, np.ndarray]:
     silently producing a garbage channel.
     """
     lines = text.splitlines()
-    info = Info([])
+    info = Info()
     start_data_idx = 0
     for idx, line in enumerate(lines):
         line = line.strip()
@@ -121,10 +120,23 @@ def resolve_time_axis(
         and ``note`` is a human-readable description of any *assumption* made — ``None``
         when the file fully specified the convention, so no assumption was necessary.
     """
-    reference = info.get("Reference channel")
-    reference_channel_code = info.get("Reference channel name")
-    time_of_first_sample = info.get("Time of first sample")
-    sampling_interval = info.get("Sampling interval")
+
+    def get_float(key: str) -> float | None:
+        value = info.get(key)
+        if isinstance(value, bool) or not isinstance(value, (int, float)):
+            return None
+        return float(value)
+
+    reference_value = info.get("Reference channel")
+    reference = reference_value if isinstance(reference_value, str) else None
+    reference_channel_code_value = info.get("Reference channel name")
+    reference_channel_code = (
+        reference_channel_code_value
+        if isinstance(reference_channel_code_value, str)
+        else None
+    )
+    time_of_first_sample = get_float("Time of first sample")
+    sampling_interval = get_float("Sampling interval")
 
     def implicit_axis(first: float, interval: float) -> np.ndarray:
         return np.linspace(first, first + (n - 1) * interval, n)
@@ -190,8 +202,12 @@ def resolve_time_axis(
 
 def parse_xxx(text: str, isomme) -> Channel:
     info, array = parse_header_and_data(text)
-    code = info.get("Channel code")
-    unit = info.get("Unit")
+    code_value = info.get("Channel code")
+    if not isinstance(code_value, str):
+        raise MalformedFileError("Missing or invalid 'Channel code' descriptor.")
+    code = code_value
+    unit_value = info.get("Unit")
+    unit = unit_value if isinstance(unit_value, str) else None
 
     index, note = resolve_time_axis(info, len(array), isomme)
 
@@ -214,7 +230,7 @@ def parse_xxx(text: str, isomme) -> Channel:
     return Channel(code, pd.DataFrame(array, index=index), unit=unit, info=info)
 
 
-def get_value(text: str) -> Any:
+def get_value(text: str) -> InfoValue:
     """
     Converts a string into suitable datatype.
     - None

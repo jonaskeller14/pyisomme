@@ -1,4 +1,5 @@
 import io
+from datetime import datetime
 
 import pytest
 
@@ -143,3 +144,29 @@ class TestWrite:
         # Verify 28-character left alignment and NOVALUE handling
         assert lines[0] == "title                       :Project"
         assert lines[1] == "empty_val                   :NOVALUE"
+
+
+class TestTypedValues:
+    def test_get_all_preserves_duplicate_value_order(
+        self, populated_info: Info
+    ) -> None:
+        assert populated_info.get_all("name") == ["Alice", "Bob"]
+        assert populated_info.get_all("missing") == []
+
+    def test_write_serializes_boolean_and_datetime_values(self) -> None:
+        info = Info(
+            [
+                ("answer", True),
+                ("enabled", False),
+                ("recorded", datetime(2026, 8, 23, 10, 30, 45)),
+            ]
+        )
+        buffer = io.StringIO()
+
+        info.write(buffer)
+
+        assert buffer.getvalue().splitlines() == [
+            "answer                      :YES",
+            "enabled                     :NO",
+            "recorded                    :2026-08-23T10:30:45",
+        ]

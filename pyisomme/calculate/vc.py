@@ -8,10 +8,18 @@ import pandas as pd
 
 from pyisomme.channel import Channel
 from pyisomme.errors import UnsupportedCalculationError
+from pyisomme.info import InfoValue
 from pyisomme.unit import Unit
 from pyisomme.utils import debug_logging
 
 logger = logging.getLogger("pyisomme.calculate")
+
+
+def _time_info_value(value: object) -> float:
+    """Validate a dataframe index value before storing it as time metadata."""
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise TypeError(f"Expected a numeric time value, got {value!r}.")
+    return float(value)
 
 
 @debug_logging(logger)
@@ -101,6 +109,13 @@ def calculate_vc(
 
     vc = scaling_factor * v_t * c_t
 
+    calculation_info: dict[str, InfoValue] = {
+        ".Channel 001": str(channel.code),
+        ".Filter": channel.code.filter_class,
+        ".Scaling factor": scaling_factor,
+        ".Deformation constant": defo_constant,
+    }
+
     channel_vc = Channel(
         code=channel.code.set(
             main_location="VCCR"
@@ -116,14 +131,13 @@ def calculate_vc(
             {
                 "Data source": "calculation",
             }
-        ).add(
-            {
-                ".Channel 001": channel.code,
-                ".Filter": channel.code.filter_class,
-                ".Scaling factor": scaling_factor,
-                ".Deformation constant": defo_constant,
-            }
-        ),
+        ).add(calculation_info),
+    )
+
+    analysis_start_time = _time_info_value(channel_vc.data.index[0])
+    analysis_end_time = _time_info_value(channel_vc.data.index[-1])
+    maximum_time = _time_info_value(
+        channel.data.index[int(np.argmax(channel_vc.get_data()))]
     )
 
     channel_vc_x = Channel(
@@ -135,9 +149,9 @@ def calculate_vc(
         unit=channel_vc.unit,
         info=channel_vc.info.add(
             {
-                ".Analysis start time": channel_vc.data.index[0],
-                ".Analysis end time": channel_vc.data.index[-1],
-                ".Time": channel.data.index[int(np.argmax(channel_vc.get_data()))],
+                ".Analysis start time": analysis_start_time,
+                ".Analysis end time": analysis_end_time,
+                ".Time": maximum_time,
             }
         ),
     )
