@@ -3,6 +3,7 @@ from __future__ import annotations
 import io
 from contextlib import redirect_stdout
 from dataclasses import replace
+from typing import Any
 
 import numpy as np
 import pytest
