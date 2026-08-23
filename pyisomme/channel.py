@@ -510,7 +510,7 @@ class Channel:
             self.info.update(
                 {
                     "Channel code": self.code,
-                    "Unit": self.unit,
+                    "Unit": self.unit.to_isomme(),
                     "Number of samples": len(self.data),
                 }
             )

@@ -288,6 +288,22 @@ class TestTimeAxisNormalization:
     def _channel_text(header_lines, data_values):
         return "\n".join(list(header_lines) + [str(v) for v in data_values])
 
+    @pytest.mark.parametrize("unit", ["g", "g0"])
+    def test_gravity_unit_spellings_are_read_as_standard_gravity(self, unit):
+        channel = parse_xxx(
+            self._channel_text(
+                [
+                    "Channel code                :11HEADCG0000ACXP",
+                    f"Unit                        :{unit}",
+                    "Sampling interval           :0.01",
+                ],
+                [0.0, 1.0],
+            ),
+            pyisomme.Isomme(),
+        )
+
+        assert channel.unit == pyisomme.Unit(pyisomme.g0)
+
     def test_declared_implicit_reconstructs_time_axis(self):
         text = self._channel_text(
             [

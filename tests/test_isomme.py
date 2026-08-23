@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from pyisomme import Channel, Isomme
+from pyisomme import Channel, Isomme, Unit, g0
 
 
 class TestIsomme:
@@ -57,6 +57,27 @@ class TestIsomme:
         assert [str(channel.code) for channel in written.channels] == [
             "11HEAD000000ACXP"
         ]
+
+    def test_write_normalizes_standard_gravity_unit_to_g(self, tmp_path):
+        isomme = Isomme(
+            test_number="synthetic",
+            channels=[
+                Channel(
+                    "11HEAD000000ACXP",
+                    pd.DataFrame([1.0, 2.0]),
+                    Unit(g0),
+                ),
+            ],
+        )
+
+        isomme.write(tmp_path / "synthetic.mme")
+
+        channel_text = (tmp_path / "Channel" / "synthetic.001").read_text()
+        assert "Unit                        :g\n" in channel_text
+        assert "g0" not in channel_text
+
+        written = Isomme().read(tmp_path / "synthetic.mme")
+        assert written.channels[0].unit == Unit(g0)
 
     def test_get_test_info(self):
         isomme = Isomme(test_info=[("Laboratory test ref. number", "98/7707")])

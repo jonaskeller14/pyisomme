@@ -2335,11 +2335,13 @@ class EuroNCAP_Frontal_MPDB(Report[Overall]):
                 ].criterion_compatibility_modifier.criterion_olc_modifier
                 self.channels[isomme] = [[channel, olc_visual]]
                 cell_texts.append([f"{olc.get_data(unit=Unit(g0))[0]:.2f}"])
-                cell_colors.append([
-                    (*to_rgb(criterion.color), 0.5)
-                    if criterion.color is not None
-                    else (0.0, 0.0, 0.0, 0.0)
-                ])
+                cell_colors.append(
+                    [
+                        (*to_rgb(criterion.color), 0.5)
+                        if criterion.color is not None
+                        else (0.0, 0.0, 0.0, 0.0)
+                    ]
+                )
                 row_labels.append(isomme.test_number)
             self.cell_texts = [cell_texts]
             self._cell_colors = cell_colors
@@ -2349,12 +2351,14 @@ class EuroNCAP_Frontal_MPDB(Report[Overall]):
             self.cell_colors = [
                 [
                     [
-                        (*to_rgb(
-                            self.report.criterion_overall[
-                                isomme
-                            ]
-                            .criterion_compatibility_modifier.criterion_olc_modifier.color
-                        ), 0.5)
+                        (
+                            *to_rgb(
+                                self.report.criterion_overall[
+                                    isomme
+                                ].criterion_compatibility_modifier.criterion_olc_modifier.color
+                            ),
+                            0.5,
+                        )
                         if self.report.criterion_overall[
                             isomme
                         ].criterion_compatibility_modifier.criterion_olc_modifier.color

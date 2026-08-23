@@ -121,3 +121,7 @@ class Unit:
 
     def __str__(self):
         return str(self._astropy_unit)
+
+    def to_isomme(self) -> str:
+        """Return the unit spelling used in ISO-MME channel-file headers."""
+        return "g" if self._astropy_unit == g0 else str(self)

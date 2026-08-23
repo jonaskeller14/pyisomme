@@ -1,4 +1,9 @@
+import matplotlib
 import pytest
+
+# Keep plotting tests independent of a locally configured interactive backend.
+# This must run before test modules import ``matplotlib.pyplot``.
+matplotlib.use("Agg")
 
 
 def pytest_addoption(parser: pytest.Parser) -> None:
