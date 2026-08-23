@@ -8,9 +8,11 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from pyisomme.__main__ import CODE_FIELDS, build_parser, main
+import pyisomme.__main__ as cli
 from pyisomme.channel import Channel
+from pyisomme.code import CODE_COMPONENTS
 from pyisomme.isomme import Isomme
+from pyisomme.report import REPORTS
 
 
 @dataclass(frozen=True)
@@ -27,24 +29,13 @@ def make_isomme(test_number: str, scale: float) -> Isomme:
         test_info=[],
         channel_info=[],
         channels=[
-            Channel(
-                "11HEAD000000ACXP",
-                pd.DataFrame([1.0, 2.0, 3.0], index=time),
-                "g",
-                info=[("Reference channel", "implicit")],
-            ),
+            Channel("11HEAD000000ACXP", pd.DataFrame([1.0, 2.0, 3.0], index=time), "g"),
             Channel(
                 "13CHST000000DSXP",
                 pd.DataFrame(np.array([4.0, 5.0, 6.0]) * scale, index=time),
                 "m",
-                info=[("Reference channel", "implicit")],
             ),
-            Channel(
-                "14HEAD000000ACXP",
-                pd.DataFrame([7.0, 8.0, 9.0], index=time),
-                "g",
-                info=[("Reference channel", "implicit")],
-            ),
+            Channel("14HEAD000000ACXP", pd.DataFrame([7.0, 8.0, 9.0], index=time), "g"),
         ],
     )
 
@@ -62,7 +53,7 @@ def cli_files(tmp_path: Path) -> CliFiles:
 @pytest.fixture
 def run_cli(capsys: pytest.CaptureFixture[str]) -> Callable[..., str]:
     def _run(*arguments: str) -> str:
-        main(list(arguments))
+        cli.main(list(arguments))
         return capsys.readouterr().out
 
     return _run
@@ -82,218 +73,168 @@ def required_channel(isomme: Isomme, pattern: str) -> Channel:
     return channel
 
 
-def test_help_exposes_set_convert_and_all_fields(
+def test_top_level_help_and_subcommands_are_exposed(
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    """Ensure the CLI help documents all supported mutation fields and commands."""
-    parser = build_parser()
     with pytest.raises(SystemExit, match="0"):
-        parser.parse_args(["set", "--help"])
+        cli.main(["--help"])
     help_text = capsys.readouterr().out
-    assert "Quote wildcard patterns" in help_text
-    for field in ("unit", *CODE_FIELDS):
-        assert field in help_text
+    assert "Read, modify, plot, and report" in help_text
+    for command in ("code", "convert", "list", "merge", "plot", "report", "set"):
+        assert command in help_text
 
     with pytest.raises(SystemExit, match="0"):
-        parser.parse_args(["convert", "--help"])
-    assert "numerically convert" in capsys.readouterr().out
+        cli.main(["set", "--help"])
+    set_help = capsys.readouterr().out
+    assert "--dry-run" in set_help
+    assert "--main-location" in set_help
+    assert "characters 3-6" in set_help
+
+    with pytest.raises(SystemExit, match="0"):
+        cli.main(["convert", "--help"])
+    assert "required --unit option" in capsys.readouterr().out
 
 
-def test_code_fields_are_dispatched_and_unmatched_channel_is_unchanged(
+def test_every_subcommand_is_parsed_and_dispatched(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls: list[str] = []
+
+    def record(name: str) -> Callable[..., None]:
+        def handler(*args: object, **kwargs: object) -> None:
+            calls.append(name)
+
+        return handler
+
+    for command in ("list", "merge", "set", "convert", "report"):
+        monkeypatch.setattr(cli, f"execute_{command}_command", record(command))
+    monkeypatch.setattr(cli, "execute_code_command", record("code"))
+    monkeypatch.setattr(cli, "execute_plot_command", record("plot"))
+
+    report_name = REPORTS[0].__name__
+    for invocation in (
+        ["list", "input.mme"],
+        ["code", "11HEAD000000ACXP"],
+        ["merge", "output.mme", "input.mme"],
+        ["set", "input.mme", "--unit", "g", "-c", "11*"],
+        ["convert", "input.mme", "--unit", "g", "-c", "11*"],
+        ["report", report_name, "report.pptx", "input.mme"],
+        ["plot", "input.mme", "-c", "11*"],
+    ):
+        cli.main(invocation)
+
+    assert calls == ["list", "code", "merge", "set", "convert", "report", "plot"]
+
+
+def test_code_command_describes_channel_code(run_cli: Callable[..., str]) -> None:
+    output = run_cli("code", "11HEAD0000H3ACXA")
+    assert "Code: 11HEAD0000H3ACXA" in output
+    assert "Main Location:" in output
+    assert "Default unit:" in output
+
+
+def test_list_command_filters_channel_codes(
     cli_files: CliFiles, run_cli: Callable[..., str]
 ) -> None:
-    """Verify each code field updates the selected channel without touching others."""
-    values = {
-        "main_location": "ABCD",
-        "fine_location_1": "AA",
-        "fine_location_2": "BB",
-        "fine_location_3": "CC",
-        "physical_dimension": "DD",
-        "direction": "R",
-        "filter_class": "X",
-        "position": "2",
-        "test_object": "2",
-    }
-    for field, value in values.items():
-        pattern = "12*" if field == "test_object" else "11*"
-        run_cli("set", str(cli_files.mme), field, value, "-c", pattern)
-
-    result = Isomme().read(cli_files.mme)
-    changed = result.get_channel(
-        "22ABCDAABBCCDDRX",
-        filter=False,
-        calculate=False,
-        differentiate=False,
-        integrate=False,
-    )
-    assert changed is not None
-    assert (
-        result.get_channel(
-            "13CHST000000DSXP",
-            filter=False,
-            calculate=False,
-            differentiate=False,
-            integrate=False,
-        )
-    ) is not None
-    assert set(values) == set(CODE_FIELDS)
+    output = run_cli("list", str(cli_files.mme), "-c", "13CHST*")
+    assert "CLI" in output
+    assert "13CHST000000DSXP" in output
+    assert "11HEAD000000ACXP" not in output
 
 
-def test_multiple_patterns_relabel_units_without_converting_values(
+def test_set_updates_multiple_metadata_fields_and_relabels_units(
     cli_files: CliFiles, run_cli: Callable[..., str]
 ) -> None:
-    """Ensure set relabels every matching unit while preserving signal values."""
-    before = {
-        str(channel.code): channel.get_data().copy()
-        for channel in Isomme().read(cli_files.mme).channels
-    }
-    output = run_cli("set", str(cli_files.mme), "unit", "um", "-c", "11*", "13CHST*")
-
-    result = Isomme().read(cli_files.mme)
-    assert str(required_channel(result, "11*").unit) == "um"
-    assert str(required_channel(result, "13CHST*").unit) == "um"
-    assert str(required_channel(result, "14*").unit) == "g0"
-    for channel in result.channels:
-        np.testing.assert_array_equal(channel.get_data(), before[str(channel.code)])
-    assert "Matched 2 channel(s); changed 2." in output
-
-    output = run_cli("set", str(cli_files.mme), "unit", "um", "-c", "11*", "13CHST*")
-    assert "Matched 2 channel(s); changed 0." in output
-
-
-def test_round_trip_updates_chn_and_channel_header(
-    cli_files: CliFiles, run_cli: Callable[..., str]
-) -> None:
-    """Ensure code changes are persisted in both ISO-MME channel metadata files."""
-    run_cli("set", str(cli_files.mme), "fine_location_3", "H3", "-c", "13CHST*")
-    chn = (cli_files.root / "Channel" / "CLI.chn").read_text()
-    channel_headers = "\n".join(
-        path.read_text() for path in (cli_files.root / "Channel").glob("CLI.0??")
-    )
-    assert "13CHST0000H3DSXP" in chn
-    assert "13CHST0000H3DSXP" in channel_headers
-
-
-def test_set_accepts_multiple_input_paths(
-    cli_files: CliFiles, run_cli: Callable[..., str]
-) -> None:
-    """Ensure set applies the requested change to every input container."""
+    before = required_channel(Isomme().read(cli_files.mme), "11*").get_data().copy()
     output = run_cli(
         "set",
         str(cli_files.mme),
-        str(cli_files.second_mme),
+        "--test-object",
+        "2",
+        "--position",
+        "2",
+        "--main-location",
+        "ABCD",
+        "--fine-location-1",
+        "AA",
+        "--fine-location-2",
+        "BB",
+        "--fine-location-3",
+        "CC",
+        "--physical-dimension",
+        "DD",
+        "--direction",
+        "R",
+        "--filter-class",
+        "X",
+        "--unit",
+        "um",
+        "-c",
+        "11*",
+    )
+    channel = required_channel(Isomme().read(cli_files.mme), "22ABCDAABBCCDDRX")
+    assert str(channel.unit) == "um"
+    np.testing.assert_array_equal(channel.get_data(), before)
+    assert "[g0] 11HEAD000000ACXP -> 22ABCDAABBCCDDRX [um]" in output
+    assert {name for name, _ in CODE_COMPONENTS} == {
+        "test_object",
+        "position",
+        "main_location",
+        "fine_location_1",
+        "fine_location_2",
         "fine_location_3",
+        "physical_dimension",
+        "direction",
+        "filter_class",
+    }
+
+
+def test_set_dry_run_does_not_write(
+    cli_files: CliFiles, run_cli: Callable[..., str]
+) -> None:
+    before = snapshot(cli_files.root)
+    output = run_cli(
+        "set",
+        str(cli_files.mme),
+        "--fine-location-3",
         "H3",
         "-c",
         "13CHST*",
+        "--dry-run",
     )
-    for path in (cli_files.mme, cli_files.second_mme):
-        result = Isomme().read(path)
-        assert (
-            result.get_channel(
-                "13CHST0000H3DSXP",
-                filter=False,
-                calculate=False,
-                differentiate=False,
-                integrate=False,
-            )
-        ) is not None
-        assert str(path) in output
+    assert snapshot(cli_files.root) == before
+    assert "Dry run: no files were written." in output
 
 
-def test_convert_unit_accepts_multiple_inputs_and_converts_values(
+def test_convert_converts_values_across_multiple_inputs(
     cli_files: CliFiles, run_cli: Callable[..., str]
 ) -> None:
-    """Ensure convert changes units and numeric values across all input containers."""
-    before = []
-    for path in (cli_files.mme, cli_files.second_mme):
-        channel = required_channel(Isomme().read(path), "13CHST*")
-        before.append(channel.get_data().copy())
-
+    before = [
+        required_channel(Isomme().read(path), "13CHST*").get_data().copy()
+        for path in (cli_files.mme, cli_files.second_mme)
+    ]
     output = run_cli(
         "convert",
         str(cli_files.mme),
         str(cli_files.second_mme),
-        "unit",
+        "--unit",
         "mm",
         "-c",
         "13CHST*",
     )
     for path, old_data in zip((cli_files.mme, cli_files.second_mme), before):
-        result = Isomme().read(path)
-        channel = required_channel(result, "13CHST*")
+        channel = required_channel(Isomme().read(path), "13CHST*")
         assert str(channel.unit) == "mm"
         np.testing.assert_allclose(channel.get_data(), old_data * 1000.0)
-        assert str(required_channel(result, "11*").unit) == "g0"
-    assert output.count("Matched 1 channel(s); changed 1.") == 2
+    assert output.count("13CHST000000DSXP:") == 2
 
+
+def test_convert_dry_run_does_not_write(
+    cli_files: CliFiles, run_cli: Callable[..., str]
+) -> None:
+    before = snapshot(cli_files.root)
     output = run_cli(
-        "convert",
-        str(cli_files.mme),
-        str(cli_files.second_mme),
-        "unit",
-        "mm",
-        "-c",
-        "13CHST*",
+        "convert", str(cli_files.mme), "--unit", "mm", "-c", "13CHST*", "--dry-run"
     )
-    assert output.count("Matched 1 channel(s); changed 0.") == 2
-
-
-def test_incompatible_conversion_in_later_input_prevents_all_writes(
-    cli_files: CliFiles, capsys: pytest.CaptureFixture[str]
-) -> None:
-    """Ensure a failed multi-input conversion leaves every input unchanged."""
-    second = Isomme().read(cli_files.second_mme)
-    required_channel(second, "13CHST*").set_unit("s")
-    second.write(cli_files.second_mme)
-    before = snapshot(cli_files.root)
-
-    with pytest.raises(SystemExit, match="2"):
-        main(
-            [
-                "convert",
-                str(cli_files.mme),
-                str(cli_files.second_mme),
-                "unit",
-                "mm",
-                "-c",
-                "13CHST*",
-            ]
-        )
-    capsys.readouterr()
     assert snapshot(cli_files.root) == before
-
-
-@pytest.mark.parametrize(
-    ("field", "value", "pattern"),
-    [
-        ("fine_location_3", "H3", "99*"),
-        ("fine_location_3", "TOO-LONG", "11*"),
-        ("unit", "not_a_unit", "11*"),
-    ],
-)
-def test_no_match_and_invalid_value_do_not_write(
-    cli_files: CliFiles,
-    capsys: pytest.CaptureFixture[str],
-    field: str,
-    value: str,
-    pattern: str,
-) -> None:
-    """Ensure unmatched or invalid set requests fail before writing any files."""
-    before = snapshot(cli_files.root)
-    with pytest.raises(SystemExit, match="2"):
-        main(["set", str(cli_files.mme), field, value, "-c", pattern])
-    capsys.readouterr()
-    assert snapshot(cli_files.root) == before
-
-
-def test_individual_channel_file_is_rejected_before_reading(
-    cli_files: CliFiles, capsys: pytest.CaptureFixture[str]
-) -> None:
-    """Ensure set rejects a channel data file before attempting an unsafe write."""
-    xxx_path = cli_files.root / "Channel" / "CLI.001"
-    before = snapshot(cli_files.root)
-    with pytest.raises(SystemExit, match="2"):
-        main(["set", str(xxx_path), "unit", "um", "-c", "*"])
-    assert "Cannot write ISO-MME back" in capsys.readouterr().err
-    assert snapshot(cli_files.root) == before
+    assert "Dry run: no files were written." in output

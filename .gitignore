@@ -42,6 +42,8 @@ coverage.xml
 htmlcov/
 
 # scratch / local artifacts
+tmp.ipynb
+tmp.py
 tmp/
 tmp1/
 tmp2/

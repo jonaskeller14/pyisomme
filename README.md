@@ -31,11 +31,32 @@ pyisomme --help
 pyisomme <command> --help
 ```
 
+Describe a channel code:
+
+```bash
+pyisomme code 11HEADCG00H3ACXD
+```
+
+```text
+Code: 11HEADCG00H3ACXD
+Test Object: Vehicle 1
+Position: Front left
+Main Location: Head
+Fine Location 1: Center of Gravity
+Fine Location 2: Not defined
+Fine Location 3: Hybrid III Mid-Sized Adult Male Dummy
+Physical Dimension: Acceleration
+Direction: Longitudinal
+Filter Class: CFC 60
+Default unit: m / s2
+```
+
 | Command | Purpose |
 | --- | --- |
 | `list` | List channels, optionally selected by code patterns |
+| `code` | Decode a 16-character channel code and show its default unit |
 | `merge` | Merge and transform one or more ISO-MME containers |
-| `set` | Relabel one metadata field on selected channels in place |
+| `set` | Set one or more metadata fields on selected channels in place |
 | `convert` | Numerically convert selected channel data to another unit in place |
 | `plot` | Plot selected or calculated channels |
 | `report` | Calculate and export an assessment report |
@@ -43,13 +64,13 @@ pyisomme <command> --help
 Edit channel codes
 
 ```bash
-pyisomme set TEST1.mme TEST2.zip fine_location_3 H3 -c '11*' '13*'
+pyisomme set TEST1.mme TEST2.zip --fine-location-3 H3 -c '11HEAD000000ACXP' '13CHST000000DSXP'
 ```
 
 Convert channel values and units (e.g. `0.04 m` becomes `40 mm`)
 
 ```bash
-pyisomme convert TEST1.mme TEST2.zip unit mm -c '??CHST??????DS??'
+pyisomme convert TEST1.mme TEST2.zip --unit mm -c '13CHST0000H3DSXP'
 ```
 
 Merge multiple ISO-MME containers:
