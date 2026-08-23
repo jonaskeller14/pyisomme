@@ -8,6 +8,7 @@ import getpass
 import os
 from abc import ABC
 from datetime import datetime
+from typing import Any
 
 from pptx.presentation import Presentation
 from pptx.util import Inches
@@ -26,7 +27,7 @@ def _current_user() -> str:
             return "unknown"
 
 
-class Page_Content(Page, ABC):
+class Page_Content(Page[Any], ABC):
     """A titled content slide with a footer, and nothing in the body."""
 
     title: str | None = None

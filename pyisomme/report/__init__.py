@@ -1,3 +1,5 @@
+from typing import Any
+
 from pyisomme.report import correlation, euro_ncap, fmvss, iihs, un, us_ncap
 from pyisomme.report.base_report import BaseReport
 from pyisomme.report.correlation import Correlation
@@ -24,7 +26,7 @@ from pyisomme.report.un import (
     UN_Side_Pole_R135,
 )
 
-REPORTS: list[type[Report]] = [
+REPORTS: list[type[Report[Any]]] = [
     Correlation,
     EuroNCAP_Frontal_MPDB,
     EuroNCAP_Frontal_50kmh,

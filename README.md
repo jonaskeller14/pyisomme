@@ -31,6 +31,17 @@ pyisomme --help
 pyisomme <command> --help
 ```
 
+| Command | Purpose |
+| --- | --- |
+| `list` | List channels, optionally selected by code patterns |
+| `code` | Decode a 16-character channel code and show its default unit |
+| `merge` | Merge and transform one or more ISO-MME containers |
+| `set` | Set one or more metadata fields on selected channels in place |
+| `convert` | Numerically convert selected channel data to another unit in place |
+| `plot` | Plot selected or calculated channels |
+| `report` | Calculate and export an assessment report |
+
+
 Describe a channel code:
 
 ```bash
@@ -50,16 +61,6 @@ Direction: Longitudinal
 Filter Class: CFC 60
 Default unit: m / s2
 ```
-
-| Command | Purpose |
-| --- | --- |
-| `list` | List channels, optionally selected by code patterns |
-| `code` | Decode a 16-character channel code and show its default unit |
-| `merge` | Merge and transform one or more ISO-MME containers |
-| `set` | Set one or more metadata fields on selected channels in place |
-| `convert` | Numerically convert selected channel data to another unit in place |
-| `plot` | Plot selected or calculated channels |
-| `report` | Calculate and export an assessment report |
 
 Edit channel codes
 

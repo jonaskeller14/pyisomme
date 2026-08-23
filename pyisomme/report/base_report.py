@@ -60,7 +60,7 @@ class BaseReport(ABC):
         """Print the calculated results."""
 
     @abstractmethod
-    def json_results(self) -> dict:
+    def json_results(self) -> dict[str, Any]:
         """Return the results in json dictionary format"""
 
     @abstractmethod

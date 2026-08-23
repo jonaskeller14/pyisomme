@@ -150,7 +150,7 @@ class Overall(Criterion):
     p_driver: Manual[str, P_DRIVER]
     p_passenger: Manual[str, P_PASSENGER]
 
-    def __init__(self, report: Report, isomme: Isomme) -> None:
+    def __init__(self, report: Report[Any], isomme: Isomme) -> None:
         super().__init__(report, isomme)
         # Also at construction: the pages read the positions when the report is built.
         self.prepare()
@@ -358,7 +358,7 @@ class Overall(Criterion):
                     Limit_Fail(
                         codes,
                         func=lambda x: (
-                            -42 if self.report.protocol == "22.06.2016" else -34
+                            -42 if self.report.protocol == PROTOCOL_R137_2016 else -34
                         ),
                         y_unit="mm",
                         upper=True,
@@ -366,7 +366,7 @@ class Overall(Criterion):
                     Limit_Pass(
                         codes,
                         func=lambda x: (
-                            -42 if self.report.protocol == "22.06.2016" else -34
+                            -42 if self.report.protocol == PROTOCOL_R137_2016 else -34
                         ),
                         y_unit="mm",
                         lower=True,

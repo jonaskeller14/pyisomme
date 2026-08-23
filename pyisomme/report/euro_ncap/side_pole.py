@@ -49,7 +49,7 @@ class Overall(Criterion):
     source = "§5"
     p: Manual[str, P]
 
-    def __init__(self, report: Report, isomme: Isomme) -> None:
+    def __init__(self, report: Report[Any], isomme: Isomme) -> None:
         super().__init__(report, isomme)
         # Also at construction: the pages read `p` when the report is built.
         self.prepare()
@@ -492,7 +492,7 @@ class EuroNCAP_Side_Pole(Report[Overall]):
         name = "Values Chart"
         title = "Values"
 
-        def __init__(self, report: Report) -> None:
+        def __init__(self, report: Report[Any]) -> None:
             super().__init__(report)
 
             self.criteria = {
@@ -529,7 +529,7 @@ class EuroNCAP_Side_Pole(Report[Overall]):
         name = "Values Table"
         title = "Values"
 
-        def __init__(self, report: Report) -> None:
+        def __init__(self, report: Report[Any]) -> None:
             super().__init__(report)
 
             self.criteria = {
@@ -566,7 +566,7 @@ class EuroNCAP_Side_Pole(Report[Overall]):
         name: str = "Rating Table"
         title: str = "Rating"
 
-        def __init__(self, report: Report) -> None:
+        def __init__(self, report: Report[Any]) -> None:
             super().__init__(report)
 
             self.criteria = {
@@ -587,7 +587,7 @@ class EuroNCAP_Side_Pole(Report[Overall]):
         ncols: int = 2
         sharey: bool = True
 
-        def __init__(self, report: Report) -> None:
+        def __init__(self, report: Report[Any]) -> None:
             super().__init__(report)
             self.channels = {
                 isomme: [
@@ -604,7 +604,7 @@ class EuroNCAP_Side_Pole(Report[Overall]):
         ncols: int = 2
         sharey: bool = True
 
-        def __init__(self, report: Report) -> None:
+        def __init__(self, report: Report[Any]) -> None:
             super().__init__(report)
             self.channels = {
                 isomme: [
@@ -625,7 +625,7 @@ class EuroNCAP_Side_Pole(Report[Overall]):
         ncols: int = 2
         sharey: bool = True
 
-        def __init__(self, report: Report) -> None:
+        def __init__(self, report: Report[Any]) -> None:
             super().__init__(report)
             self.channels = {
                 isomme: [
@@ -646,7 +646,7 @@ class EuroNCAP_Side_Pole(Report[Overall]):
         ncols = 2
         sharey = True
 
-        def __init__(self, report: Report) -> None:
+        def __init__(self, report: Report[Any]) -> None:
             super().__init__(report)
             self.channels = {
                 isomme: [
@@ -663,7 +663,7 @@ class EuroNCAP_Side_Pole(Report[Overall]):
         ncols: int = 2
         sharey: bool = True
 
-        def __init__(self, report: Report) -> None:
+        def __init__(self, report: Report[Any]) -> None:
             super().__init__(report)
             self.channels = {
                 isomme: [
@@ -682,7 +682,7 @@ class EuroNCAP_Side_Pole(Report[Overall]):
         ncols: int = 2
         sharey: bool = True
 
-        def __init__(self, report: Report) -> None:
+        def __init__(self, report: Report[Any]) -> None:
             super().__init__(report)
             self.channels = {
                 isomme: [
@@ -698,7 +698,7 @@ class EuroNCAP_Side_Pole(Report[Overall]):
         name: str = "Pubic Symphysis Force"
         title: str = "Pubic Symphysis Force"
 
-        def __init__(self, report: Report) -> None:
+        def __init__(self, report: Report[Any]) -> None:
             super().__init__(report)
             self.channels = {
                 isomme: [[f"?{self.report.criterion_overall[isomme].p}PUBC0000??FOYB"]]

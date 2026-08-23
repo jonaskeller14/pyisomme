@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 from urllib.parse import urlparse
 
 from pyisomme.report.validate.issue import Issue, IssueSeverity
@@ -18,7 +18,7 @@ def is_http_url(url: str) -> bool:
         return False
 
 
-def check_protocols(report: Report) -> list[Issue]:
+def check_protocols(report: Report[Any]) -> list[Issue]:
     issues: list[Issue] = []
 
     protocols = report.protocols

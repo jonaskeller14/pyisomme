@@ -19,11 +19,11 @@ if TYPE_CHECKING:
 
 class Page_Line_Table(Page_Figure, ABC):
     channels: dict[Isomme, list[list[Channel | str | None]]]
-    cell_texts: list[np.ndarray | list[list]]
-    row_labels: list[np.ndarray | list]
-    col_labels: list[np.ndarray | list]
-    cell_colors: list[np.ndarray | list[list]] | None = None
-    col_labels_colors: list[np.ndarray | list] | None = None
+    cell_texts: list[np.ndarray[Any, Any] | list[list[Any]]]
+    row_labels: list[np.ndarray[Any, Any] | list[Any]]
+    col_labels: list[np.ndarray[Any, Any] | list[Any]]
+    cell_colors: list[np.ndarray[Any, Any] | list[list[Any]]] | None = None
+    col_labels_colors: list[np.ndarray[Any, Any] | list[Any]] | None = None
     col_labels_fontweight: str | None = None
     nrows: int = 1
     ncols: int = 1

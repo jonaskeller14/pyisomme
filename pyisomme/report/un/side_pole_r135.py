@@ -40,7 +40,7 @@ class Overall(Criterion):
     role = Role.AGGREGATE
     p: Manual[str, P]
 
-    def __init__(self, report: Report, isomme: Isomme) -> None:
+    def __init__(self, report: Report[Any], isomme: Isomme) -> None:
         super().__init__(report, isomme)
         # Also at construction: the pages read `p` when the report is built.
         self.prepare()

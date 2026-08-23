@@ -54,7 +54,7 @@ class Overall(Criterion):
     p_driver: Manual[str, P_DRIVER]
     p_passenger: Manual[str, P_PASSENGER]
 
-    def __init__(self, report: Report, isomme: Isomme) -> None:
+    def __init__(self, report: Report[Any], isomme: Isomme) -> None:
         super().__init__(report, isomme)
         # Also at construction: the pages read the positions when the report is built.
         self.prepare()

@@ -9,7 +9,7 @@ import re
 import shutil
 from collections.abc import Iterable
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal
 
 from tqdm.auto import tqdm
 from tqdm.contrib.logging import logging_redirect_tqdm
@@ -35,9 +35,9 @@ class Isomme:
     def __init__(
         self,
         test_number: str | None = None,
-        test_info: list | None = None,
+        test_info: list[tuple[str, Any]] | None = None,
         channels: list[Channel] | None = None,
-        channel_info: list | None = None,
+        channel_info: list[tuple[str, Any]] | None = None,
     ):
         """
         Create empty Isomme object.
@@ -47,7 +47,7 @@ class Isomme:
         self.channels = [] if channels is None else channels
         self.channel_info = Info([]) if channel_info is None else Info(channel_info)
 
-    def get_test_info(self, *labels) -> str | None:
+    def get_test_info(self, *labels) -> Any | None:
         """
         Get test info by giving one or multiple label(s) to identify information.
         Regex or fnmatch patterns possible.
@@ -65,7 +65,7 @@ class Isomme:
                     continue
         return None
 
-    def get_channel_info(self, *labels) -> str | None:
+    def get_channel_info(self, *labels) -> Any | None:
         """
         Get channel info by giving one or multiple label(s) to identify information.
         Regex or fnmmatch pattern possible.
@@ -416,7 +416,9 @@ class Isomme:
         return self
 
     def __eq__(self, other) -> bool:
-        return self.test_number == other.test_number
+        if isinstance(other, Isomme):
+            return self.test_number == other.test_number
+        return False
 
     def __ne__(self, other) -> bool:
         return not self.__eq__(other)
@@ -672,7 +674,7 @@ class Isomme:
 
 def read(
     *paths,
-    channel_code_patterns: list | None = None,
+    channel_code_patterns: list[str] | None = None,
     recursive: bool = True,
     merge: bool = True,
 ) -> list[Isomme]:

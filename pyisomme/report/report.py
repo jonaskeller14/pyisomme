@@ -175,7 +175,7 @@ class Report(BaseReport, Generic[C]):
                     f"Rating={criterion.rating:.5g}"
                 )
 
-    def json_results(self) -> dict:
+    def json_results(self) -> dict[str, Any]:
         results: dict[str, Any] = {}
         for isomme_idx, isomme in enumerate(self.isomme_list, 1):
             test_results: dict[str, Any] = {}

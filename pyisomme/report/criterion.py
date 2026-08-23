@@ -144,10 +144,10 @@ class Criterion:
     channel: Channel | None = None
     value: float = np.nan
     rating: float = np.nan
-    color: str | tuple | None = None
+    color: str | tuple[Any, ...] | None = None
     status: Status = Status.PENDING
     na_reason: MissingData | None = None
-    report: Report
+    report: Report[Any]
     isomme: Isomme
     role: Role = Role.RESULT
     skip_missing: str | None = None  # --> NaN-tolerant aggregation
@@ -160,7 +160,7 @@ class Criterion:
 
     #: ``{attribute: sub}`` for every child declared with :class:`sub`, filled by
     #: ``sub.__set_name__``. Never mutated in place — see there.
-    _declared_children: dict[str, sub] = {}
+    _declared_children: dict[str, sub[Any]] = {}
     #: The framework-owned children, ``{attribute: criterion}``. Annotated but not
     #: assigned: a class-level ``{}`` would be shared by every criterion in the process.
     #: Always reach it through :meth:`_child_map`, which creates it on first use.
@@ -169,7 +169,7 @@ class Criterion:
     #: This criterion's ``at=``, or ``None`` to inherit the parent's context unchanged.
     _ctx_source: CtxSource | None = None
 
-    def __init__(self, report: Report, isomme: Isomme) -> None:
+    def __init__(self, report: Report[Any], isomme: Isomme) -> None:
         self.report = report
         self.isomme = isomme
         self.limits = Limits(name=report.name, limit_list=[])

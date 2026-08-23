@@ -27,7 +27,7 @@ class Overall(Criterion):
     is_reference: bool | None = None
     is_comparison: bool | None = None
 
-    def __init__(self, report: Report, isomme: Isomme) -> None:
+    def __init__(self, report: Report[Any], isomme: Isomme) -> None:
         super().__init__(report, isomme)
 
         isomme_r = self.report.isomme_list[0]
@@ -83,7 +83,7 @@ class Overall(Criterion):
 
         def __init__(
             self,
-            report: Report,
+            report: Report[Any],
             isomme: Isomme,
             channel_r: Channel | None,
             channel_c: Channel | None,

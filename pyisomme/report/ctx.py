@@ -25,7 +25,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass, field, replace
 from string import Formatter
 from types import MappingProxyType
-from typing import TYPE_CHECKING, Protocol
+from typing import TYPE_CHECKING, Any, Protocol
 
 from pyisomme.code import CODE_LENGTH, pattern_length
 from pyisomme.errors import InvalidCodeError, MissingData
@@ -59,7 +59,7 @@ _FORMATTER = Formatter()
 class Ctx:
     """The report, the test, and the fields that fill a criterion's code templates."""
 
-    report: Report
+    report: Report[Any]
     isomme: Isomme
     fields: Mapping[str, FieldValue] = field(
         default_factory=lambda: MappingProxyType({})

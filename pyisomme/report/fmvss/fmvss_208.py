@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import logging
 from enum import Enum
-from typing import cast
+from typing import Any, cast
 
 import numpy as np
 
@@ -342,7 +342,7 @@ class Overall(_FMVSSCriterion):
     p_driver: Manual[str, P_DRIVER]
     p_passenger: Manual[str, P_PASSENGER]
 
-    def __init__(self, report: Report, isomme: Isomme) -> None:
+    def __init__(self, report: Report[Any], isomme: Isomme) -> None:
         super().__init__(report, isomme)
         self.prepare()
 

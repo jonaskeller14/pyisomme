@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterator
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING, Any, Callable
 
 from pyisomme.report.validate.check_code_pattern import check_code_pattern
 from pyisomme.report.validate.check_limit_capping import check_limit_capping
@@ -68,7 +68,7 @@ def validate_tree(overall: Criterion) -> list[Issue]:
     return issues
 
 
-def validate_report(report: Report) -> list[Issue]:
+def validate_report(report: Report[Any]) -> list[Issue]:
     """
     Every issue in ``report``, over all of its tests.
 

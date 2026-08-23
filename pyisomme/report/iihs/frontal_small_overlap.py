@@ -480,7 +480,7 @@ class IIHS_Frontal_Small_Overlap(Report[Overall]):
         ncols = 2
         sharey = True
 
-        def __init__(self, report: Report) -> None:
+        def __init__(self, report: Report[Any]) -> None:
             super().__init__(report)
             self.channels = {
                 isomme: [

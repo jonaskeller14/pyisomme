@@ -36,7 +36,7 @@ class Overall(Criterion):
     role = Role.AGGREGATE
     p: Manual[str, P]
 
-    def __init__(self, report: Report, isomme: Isomme) -> None:
+    def __init__(self, report: Report[Any], isomme: Isomme) -> None:
         super().__init__(report, isomme)
         # Also at construction: the pages read `p` when the report is built.
         self.prepare()
@@ -327,8 +327,8 @@ class Overall(Criterion):
             #: a ``sub()`` cannot hand one child a reference to another. They are declared
             #: before this one, so they are already calculated when ``calculation()`` runs.
             components: tuple[str, ...] = ()
-            values: np.ndarray
-            weights: np.ndarray
+            values: np.ndarray[Any, Any]
+            weights: np.ndarray[Any, Any]
 
             def define_limits(self) -> list[Limit]:
                 return [

@@ -269,7 +269,7 @@ class Overall(Criterion):
     p_driver: Manual[str, P_DRIVER]
     p_passenger: Manual[str, P_PASSENGER]
 
-    def __init__(self, report: Report, isomme: Isomme) -> None:
+    def __init__(self, report: Report[Any], isomme: Isomme) -> None:
         super().__init__(report, isomme)
         # Also at construction, not only before every calculate(): the pages build
         # their channel patterns from p_driver when the report is constructed.
@@ -1912,7 +1912,7 @@ class EuroNCAP_Frontal_MPDB(Report[Overall]):
         ncols = 2
         sharey = True
 
-        def __init__(self, report: Report) -> None:
+        def __init__(self, report: Report[Any]) -> None:
             super().__init__(report)
             self.channels = {
                 isomme: [
@@ -1939,7 +1939,7 @@ class EuroNCAP_Frontal_MPDB(Report[Overall]):
         ncols = 2
         sharey = True
 
-        def __init__(self, report: Report) -> None:
+        def __init__(self, report: Report[Any]) -> None:
             super().__init__(report)
             self.channels = {
                 isomme: [
@@ -1966,7 +1966,7 @@ class EuroNCAP_Frontal_MPDB(Report[Overall]):
         ncols = 2
         sharey = True
 
-        def __init__(self, report: Report) -> None:
+        def __init__(self, report: Report[Any]) -> None:
             super().__init__(report)
             self.channels = {
                 isomme: [
@@ -2034,7 +2034,6 @@ class EuroNCAP_Frontal_MPDB(Report[Overall]):
         report: EuroNCAP_Frontal_MPDB
         name: str = "Passenger Rating Table"
         title: str = "Passenger Rating"
-        table_content: dict
 
         def __init__(self, report: EuroNCAP_Frontal_MPDB) -> None:
             super().__init__(report)
@@ -2149,7 +2148,7 @@ class EuroNCAP_Frontal_MPDB(Report[Overall]):
         ncols: int = 2
         sharey: bool = True
 
-        def __init__(self, report: Report) -> None:
+        def __init__(self, report: Report[Any]) -> None:
             super().__init__(report)
             self.channels = {
                 isomme: [
@@ -2168,7 +2167,7 @@ class EuroNCAP_Frontal_MPDB(Report[Overall]):
         ncols: int = 2
         sharey: bool = False
 
-        def __init__(self, report: Report) -> None:
+        def __init__(self, report: Report[Any]) -> None:
             super().__init__(report)
             self.channels = {
                 isomme: [
@@ -2191,7 +2190,7 @@ class EuroNCAP_Frontal_MPDB(Report[Overall]):
         nrows: int = 1
         ncols: int = 2
 
-        def __init__(self, report: Report) -> None:
+        def __init__(self, report: Report[Any]) -> None:
             super().__init__(report)
             self.channels = {
                 isomme: [
@@ -2212,7 +2211,7 @@ class EuroNCAP_Frontal_MPDB(Report[Overall]):
         ncols: int = 2
         sharey: bool = True
 
-        def __init__(self, report: Report) -> None:
+        def __init__(self, report: Report[Any]) -> None:
             super().__init__(report)
             self.channels = {
                 isomme: [
@@ -2233,7 +2232,7 @@ class EuroNCAP_Frontal_MPDB(Report[Overall]):
         ncols = 2
         sharey = True
 
-        def __init__(self, report: Report) -> None:
+        def __init__(self, report: Report[Any]) -> None:
             super().__init__(report)
             self.channels = {
                 isomme: [
@@ -2254,7 +2253,7 @@ class EuroNCAP_Frontal_MPDB(Report[Overall]):
         ncols = 2
         sharey = True
 
-        def __init__(self, report: Report) -> None:
+        def __init__(self, report: Report[Any]) -> None:
             super().__init__(report)
             self.channels = {
                 isomme: [
@@ -2281,7 +2280,7 @@ class EuroNCAP_Frontal_MPDB(Report[Overall]):
         ncols = 2
         sharey = True
 
-        def __init__(self, report: Report) -> None:
+        def __init__(self, report: Report[Any]) -> None:
             super().__init__(report)
             self.channels = {
                 isomme: [
@@ -2304,7 +2303,6 @@ class EuroNCAP_Frontal_MPDB(Report[Overall]):
     class Page_OLC_Trolley(Page_Line_Table):
         name: str = "OLC Trolley"
         title: str = "Occupant Load Criterion (OLC) of Trolley"
-        channels: dict
         nrows: int = 1
         ncols: int = 2
 

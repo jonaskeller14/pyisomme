@@ -94,7 +94,7 @@ class TestDeclarationOrder:
         class Overall(Criterion):
             declared = sub(rated(1.0))
 
-            def __init__(self, report: Report, isomme: Isomme) -> None:
+            def __init__(self, report: Report[Any], isomme: Isomme) -> None:
                 super().__init__(report, isomme)
                 self.legacy_z = rated(2.0)(report, isomme)
                 self.legacy_a = rated(3.0)(report, isomme)
@@ -229,7 +229,7 @@ class TestAutoCalculation:
         """A not-yet-migrated parent calculates its own children; the framework must not."""
 
         class Overall(Criterion):
-            def __init__(self, report: Report, isomme: Isomme) -> None:
+            def __init__(self, report: Report[Any], isomme: Isomme) -> None:
                 super().__init__(report, isomme)
                 self.criterion_legacy = rated(1.0)(report, isomme)
 
@@ -429,7 +429,7 @@ class TestAggregation:
         """The helpers read `get_children()`, so they work before a report is migrated."""
 
         class Overall(Criterion):
-            def __init__(self, report: Report, isomme: Isomme) -> None:
+            def __init__(self, report: Report[Any], isomme: Isomme) -> None:
                 super().__init__(report, isomme)
                 self.criterion_a = rated(4.0)(report, isomme)
                 self.criterion_b = rated(2.0)(report, isomme)
@@ -806,7 +806,7 @@ class TestLimits:
         """Coexistence: the 13 unmigrated reports build their rows in ``__init__``."""
 
         class Overall(Criterion):
-            def __init__(self, report: Report, isomme: Isomme) -> None:
+            def __init__(self, report: Report[Any], isomme: Isomme) -> None:
                 super().__init__(report, isomme)
                 self.extend_limit_list([constant(1.0)])
 

@@ -51,7 +51,7 @@ class Overall(Criterion):
     #: The root pins the code-template field once and the whole tree inherits it.
     _ctx_source = from_input(P)
 
-    def __init__(self, report: Report, isomme: Isomme) -> None:
+    def __init__(self, report: Report[Any], isomme: Isomme) -> None:
         super().__init__(report, isomme)
         self.prepare()
 

@@ -23,11 +23,11 @@ class USNCAP(MetaReport):
 
     def __init__(
         self,
-        frontal_56kmh: list,
-        frontal_mpdb: list,
-        side_pole: list,
-        side_barrier: list,
-        side_farside: list,
+        frontal_56kmh: list[Any],
+        frontal_mpdb: list[Any],
+        side_pole: list[Any],
+        side_barrier: list[Any],
+        side_farside: list[Any],
         *args: Any,
         **kwargs: Any,
     ) -> None:

@@ -174,7 +174,7 @@ def describe_criterion(
     return lines + [""]
 
 
-def describe_report(report: Report) -> str:
+def describe_report(report: Report[Any]) -> str:
     """
     ``report`` as Markdown.
 

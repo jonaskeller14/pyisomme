@@ -105,7 +105,7 @@ class MetaReport(BaseReport):
             maximum = "n/a" if self.max_rating is None else f"{self.max_rating:.5g}"
             print(f"  {'TOTAL':<34}{rating:>8} / {maximum}")
 
-    def json_results(self) -> dict:
+    def json_results(self) -> dict[str, Any]:
         return {
             "Overall": {
                 "result": {

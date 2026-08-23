@@ -319,7 +319,7 @@ class Overall(Criterion):
     p_front_passenger: Manual[str, P_FRONT_PASSENGER]
     p_rear_passenger: Manual[str, P_REAR_PASSENGER]
 
-    def __init__(self, report: Report, isomme: Isomme) -> None:
+    def __init__(self, report: Report[Any], isomme: Isomme) -> None:
         super().__init__(report, isomme)
         # Also at construction, not only before every calculate(): the pages build
         # their channel patterns from p_driver when the report is constructed.
@@ -1437,7 +1437,7 @@ class EuroNCAP_Frontal_50kmh(Report[Overall]):
         ncols: int = 2
         sharey: bool = False
 
-        def __init__(self, report: Report) -> None:
+        def __init__(self, report: Report[Any]) -> None:
             super().__init__(report)
             self.channels = {
                 isomme: [
@@ -1525,7 +1525,7 @@ class EuroNCAP_Frontal_50kmh(Report[Overall]):
                     )
                 )
 
-            cell_texts: list[np.ndarray | list[list[Any]]] = [
+            cell_texts: list[np.ndarray[Any, Any] | list[list[Any]]] = [
                 [
                     [
                         f"{hic:.1f}" if np.isfinite(hic) else "n/a",
@@ -1535,10 +1535,10 @@ class EuroNCAP_Frontal_50kmh(Report[Overall]):
                     for _, hic, start_ms, end_ms in hic_data
                 ]
             ]
-            col_labels: list[np.ndarray | list[Any]] = [
+            col_labels: list[np.ndarray[Any, Any] | list[Any]] = [
                 ["HIC15", "Start [ms]", "End [ms]"]
             ]
-            row_labels: list[np.ndarray | list[Any]] = [
+            row_labels: list[np.ndarray[Any, Any] | list[Any]] = [
                 [isomme.test_number for isomme in self.report.isomme_list]
             ]
             plot = Plot_Line_Table(
@@ -1601,7 +1601,7 @@ class EuroNCAP_Frontal_50kmh(Report[Overall]):
         ncols: int = 2
         sharey: bool = False
 
-        def __init__(self, report: Report) -> None:
+        def __init__(self, report: Report[Any]) -> None:
             super().__init__(report)
             self.channels = {
                 isomme: [
@@ -1652,7 +1652,7 @@ class EuroNCAP_Frontal_50kmh(Report[Overall]):
         nrows: int = 1
         ncols: int = 2
 
-        def __init__(self, report: Report) -> None:
+        def __init__(self, report: Report[Any]) -> None:
             super().__init__(report)
             self.channels = {
                 isomme: [
@@ -1673,7 +1673,7 @@ class EuroNCAP_Frontal_50kmh(Report[Overall]):
         ncols: int = 2
         sharey: bool = True
 
-        def __init__(self, report: Report) -> None:
+        def __init__(self, report: Report[Any]) -> None:
             super().__init__(report)
             self.channels = {
                 isomme: [
@@ -1735,7 +1735,6 @@ class EuroNCAP_Frontal_50kmh(Report[Overall]):
         report: EuroNCAP_Frontal_50kmh
         name: str = "Front Passenger Rating Table"
         title: str = "Front Passenger Rating"
-        table_content: dict
 
         def __init__(self, report: EuroNCAP_Frontal_50kmh) -> None:
             super().__init__(report)
