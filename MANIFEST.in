@@ -1,0 +1,19 @@
+# setuptools-scm adds every git-tracked file to the sdist by default, which would
+# pull ~13 MB of fixture data, protocol references and notebooks into the release.
+# Prune it back to source + metadata. Anything listed here is still in the repo,
+# just not in the published tarball.
+prune data
+prune references
+prune docs
+prune head-trajectory-calculation
+prune tests/golden
+prune out
+
+exclude template.pptx
+exclude CLAUDE.md
+exclude requirements.txt
+exclude .gitignore
+recursive-exclude .github *
+recursive-exclude .claude *
+recursive-exclude tmp *
+global-exclude *.py[cod] __pycache__/*

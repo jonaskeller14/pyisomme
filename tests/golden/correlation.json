@@ -1,0 +1,143 @@
+{
+  "1: v1": {
+    "Overall": {
+      "result": {
+        "name": "Overall",
+        "value": "nan",
+        "rating": "nan",
+        "color": null,
+        "status": "OK"
+      }
+    },
+    "11HEAD0000H3ACXA": {
+      "result": {
+        "name": "11HEAD0000H3ACXD",
+        "value": "nan",
+        "rating": "nan",
+        "color": null,
+        "status": "OK"
+      }
+    },
+    "11HEAD0000H3ACYA": {
+      "result": {
+        "name": "11HEAD0000H3ACYD",
+        "value": "nan",
+        "rating": "nan",
+        "color": null,
+        "status": "OK"
+      }
+    },
+    "11HEAD0000H3ACZA": {
+      "result": {
+        "name": "11HEAD0000H3ACZD",
+        "value": "nan",
+        "rating": "nan",
+        "color": null,
+        "status": "OK"
+      }
+    },
+    "11CHST0000H3DSX1": {
+      "result": {
+        "name": "11CHST0000H3DSXD",
+        "value": "nan",
+        "rating": "nan",
+        "color": null,
+        "status": "OK"
+      }
+    }
+  },
+  "2: v2": {
+    "Overall": {
+      "result": {
+        "name": "Overall",
+        "value": 0.853,
+        "rating": 0.853,
+        "color": null,
+        "status": "OK"
+      }
+    },
+    "11HEAD0000H3ACXA": {
+      "result": {
+        "name": "11HEAD0000H3ACXD",
+        "value": 0.853,
+        "rating": 0.853,
+        "color": "green",
+        "status": "OK"
+      }
+    },
+    "11HEAD0000H3ACYA": {
+      "result": {
+        "name": "11HEAD0000H3ACYD",
+        "value": 0.885,
+        "rating": 0.885,
+        "color": "green",
+        "status": "OK"
+      }
+    },
+    "11HEAD0000H3ACZA": {
+      "result": {
+        "name": "11HEAD0000H3ACZD",
+        "value": 0.89,
+        "rating": 0.89,
+        "color": "green",
+        "status": "OK"
+      }
+    },
+    "11CHST0000H3DSX1": {
+      "result": {
+        "name": "11CHST0000H3DSXD",
+        "value": 1.0,
+        "rating": 1.0,
+        "color": "green",
+        "status": "OK"
+      }
+    }
+  },
+  "3: v3": {
+    "Overall": {
+      "result": {
+        "name": "Overall",
+        "value": 0.563,
+        "rating": 0.563,
+        "color": null,
+        "status": "OK"
+      }
+    },
+    "11HEAD0000H3ACXA": {
+      "result": {
+        "name": "11HEAD0000H3ACXD",
+        "value": 0.563,
+        "rating": 0.563,
+        "color": "orange",
+        "status": "OK"
+      }
+    },
+    "11HEAD0000H3ACYA": {
+      "result": {
+        "name": "11HEAD0000H3ACYD",
+        "value": 0.577,
+        "rating": 0.577,
+        "color": "orange",
+        "status": "OK"
+      }
+    },
+    "11HEAD0000H3ACZA": {
+      "result": {
+        "name": "11HEAD0000H3ACZD",
+        "value": 0.588,
+        "rating": 0.588,
+        "color": "orange",
+        "status": "OK"
+      }
+    },
+    "11CHST0000H3DSX1": {
+      "result": {
+        "name": "11CHST0000H3DSXD",
+        "value": 1.0,
+        "rating": 1.0,
+        "color": "green",
+        "status": "OK"
+      }
+    }
+  }
+}

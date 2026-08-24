@@ -1,0 +1,1140 @@
+{
+  "1: v1": {
+    "Overall": {
+      "result": {
+        "name": "Overall",
+        "value": 6.49378580367487,
+        "rating": 6.49378580367487,
+        "color": null,
+        "status": "OK"
+      }
+    },
+    "criterion_driver": {
+      "result": {
+        "name": "Driver",
+        "value": 12.98757160734974,
+        "rating": 12.98757160734974,
+        "color": null,
+        "status": "OK"
+      },
+      "criterion_head": {
+        "result": {
+          "name": "Head",
+          "value": 4.0,
+          "rating": 4.0,
+          "color": null,
+          "status": "OK"
+        },
+        "criterion_hic_15": {
+          "result": {
+            "name": "HIC 15",
+            "value": 287.86977089735404,
+            "rating": 4.0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_head_a3ms": {
+          "result": {
+            "name": "Head a3ms",
+            "value": 52.783863015501225,
+            "rating": 4.0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_UnstableAirbagContact": {
+          "result": {
+            "name": "Modifier for Unstable Airbag Contact",
+            "value": false,
+            "rating": 0,
+            "color": null,
+            "status": "OK"
+          }
+        },
+        "criterion_HazardousAirbagDeployment": {
+          "result": {
+            "name": "Modifier for Hazardous Airbag Deployment",
+            "value": false,
+            "rating": 0,
+            "color": null,
+            "status": "OK"
+          }
+        },
+        "criterion_IncorrectAirbagDeployment": {
+          "result": {
+            "name": "Modifier for Incorrect Airbag Deployment",
+            "value": false,
+            "rating": 0,
+            "color": null,
+            "status": "OK"
+          }
+        },
+        "criterion_DisplacementSteeringColumn": {
+          "result": {
+            "name": "Modifier for Displacement of Steering Column",
+            "value": 0.0,
+            "rating": 0.0,
+            "color": null,
+            "status": "OK"
+          }
+        }
+      },
+      "criterion_neck": {
+        "result": {
+          "name": "Neck",
+          "value": 4.0,
+          "rating": 4.0,
+          "color": null,
+          "status": "OK"
+        },
+        "criterion_my_extension": {
+          "result": {
+            "name": "Neck My extension",
+            "value": -15.0,
+            "rating": 4.0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_fz_tension": {
+          "result": {
+            "name": "Neck Fz tension",
+            "value": 1.2,
+            "rating": 4.0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_fx_shear": {
+          "result": {
+            "name": "Neck Fx shear",
+            "value": 0.4,
+            "rating": 4.0,
+            "color": "green",
+            "status": "OK"
+          }
+        }
+      },
+      "criterion_chest": {
+        "result": {
+          "name": "Chest",
+          "value": 0.9875716073497401,
+          "rating": 0.9875716073497401,
+          "color": null,
+          "status": "OK"
+        },
+        "criterion_chest_deflection": {
+          "result": {
+            "name": "Chest Deflection",
+            "value": -30.03708097667708,
+            "rating": 0.9875716073497401,
+            "color": "brown",
+            "status": "OK"
+          }
+        },
+        "criterion_chest_vc": {
+          "result": {
+            "name": "Chest VC",
+            "value": -0.20493484042229002,
+            "rating": 4.0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_SteeringWheelContact": {
+          "result": {
+            "name": "Modifier Chest Steering Wheel Contact",
+            "value": 0,
+            "rating": 0,
+            "color": null,
+            "status": "OK"
+          }
+        },
+        "criterion_shoulder_belt_load": {
+          "result": {
+            "name": "Modifier Shoulder Belt Load",
+            "value": 3.0602757760882047,
+            "rating": 0.0,
+            "color": "green",
+            "status": "OK"
+          }
+        }
+      },
+      "criterion_femur": {
+        "result": {
+          "name": "Femur",
+          "value": 4.0,
+          "rating": 4.0,
+          "color": null,
+          "status": "OK"
+        },
+        "criterion_femur_axial_force": {
+          "result": {
+            "name": "Femur Axial Force",
+            "value": -1.0529206586736184,
+            "rating": 4.0,
+            "color": null,
+            "status": "OK"
+          },
+          "criterion_femur_axial_force_left": {
+            "result": {
+              "name": "Femur Axial Force Left",
+              "value": -1.0529206586736184,
+              "rating": 4.0,
+              "color": "green",
+              "status": "OK"
+            }
+          },
+          "criterion_femur_axial_force_right": {
+            "result": {
+              "name": "Femur Axial Force Right",
+              "value": -1.0529206586736184,
+              "rating": 4.0,
+              "color": "green",
+              "status": "OK"
+            }
+          }
+        },
+        "criterion_submarining": {
+          "result": {
+            "name": "Submarining",
+            "value": false,
+            "rating": 0,
+            "color": null,
+            "status": "OK"
+          }
+        }
+      }
+    },
+    "criterion_front_passenger": {
+      "result": {
+        "name": "Front Passenger",
+        "value": 12.98757160734974,
+        "rating": 12.98757160734974,
+        "color": null,
+        "status": "OK"
+      },
+      "criterion_head": {
+        "result": {
+          "name": "Head",
+          "value": 4.0,
+          "rating": 4.0,
+          "color": null,
+          "status": "OK"
+        },
+        "criterion_hic_15": {
+          "result": {
+            "name": "HIC 15",
+            "value": 287.86977089735404,
+            "rating": 4.0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_head_a3ms": {
+          "result": {
+            "name": "Head a3ms",
+            "value": 52.783863015501225,
+            "rating": 4.0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_HazardousAirbagDeployment": {
+          "result": {
+            "name": "Modifier for Hazardous Airbag Deployment",
+            "value": false,
+            "rating": 0,
+            "color": null,
+            "status": "OK"
+          }
+        },
+        "criterion_IncorrectAirbagDeployment": {
+          "result": {
+            "name": "Modifier for Incorrect Airbag Deployment",
+            "value": false,
+            "rating": 0,
+            "color": null,
+            "status": "OK"
+          }
+        }
+      },
+      "criterion_neck": {
+        "result": {
+          "name": "Neck",
+          "value": 4.0,
+          "rating": 4.0,
+          "color": null,
+          "status": "OK"
+        },
+        "criterion_my_extension": {
+          "result": {
+            "name": "Neck My extension",
+            "value": -15.0,
+            "rating": 4.0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_fz_tension": {
+          "result": {
+            "name": "Neck Fz tension",
+            "value": 1.2,
+            "rating": 4.0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_fx_shear": {
+          "result": {
+            "name": "Neck Fx shear",
+            "value": 0.4,
+            "rating": 4.0,
+            "color": "green",
+            "status": "OK"
+          }
+        }
+      },
+      "criterion_chest": {
+        "result": {
+          "name": "Chest",
+          "value": 0.9875716073497401,
+          "rating": 0.9875716073497401,
+          "color": null,
+          "status": "OK"
+        },
+        "criterion_chest_deflection": {
+          "result": {
+            "name": "Chest Deflection",
+            "value": -30.03708097667708,
+            "rating": 0.9875716073497401,
+            "color": "brown",
+            "status": "OK"
+          }
+        },
+        "criterion_chest_vc": {
+          "result": {
+            "name": "Chest VC",
+            "value": -0.20493484042229002,
+            "rating": 4.0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_shoulder_belt_load": {
+          "result": {
+            "name": "Modifier Shoulder Belt Load",
+            "value": 3.0602757760882047,
+            "rating": 0.0,
+            "color": "green",
+            "status": "OK"
+          }
+        }
+      },
+      "criterion_femur": {
+        "result": {
+          "name": "Femur",
+          "value": 4.0,
+          "rating": 4.0,
+          "color": null,
+          "status": "OK"
+        },
+        "criterion_femur_axial_force": {
+          "result": {
+            "name": "Femur Axial Force",
+            "value": -1.0529206586736184,
+            "rating": 4.0,
+            "color": null,
+            "status": "OK"
+          },
+          "criterion_femur_axial_force_left": {
+            "result": {
+              "name": "Femur Axial Force Left",
+              "value": -1.0529206586736184,
+              "rating": 4.0,
+              "color": "green",
+              "status": "OK"
+            }
+          },
+          "criterion_femur_axial_force_right": {
+            "result": {
+              "name": "Femur Axial Force Right",
+              "value": -1.0529206586736184,
+              "rating": 4.0,
+              "color": "green",
+              "status": "OK"
+            }
+          }
+        }
+      }
+    },
+    "criterion_rear_passenger": {
+      "result": {
+        "name": "Rear Passenger",
+        "value": 12.98757160734974,
+        "rating": 12.98757160734974,
+        "color": null,
+        "status": "OK"
+      },
+      "criterion_head": {
+        "result": {
+          "name": "Head",
+          "value": 4.0,
+          "rating": 4.0,
+          "color": null,
+          "status": "OK"
+        },
+        "criterion_hic_15": {
+          "result": {
+            "name": "HIC 15",
+            "value": 287.86977089735404,
+            "rating": 4.0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_head_a3ms": {
+          "result": {
+            "name": "Head a3ms",
+            "value": 52.783863015501225,
+            "rating": 4.0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_UnstableAirbagContact": {
+          "result": {
+            "name": "Modifier for Unstable Airbag Contact",
+            "value": false,
+            "rating": 0,
+            "color": null,
+            "status": "OK"
+          }
+        },
+        "criterion_HazardousAirbagDeployment": {
+          "result": {
+            "name": "Modifier for Hazardous Airbag Deployment",
+            "value": false,
+            "rating": 0,
+            "color": null,
+            "status": "OK"
+          }
+        },
+        "criterion_IncorrectAirbagDeployment": {
+          "result": {
+            "name": "Modifier for Incorrect Airbag Deployment",
+            "value": false,
+            "rating": 0,
+            "color": null,
+            "status": "OK"
+          }
+        },
+        "criterion_ExceedingForwardExcursionLine": {
+          "result": {
+            "name": "Modifier for Exceeding forward excursion line",
+            "value": 0,
+            "rating": 0,
+            "color": null,
+            "status": "OK"
+          }
+        }
+      },
+      "criterion_neck": {
+        "result": {
+          "name": "Neck",
+          "value": 4.0,
+          "rating": 4.0,
+          "color": null,
+          "status": "OK"
+        },
+        "criterion_my_extension": {
+          "result": {
+            "name": "Neck My extension",
+            "value": -15.0,
+            "rating": 2.0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_fz_tension": {
+          "result": {
+            "name": "Neck Fz tension",
+            "value": 1.2,
+            "rating": 1.0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_fx_shear": {
+          "result": {
+            "name": "Neck Fx shear",
+            "value": 0.4,
+            "rating": 1.0,
+            "color": "green",
+            "status": "OK"
+          }
+        }
+      },
+      "criterion_chest": {
+        "result": {
+          "name": "Chest",
+          "value": 0.9875716073497401,
+          "rating": 0.9875716073497401,
+          "color": null,
+          "status": "OK"
+        },
+        "criterion_chest_deflection": {
+          "result": {
+            "name": "Chest Deflection",
+            "value": -30.03708097667708,
+            "rating": 0.9875716073497401,
+            "color": "brown",
+            "status": "OK"
+          }
+        },
+        "criterion_chest_vc": {
+          "result": {
+            "name": "Chest VC",
+            "value": -0.20493484042229002,
+            "rating": 4.0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_shoulder_belt_load": {
+          "result": {
+            "name": "Modifier Shoulder Belt Load",
+            "value": 3.0602757760882047,
+            "rating": 0.0,
+            "color": "green",
+            "status": "OK"
+          }
+        }
+      },
+      "criterion_femur": {
+        "result": {
+          "name": "Femur",
+          "value": 4.0,
+          "rating": 4.0,
+          "color": null,
+          "status": "OK"
+        },
+        "criterion_femur_axial_force": {
+          "result": {
+            "name": "Femur Axial Force",
+            "value": -1.0529206586736184,
+            "rating": 4.0,
+            "color": null,
+            "status": "OK"
+          },
+          "criterion_femur_axial_force_left": {
+            "result": {
+              "name": "Femur Axial Force Left",
+              "value": -1.0529206586736184,
+              "rating": 4.0,
+              "color": "green",
+              "status": "OK"
+            }
+          },
+          "criterion_femur_axial_force_right": {
+            "result": {
+              "name": "Femur Axial Force Right",
+              "value": -1.0529206586736184,
+              "rating": 4.0,
+              "color": "green",
+              "status": "OK"
+            }
+          }
+        },
+        "criterion_submarining": {
+          "result": {
+            "name": "Submarining",
+            "value": false,
+            "rating": 0,
+            "color": null,
+            "status": "OK"
+          }
+        }
+      }
+    },
+    "criterion_door_opening_during_impact": {
+      "result": {
+        "name": "Door Opening During Impact",
+        "value": 0,
+        "rating": 0,
+        "color": null,
+        "status": "OK"
+      }
+    }
+  },
+  "2: v2": {
+    "Overall": {
+      "result": {
+        "name": "Overall",
+        "value": 0.0,
+        "rating": 0.0,
+        "color": null,
+        "status": "OK"
+      }
+    },
+    "criterion_driver": {
+      "result": {
+        "name": "Driver",
+        "value": "-inf",
+        "rating": "-inf",
+        "color": null,
+        "status": "OK"
+      },
+      "criterion_head": {
+        "result": {
+          "name": "Head",
+          "value": "-inf",
+          "rating": "-inf",
+          "color": null,
+          "status": "OK"
+        },
+        "criterion_hic_15": {
+          "result": {
+            "name": "HIC 15",
+            "value": 792.3233570427126,
+            "rating": "-inf",
+            "color": "gray",
+            "status": "OK"
+          }
+        },
+        "criterion_head_a3ms": {
+          "result": {
+            "name": "Head a3ms",
+            "value": 79.07226564622867,
+            "rating": 0.46230182083318117,
+            "color": "brown",
+            "status": "OK"
+          }
+        },
+        "criterion_UnstableAirbagContact": {
+          "result": {
+            "name": "Modifier for Unstable Airbag Contact",
+            "value": false,
+            "rating": 0,
+            "color": null,
+            "status": "OK"
+          }
+        },
+        "criterion_HazardousAirbagDeployment": {
+          "result": {
+            "name": "Modifier for Hazardous Airbag Deployment",
+            "value": false,
+            "rating": 0,
+            "color": null,
+            "status": "OK"
+          }
+        },
+        "criterion_IncorrectAirbagDeployment": {
+          "result": {
+            "name": "Modifier for Incorrect Airbag Deployment",
+            "value": false,
+            "rating": 0,
+            "color": null,
+            "status": "OK"
+          }
+        },
+        "criterion_DisplacementSteeringColumn": {
+          "result": {
+            "name": "Modifier for Displacement of Steering Column",
+            "value": 0.0,
+            "rating": 0.0,
+            "color": null,
+            "status": "OK"
+          }
+        }
+      },
+      "criterion_neck": {
+        "result": {
+          "name": "Neck",
+          "value": 3.566449511400651,
+          "rating": 3.566449511400651,
+          "color": null,
+          "status": "OK"
+        },
+        "criterion_my_extension": {
+          "result": {
+            "name": "Neck My extension",
+            "value": -22.5,
+            "rating": 4.0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_fz_tension": {
+          "result": {
+            "name": "Neck Fz tension",
+            "value": 1.8,
+            "rating": 3.566449511400651,
+            "color": "yellow",
+            "status": "OK"
+          }
+        },
+        "criterion_fx_shear": {
+          "result": {
+            "name": "Neck Fx shear",
+            "value": 0.6,
+            "rating": 4.0,
+            "color": "green",
+            "status": "OK"
+          }
+        }
+      },
+      "criterion_chest": {
+        "result": {
+          "name": "Chest",
+          "value": "-inf",
+          "rating": "-inf",
+          "color": null,
+          "status": "OK"
+        },
+        "criterion_chest_deflection": {
+          "result": {
+            "name": "Chest Deflection",
+            "value": -45.05562146501558,
+            "rating": "-inf",
+            "color": "gray",
+            "status": "OK"
+          }
+        },
+        "criterion_chest_vc": {
+          "result": {
+            "name": "Chest VC",
+            "value": -0.46110339095015024,
+            "rating": 4.0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_SteeringWheelContact": {
+          "result": {
+            "name": "Modifier Chest Steering Wheel Contact",
+            "value": 0,
+            "rating": 0,
+            "color": null,
+            "status": "OK"
+          }
+        },
+        "criterion_shoulder_belt_load": {
+          "result": {
+            "name": "Modifier Shoulder Belt Load",
+            "value": 4.5967238366407885,
+            "rating": 0.0,
+            "color": "green",
+            "status": "OK"
+          }
+        }
+      },
+      "criterion_femur": {
+        "result": {
+          "name": "Femur",
+          "value": 4.0,
+          "rating": 4.0,
+          "color": null,
+          "status": "OK"
+        },
+        "criterion_femur_axial_force": {
+          "result": {
+            "name": "Femur Axial Force",
+            "value": -1.5793809880104277,
+            "rating": 4.0,
+            "color": null,
+            "status": "OK"
+          },
+          "criterion_femur_axial_force_left": {
+            "result": {
+              "name": "Femur Axial Force Left",
+              "value": -1.5793809880104277,
+              "rating": 4.0,
+              "color": "green",
+              "status": "OK"
+            }
+          },
+          "criterion_femur_axial_force_right": {
+            "result": {
+              "name": "Femur Axial Force Right",
+              "value": -1.5793809880104277,
+              "rating": 4.0,
+              "color": "green",
+              "status": "OK"
+            }
+          }
+        },
+        "criterion_submarining": {
+          "result": {
+            "name": "Submarining",
+            "value": false,
+            "rating": 0,
+            "color": null,
+            "status": "OK"
+          }
+        }
+      }
+    },
+    "criterion_front_passenger": {
+      "result": {
+        "name": "Front Passenger",
+        "value": "-inf",
+        "rating": "-inf",
+        "color": null,
+        "status": "OK"
+      },
+      "criterion_head": {
+        "result": {
+          "name": "Head",
+          "value": "-inf",
+          "rating": "-inf",
+          "color": null,
+          "status": "OK"
+        },
+        "criterion_hic_15": {
+          "result": {
+            "name": "HIC 15",
+            "value": 792.3233570427126,
+            "rating": "-inf",
+            "color": "gray",
+            "status": "OK"
+          }
+        },
+        "criterion_head_a3ms": {
+          "result": {
+            "name": "Head a3ms",
+            "value": 79.07226564622867,
+            "rating": 0.46230182083318117,
+            "color": "brown",
+            "status": "OK"
+          }
+        },
+        "criterion_HazardousAirbagDeployment": {
+          "result": {
+            "name": "Modifier for Hazardous Airbag Deployment",
+            "value": false,
+            "rating": 0,
+            "color": null,
+            "status": "OK"
+          }
+        },
+        "criterion_IncorrectAirbagDeployment": {
+          "result": {
+            "name": "Modifier for Incorrect Airbag Deployment",
+            "value": false,
+            "rating": 0,
+            "color": null,
+            "status": "OK"
+          }
+        }
+      },
+      "criterion_neck": {
+        "result": {
+          "name": "Neck",
+          "value": 3.566449511400651,
+          "rating": 3.566449511400651,
+          "color": null,
+          "status": "OK"
+        },
+        "criterion_my_extension": {
+          "result": {
+            "name": "Neck My extension",
+            "value": -22.5,
+            "rating": 4.0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_fz_tension": {
+          "result": {
+            "name": "Neck Fz tension",
+            "value": 1.8,
+            "rating": 3.566449511400651,
+            "color": "yellow",
+            "status": "OK"
+          }
+        },
+        "criterion_fx_shear": {
+          "result": {
+            "name": "Neck Fx shear",
+            "value": 0.6,
+            "rating": 4.0,
+            "color": "green",
+            "status": "OK"
+          }
+        }
+      },
+      "criterion_chest": {
+        "result": {
+          "name": "Chest",
+          "value": "-inf",
+          "rating": "-inf",
+          "color": null,
+          "status": "OK"
+        },
+        "criterion_chest_deflection": {
+          "result": {
+            "name": "Chest Deflection",
+            "value": -45.05562146501558,
+            "rating": "-inf",
+            "color": "gray",
+            "status": "OK"
+          }
+        },
+        "criterion_chest_vc": {
+          "result": {
+            "name": "Chest VC",
+            "value": -0.46110339095015024,
+            "rating": 4.0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_shoulder_belt_load": {
+          "result": {
+            "name": "Modifier Shoulder Belt Load",
+            "value": 4.5967238366407885,
+            "rating": 0.0,
+            "color": "green",
+            "status": "OK"
+          }
+        }
+      },
+      "criterion_femur": {
+        "result": {
+          "name": "Femur",
+          "value": 4.0,
+          "rating": 4.0,
+          "color": null,
+          "status": "OK"
+        },
+        "criterion_femur_axial_force": {
+          "result": {
+            "name": "Femur Axial Force",
+            "value": -1.5793809880104277,
+            "rating": 4.0,
+            "color": null,
+            "status": "OK"
+          },
+          "criterion_femur_axial_force_left": {
+            "result": {
+              "name": "Femur Axial Force Left",
+              "value": -1.5793809880104277,
+              "rating": 4.0,
+              "color": "green",
+              "status": "OK"
+            }
+          },
+          "criterion_femur_axial_force_right": {
+            "result": {
+              "name": "Femur Axial Force Right",
+              "value": -1.5793809880104277,
+              "rating": 4.0,
+              "color": "green",
+              "status": "OK"
+            }
+          }
+        }
+      }
+    },
+    "criterion_rear_passenger": {
+      "result": {
+        "name": "Rear Passenger",
+        "value": "-inf",
+        "rating": "-inf",
+        "color": null,
+        "status": "OK"
+      },
+      "criterion_head": {
+        "result": {
+          "name": "Head",
+          "value": "-inf",
+          "rating": "-inf",
+          "color": null,
+          "status": "OK"
+        },
+        "criterion_hic_15": {
+          "result": {
+            "name": "HIC 15",
+            "value": 792.3233570427126,
+            "rating": "-inf",
+            "color": "gray",
+            "status": "OK"
+          }
+        },
+        "criterion_head_a3ms": {
+          "result": {
+            "name": "Head a3ms",
+            "value": 79.07226564622867,
+            "rating": 0.46230182083318117,
+            "color": "brown",
+            "status": "OK"
+          }
+        },
+        "criterion_UnstableAirbagContact": {
+          "result": {
+            "name": "Modifier for Unstable Airbag Contact",
+            "value": false,
+            "rating": 0,
+            "color": null,
+            "status": "OK"
+          }
+        },
+        "criterion_HazardousAirbagDeployment": {
+          "result": {
+            "name": "Modifier for Hazardous Airbag Deployment",
+            "value": false,
+            "rating": 0,
+            "color": null,
+            "status": "OK"
+          }
+        },
+        "criterion_IncorrectAirbagDeployment": {
+          "result": {
+            "name": "Modifier for Incorrect Airbag Deployment",
+            "value": false,
+            "rating": 0,
+            "color": null,
+            "status": "OK"
+          }
+        },
+        "criterion_ExceedingForwardExcursionLine": {
+          "result": {
+            "name": "Modifier for Exceeding forward excursion line",
+            "value": 0,
+            "rating": 0,
+            "color": null,
+            "status": "OK"
+          }
+        }
+      },
+      "criterion_neck": {
+        "result": {
+          "name": "Neck",
+          "value": 3.891612377850163,
+          "rating": 3.891612377850163,
+          "color": null,
+          "status": "OK"
+        },
+        "criterion_my_extension": {
+          "result": {
+            "name": "Neck My extension",
+            "value": -22.5,
+            "rating": 2.0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_fz_tension": {
+          "result": {
+            "name": "Neck Fz tension",
+            "value": 1.8,
+            "rating": 0.8916123778501628,
+            "color": "yellow",
+            "status": "OK"
+          }
+        },
+        "criterion_fx_shear": {
+          "result": {
+            "name": "Neck Fx shear",
+            "value": 0.6,
+            "rating": 1.0,
+            "color": "green",
+            "status": "OK"
+          }
+        }
+      },
+      "criterion_chest": {
+        "result": {
+          "name": "Chest",
+          "value": "-inf",
+          "rating": "-inf",
+          "color": null,
+          "status": "OK"
+        },
+        "criterion_chest_deflection": {
+          "result": {
+            "name": "Chest Deflection",
+            "value": -45.05562146501558,
+            "rating": "-inf",
+            "color": "gray",
+            "status": "OK"
+          }
+        },
+        "criterion_chest_vc": {
+          "result": {
+            "name": "Chest VC",
+            "value": -0.46110339095015024,
+            "rating": 4.0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_shoulder_belt_load": {
+          "result": {
+            "name": "Modifier Shoulder Belt Load",
+            "value": 4.5967238366407885,
+            "rating": 0.0,
+            "color": "green",
+            "status": "OK"
+          }
+        }
+      },
+      "criterion_femur": {
+        "result": {
+          "name": "Femur",
+          "value": 4.0,
+          "rating": 4.0,
+          "color": null,
+          "status": "OK"
+        },
+        "criterion_femur_axial_force": {
+          "result": {
+            "name": "Femur Axial Force",
+            "value": -1.5793809880104277,
+            "rating": 4.0,
+            "color": null,
+            "status": "OK"
+          },
+          "criterion_femur_axial_force_left": {
+            "result": {
+              "name": "Femur Axial Force Left",
+              "value": -1.5793809880104277,
+              "rating": 4.0,
+              "color": "green",
+              "status": "OK"
+            }
+          },
+          "criterion_femur_axial_force_right": {
+            "result": {
+              "name": "Femur Axial Force Right",
+              "value": -1.5793809880104277,
+              "rating": 4.0,
+              "color": "green",
+              "status": "OK"
+            }
+          }
+        },
+        "criterion_submarining": {
+          "result": {
+            "name": "Submarining",
+            "value": false,
+            "rating": 0,
+            "color": null,
+            "status": "OK"
+          }
+        }
+      }
+    },
+    "criterion_door_opening_during_impact": {
+      "result": {
+        "name": "Door Opening During Impact",
+        "value": 0,
+        "rating": 0,
+        "color": null,
+        "status": "OK"
+      }
+    }
+  }
+}

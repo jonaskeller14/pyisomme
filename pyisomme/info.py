@@ -1,67 +1,153 @@
 from __future__ import annotations
 
-from typing import Any, IO
+from collections.abc import Iterable, Iterator, Mapping
+from dataclasses import dataclass, field
+from datetime import datetime
+from typing import IO, TypeVar, Union, cast, overload
+
+InfoValue = Union[str, int, float, bool, datetime, None]
+InfoItem = tuple[str, InfoValue]
+DefaultValue = TypeVar("DefaultValue")
+InfoInput = Union[Mapping[str, InfoValue], Iterable[InfoItem]]
 
 
-class Info(list):
-    """Implements basic dictionary methods to a list-super-object. List allows duplicate keys."""
-    def __setitem__(self, key, value):
-        if isinstance(key, str):
-            self.append((key, value))
+def format_value(value: InfoValue) -> str:
+    """Serialize one parsed metadata value to its ISO-MME text representation."""
+    if value is None:
+        return "NOVALUE"
+    if isinstance(value, bool):
+        return "YES" if value else "NO"
+    if isinstance(value, datetime):
+        return value.isoformat()
+    return str(value)
+
+
+@dataclass(init=False)
+class Info:
+    """Ordered ISO-MME metadata which preserves repeated descriptor names.
+
+    String keys address the first matching descriptor; :meth:`get_all` exposes
+    every value stored for repeatable descriptor names such as ``Comments``.
+    """
+
+    _items: list[InfoItem] = field(default_factory=list)
+
+    def __init__(
+        self, items: Mapping[str, InfoValue] | Iterable[InfoItem] = ()
+    ) -> None:
+        if isinstance(items, Mapping):
+            mapping = cast(Mapping[str, InfoValue], items)
+            self._items = list(mapping.items())
         else:
-            super().__setitem__(key, value)
+            self._items = list(items)
 
-    def __getitem__(self, key: Any):
+    def __iter__(self) -> Iterator[InfoItem]:
+        return iter(self._items)
+
+    def __len__(self) -> int:
+        return len(self._items)
+
+    def __add__(self, other: Mapping[str, InfoValue] | Iterable[InfoItem]) -> Info:
+        result = Info(self)
+        return result.add(other)
+
+    @overload
+    def __getitem__(self, key: str) -> InfoValue: ...
+
+    @overload
+    def __getitem__(self, key: int) -> InfoItem: ...
+
+    @overload
+    def __getitem__(self, key: slice) -> list[InfoItem]: ...
+
+    def __getitem__(
+        self, key: str | int | slice
+    ) -> InfoValue | InfoItem | list[InfoItem]:
         if isinstance(key, str):
-            for name, value in self:
+            for name, value in self._items:
                 if name == key:
                     return value
+            raise KeyError(f"Key '{key}' not found.")
+        return self._items[key]
+
+    @overload
+    def __setitem__(self, key: str, value: InfoValue) -> None: ...
+
+    @overload
+    def __setitem__(self, key: int, value: InfoItem) -> None: ...
+
+    @overload
+    def __setitem__(self, key: slice, value: Iterable[InfoItem]) -> None: ...
+
+    def __setitem__(
+        self,
+        key: str | int | slice,
+        value: InfoValue | InfoItem | Iterable[InfoItem],
+    ) -> None:
+        if isinstance(key, str):
+            self._items.append((key, cast(InfoValue, value)))
+        elif isinstance(key, int):
+            self._items[key] = cast(InfoItem, value)
         else:
-            return super().__getitem__(key)
-        raise KeyError
+            self._items[key] = cast(Iterable[InfoItem], value)
 
-    def get(self, key: str, default=None):
-        try:
-            return self.__getitem__(key)
-        except KeyError:
-            return default
+    def __contains__(self, item: object) -> bool:
+        if isinstance(item, str):
+            return any(name == item for name, _ in self._items)
+        return item in self._items
 
-    def update(self, other: list | dict) -> Info:
-        """Replace if name already exists else append."""
-        if isinstance(other, dict):
-            return self.update([(n, v) for n, v in other.items()])
+    def __repr__(self) -> str:
+        return "\n".join(
+            f"{name:<28}:{format_value(value)}" for name, value in self._items
+        )
 
-        for o_name, o_value in other:
-            if o_name not in self:
-                self[o_name] = o_value
+    @overload
+    def get(self, key: str) -> InfoValue: ...
+
+    @overload
+    def get(self, key: str, default: DefaultValue) -> InfoValue | DefaultValue: ...
+
+    def get(
+        self, key: str, default: DefaultValue | None = None
+    ) -> InfoValue | DefaultValue | None:
+        return next((value for name, value in self._items if name == key), default)
+
+    def get_all(self, key: str) -> list[InfoValue]:
+        """Return every value stored under ``key``, in file order."""
+        return [value for name, value in self._items if name == key]
+
+    def update(self, other: Mapping[str, InfoValue] | Iterable[InfoItem]) -> Info:
+        """Replace the first occurrence of each key, or append it if absent."""
+        entries = other.items() if isinstance(other, Mapping) else other
+        for other_name, other_value in cast(Iterable[InfoItem], entries):
+            for index, (name, _) in enumerate(self._items):
+                if name == other_name:
+                    self._items[index] = (other_name, other_value)
+                    break
             else:
-                for idx, (name, value) in enumerate(self):
-                    if name == o_name:
-                        self[idx] = (o_name, o_value)
+                self._items.append((other_name, other_value))
         return self
 
-    def add(self, other: list | dict) -> Info:
-        if isinstance(other, dict):
-            other = [(name, value) for name, value in other.items()]
-        super().extend(other)
+    def add(self, other: Mapping[str, InfoValue] | Iterable[InfoItem]) -> Info:
+        """Append metadata entries, including entries with existing keys."""
+        entries = other.items() if isinstance(other, Mapping) else other
+        self._items.extend(cast(Iterable[InfoItem], entries))
         return self
 
-    def keys(self) -> list:
-        return [name for name, _ in self]
+    def remove(self, item: InfoItem) -> None:
+        self._items.remove(item)
 
-    def values(self) -> list:
-        return [value for _, value in self]
+    def keys(self) -> list[str]:
+        return [name for name, _ in self._items]
 
-    def items(self) -> list:
-        return self
+    def values(self) -> list[InfoValue]:
+        return [value for _, value in self._items]
 
-    def write(self, file: IO) -> IO:
-        for name, value in self:
-            file.write(f"{name.ljust(28, ' ')}:{value if value is not None else 'NOVALUE'}\n")
+    def items(self) -> list[InfoItem]:
+        """Return a copy so callers cannot mutate the internal item list."""
+        return list(self._items)
+
+    def write(self, file: IO[str]) -> IO[str]:
+        for name, value in self._items:
+            file.write(f"{name:<28}:{format_value(value)}\n")
         return file
-
-    def __contains__(self, key) -> bool:
-        for name, _ in self:
-            if name == key:
-                return True
-        return False

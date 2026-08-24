@@ -1,0 +1,19 @@
+{
+  "Correlation": [],
+  "EuroNCAP_Frontal_MPDB": [],
+  "EuroNCAP_Frontal_50kmh": [],
+  "EuroNCAP_Side_Barrier": [],
+  "EuroNCAP_Side_Pole": [],
+  "EuroNCAP_Side_FarSide": [],
+  "FMVSS_208": [],
+  "IIHS_Frontal_Small_Overlap": [],
+  "IIHS_Frontal_Moderate_Overlap": [],
+  "IIHS_Side_Impact": [],
+  "UN_Frontal_50kmh_R137": [],
+  "UN_Frontal_56kmh_ODB_R94": [],
+  "UN_Side_Pole_R135": [],
+  "UN_Side_Barrier_R95": [
+    "[warning] limit_symmetry @ criterion_dummy/criterion_chest_lateral_deflection: limit block ['?1RIBS??????DSY?'] has rows on both sides of zero but they are not mirrors: +[Fail(42, lower)] vs -[Fail(-42, upper), Pass(-42, lower)]."
+  ],
+  "EuroNCAP": []
+}

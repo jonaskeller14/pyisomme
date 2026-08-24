@@ -1,0 +1,5 @@
+Instrumentation standard    :SAEJ211, issued 1992
+Number of channels          :3
+Name of channel 001         :11TIRS000000TIRP / Time reference
+Name of channel 002         :11HEADCG0000ACXP / Kopf-Schwerpunkt Beschleunigung X
+Name of channel 003         :11CHST0000H3DSXP / Brustkorb-Eindrückung X (µm)

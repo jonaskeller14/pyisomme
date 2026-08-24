@@ -1,0 +1,683 @@
+{
+  "1: v1": {
+    "Overall": {
+      "result": {
+        "name": "Overall",
+        "value": 1.0,
+        "rating": 1.0,
+        "color": null,
+        "status": "OK"
+      }
+    },
+    "criterion_driver": {
+      "result": {
+        "name": "Driver",
+        "value": 1.0,
+        "rating": 1.0,
+        "color": null,
+        "status": "OK"
+      },
+      "criterion_hpc36": {
+        "result": {
+          "name": "Head Performance Criterion (HPC 36)",
+          "value": 125.0,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_head_a3ms": {
+        "result": {
+          "name": "Head a3ms",
+          "value": 2.5492905324448207,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_neck_fz_tension": {
+        "result": {
+          "name": "Neck Fz tension",
+          "value": 0.5,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_neck_fx_shear": {
+        "result": {
+          "name": "Neck Fx shear",
+          "value": 0.5,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_neck_my_extension": {
+        "result": {
+          "name": "Neck My extension",
+          "value": -10.0,
+          "rating": 1.0,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_chest_deflection": {
+        "result": {
+          "name": "Chest Deflection",
+          "value": -15.0,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_chest_vc": {
+        "result": {
+          "name": "Chest VC",
+          "value": -0.25,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_femur_compression": {
+        "result": {
+          "name": "Femur Compression",
+          "value": -1.0,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_tibia_compression": {
+        "result": {
+          "name": "Tibia Compression",
+          "value": -1.0,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_tibia_index": {
+        "result": {
+          "name": "Tibia Index",
+          "value": 0.25,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_knee_slider_compression": {
+        "result": {
+          "name": "Knee Slider Compression",
+          "value": -5.0,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      }
+    },
+    "criterion_passenger": {
+      "result": {
+        "name": "Passenger",
+        "value": 1.0,
+        "rating": 1.0,
+        "color": null,
+        "status": "OK"
+      },
+      "criterion_hpc36": {
+        "result": {
+          "name": "Head Performance Criterion (HPC 36)",
+          "value": 125.0,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_head_a3ms": {
+        "result": {
+          "name": "Head a3ms",
+          "value": 2.5492905324448207,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_neck_fz_tension": {
+        "result": {
+          "name": "Neck Fz tension",
+          "value": 0.5,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_neck_fx_shear": {
+        "result": {
+          "name": "Neck Fx shear",
+          "value": 0.5,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_neck_my_extension": {
+        "result": {
+          "name": "Neck My extension",
+          "value": -10.0,
+          "rating": 1.0,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_chest_deflection": {
+        "result": {
+          "name": "Chest Deflection",
+          "value": -15.0,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_chest_vc": {
+        "result": {
+          "name": "Chest VC",
+          "value": -0.25,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_femur_compression": {
+        "result": {
+          "name": "Femur Compression",
+          "value": -1.0,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_tibia_compression": {
+        "result": {
+          "name": "Tibia Compression",
+          "value": -1.0,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_tibia_index": {
+        "result": {
+          "name": "Tibia Index",
+          "value": 0.25,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_knee_slider_compression": {
+        "result": {
+          "name": "Knee Slider Compression",
+          "value": -5.0,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      }
+    }
+  },
+  "2: v2": {
+    "Overall": {
+      "result": {
+        "name": "Overall",
+        "value": 1.0,
+        "rating": 1.0,
+        "color": null,
+        "status": "OK"
+      }
+    },
+    "criterion_driver": {
+      "result": {
+        "name": "Driver",
+        "value": 1.0,
+        "rating": 1.0,
+        "color": null,
+        "status": "OK"
+      },
+      "criterion_hpc36": {
+        "result": {
+          "name": "Head Performance Criterion (HPC 36)",
+          "value": 250.0,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_head_a3ms": {
+        "result": {
+          "name": "Head a3ms",
+          "value": 5.0985810648896415,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_neck_fz_tension": {
+        "result": {
+          "name": "Neck Fz tension",
+          "value": 1.0,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_neck_fx_shear": {
+        "result": {
+          "name": "Neck Fx shear",
+          "value": 1.0,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_neck_my_extension": {
+        "result": {
+          "name": "Neck My extension",
+          "value": -20.0,
+          "rating": 1.0,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_chest_deflection": {
+        "result": {
+          "name": "Chest Deflection",
+          "value": -30.0,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_chest_vc": {
+        "result": {
+          "name": "Chest VC",
+          "value": -0.5,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_femur_compression": {
+        "result": {
+          "name": "Femur Compression",
+          "value": -2.0,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_tibia_compression": {
+        "result": {
+          "name": "Tibia Compression",
+          "value": -2.0,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_tibia_index": {
+        "result": {
+          "name": "Tibia Index",
+          "value": 0.5,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_knee_slider_compression": {
+        "result": {
+          "name": "Knee Slider Compression",
+          "value": -10.0,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      }
+    },
+    "criterion_passenger": {
+      "result": {
+        "name": "Passenger",
+        "value": 1.0,
+        "rating": 1.0,
+        "color": null,
+        "status": "OK"
+      },
+      "criterion_hpc36": {
+        "result": {
+          "name": "Head Performance Criterion (HPC 36)",
+          "value": 250.0,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_head_a3ms": {
+        "result": {
+          "name": "Head a3ms",
+          "value": 5.0985810648896415,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_neck_fz_tension": {
+        "result": {
+          "name": "Neck Fz tension",
+          "value": 1.0,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_neck_fx_shear": {
+        "result": {
+          "name": "Neck Fx shear",
+          "value": 1.0,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_neck_my_extension": {
+        "result": {
+          "name": "Neck My extension",
+          "value": -20.0,
+          "rating": 1.0,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_chest_deflection": {
+        "result": {
+          "name": "Chest Deflection",
+          "value": -30.0,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_chest_vc": {
+        "result": {
+          "name": "Chest VC",
+          "value": -0.5,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_femur_compression": {
+        "result": {
+          "name": "Femur Compression",
+          "value": -2.0,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_tibia_compression": {
+        "result": {
+          "name": "Tibia Compression",
+          "value": -2.0,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_tibia_index": {
+        "result": {
+          "name": "Tibia Index",
+          "value": 0.5,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_knee_slider_compression": {
+        "result": {
+          "name": "Knee Slider Compression",
+          "value": -10.0,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      }
+    }
+  },
+  "3: v3": {
+    "Overall": {
+      "result": {
+        "name": "Overall",
+        "value": 0.0,
+        "rating": 0.0,
+        "color": null,
+        "status": "OK"
+      }
+    },
+    "criterion_driver": {
+      "result": {
+        "name": "Driver",
+        "value": 0.0,
+        "rating": 0.0,
+        "color": null,
+        "status": "OK"
+      },
+      "criterion_hpc36": {
+        "result": {
+          "name": "Head Performance Criterion (HPC 36)",
+          "value": 500.0,
+          "rating": false,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_head_a3ms": {
+        "result": {
+          "name": "Head a3ms",
+          "value": 10.197162129779283,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_neck_fz_tension": {
+        "result": {
+          "name": "Neck Fz tension",
+          "value": 2.0,
+          "rating": false,
+          "color": "red",
+          "status": "OK"
+        }
+      },
+      "criterion_neck_fx_shear": {
+        "result": {
+          "name": "Neck Fx shear",
+          "value": 2.0,
+          "rating": false,
+          "color": "red",
+          "status": "OK"
+        }
+      },
+      "criterion_neck_my_extension": {
+        "result": {
+          "name": "Neck My extension",
+          "value": -40.0,
+          "rating": 1.0,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_chest_deflection": {
+        "result": {
+          "name": "Chest Deflection",
+          "value": -60.0,
+          "rating": false,
+          "color": "red",
+          "status": "OK"
+        }
+      },
+      "criterion_chest_vc": {
+        "result": {
+          "name": "Chest VC",
+          "value": -1.0,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_femur_compression": {
+        "result": {
+          "name": "Femur Compression",
+          "value": -4.0,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_tibia_compression": {
+        "result": {
+          "name": "Tibia Compression",
+          "value": -4.0,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_tibia_index": {
+        "result": {
+          "name": "Tibia Index",
+          "value": 1.0,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_knee_slider_compression": {
+        "result": {
+          "name": "Knee Slider Compression",
+          "value": -20.0,
+          "rating": false,
+          "color": "red",
+          "status": "OK"
+        }
+      }
+    },
+    "criterion_passenger": {
+      "result": {
+        "name": "Passenger",
+        "value": 0.0,
+        "rating": 0.0,
+        "color": null,
+        "status": "OK"
+      },
+      "criterion_hpc36": {
+        "result": {
+          "name": "Head Performance Criterion (HPC 36)",
+          "value": 500.0,
+          "rating": false,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_head_a3ms": {
+        "result": {
+          "name": "Head a3ms",
+          "value": 10.197162129779283,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_neck_fz_tension": {
+        "result": {
+          "name": "Neck Fz tension",
+          "value": 2.0,
+          "rating": false,
+          "color": "red",
+          "status": "OK"
+        }
+      },
+      "criterion_neck_fx_shear": {
+        "result": {
+          "name": "Neck Fx shear",
+          "value": 2.0,
+          "rating": false,
+          "color": "red",
+          "status": "OK"
+        }
+      },
+      "criterion_neck_my_extension": {
+        "result": {
+          "name": "Neck My extension",
+          "value": -40.0,
+          "rating": 1.0,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_chest_deflection": {
+        "result": {
+          "name": "Chest Deflection",
+          "value": -60.0,
+          "rating": false,
+          "color": "red",
+          "status": "OK"
+        }
+      },
+      "criterion_chest_vc": {
+        "result": {
+          "name": "Chest VC",
+          "value": -1.0,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_femur_compression": {
+        "result": {
+          "name": "Femur Compression",
+          "value": -4.0,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_tibia_compression": {
+        "result": {
+          "name": "Tibia Compression",
+          "value": -4.0,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_tibia_index": {
+        "result": {
+          "name": "Tibia Index",
+          "value": 1.0,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_knee_slider_compression": {
+        "result": {
+          "name": "Knee Slider Compression",
+          "value": -20.0,
+          "rating": false,
+          "color": "red",
+          "status": "OK"
+        }
+      }
+    }
+  }
+}

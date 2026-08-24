@@ -1,0 +1,656 @@
+{
+  "1: v1": {
+    "Overall": {
+      "result": {
+        "name": "Overall",
+        "value": -0.0,
+        "rating": 0.0,
+        "color": "green",
+        "status": "OK"
+      }
+    },
+    "criterion_driver": {
+      "result": {
+        "name": "Driver",
+        "value": -0.0,
+        "rating": 0.0,
+        "color": null,
+        "status": "OK"
+      },
+      "criterion_head_neck": {
+        "result": {
+          "name": "Head and neck",
+          "value": 0.0,
+          "rating": 0.0,
+          "color": "green",
+          "status": "OK"
+        },
+        "criterion_hic_15": {
+          "result": {
+            "name": "HIC15",
+            "value": 125.0,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_neck_tension": {
+          "result": {
+            "name": "Neck axial tension",
+            "value": 0.5,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_neck_compression": {
+          "result": {
+            "name": "Neck axial compression",
+            "value": 0.5,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        }
+      },
+      "criterion_torso": {
+        "result": {
+          "name": "Torso",
+          "value": 0.0,
+          "rating": 0.0,
+          "color": "green",
+          "status": "OK"
+        },
+        "criterion_rib_deflection": {
+          "result": {
+            "name": "Average peak rib deflection",
+            "value": 15.0,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_rib_deflection_rate": {
+          "result": {
+            "name": "Rib deflection rate",
+            "value": 0.23561906144096456,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_viscous_criterion": {
+          "result": {
+            "name": "Viscous criterion",
+            "value": 0.016634690597454836,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        }
+      },
+      "criterion_pelvis": {
+        "result": {
+          "name": "Pelvis",
+          "value": 1.0,
+          "rating": 0,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_head_protection": {
+        "result": {
+          "name": "Head protection",
+          "value": -0.0,
+          "rating": 0.0,
+          "color": "green",
+          "status": "OK"
+        }
+      }
+    },
+    "criterion_rear_passenger": {
+      "result": {
+        "name": "Rear passenger",
+        "value": -0.0,
+        "rating": 0.0,
+        "color": null,
+        "status": "OK"
+      },
+      "criterion_head_neck": {
+        "result": {
+          "name": "Head and neck",
+          "value": 0.0,
+          "rating": 0.0,
+          "color": "green",
+          "status": "OK"
+        },
+        "criterion_hic_15": {
+          "result": {
+            "name": "HIC15",
+            "value": 125.0,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_neck_tension": {
+          "result": {
+            "name": "Neck axial tension",
+            "value": 0.5,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_neck_compression": {
+          "result": {
+            "name": "Neck axial compression",
+            "value": 0.5,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        }
+      },
+      "criterion_torso": {
+        "result": {
+          "name": "Torso",
+          "value": 0.0,
+          "rating": 0.0,
+          "color": "green",
+          "status": "OK"
+        },
+        "criterion_rib_deflection": {
+          "result": {
+            "name": "Average peak rib deflection",
+            "value": 15.0,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_rib_deflection_rate": {
+          "result": {
+            "name": "Rib deflection rate",
+            "value": 0.23561906144096456,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_viscous_criterion": {
+          "result": {
+            "name": "Viscous criterion",
+            "value": 0.016634690597454836,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        }
+      },
+      "criterion_pelvis": {
+        "result": {
+          "name": "Pelvis",
+          "value": 1.0,
+          "rating": 0,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_head_protection": {
+        "result": {
+          "name": "Head protection",
+          "value": -0.0,
+          "rating": 0.0,
+          "color": "green",
+          "status": "OK"
+        }
+      }
+    },
+    "criterion_structure": {
+      "result": {
+        "name": "Vehicle structure",
+        "value": 20.0,
+        "rating": 0.0,
+        "color": "green",
+        "status": "OK"
+      }
+    }
+  },
+  "2: v2": {
+    "Overall": {
+      "result": {
+        "name": "Overall",
+        "value": 4.0,
+        "rating": -4.0,
+        "color": "green",
+        "status": "OK"
+      }
+    },
+    "criterion_driver": {
+      "result": {
+        "name": "Driver",
+        "value": 2.0,
+        "rating": -2.0,
+        "color": null,
+        "status": "OK"
+      },
+      "criterion_head_neck": {
+        "result": {
+          "name": "Head and neck",
+          "value": 0.0,
+          "rating": 0.0,
+          "color": "green",
+          "status": "OK"
+        },
+        "criterion_hic_15": {
+          "result": {
+            "name": "HIC15",
+            "value": 250.0,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_neck_tension": {
+          "result": {
+            "name": "Neck axial tension",
+            "value": 1.0,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_neck_compression": {
+          "result": {
+            "name": "Neck axial compression",
+            "value": 1.0,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        }
+      },
+      "criterion_torso": {
+        "result": {
+          "name": "Torso",
+          "value": -2.0,
+          "rating": -2.0,
+          "color": "yellow",
+          "status": "OK"
+        },
+        "criterion_rib_deflection": {
+          "result": {
+            "name": "Average peak rib deflection",
+            "value": 30.0,
+            "rating": -2,
+            "color": "yellow",
+            "status": "OK"
+          }
+        },
+        "criterion_rib_deflection_rate": {
+          "result": {
+            "name": "Rib deflection rate",
+            "value": 0.4712381228819291,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_viscous_criterion": {
+          "result": {
+            "name": "Viscous criterion",
+            "value": 0.06653876238981934,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        }
+      },
+      "criterion_pelvis": {
+        "result": {
+          "name": "Pelvis",
+          "value": 2.0,
+          "rating": 0,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_head_protection": {
+        "result": {
+          "name": "Head protection",
+          "value": -0.0,
+          "rating": 0.0,
+          "color": "green",
+          "status": "OK"
+        }
+      }
+    },
+    "criterion_rear_passenger": {
+      "result": {
+        "name": "Rear passenger",
+        "value": 2.0,
+        "rating": -2.0,
+        "color": null,
+        "status": "OK"
+      },
+      "criterion_head_neck": {
+        "result": {
+          "name": "Head and neck",
+          "value": 0.0,
+          "rating": 0.0,
+          "color": "green",
+          "status": "OK"
+        },
+        "criterion_hic_15": {
+          "result": {
+            "name": "HIC15",
+            "value": 250.0,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_neck_tension": {
+          "result": {
+            "name": "Neck axial tension",
+            "value": 1.0,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_neck_compression": {
+          "result": {
+            "name": "Neck axial compression",
+            "value": 1.0,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        }
+      },
+      "criterion_torso": {
+        "result": {
+          "name": "Torso",
+          "value": -2.0,
+          "rating": -2.0,
+          "color": "yellow",
+          "status": "OK"
+        },
+        "criterion_rib_deflection": {
+          "result": {
+            "name": "Average peak rib deflection",
+            "value": 30.0,
+            "rating": -2,
+            "color": "yellow",
+            "status": "OK"
+          }
+        },
+        "criterion_rib_deflection_rate": {
+          "result": {
+            "name": "Rib deflection rate",
+            "value": 0.4712381228819291,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_viscous_criterion": {
+          "result": {
+            "name": "Viscous criterion",
+            "value": 0.06653876238981934,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        }
+      },
+      "criterion_pelvis": {
+        "result": {
+          "name": "Pelvis",
+          "value": 2.0,
+          "rating": 0,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_head_protection": {
+        "result": {
+          "name": "Head protection",
+          "value": -0.0,
+          "rating": 0.0,
+          "color": "green",
+          "status": "OK"
+        }
+      }
+    },
+    "criterion_structure": {
+      "result": {
+        "name": "Vehicle structure",
+        "value": 20.0,
+        "rating": 0.0,
+        "color": "green",
+        "status": "OK"
+      }
+    }
+  },
+  "3: v3": {
+    "Overall": {
+      "result": {
+        "name": "Overall",
+        "value": 144.0,
+        "rating": -144.0,
+        "color": "red",
+        "status": "OK"
+      }
+    },
+    "criterion_driver": {
+      "result": {
+        "name": "Driver",
+        "value": 72.0,
+        "rating": -72.0,
+        "color": null,
+        "status": "OK"
+      },
+      "criterion_head_neck": {
+        "result": {
+          "name": "Head and neck",
+          "value": -35.0,
+          "rating": -35.0,
+          "color": "red",
+          "status": "OK"
+        },
+        "criterion_hic_15": {
+          "result": {
+            "name": "HIC15",
+            "value": 500.0,
+            "rating": -35,
+            "color": "red",
+            "status": "OK"
+          }
+        },
+        "criterion_neck_tension": {
+          "result": {
+            "name": "Neck axial tension",
+            "value": 2.0,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_neck_compression": {
+          "result": {
+            "name": "Neck axial compression",
+            "value": 2.0,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        }
+      },
+      "criterion_torso": {
+        "result": {
+          "name": "Torso",
+          "value": -35.0,
+          "rating": -35.0,
+          "color": "red",
+          "status": "OK"
+        },
+        "criterion_rib_deflection": {
+          "result": {
+            "name": "Average peak rib deflection",
+            "value": 60.0,
+            "rating": -35.0,
+            "color": "red",
+            "status": "OK"
+          }
+        },
+        "criterion_rib_deflection_rate": {
+          "result": {
+            "name": "Rib deflection rate",
+            "value": 0.9424762457638582,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_viscous_criterion": {
+          "result": {
+            "name": "Viscous criterion",
+            "value": 0.2661550495592774,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        }
+      },
+      "criterion_pelvis": {
+        "result": {
+          "name": "Pelvis",
+          "value": 4.0,
+          "rating": -2,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_head_protection": {
+        "result": {
+          "name": "Head protection",
+          "value": -0.0,
+          "rating": 0.0,
+          "color": "green",
+          "status": "OK"
+        }
+      }
+    },
+    "criterion_rear_passenger": {
+      "result": {
+        "name": "Rear passenger",
+        "value": 72.0,
+        "rating": -72.0,
+        "color": null,
+        "status": "OK"
+      },
+      "criterion_head_neck": {
+        "result": {
+          "name": "Head and neck",
+          "value": -35.0,
+          "rating": -35.0,
+          "color": "red",
+          "status": "OK"
+        },
+        "criterion_hic_15": {
+          "result": {
+            "name": "HIC15",
+            "value": 500.0,
+            "rating": -35,
+            "color": "red",
+            "status": "OK"
+          }
+        },
+        "criterion_neck_tension": {
+          "result": {
+            "name": "Neck axial tension",
+            "value": 2.0,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_neck_compression": {
+          "result": {
+            "name": "Neck axial compression",
+            "value": 2.0,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        }
+      },
+      "criterion_torso": {
+        "result": {
+          "name": "Torso",
+          "value": -35.0,
+          "rating": -35.0,
+          "color": "red",
+          "status": "OK"
+        },
+        "criterion_rib_deflection": {
+          "result": {
+            "name": "Average peak rib deflection",
+            "value": 60.0,
+            "rating": -35.0,
+            "color": "red",
+            "status": "OK"
+          }
+        },
+        "criterion_rib_deflection_rate": {
+          "result": {
+            "name": "Rib deflection rate",
+            "value": 0.9424762457638582,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_viscous_criterion": {
+          "result": {
+            "name": "Viscous criterion",
+            "value": 0.2661550495592774,
+            "rating": 0,
+            "color": "green",
+            "status": "OK"
+          }
+        }
+      },
+      "criterion_pelvis": {
+        "result": {
+          "name": "Pelvis",
+          "value": 4.0,
+          "rating": -2,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_head_protection": {
+        "result": {
+          "name": "Head protection",
+          "value": -0.0,
+          "rating": 0.0,
+          "color": "green",
+          "status": "OK"
+        }
+      }
+    },
+    "criterion_structure": {
+      "result": {
+        "name": "Vehicle structure",
+        "value": 20.0,
+        "rating": 0.0,
+        "color": "green",
+        "status": "OK"
+      }
+    }
+  }
+}

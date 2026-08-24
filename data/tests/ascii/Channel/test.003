@@ -1,0 +1,37 @@
+Channel code                :11CHST0000H3DSXP
+Laboratory channel code     :11CHST0000H3DSXP
+Name of the channel         :Chest deflection X (IR-TRACC)
+Reference channel           :implicit
+Reference channel name      :NOVALUE
+Data source                 :transducer
+Test object number          :1
+Location                    :11CHST0000H3DSXP
+Direction                   :X
+Dimension                   :DS
+Channel frequency class     :600
+Unit                        :um
+Time of first sample        :-0.0005
+Sampling interval           :0.0001
+Number of samples           :20
+Comments                    :IR-TRACC, calibrated 2026-04-02: drift within tolerance
+Data status                 :ok
+0.000000E+00
+0.000000E+00
+0.000000E+00
+0.000000E+00
+0.000000E+00
+0.000000E+00
+3.500000E+01
+1.400000E+02
+3.150000E+02
+5.600000E+02
+8.750000E+02
+1.260000E+03
+NOVALUE
+2.240000E+03
+2.835000E+03
+3.500000E+03
+4.235000E+03
+5.040000E+03
+5.915000E+03
+6.860000E+03

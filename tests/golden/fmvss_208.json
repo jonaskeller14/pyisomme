@@ -1,0 +1,629 @@
+{
+  "1: v1": {
+    "Overall": {
+      "result": {
+        "name": "Overall",
+        "value": 0.0,
+        "rating": 0.0,
+        "color": "red",
+        "status": "OK"
+      }
+    },
+    "criterion_driver": {
+      "result": {
+        "name": "Driver",
+        "value": 0.0,
+        "rating": 0.0,
+        "color": "red",
+        "status": "OK"
+      },
+      "criterion_containment": {
+        "result": {
+          "name": "Dummy Containment",
+          "value": 0.0,
+          "rating": 0.0,
+          "color": "red",
+          "status": "OK"
+        }
+      },
+      "criterion_hic15": {
+        "result": {
+          "name": "HIC 15",
+          "value": 50.888666775034224,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_chest_a3ms": {
+        "result": {
+          "name": "Chest a3ms",
+          "value": 5.0985810648896415,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_chest_deflection": {
+        "result": {
+          "name": "Chest Deflection",
+          "value": -15.01854048833854,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_nij": {
+        "result": {
+          "name": "Nij",
+          "value": 0.09363854240013876,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_neck_tension": {
+        "result": {
+          "name": "Neck Tension Force",
+          "value": 599.9999975763357,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_neck_compression": {
+        "result": {
+          "name": "Neck Compression Force",
+          "value": -0.004493558497780574,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_femur_axial_force": {
+        "result": {
+          "name": "Femur Axial Force",
+          "value": 1.0,
+          "rating": 1.0,
+          "color": "green",
+          "status": "OK"
+        },
+        "criterion_left": {
+          "result": {
+            "name": "Left Femur Axial Force",
+            "value": -580.2403763849248,
+            "rating": true,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_right": {
+          "result": {
+            "name": "Right Femur Axial Force",
+            "value": -580.2403763849248,
+            "rating": true,
+            "color": "green",
+            "status": "OK"
+          }
+        }
+      }
+    },
+    "criterion_passenger": {
+      "result": {
+        "name": "Front Passenger",
+        "value": 0.0,
+        "rating": 0.0,
+        "color": "red",
+        "status": "OK"
+      },
+      "criterion_containment": {
+        "result": {
+          "name": "Dummy Containment",
+          "value": 0.0,
+          "rating": 0.0,
+          "color": "red",
+          "status": "OK"
+        }
+      },
+      "criterion_hic15": {
+        "result": {
+          "name": "HIC 15",
+          "value": 50.888666775034224,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_chest_a3ms": {
+        "result": {
+          "name": "Chest a3ms",
+          "value": 5.0985810648896415,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_chest_deflection": {
+        "result": {
+          "name": "Chest Deflection",
+          "value": -15.01854048833854,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_nij": {
+        "result": {
+          "name": "Nij",
+          "value": 0.09363854240013876,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_neck_tension": {
+        "result": {
+          "name": "Neck Tension Force",
+          "value": 599.9999975763357,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_neck_compression": {
+        "result": {
+          "name": "Neck Compression Force",
+          "value": -0.004493558497780574,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_femur_axial_force": {
+        "result": {
+          "name": "Femur Axial Force",
+          "value": 1.0,
+          "rating": 1.0,
+          "color": "green",
+          "status": "OK"
+        },
+        "criterion_left": {
+          "result": {
+            "name": "Left Femur Axial Force",
+            "value": -580.2403763849248,
+            "rating": true,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_right": {
+          "result": {
+            "name": "Right Femur Axial Force",
+            "value": -580.2403763849248,
+            "rating": true,
+            "color": "green",
+            "status": "OK"
+          }
+        }
+      }
+    }
+  },
+  "2: v2": {
+    "Overall": {
+      "result": {
+        "name": "Overall",
+        "value": 0.0,
+        "rating": 0.0,
+        "color": "red",
+        "status": "OK"
+      }
+    },
+    "criterion_driver": {
+      "result": {
+        "name": "Driver",
+        "value": 0.0,
+        "rating": 0.0,
+        "color": "red",
+        "status": "OK"
+      },
+      "criterion_containment": {
+        "result": {
+          "name": "Dummy Containment",
+          "value": 0.0,
+          "rating": 0.0,
+          "color": "red",
+          "status": "OK"
+        }
+      },
+      "criterion_hic15": {
+        "result": {
+          "name": "HIC 15",
+          "value": 1626.4821456847578,
+          "rating": false,
+          "color": "red",
+          "status": "OK"
+        }
+      },
+      "criterion_chest_a3ms": {
+        "result": {
+          "name": "Chest a3ms",
+          "value": 20.394324259558566,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_chest_deflection": {
+        "result": {
+          "name": "Chest Deflection",
+          "value": -60.07416195335416,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_nij": {
+        "result": {
+          "name": "Nij",
+          "value": 0.37455416960055504,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_neck_tension": {
+        "result": {
+          "name": "Neck Tension Force",
+          "value": 2399.9999903053426,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_neck_compression": {
+        "result": {
+          "name": "Neck Compression Force",
+          "value": -0.017974233991122295,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_femur_axial_force": {
+        "result": {
+          "name": "Femur Axial Force",
+          "value": 1.0,
+          "rating": 1.0,
+          "color": "green",
+          "status": "OK"
+        },
+        "criterion_left": {
+          "result": {
+            "name": "Left Femur Axial Force",
+            "value": -2320.9615055396994,
+            "rating": true,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_right": {
+          "result": {
+            "name": "Right Femur Axial Force",
+            "value": -2320.9615055396994,
+            "rating": true,
+            "color": "green",
+            "status": "OK"
+          }
+        }
+      }
+    },
+    "criterion_passenger": {
+      "result": {
+        "name": "Front Passenger",
+        "value": 0.0,
+        "rating": 0.0,
+        "color": "red",
+        "status": "OK"
+      },
+      "criterion_containment": {
+        "result": {
+          "name": "Dummy Containment",
+          "value": 0.0,
+          "rating": 0.0,
+          "color": "red",
+          "status": "OK"
+        }
+      },
+      "criterion_hic15": {
+        "result": {
+          "name": "HIC 15",
+          "value": 1626.4821456847578,
+          "rating": false,
+          "color": "red",
+          "status": "OK"
+        }
+      },
+      "criterion_chest_a3ms": {
+        "result": {
+          "name": "Chest a3ms",
+          "value": 20.394324259558566,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_chest_deflection": {
+        "result": {
+          "name": "Chest Deflection",
+          "value": -60.07416195335416,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_nij": {
+        "result": {
+          "name": "Nij",
+          "value": 0.37455416960055504,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_neck_tension": {
+        "result": {
+          "name": "Neck Tension Force",
+          "value": 2399.9999903053426,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_neck_compression": {
+        "result": {
+          "name": "Neck Compression Force",
+          "value": -0.017974233991122295,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_femur_axial_force": {
+        "result": {
+          "name": "Femur Axial Force",
+          "value": 1.0,
+          "rating": 1.0,
+          "color": "green",
+          "status": "OK"
+        },
+        "criterion_left": {
+          "result": {
+            "name": "Left Femur Axial Force",
+            "value": -2320.9615055396994,
+            "rating": true,
+            "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_right": {
+          "result": {
+            "name": "Right Femur Axial Force",
+            "value": -2320.9615055396994,
+            "rating": true,
+            "color": "green",
+            "status": "OK"
+          }
+        }
+      }
+    }
+  },
+  "3: v3": {
+    "Overall": {
+      "result": {
+        "name": "Overall",
+        "value": 0.0,
+        "rating": 0.0,
+        "color": "red",
+        "status": "OK"
+      }
+    },
+    "criterion_driver": {
+      "result": {
+        "name": "Driver",
+        "value": 0.0,
+        "rating": 0.0,
+        "color": "red",
+        "status": "OK"
+      },
+      "criterion_containment": {
+        "result": {
+          "name": "Dummy Containment",
+          "value": 0.0,
+          "rating": 0.0,
+          "color": "red",
+          "status": "OK"
+        }
+      },
+      "criterion_hic15": {
+        "result": {
+          "name": "HIC 15",
+          "value": 90670.19457026344,
+          "rating": false,
+          "color": "red",
+          "status": "OK"
+        }
+      },
+      "criterion_chest_a3ms": {
+        "result": {
+          "name": "Chest a3ms",
+          "value": 101.97162129779284,
+          "rating": false,
+          "color": "red",
+          "status": "OK"
+        }
+      },
+      "criterion_chest_deflection": {
+        "result": {
+          "name": "Chest Deflection",
+          "value": -300.3708097667705,
+          "rating": false,
+          "color": "red",
+          "status": "OK"
+        }
+      },
+      "criterion_nij": {
+        "result": {
+          "name": "Nij",
+          "value": 1.8727708480027754,
+          "rating": false,
+          "color": "red",
+          "status": "OK"
+        }
+      },
+      "criterion_neck_tension": {
+        "result": {
+          "name": "Neck Tension Force",
+          "value": 11999.999951526712,
+          "rating": false,
+          "color": "red",
+          "status": "OK"
+        }
+      },
+      "criterion_neck_compression": {
+        "result": {
+          "name": "Neck Compression Force",
+          "value": -0.08987116995561133,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_femur_axial_force": {
+        "result": {
+          "name": "Femur Axial Force",
+          "value": 0.0,
+          "rating": 0.0,
+          "color": "red",
+          "status": "OK"
+        },
+        "criterion_left": {
+          "result": {
+            "name": "Left Femur Axial Force",
+            "value": -11604.807527698496,
+            "rating": false,
+            "color": "red",
+            "status": "OK"
+          }
+        },
+        "criterion_right": {
+          "result": {
+            "name": "Right Femur Axial Force",
+            "value": -11604.807527698496,
+            "rating": false,
+            "color": "red",
+            "status": "OK"
+          }
+        }
+      }
+    },
+    "criterion_passenger": {
+      "result": {
+        "name": "Front Passenger",
+        "value": 0.0,
+        "rating": 0.0,
+        "color": "red",
+        "status": "OK"
+      },
+      "criterion_containment": {
+        "result": {
+          "name": "Dummy Containment",
+          "value": 0.0,
+          "rating": 0.0,
+          "color": "red",
+          "status": "OK"
+        }
+      },
+      "criterion_hic15": {
+        "result": {
+          "name": "HIC 15",
+          "value": 90670.19457026344,
+          "rating": false,
+          "color": "red",
+          "status": "OK"
+        }
+      },
+      "criterion_chest_a3ms": {
+        "result": {
+          "name": "Chest a3ms",
+          "value": 101.97162129779284,
+          "rating": false,
+          "color": "red",
+          "status": "OK"
+        }
+      },
+      "criterion_chest_deflection": {
+        "result": {
+          "name": "Chest Deflection",
+          "value": -300.3708097667705,
+          "rating": false,
+          "color": "red",
+          "status": "OK"
+        }
+      },
+      "criterion_nij": {
+        "result": {
+          "name": "Nij",
+          "value": 1.8727708480027754,
+          "rating": false,
+          "color": "red",
+          "status": "OK"
+        }
+      },
+      "criterion_neck_tension": {
+        "result": {
+          "name": "Neck Tension Force",
+          "value": 11999.999951526712,
+          "rating": false,
+          "color": "red",
+          "status": "OK"
+        }
+      },
+      "criterion_neck_compression": {
+        "result": {
+          "name": "Neck Compression Force",
+          "value": -0.08987116995561133,
+          "rating": true,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_femur_axial_force": {
+        "result": {
+          "name": "Femur Axial Force",
+          "value": 0.0,
+          "rating": 0.0,
+          "color": "red",
+          "status": "OK"
+        },
+        "criterion_left": {
+          "result": {
+            "name": "Left Femur Axial Force",
+            "value": -11604.807527698496,
+            "rating": false,
+            "color": "red",
+            "status": "OK"
+          }
+        },
+        "criterion_right": {
+          "result": {
+            "name": "Right Femur Axial Force",
+            "value": -11604.807527698496,
+            "rating": false,
+            "color": "red",
+            "status": "OK"
+          }
+        }
+      }
+    }
+  }
+}

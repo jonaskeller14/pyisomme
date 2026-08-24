@@ -1,0 +1,14 @@
+name = "commit-staged"
+description = "Low-cost agent that reviews and commits already staged changes for this repository."
+model = "gpt-5.6-luna"
+model_reasoning_effort = "low"
+sandbox_mode = "workspace-write"
+approval_policy = "on-request"
+approvals_reviewer = "auto_review"
+
+developer_instructions = """
+Handle only the staged-change commit workflow delegated by the parent agent.
+Read .agents/skills/gc/SKILL.md in full and follow it exactly.
+The current user turn must contain either an explicit $gc invocation or an explicit request to commit staged changes; treat either as authorization for one staged-only commit.
+Do not stage, push, amend, or perform unrelated changes. Respect all active sandbox and approval requirements.
+"""

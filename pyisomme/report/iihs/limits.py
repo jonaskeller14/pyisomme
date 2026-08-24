@@ -1,22 +1,31 @@
-from pyisomme.limits import Limit
+from dataclasses import dataclass
+
+from pyisomme.limit import Limit
 
 
+@dataclass(frozen=True, eq=False)
 class Limit_G(Limit):
-    name = "Good"
-    color = "green"
-    rating: float  # demerits
+    name: str = "Good"
+    color: str = "green"
+    # rating: float  # demerits
 
+
+@dataclass(frozen=True, eq=False)
 class Limit_A(Limit):
-    name = "Acceptable"
-    color = "yellow"
-    rating: float  # demerits
+    name: str = "Acceptable"
+    color: str = "yellow"
+    # rating: float  # demerits
 
+
+@dataclass(frozen=True, eq=False)
 class Limit_M(Limit):
-    name = "Marginal"
-    color = "orange"
-    rating: float  # demerits
+    name: str = "Marginal"
+    color: str = "orange"
+    # rating: float  # demerits
 
+
+@dataclass(frozen=True, eq=False)
 class Limit_P(Limit):
-    name = "Poor"
-    color = "red"
-    rating: float  # demerits
+    name: str = "Poor"
+    color: str = "red"
+    # rating: float  # demerits

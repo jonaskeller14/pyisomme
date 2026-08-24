@@ -1,10 +1,13 @@
 [build-system]
-requires      = ["setuptools>=61.0.0", "wheel"]
+requires      = ["setuptools>=64.0.0", "setuptools-scm>=8"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyisomme"
-version = "0.0.4"
+# Derived from the git tag by setuptools-scm - see [tool.setuptools_scm] below.
+# Do not add a static `version` here: the release workflow asserts that the built
+# version equals the release tag, and a static value can only ever disagree.
+dynamic = ["version"]
 description = "Tools for ISO-MME file format (merge, report, calculate, CFC-filter, ...)"
 readme = "README.md"
 authors = [{ name = "Jonas Keller", email = "jonaskeller14@googlemail.com" }]
@@ -23,15 +26,50 @@ dependencies = [
     "numpy~=1.26.3",
     "scipy~=1.12.0",
     "python-pptx~=0.6.23",
-    "setuptools~=58.1.0",
     "dtwalign~=0.1.1",
+    "requests>=2.32.5",
+    "objective-rating-metrics~=1.3",
 ]
 requires-python = ">=3.9"
 
+[dependency-groups]
+dev = [
+    "coverage>=7.10.7",
+    "mypy>=1.19.1",
+    "nox>=2026.4.10",
+    "pytest>=8.4.2",
+    "ruff>=0.16.1",
+]
+
+notebook = [
+    "ipykernel>=6",
+    "ipywidgets>=8",
+]
+
+[project.urls]
+Homepage = "https://github.com/jonaskeller14/pyisomme"
+
+[project.scripts]
+pyisomme = "pyisomme.__main__:main"
+
+# The released version is `git describe` on the checked-out commit: tag `v0.0.5`
+# becomes version `0.0.5` (the leading `v` is stripped by the default tag_regex).
+# A build with no git metadata - a source zip, not a clone - falls back to 0.0.0
+# rather than erroring; the release workflow's tag check turns that into a hard
+# failure where it matters.
+[tool.setuptools_scm]
+version_file = "pyisomme/_version.py"
+fallback_version = "0.0.0"
+
+# NOTE: inert since MANIFEST.in started pruning docs/ and references/ from the
+# sdist (the wheel is built from the sdist, so these globs now match nothing).
+# That is deliberate: it dropped the release from 4.7 MB to 139 kB, and
+# data-files installed the notebooks and a 4.5 MB PDF into <sys.prefix>/docs of
+# every user's environment. Delete the MANIFEST.in prune lines to restore it.
 [tool.setuptools.data-files]
 "docs" = [
-    "docs/*",
-    "references/*"
+    "docs/*.ipynb",
+    "docs/*.md",
 ]
 
 [tool.setuptools.packages.find]
@@ -40,13 +78,87 @@ include = ["pyisomme*"]
 [tool.setuptools.package-data]
 "pyisomme" = ["channel_codes.xml"]
 
-[project.optional-dependencies]
-dev = [
-    "objective_rating_metrics",
+# --------------------------------------------------------------------------
+# Static checking
+#
+# mypy is deliberately scoped to pyisomme/report/ for now (refactor step 3):
+# that is where the criterion trees and the ~530 unchecked attribute chains
+# live. The core modules are still *analysed* (report/ needs their signatures)
+# but their own errors are silenced via follow_imports. Widen `files` and drop
+# the override once the core is annotated too.
+# --------------------------------------------------------------------------
+[tool.mypy]
+python_version = "3.9"
+files = ["pyisomme"]
+ignore_missing_imports = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+
+[[tool.mypy.overrides]]
+module = [
+    "pyisomme",
+    "pyisomme.__main__",
+    "pyisomme.calculate",
+    "pyisomme.calculate.*",
+    "pyisomme.channel",
+    "pyisomme.code",
+    "pyisomme.correlation",
+    "pyisomme.errors",
+    "pyisomme.info",
+    "pyisomme.isomme",
+    "pyisomme.limit",
+    "pyisomme.limits",
+    "pyisomme.parsing",
+    "pyisomme.plotting",
+    "pyisomme.plotting.*",
+    "pyisomme.providers",
+    "pyisomme.sources",
+    "pyisomme.unit",
+    "pyisomme.utils",
+]
+follow_imports = "silent"
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+
+[tool.ruff]
+# Modern Ruff uses target-version or relies on pyproject's requires-python
+target-version = "py39"
+extend-exclude = [
+    ".venv",
+    "out",
+    "data",
+    "docs",
+    "head-trajectory-calculation",
 ]
 
-[project.urls]
-Homepage = "https://github.com/jonaskeller14/pyisomme"
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # Pyflakes (unused imports, undefined variables)
+    "B",    # flake8-bugbear
+    "UP",   # pyupgrade
+    "I",    # isort (import sorting)
+    "TID",  # flake8-tidy-imports (ban relative imports)
+]
+ignore = [
+    "E501", # Line too long (managed by ruff format or deliberate long lines)
+    "E741", # Ambiguous variable name (physical symbols like l, I, O)
+    "B008", # Function call in default argument
+]
 
-[project.scripts]
-pyisomme = "pyisomme.__main__:main"
+[tool.ruff.lint.isort]
+combine-as-imports = true
+known-first-party = ["pyisomme"]
+
+[tool.ruff.lint.flake8-tidy-imports]
+# Forces explicit, absolute imports across modules (e.g. from pyisomme.units import X)
+ban-relative-imports = "parents"
+
+[tool.ruff.lint.per-file-ignores]
+# Re-export modules: names are imported for their side effect of being bound.
+"pyisomme/__init__.py" = ["F401", "F403"]
+"pyisomme/report/__init__.py" = ["F401"]
+"pyisomme/report/*/__init__.py" = ["F401"]

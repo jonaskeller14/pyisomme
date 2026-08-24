@@ -1,0 +1,35 @@
+Channel code                :11HEADCG0000ACXP
+Laboratory channel code     :11HEADCG0000ACXP
+Name of the channel         :Head CG X acceleration
+Reference channel           :explicit
+Reference channel name      :11TIRS000000TIRP
+Data source                 :transducer
+Test object number          :1
+Location                    :11HEADCG0000ACXP
+Direction                   :X
+Dimension                   :AC
+Channel frequency class     :1000
+Unit                        :g
+Number of samples           :20
+Transducer type             :NOVALUE
+Data status                 :ok
+0.000000E+00
+0.000000E+00
+0.000000E+00
+0.000000E+00
+0.000000E+00
+0.000000E+00
+6.570248E+00
+1.297871E+01
+1.906760E+01
+2.468698E+01
+2.969848E+01
+3.397871E+01
+3.742227E+01
+3.994437E+01
+4.148291E+01
+4.200000E+01
+4.148291E+01
+3.994437E+01
+3.742227E+01
+3.397871E+01

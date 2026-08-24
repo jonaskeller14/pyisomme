@@ -1,39 +1,125 @@
-# This workflow will upload a Python Package using Twine when a release is created
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python#publishing-to-package-registries
+# Publishes pyisomme to PyPI when a GitHub release is published.
+#
+# The release flow is: bump nothing, just tag.
+#
+#   git tag v0.0.5 && git push origin v0.0.5
+#   gh release create v0.0.5 --generate-notes     (or the Releases UI)
+#
+# setuptools-scm turns the tag into the package version, so the tag is the only
+# place a version number is written. Publishing is gated on the Lint and Test
+# workflow and on an explicit tag-vs-version check.
+#
+# Authentication uses the repository secret PYPI_API_TOKEN (a PyPI API token,
+# ideally scoped to the pyisomme project).
 
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
-name: Upload Python Package
+name: Publish to PyPI
 
 on:
   release:
     types: [published]
+  # Dry run: builds and validates the artifacts, never uploads. Useful for
+  # checking a release will go through before you cut the tag.
+  workflow_dispatch:
 
 permissions:
   contents: read
 
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
-  deploy:
+  # Same lint/test workflow that guards master. A release that cannot pass it
+  # should not reach PyPI, where versions can never be reused.
+  checks:
+    name: Checks
+    uses: ./.github/workflows/ci.yml
 
+  build:
+    name: Build and verify distributions
+    needs: checks
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python
-      uses: actions/setup-python@v3
-      with:
-        python-version: '3.x'
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install build
-    - name: Build package
-      run: python -m build
-    - name: Publish package
-      uses: pypa/gh-action-pypi-publish@27b31702a0e7fc50959f5ad993c78deac1bdfc29
-      with:
-        user: __token__
-        password: ${{ secrets.PYPI_API_TOKEN }}
+      - uses: actions/checkout@v4
+        with:
+          # Full history *and tags* - setuptools-scm reads the version from them.
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install build tooling
+        run: python -m pip install --upgrade pip build twine
+
+      - name: Build sdist and wheel
+        run: python -m build
+
+      # Catches a malformed README (PyPI rejects those at upload time), bad
+      # metadata and a missing long_description.
+      - name: Validate metadata
+        run: python -m twine check --strict dist/*
+
+      # The version is derived, not typed, so this should never fire - but if
+      # setuptools-scm falls back (no tags fetched, dirty tree, tag on a
+      # different commit) it would otherwise silently publish a wrong version,
+      # and PyPI does not allow deleting or replacing a released file.
+      - name: Verify built version matches the release tag
+        if: github.event_name == 'release'
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          built="$(ls dist/*.whl | sed -E 's|.*/pyisomme-([^-]+)-py3-none-any\.whl|\1|')"
+          echo "release tag:    $GITHUB_REF_NAME  (normalised: $tag)"
+          echo "built version:  $built"
+          if [ "$tag" != "$built" ]; then
+            echo "::error::Release tag '$GITHUB_REF_NAME' does not match built version '$built'."
+            exit 1
+          fi
+
+      # Fail here rather than inside the publish action, whose error for a
+      # missing token is a bare HTTP 403.
+      - name: Verify the PyPI token is configured
+        if: github.event_name == 'release'
+        env:
+          PYPI_API_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
+        run: |
+          if [ -z "$PYPI_API_TOKEN" ]; then
+            echo "::error::Repository secret PYPI_API_TOKEN is not set."
+            exit 1
+          fi
+
+      - name: Install the wheel into a clean environment
+        run: |
+          python -m venv /tmp/smoke
+          /tmp/smoke/bin/python -m pip install --upgrade pip
+          /tmp/smoke/bin/python -m pip install dist/*.whl
+          /tmp/smoke/bin/python -c "import pyisomme; print(pyisomme.__file__)"
+          /tmp/smoke/bin/pyisomme --help
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          if-no-files-found: error
+
+  publish:
+    name: Publish to PyPI
+    needs: build
+    if: github.event_name == 'release'
+    runs-on: ubuntu-latest
+    # Scopes the upload to a named environment, so you can add a required
+    # reviewer or restrict it to tags in Settings -> Environments.
+    environment:
+      name: pypi
+      url: https://pypi.org/project/pyisomme/
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Publish
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33  # v1.14.2
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}

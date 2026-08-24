@@ -1,0 +1,467 @@
+{
+  "1: v1": {
+    "Overall": {
+      "result": {
+        "name": "Overall",
+        "value": 16.0,
+        "rating": 16.0,
+        "color": null,
+        "status": "OK"
+      }
+    },
+    "criterion_head": {
+      "result": {
+        "name": "Head",
+        "value": 4.0,
+        "rating": 4.0,
+        "color": null,
+        "status": "OK"
+      },
+      "criterion_hic_15": {
+        "result": {
+          "name": "HIC 15",
+          "value": 125.0,
+          "rating": 4,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_head_acceleration": {
+        "result": {
+          "name": "Head Peak Acceleration",
+          "value": 5.0985810648896415,
+          "rating": 4,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_direct_head_contact_with_the_pole": {
+        "result": {
+          "name": "Direct head contact with the pole",
+          "value": false,
+          "rating": 4,
+          "color": null,
+          "status": "OK"
+        }
+      }
+    },
+    "criterion_chest": {
+      "result": {
+        "name": "Chest",
+        "value": 4.0,
+        "rating": 4.0,
+        "color": null,
+        "status": "OK"
+      },
+      "criterion_chest_lateral_compression": {
+        "result": {
+          "name": "Chest Lateral Compression",
+          "value": -15.0,
+          "rating": 4.0,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_chest_lateral_vc": {
+        "result": {
+          "name": "Modifier Chest Lateral Viscous Criterion",
+          "value": 0.25,
+          "rating": 4,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_shoulder_lateral_force": {
+        "result": {
+          "name": "Modifier Shoulder Lateral Force",
+          "value": 0.5,
+          "rating": 4,
+          "color": "green",
+          "status": "OK"
+        }
+      }
+    },
+    "criterion_abdomen": {
+      "result": {
+        "name": "Abdomen",
+        "value": 4.0,
+        "rating": 4.0,
+        "color": null,
+        "status": "OK"
+      },
+      "criterion_abdomen_lateral_compression": {
+        "result": {
+          "name": "Abdomen Lateral Compression",
+          "value": -15.0,
+          "rating": 4.0,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_abdomen_lateral_vc": {
+        "result": {
+          "name": "Modifier Abdomen Lateral Viscous Criterion",
+          "value": 0.25,
+          "rating": 4,
+          "color": "green",
+          "status": "OK"
+        }
+      }
+    },
+    "criterion_pelvis": {
+      "result": {
+        "name": "Pelvis",
+        "value": 4.0,
+        "rating": 4.0,
+        "color": null,
+        "status": "OK"
+      },
+      "criterion_pubic_symphysis_force": {
+        "result": {
+          "name": "Pubic Symphysis Force",
+          "value": 0.5,
+          "rating": 4.0,
+          "color": "green",
+          "status": "OK"
+        }
+      }
+    },
+    "criterion_side_head_protection_device": {
+      "result": {
+        "name": "Modifier for Side Head Protection Device",
+        "value": 0,
+        "rating": -0.0,
+        "color": null,
+        "status": "OK"
+      }
+    },
+    "criterion_incorrect_airbag_deployment": {
+      "result": {
+        "name": "Modifier for Incorrect Airbag Deployment",
+        "value": 0,
+        "rating": -0.0,
+        "color": null,
+        "status": "OK"
+      }
+    },
+    "criterion_door_opening_during_impact": {
+      "result": {
+        "name": "Door Opening During Impact",
+        "value": 0,
+        "rating": -0.0,
+        "color": null,
+        "status": "OK"
+      }
+    }
+  },
+  "2: v2": {
+    "Overall": {
+      "result": {
+        "name": "Overall",
+        "value": 15.636983499249965,
+        "rating": 15.636983499249965,
+        "color": null,
+        "status": "OK"
+      }
+    },
+    "criterion_head": {
+      "result": {
+        "name": "Head",
+        "value": 4.0,
+        "rating": 4.0,
+        "color": null,
+        "status": "OK"
+      },
+      "criterion_hic_15": {
+        "result": {
+          "name": "HIC 15",
+          "value": 250.0,
+          "rating": 4,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_head_acceleration": {
+        "result": {
+          "name": "Head Peak Acceleration",
+          "value": 10.197162129779283,
+          "rating": 4,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_direct_head_contact_with_the_pole": {
+        "result": {
+          "name": "Direct head contact with the pole",
+          "value": false,
+          "rating": 4,
+          "color": null,
+          "status": "OK"
+        }
+      }
+    },
+    "criterion_chest": {
+      "result": {
+        "name": "Chest",
+        "value": 3.6369834992499657,
+        "rating": 3.6369834992499657,
+        "color": null,
+        "status": "OK"
+      },
+      "criterion_chest_lateral_compression": {
+        "result": {
+          "name": "Chest Lateral Compression",
+          "value": -30.0,
+          "rating": 3.6369834992499657,
+          "color": "yellow",
+          "status": "OK"
+        }
+      },
+      "criterion_chest_lateral_vc": {
+        "result": {
+          "name": "Modifier Chest Lateral Viscous Criterion",
+          "value": 0.5,
+          "rating": 4,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_shoulder_lateral_force": {
+        "result": {
+          "name": "Modifier Shoulder Lateral Force",
+          "value": 1.0,
+          "rating": 4,
+          "color": "green",
+          "status": "OK"
+        }
+      }
+    },
+    "criterion_abdomen": {
+      "result": {
+        "name": "Abdomen",
+        "value": 4.0,
+        "rating": 4.0,
+        "color": null,
+        "status": "OK"
+      },
+      "criterion_abdomen_lateral_compression": {
+        "result": {
+          "name": "Abdomen Lateral Compression",
+          "value": -30.0,
+          "rating": 4.0,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_abdomen_lateral_vc": {
+        "result": {
+          "name": "Modifier Abdomen Lateral Viscous Criterion",
+          "value": 0.5,
+          "rating": 4,
+          "color": "green",
+          "status": "OK"
+        }
+      }
+    },
+    "criterion_pelvis": {
+      "result": {
+        "name": "Pelvis",
+        "value": 4.0,
+        "rating": 4.0,
+        "color": null,
+        "status": "OK"
+      },
+      "criterion_pubic_symphysis_force": {
+        "result": {
+          "name": "Pubic Symphysis Force",
+          "value": 1.0,
+          "rating": 4.0,
+          "color": "green",
+          "status": "OK"
+        }
+      }
+    },
+    "criterion_side_head_protection_device": {
+      "result": {
+        "name": "Modifier for Side Head Protection Device",
+        "value": 0,
+        "rating": -0.0,
+        "color": null,
+        "status": "OK"
+      }
+    },
+    "criterion_incorrect_airbag_deployment": {
+      "result": {
+        "name": "Modifier for Incorrect Airbag Deployment",
+        "value": 0,
+        "rating": -0.0,
+        "color": null,
+        "status": "OK"
+      }
+    },
+    "criterion_door_opening_during_impact": {
+      "result": {
+        "name": "Door Opening During Impact",
+        "value": 0,
+        "rating": -0.0,
+        "color": null,
+        "status": "OK"
+      }
+    }
+  },
+  "3: v3": {
+    "Overall": {
+      "result": {
+        "name": "Overall",
+        "value": 0.0,
+        "rating": 0.0,
+        "color": null,
+        "status": "OK"
+      }
+    },
+    "criterion_head": {
+      "result": {
+        "name": "Head",
+        "value": "-inf",
+        "rating": "-inf",
+        "color": null,
+        "status": "OK"
+      },
+      "criterion_hic_15": {
+        "result": {
+          "name": "HIC 15",
+          "value": 500.0,
+          "rating": "-inf",
+          "color": "gray",
+          "status": "OK"
+        }
+      },
+      "criterion_head_acceleration": {
+        "result": {
+          "name": "Head Peak Acceleration",
+          "value": 20.394324259558566,
+          "rating": 4,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_direct_head_contact_with_the_pole": {
+        "result": {
+          "name": "Direct head contact with the pole",
+          "value": false,
+          "rating": 4,
+          "color": null,
+          "status": "OK"
+        }
+      }
+    },
+    "criterion_chest": {
+      "result": {
+        "name": "Chest",
+        "value": "-inf",
+        "rating": "-inf",
+        "color": null,
+        "status": "OK"
+      },
+      "criterion_chest_lateral_compression": {
+        "result": {
+          "name": "Chest Lateral Compression",
+          "value": -60.0,
+          "rating": "-inf",
+          "color": "red",
+          "status": "OK"
+        }
+      },
+      "criterion_chest_lateral_vc": {
+        "result": {
+          "name": "Modifier Chest Lateral Viscous Criterion",
+          "value": 1.0,
+          "rating": 4,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_shoulder_lateral_force": {
+        "result": {
+          "name": "Modifier Shoulder Lateral Force",
+          "value": 2.0,
+          "rating": 4,
+          "color": "green",
+          "status": "OK"
+        }
+      }
+    },
+    "criterion_abdomen": {
+      "result": {
+        "name": "Abdomen",
+        "value": 1.1075,
+        "rating": 1.1075,
+        "color": null,
+        "status": "OK"
+      },
+      "criterion_abdomen_lateral_compression": {
+        "result": {
+          "name": "Abdomen Lateral Compression",
+          "value": -60.0,
+          "rating": 1.1075,
+          "color": "brown",
+          "status": "OK"
+        }
+      },
+      "criterion_abdomen_lateral_vc": {
+        "result": {
+          "name": "Modifier Abdomen Lateral Viscous Criterion",
+          "value": 1.0,
+          "rating": 4,
+          "color": "green",
+          "status": "OK"
+        }
+      }
+    },
+    "criterion_pelvis": {
+      "result": {
+        "name": "Pelvis",
+        "value": 2.911989100817439,
+        "rating": 2.911989100817439,
+        "color": null,
+        "status": "OK"
+      },
+      "criterion_pubic_symphysis_force": {
+        "result": {
+          "name": "Pubic Symphysis Force",
+          "value": 2.0,
+          "rating": 2.911989100817439,
+          "color": "yellow",
+          "status": "OK"
+        }
+      }
+    },
+    "criterion_side_head_protection_device": {
+      "result": {
+        "name": "Modifier for Side Head Protection Device",
+        "value": 0,
+        "rating": -0.0,
+        "color": null,
+        "status": "OK"
+      }
+    },
+    "criterion_incorrect_airbag_deployment": {
+      "result": {
+        "name": "Modifier for Incorrect Airbag Deployment",
+        "value": 0,
+        "rating": -0.0,
+        "color": null,
+        "status": "OK"
+      }
+    },
+    "criterion_door_opening_during_impact": {
+      "result": {
+        "name": "Door Opening During Impact",
+        "value": 0,
+        "rating": -0.0,
+        "color": null,
+        "status": "OK"
+      }
+    }
+  }
+}
