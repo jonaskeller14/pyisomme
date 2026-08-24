@@ -66,12 +66,12 @@ class Overall(Criterion):
         def calculation(self) -> CriterionResult:
             value = np.min(
                 [
-                    self.head_avr.result.value,
-                    self.thsp_04_acr.result.value,
-                    self.thsp_12_acr.result.value,
-                    self.pelv_acr.result.value,
-                    self.b_pillar_acr.result.value,
-                    self.belt_b3_fo0.result.value,
+                    Criterion.value_of(self.head_avr),
+                    Criterion.value_of(self.thsp_04_acr),
+                    Criterion.value_of(self.thsp_12_acr),
+                    Criterion.value_of(self.pelv_acr),
+                    Criterion.value_of(self.b_pillar_acr),
+                    Criterion.value_of(self.belt_b3_fo0),
                 ]
             )
             rating = True if value >= 0.5 else False
@@ -376,11 +376,11 @@ class Overall(Criterion):
 
             def calculation(self) -> CriterionResult:
                 channels = [
-                    self.require(c.result.channel, c.name)
+                    self.require(Criterion.channel_of(c), c.name)
                     for c in self.criteria_individual_iso_score
                 ]
                 self.values = np.array(
-                    [c.result.value for c in self.criteria_individual_iso_score]
+                    [Criterion.value_of(c) for c in self.criteria_individual_iso_score]
                 )
 
                 unit = channels[0].unit
@@ -578,7 +578,9 @@ class EuroNCAP_Side_Farside_VTC(Report[Overall]):
         name = "Validation ISO-Score Table"
         title = "Validation ISO-Score"
         row_label = staticmethod(lambda criterion: f"{criterion.name}")
-        cell_text = staticmethod(lambda criterion: f"{criterion.result.value:.1%}")
+        cell_text = staticmethod(
+            lambda criterion: f"{Criterion.value_of(criterion):.1%}"
+        )
 
         def __init__(self, report: EuroNCAP_Side_Farside_VTC) -> None:
             super().__init__(report)
@@ -658,7 +660,9 @@ class EuroNCAP_Side_Farside_VTC(Report[Overall]):
         title = "Validation Injury-Criteria Percentage"
         row_label = staticmethod(lambda criterion: f"{criterion.name}")
         cell_text = staticmethod(
-            lambda criterion: f"{criterion.r_ac_sim:.1%}\n{criterion.result.value:.1%}"
+            lambda criterion: (
+                f"{criterion.r_ac_sim:.1%}\n{Criterion.value_of(criterion):.1%}"
+            )
         )
 
         def __init__(self, report: EuroNCAP_Side_Farside_VTC) -> None:

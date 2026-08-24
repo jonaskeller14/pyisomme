@@ -84,10 +84,10 @@ class Overall(Criterion):
         role = Role.AGGREGATE
 
         def calculation(self) -> CriterionResult:
-            value = 1 - (1 - self.criterion_head.result.value) * (
-                1 - self.criterion_chest.result.value
-            ) * (1 - self.criterion_femur.result.value) * (
-                1 - self.criterion_neck.result.value
+            value = 1 - (1 - Criterion.value_of(self.criterion_head)) * (
+                1 - Criterion.value_of(self.criterion_chest)
+            ) * (1 - Criterion.value_of(self.criterion_femur)) * (
+                1 - Criterion.value_of(self.criterion_neck)
             )
             rating = value / 0.15  # relative risk (RR)
             return CriterionResult(

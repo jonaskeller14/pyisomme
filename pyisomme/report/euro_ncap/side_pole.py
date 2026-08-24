@@ -64,10 +64,10 @@ class Overall(Criterion):
     def calculation(self) -> CriterionResult:
         rating = np.sum(
             [
-                self.criterion_head.result.rating,
-                self.criterion_chest.result.rating,
-                self.criterion_abdomen.result.rating,
-                self.criterion_pelvis.result.rating,
+                Criterion.rating_of(self.criterion_head),
+                Criterion.rating_of(self.criterion_chest),
+                Criterion.rating_of(self.criterion_abdomen),
+                Criterion.rating_of(self.criterion_pelvis),
             ]
         )
         rating = float(np.interp(rating, [0, 16], [0, 16], left=0, right=np.nan))
@@ -76,9 +76,9 @@ class Overall(Criterion):
 
         rating += np.sum(
             [
-                self.criterion_side_head_protection_device.result.rating,
-                self.criterion_incorrect_airbag_deployment.result.rating,
-                self.criterion_door_opening_during_impact.result.rating,
+                Criterion.rating_of(self.criterion_side_head_protection_device),
+                Criterion.rating_of(self.criterion_incorrect_airbag_deployment),
+                Criterion.rating_of(self.criterion_door_opening_during_impact),
             ]
         )
 
@@ -463,7 +463,7 @@ class Overall(Criterion):
 
         def calculation(self) -> CriterionResult:
 
-            rating = self.criterion_pubic_symphysis_force.result.rating
+            rating = Criterion.rating_of(self.criterion_pubic_symphysis_force)
             return CriterionResult(
                 channel=None,
                 value=rating,

@@ -538,12 +538,38 @@ class Criterion:
         return self.ratings_of(*self.children_by_role(*roles))
 
     @staticmethod
+    def result_of(criterion: Criterion) -> CriterionResult | None:
+        """The result of an explicit criterion, if it calculated successfully."""
+        return criterion.result
+
+    @staticmethod
     def ratings_of(*criteria: Criterion) -> list[float]:
         """Ratings of explicit criteria, using NaN for unavailable results."""
-        return [
-            criterion.result.rating if criterion.result is not None else float(np.nan)
-            for criterion in criteria
-        ]
+        return [Criterion.rating_of(criterion) for criterion in criteria]
+
+    @staticmethod
+    def rating_of(criterion: Criterion) -> float:
+        """Rating of an explicit criterion, or NaN when it is unavailable."""
+        result = Criterion.result_of(criterion)
+        return result.rating if result is not None else float(np.nan)
+
+    @staticmethod
+    def value_of(criterion: Criterion) -> float:
+        """Value of an explicit criterion, or NaN when it is unavailable."""
+        result = Criterion.result_of(criterion)
+        return result.value if result is not None else float(np.nan)
+
+    @staticmethod
+    def channel_of(criterion: Criterion) -> Channel | None:
+        """Channel of an explicit criterion, or None when it is unavailable."""
+        result = Criterion.result_of(criterion)
+        return result.channel if result is not None else None
+
+    @staticmethod
+    def color_of(criterion: Criterion) -> str | tuple[Any, ...] | None:
+        """Color of an explicit criterion, or None when it is unavailable."""
+        result = Criterion.result_of(criterion)
+        return result.color if result is not None else None
 
     def _empty(self, what: str, roles: Sequence[Role]) -> float:
         wanted = ", ".join(str(role) for role in (roles or SCORING_ROLES))

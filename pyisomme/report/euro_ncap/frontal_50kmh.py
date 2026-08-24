@@ -318,8 +318,8 @@ class Criterion_Femur_Axial_Force(Criterion):
     def calculation(self) -> CriterionResult:
         value = np.min(
             [
-                self.criterion_femur_axial_force_left.result.value,
-                self.criterion_femur_axial_force_right.result.value,
+                Criterion.value_of(self.criterion_femur_axial_force_left),
+                Criterion.value_of(self.criterion_femur_axial_force_right),
             ]
         )
         rating = self.min_of_children()
@@ -414,7 +414,7 @@ class Overall(Criterion):
         # when the manufacturer-provided data misses the 90 % requirement — then
         # each body region is taken from the worse of the two front occupants.
         if self.front_passenger_meets_90_percent:
-            front_row = self.criterion_driver.result.rating
+            front_row = Criterion.rating_of(self.criterion_driver)
         else:
             front_row = float(
                 np.sum(
@@ -437,7 +437,11 @@ class Overall(Criterion):
 
         # §4.3: front row and rear passenger (16 points each) averaged, then halved.
         rating = (
-            float(np.nanmean([front_row, self.criterion_rear_passenger.result.rating]))
+            float(
+                np.nanmean(
+                    [front_row, Criterion.rating_of(self.criterion_rear_passenger)]
+                )
+            )
             / 2
         )
         # Capping (-np.inf) leads to 0 points. More than 8 points should not be possible if sub-criteria defined correctly
@@ -840,7 +844,7 @@ class Overall(Criterion):
             role = Role.AGGREGATE
 
             def calculation(self) -> CriterionResult:
-                rating = self.criterion_femur_axial_force.result.rating
+                rating = Criterion.rating_of(self.criterion_femur_axial_force)
                 rating += self.modifiers_sum()
                 return CriterionResult(
                     channel=None,
@@ -1111,7 +1115,7 @@ class Overall(Criterion):
             role = Role.AGGREGATE
 
             def calculation(self) -> CriterionResult:
-                rating = self.criterion_femur_axial_force.result.rating
+                rating = Criterion.rating_of(self.criterion_femur_axial_force)
                 return CriterionResult(
                     channel=None,
                     value=rating,
@@ -1167,7 +1171,7 @@ class Overall(Criterion):
                 if self.hard_contact:
                     rating = self.min_of_children()
                 else:
-                    rating = self.criterion_head_a3ms.result.rating
+                    rating = Criterion.rating_of(self.criterion_head_a3ms)
 
                 rating += self.modifiers_sum()
                 return CriterionResult(
@@ -1442,7 +1446,7 @@ class Overall(Criterion):
             role = Role.AGGREGATE
 
             def calculation(self) -> CriterionResult:
-                rating = self.criterion_femur_axial_force.result.rating
+                rating = Criterion.rating_of(self.criterion_femur_axial_force)
                 rating += self.modifiers_sum()
                 return CriterionResult(
                     channel=None,

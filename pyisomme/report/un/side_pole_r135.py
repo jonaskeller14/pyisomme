@@ -53,7 +53,7 @@ class Overall(Criterion):
             self.set_derived_input("p", str(p).strip())
 
     def calculation(self) -> CriterionResult:
-        rating = self.criterion_dummy.result.rating
+        rating = Criterion.rating_of(self.criterion_dummy)
         return CriterionResult(
             channel=None,
             value=rating,

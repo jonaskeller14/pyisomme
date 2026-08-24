@@ -77,7 +77,9 @@ class Overall(Criterion):
                 channel=None, value=float(np.nan), rating=float(np.nan), color=None
             )
 
-        value = np.nanmin([criterion.result.value for criterion in self.criteria])
+        value = np.nanmin(
+            [Criterion.value_of(criterion) for criterion in self.criteria]
+        )
         return CriterionResult(
             channel=None,
             value=value,
@@ -162,7 +164,9 @@ class Correlation(Report[Overall]):
         name = "Correlation Overall Rating Table"
         title = "Correlation Overall Rating"
         row_label = staticmethod(lambda criterion: f"{criterion.name}")
-        cell_text = staticmethod(lambda criterion: f"{criterion.result.value:.1%}")
+        cell_text = staticmethod(
+            lambda criterion: f"{Criterion.value_of(criterion):.1%}"
+        )
 
         def __init__(self, report: Correlation) -> None:
             super().__init__(report)

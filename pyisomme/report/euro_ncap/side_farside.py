@@ -37,7 +37,7 @@ logger = logging.getLogger(__name__)
 
 def result_channel(criterion: Criterion) -> Channel | None:
     """Return a calculated channel, if this page is built after calculation."""
-    return criterion.result.channel if criterion.result is not None else None
+    return Criterion.channel_of(criterion) if criterion.result is not None else None
 
 
 P = manual(
@@ -73,14 +73,14 @@ class Overall(Criterion):
 
         rating = np.sum(
             [
-                self.criterion_head.result.rating,
-                self.criterion_neck.result.rating,
-                self.criterion_chest_abdomen.result.rating,
+                Criterion.rating_of(self.criterion_head),
+                Criterion.rating_of(self.criterion_neck),
+                Criterion.rating_of(self.criterion_chest_abdomen),
             ]
         )
 
         # Modifier
-        rating += self.criterion_pelvis_lumbar_modifier.result.rating
+        rating += Criterion.rating_of(self.criterion_pelvis_lumbar_modifier)
 
         # Scale max. points of 12 down to 4
         rating = rating / 3

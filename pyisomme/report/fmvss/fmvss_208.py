@@ -501,9 +501,9 @@ class FMVSS_208(Report[Overall]):
     class Page_Compliance_Table(Page_Criterion_Rating_Table):
         @staticmethod
         def cell_text(criterion: Criterion) -> str:
-            if np.isnan(criterion.result.rating):
+            if np.isnan(Criterion.rating_of(criterion)):
                 return "n/a"
-            return "Pass" if criterion.result.rating else "Fail"
+            return "Pass" if Criterion.rating_of(criterion) else "Fail"
 
     class Page_Overall_Compliance(Page_Compliance_Table):
         report: FMVSS_208

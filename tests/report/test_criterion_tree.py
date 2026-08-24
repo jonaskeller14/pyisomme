@@ -398,6 +398,16 @@ class TestAggregation:
         assert np.isnan(overall.sum_of_children())
         assert np.isnan(overall.mean_of_children())
 
+    def test_explicit_result_helpers_handle_unavailable_results(self) -> None:
+        report, (v1,) = report_of(Mixed)
+        criterion = rated(4.0)(report, v1)
+
+        assert Criterion.result_of(criterion) is None
+        assert np.isnan(Criterion.rating_of(criterion))
+        assert np.isnan(Criterion.value_of(criterion))
+        assert Criterion.channel_of(criterion) is None
+        assert Criterion.color_of(criterion) is None
+
     def test_a_nan_tolerant_mean_needs_a_reason_and_records_it(self) -> None:
         class Overall(Criterion):
             fine = sub(rated(4.0))

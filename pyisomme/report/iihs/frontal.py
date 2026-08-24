@@ -626,9 +626,9 @@ class Criterion_Leg_Foot(Criterion):
         rating = self.min_of_children()
         if not np.isnan(rating):
             color = next(
-                child.result.color
+                Criterion.color_of(child)
                 for child in self.children_by_role()
-                if child.result.rating == rating
+                if Criterion.rating_of(child) == rating
             )
         return CriterionResult(
             channel=None,

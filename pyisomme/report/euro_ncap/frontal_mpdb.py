@@ -360,8 +360,8 @@ class Overall(Criterion):
 
         rating += np.sum(
             [
-                self.criterion_door_opening_during_impact.result.rating,
-                self.criterion_compatibility_modifier.result.rating,
+                Criterion.rating_of(self.criterion_door_opening_during_impact),
+                Criterion.rating_of(self.criterion_compatibility_modifier),
             ]
         )
 
@@ -383,10 +383,10 @@ class Overall(Criterion):
 
             rating = np.sum(
                 [
-                    self.criterion_head_neck.result.rating,
-                    self.criterion_chest_abdomen.result.rating,
-                    self.criterion_knee_femur_pelvis.result.rating,
-                    self.criterion_lowerleg_foot_ankle.result.rating,
+                    Criterion.rating_of(self.criterion_head_neck),
+                    Criterion.rating_of(self.criterion_chest_abdomen),
+                    Criterion.rating_of(self.criterion_knee_femur_pelvis),
+                    Criterion.rating_of(self.criterion_lowerleg_foot_ankle),
                 ]
             )
             return CriterionResult(
@@ -467,11 +467,17 @@ class Overall(Criterion):
 
                     rating += np.sum(
                         [
-                            self.criterion_damage.result.rating,
-                            self.criterion_UnstableAirbagContact.result.rating,
-                            self.criterion_HazardousAirbagDeployment.result.rating,
-                            self.criterion_IncorrectAirbagDeployment.result.rating,
-                            self.criterion_DisplacementSteeringColumn.result.rating,
+                            Criterion.rating_of(self.criterion_damage),
+                            Criterion.rating_of(self.criterion_UnstableAirbagContact),
+                            Criterion.rating_of(
+                                self.criterion_HazardousAirbagDeployment
+                            ),
+                            Criterion.rating_of(
+                                self.criterion_IncorrectAirbagDeployment
+                            ),
+                            Criterion.rating_of(
+                                self.criterion_DisplacementSteeringColumn
+                            ),
                         ]
                     )
                     return CriterionResult(
@@ -789,16 +795,16 @@ class Overall(Criterion):
 
                 def calculation(self) -> CriterionResult:
 
-                    rating = self.criterion_chest_compression.result.rating
+                    rating = Criterion.rating_of(self.criterion_chest_compression)
 
                     # Modifier
 
                     rating += np.sum(
                         [
-                            self.criterion_shoulder_belt_load.result.rating,
-                            self.criterion_SteeringWheelContact.result.rating,
-                            self.criterion_DisplacementAPillar.result.rating,
-                            self.criterion_CompartmentIntegrity.result.rating,
+                            Criterion.rating_of(self.criterion_shoulder_belt_load),
+                            Criterion.rating_of(self.criterion_SteeringWheelContact),
+                            Criterion.rating_of(self.criterion_DisplacementAPillar),
+                            Criterion.rating_of(self.criterion_CompartmentIntegrity),
                         ]
                     )
                     return CriterionResult(
@@ -948,7 +954,7 @@ class Overall(Criterion):
 
                 def calculation(self) -> CriterionResult:
 
-                    rating = self.criterion_abdomen_compression.result.rating
+                    rating = Criterion.rating_of(self.criterion_abdomen_compression)
                     return CriterionResult(
                         channel=None,
                         value=rating,
@@ -1004,9 +1010,9 @@ class Overall(Criterion):
 
                 rating += np.sum(
                     [
-                        self.criterion_submarining.result.rating,
-                        self.criterion_VariableContact.result.rating,
-                        self.criterion_ConcentratedLoading.result.rating,
+                        Criterion.rating_of(self.criterion_submarining),
+                        Criterion.rating_of(self.criterion_VariableContact),
+                        Criterion.rating_of(self.criterion_ConcentratedLoading),
                     ]
                 )
                 return CriterionResult(
@@ -1023,7 +1029,7 @@ class Overall(Criterion):
 
                 def calculation(self) -> CriterionResult:
 
-                    rating = self.criterion_acetabulum_force.result.rating
+                    rating = Criterion.rating_of(self.criterion_acetabulum_force)
                     return CriterionResult(
                         channel=None,
                         value=rating,
@@ -1076,7 +1082,7 @@ class Overall(Criterion):
 
                 def calculation(self) -> CriterionResult:
 
-                    rating = self.criterion_femur_compression.result.rating
+                    rating = Criterion.rating_of(self.criterion_femur_compression)
                     return CriterionResult(
                         channel=None,
                         value=rating,
@@ -1092,7 +1098,7 @@ class Overall(Criterion):
 
                 def calculation(self) -> CriterionResult:
 
-                    rating = self.criterion_knee_slider_compression.result.rating
+                    rating = Criterion.rating_of(self.criterion_knee_slider_compression)
                     return CriterionResult(
                         channel=None,
                         value=rating,
@@ -1125,9 +1131,9 @@ class Overall(Criterion):
 
                 rating += np.sum(
                     [
-                        self.criterion_PedalUpwardDisplacement.result.rating,
-                        self.criterion_FootwellRupture.result.rating,
-                        self.criterion_PedalBlocking.result.rating,
+                        Criterion.rating_of(self.criterion_PedalUpwardDisplacement),
+                        Criterion.rating_of(self.criterion_FootwellRupture),
+                        Criterion.rating_of(self.criterion_PedalBlocking),
                     ]
                 )
                 return CriterionResult(
@@ -1271,10 +1277,10 @@ class Overall(Criterion):
 
             rating = np.sum(
                 [
-                    self.criterion_head_neck.result.rating,
-                    self.criterion_chest.result.rating,
-                    self.criterion_knee_femur_pelvis.result.rating,
-                    self.criterion_lowerleg.result.rating,
+                    Criterion.rating_of(self.criterion_head_neck),
+                    Criterion.rating_of(self.criterion_chest),
+                    Criterion.rating_of(self.criterion_knee_femur_pelvis),
+                    Criterion.rating_of(self.criterion_lowerleg),
                 ]
             )
             return CriterionResult(
@@ -1314,9 +1320,13 @@ class Overall(Criterion):
 
                     rating += np.sum(
                         [
-                            self.criterion_UnstableAirbagContact.result.rating,
-                            self.criterion_HazardousAirbagDeployment.result.rating,
-                            self.criterion_IncorrectAirbagDeployment.result.rating,
+                            Criterion.rating_of(self.criterion_UnstableAirbagContact),
+                            Criterion.rating_of(
+                                self.criterion_HazardousAirbagDeployment
+                            ),
+                            Criterion.rating_of(
+                                self.criterion_IncorrectAirbagDeployment
+                            ),
                         ]
                     )
                     return CriterionResult(
@@ -1604,7 +1614,7 @@ class Overall(Criterion):
                 rating = value = self.min_of_children()
 
                 # Modifier
-                rating += self.criterion_shoulder_belt_load.result.rating
+                rating += Criterion.rating_of(self.criterion_shoulder_belt_load)
                 return CriterionResult(
                     channel=None,
                     value=value,
@@ -1662,8 +1672,8 @@ class Overall(Criterion):
 
                 rating += np.sum(
                     [
-                        self.criterion_VariableContact.result.rating,
-                        self.criterion_ConcentratedLoading.result.rating,
+                        Criterion.rating_of(self.criterion_VariableContact),
+                        Criterion.rating_of(self.criterion_ConcentratedLoading),
                     ]
                 )
                 return CriterionResult(
@@ -1718,9 +1728,9 @@ class Overall(Criterion):
 
             value = np.sum(
                 [
-                    self.criterion_olc_modifier.result.rating,
-                    # self.criterion_sd_modifier.result.rating,
-                    # self.criterion_bo_modifier.result.rating
+                    Criterion.rating_of(self.criterion_olc_modifier),
+                    # Criterion.rating_of(self.criterion_sd_modifier),
+                    # Criterion.rating_of(self.criterion_bo_modifier)
                 ]
             )
             rating = float(
