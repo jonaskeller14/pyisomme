@@ -346,9 +346,7 @@ class Overall(Criterion):
         )
 
         # Capping (-np.inf) leads to 0 points. More than 16 points should not be possible if sub-criteria defined correctly
-        rating = float(
-            np.interp(rating, [0, 16], [0, 16], left=0, right=np.nan)
-        )
+        rating = float(np.interp(rating, [0, 16], [0, 16], left=0, right=np.nan))
         # §3.4: "This score is halved with a total achievable score of 8 points."
         # TODO(test): no golden fixture reaches this line with a number — the MPDB
         #   driver is nan in all three, so Overall is nan. Verified by hand only
@@ -418,7 +416,7 @@ class Overall(Criterion):
 
             def calculation(self) -> CriterionResult:
                 if not self.steering_wheel_airbag_exists:
-                    rating = 0
+                    rating = 0.0
                 else:
                     rating = self.min_of_children()
                 return CriterionResult(
@@ -840,8 +838,13 @@ class Overall(Criterion):
                         if self.report.criterion_overall[
                             self.isomme
                         ].p_driver != self.ctx.field("p"):
-                            rating = 0
-                            return
+                            rating = 0.0
+                            return CriterionResult(
+                                channel=None,
+                                value=rating,
+                                rating=rating,
+                                color=None,
+                            )
 
                         value = self.displacement_a_pillar
                         rating = float(
@@ -1236,9 +1239,7 @@ class Overall(Criterion):
 
                 def calculation(self) -> CriterionResult:
                     value = self.pedal_rearward_displacement
-                    rating = float(
-                        np.interp(value, [100, 200], [4, 0], left=4)
-                    )
+                    rating = float(np.interp(value, [100, 200], [4, 0], left=4))
                     return CriterionResult(
                         channel=None,
                         value=value,
@@ -1631,9 +1632,7 @@ class Overall(Criterion):
                         self.ctx.code("?{p}CHST0000??DSXC"),
                     ).convert_unit("mm")
                     value = np.min(channel.get_data())
-                    rating = self.limits.get_limit_min_rating(
-                        channel, interpolate=True
-                    )
+                    rating = self.limits.get_limit_min_rating(channel, interpolate=True)
                     color = self.limits.get_limit_min_color(channel)
                     return CriterionResult(
                         channel=channel,
@@ -1773,9 +1772,7 @@ class Overall(Criterion):
                     self.require_channel("M?MBAR0000??VEXA", "M?MBARCG00??VEXA")
                 )[0].convert_unit(Unit(g0))
                 value = channel.get_data()[0]
-                rating = self.limits.get_limit_min_rating(
-                    channel, interpolate=True
-                )
+                rating = self.limits.get_limit_min_rating(channel, interpolate=True)
                 color = self.limits.get_limits(channel)[0].color
                 return CriterionResult(
                     channel=channel,
@@ -2552,10 +2549,9 @@ class EuroNCAP_Frontal_MPDB(Report[Overall]):
             def result_color(
                 isomme: Isomme, fallback: tuple[float, float, float, float]
             ) -> tuple[float, float, float, float]:
-                result = (
-                    self.report.criterion_overall[isomme]
-                    .criterion_compatibility_modifier.criterion_olc_modifier.result
-                )
+                result = self.report.criterion_overall[
+                    isomme
+                ].criterion_compatibility_modifier.criterion_olc_modifier.result
                 return (
                     (*to_rgb(result.color), 0.5)
                     if result is not None and result.color is not None
@@ -2564,9 +2560,7 @@ class EuroNCAP_Frontal_MPDB(Report[Overall]):
 
             self.cell_colors = [
                 [
-                    [
-                        result_color(isomme, self._cell_colors[idx][0])
-                    ]
+                    [result_color(isomme, self._cell_colors[idx][0])]
                     for idx, isomme in enumerate(self.report.isomme_list)
                 ]
             ]

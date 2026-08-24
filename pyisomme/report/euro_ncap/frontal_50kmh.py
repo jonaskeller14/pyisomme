@@ -276,9 +276,7 @@ class Criterion_Femur_Axial_Force(Criterion):
                 self.ctx.code("?{p}FEMRLE00??FOZB")
             ).convert_unit("kN")
             value = np.min(channel.get_data())
-            rating = self.limits.get_limit_min_rating(
-                channel, interpolate=True
-            )
+            rating = self.limits.get_limit_min_rating(channel, interpolate=True)
             color = self.limits.get_limit_min_color(channel)
             return CriterionResult(
                 channel=channel,
@@ -305,9 +303,7 @@ class Criterion_Femur_Axial_Force(Criterion):
                 self.ctx.code("?{p}FEMRRI00??FOZB")
             ).convert_unit("kN")
             value = np.min(channel.get_data())
-            rating = self.limits.get_limit_min_rating(
-                channel, interpolate=True
-            )
+            rating = self.limits.get_limit_min_rating(channel, interpolate=True)
             color = self.limits.get_limit_min_color(channel)
             return CriterionResult(
                 channel=channel,
@@ -441,12 +437,11 @@ class Overall(Criterion):
 
         # §4.3: front row and rear passenger (16 points each) averaged, then halved.
         rating = (
-            float(np.nanmean([front_row, self.criterion_rear_passenger.result.rating])) / 2
+            float(np.nanmean([front_row, self.criterion_rear_passenger.result.rating]))
+            / 2
         )
         # Capping (-np.inf) leads to 0 points. More than 8 points should not be possible if sub-criteria defined correctly
-        rating = float(
-            np.interp(rating, [0, 8], [0, 8], left=0, right=np.nan)
-        )
+        rating = float(np.interp(rating, [0, 8], [0, 8], left=0, right=np.nan))
 
         rating += self.modifiers_sum()
         return CriterionResult(
@@ -680,7 +675,7 @@ class Overall(Criterion):
                 if not self.report.criterion_overall[
                     self.isomme
                 ].criterion_driver.steering_wheel_airbag_exists:
-                    rating = 0
+                    rating = 0.0
                 else:
                     rating = self.min_of_children()
                 return CriterionResult(
@@ -770,9 +765,7 @@ class Overall(Criterion):
                     channel = self.require_channel(
                         self.ctx.code("?{p}NECKUP00??FOXA")
                     ).convert_unit("kN")
-                    value = channel.get_data()[
-                        np.argmax(np.abs(channel.get_data()))
-                    ]
+                    value = channel.get_data()[np.argmax(np.abs(channel.get_data()))]
                     rating = self.limits.get_limit_min_rating(channel)
                     color = self.limits.get_limit_min_color(channel)
                     return CriterionResult(
@@ -1075,9 +1068,7 @@ class Overall(Criterion):
                     channel = self.require_channel(
                         self.ctx.code("?{p}NECKUP00??FOXA")
                     ).convert_unit("kN")
-                    value = channel.get_data()[
-                        np.argmax(np.abs(channel.get_data()))
-                    ]
+                    value = channel.get_data()[np.argmax(np.abs(channel.get_data()))]
                     rating = self.limits.get_limit_min_rating(channel)
                     color = self.limits.get_limit_min_color(channel)
                     return CriterionResult(
@@ -1335,9 +1326,7 @@ class Overall(Criterion):
                     value = np.min(channel.get_data())
                     # Rescale the 4 pt. block onto the rear passenger's 2 pt. budget.
                     rating = (
-                        self.limits.get_limit_min_rating(channel)
-                        * self.max_rating
-                        / 4
+                        self.limits.get_limit_min_rating(channel) * self.max_rating / 4
                     )
                     color = self.limits.get_limit_min_color(channel)
                     return CriterionResult(
@@ -1371,9 +1360,7 @@ class Overall(Criterion):
                     value = np.max(channel.get_data())
                     # Rescale the 4 pt. block onto the rear passenger's 1 pt. budget.
                     rating = (
-                        self.limits.get_limit_min_rating(channel)
-                        * self.max_rating
-                        / 4
+                        self.limits.get_limit_min_rating(channel) * self.max_rating / 4
                     )
                     color = self.limits.get_limit_min_color(channel)
                     return CriterionResult(
@@ -1409,14 +1396,10 @@ class Overall(Criterion):
                     channel = self.require_channel(
                         self.ctx.code("?{p}NECKUP00??FOXA")
                     ).convert_unit("kN")
-                    value = channel.get_data()[
-                        np.argmax(np.abs(channel.get_data()))
-                    ]
+                    value = channel.get_data()[np.argmax(np.abs(channel.get_data()))]
                     # Rescale the 4 pt. block onto the rear passenger's 1 pt. budget.
                     rating = (
-                        self.limits.get_limit_min_rating(channel)
-                        * self.max_rating
-                        / 4
+                        self.limits.get_limit_min_rating(channel) * self.max_rating / 4
                     )
                     color = self.limits.get_limit_min_color(channel)
                     return CriterionResult(

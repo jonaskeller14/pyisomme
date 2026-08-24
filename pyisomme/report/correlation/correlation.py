@@ -122,13 +122,7 @@ class Overall(Criterion):
                 value = Correlation_ISO18571(
                     reference_channel=self.channel_r, comparison_channel=self.channel_c
                 ).overall_rating()
-                color = (
-                    "green"
-                    if value > 0.75
-                    else "orange"
-                    if value > 0.5
-                    else "red"
-                )
+                color = "green" if value > 0.75 else "orange" if value > 0.5 else "red"
             return CriterionResult(
                 channel=None,
                 value=value,

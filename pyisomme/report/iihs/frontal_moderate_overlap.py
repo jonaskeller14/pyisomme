@@ -240,9 +240,7 @@ class Overall(Criterion):
                             rating=rating,
                             color=color,
                         )
-                    channel = self.require_channel(
-                        self.ctx.code("?{p}HICR0015??00RX")
-                    )
+                    channel = self.require_channel(self.ctx.code("?{p}HICR0015??00RX"))
                     value = float(channel.get_data()[0])
                     rating = self.limits.get_limit_min_rating(
                         channel, interpolate=False
@@ -284,9 +282,7 @@ class Overall(Criterion):
                             rating=rating,
                             color=color,
                         )
-                    channel = self.require_channel(
-                        self.ctx.code("?{p}NIJCIP00??00YB")
-                    )
+                    channel = self.require_channel(self.ctx.code("?{p}NIJCIP00??00YB"))
                     value = float(np.max(channel.get_data()))
                     rating = self.limits.get_limit_min_rating(
                         channel, interpolate=False

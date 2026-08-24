@@ -86,7 +86,9 @@ class Overall(Criterion):
         def calculation(self) -> CriterionResult:
             value = 1 - (1 - self.criterion_head.result.value) * (
                 1 - self.criterion_chest.result.value
-            ) * (1 - self.criterion_femur.result.value) * (1 - self.criterion_neck.result.value)
+            ) * (1 - self.criterion_femur.result.value) * (
+                1 - self.criterion_neck.result.value
+            )
             rating = value / 0.15  # relative risk (RR)
             return CriterionResult(
                 channel=None,

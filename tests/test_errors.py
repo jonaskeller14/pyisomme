@@ -3,7 +3,6 @@
 import types
 import typing
 
-import numpy as np
 import pytest
 
 from pyisomme.errors import (
@@ -52,7 +51,9 @@ class TestCriterionOutcomes:
     ) -> typing.Callable[[typing.Callable[..., CriterionResult]], Criterion]:
         """Factory fixture that binds a custom calculation method to a fresh Criterion."""
 
-        def _factory(calculation_func: typing.Callable[..., CriterionResult]) -> Criterion:
+        def _factory(
+            calculation_func: typing.Callable[..., CriterionResult],
+        ) -> Criterion:
             criterion = Criterion(fake_report, empty_isomme)
             criterion.calculation = types.MethodType(calculation_func, criterion)
             return criterion

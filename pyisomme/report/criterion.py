@@ -541,9 +541,7 @@ class Criterion:
     def ratings_of(*criteria: Criterion) -> list[float]:
         """Ratings of explicit criteria, using NaN for unavailable results."""
         return [
-            criterion.result.rating
-            if criterion.result is not None
-            else float(np.nan)
+            criterion.result.rating if criterion.result is not None else float(np.nan)
             for criterion in criteria
         ]
 

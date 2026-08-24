@@ -38,7 +38,9 @@ class Rated(Criterion):
 
     def calculation(self) -> CriterionResult:
         self.calls += 1
-        return CriterionResult(channel=None, value=self.rating, rating=self.rating, color=None)
+        return CriterionResult(
+            channel=None, value=self.rating, rating=self.rating, color=None
+        )
 
 
 def rated(
@@ -168,7 +170,12 @@ class TestAutoCalculation:
 
             def calculation(self) -> CriterionResult:
                 # No `self.child.calculate()` — that is the point.
-                return CriterionResult(channel=None, value=self.min_of_children(), rating=self.min_of_children(), color=None)
+                return CriterionResult(
+                    channel=None,
+                    value=self.min_of_children(),
+                    rating=self.min_of_children(),
+                    color=None,
+                )
 
         report, (v1,) = report_of(Overall)
         report.calculate()
@@ -203,14 +210,18 @@ class TestAutoCalculation:
 
             def calculation(self) -> CriterionResult:
                 rating = self.min_of_children()
-                return CriterionResult(channel=None, value=rating, rating=rating, color=None)
+                return CriterionResult(
+                    channel=None, value=rating, rating=rating, color=None
+                )
 
         class Overall(Criterion):
             branch = sub(Branch)
 
             def calculation(self) -> CriterionResult:
                 rating = self.min_of_children()
-                return CriterionResult(channel=None, value=rating, rating=rating, color=None)
+                return CriterionResult(
+                    channel=None, value=rating, rating=rating, color=None
+                )
 
         report, (v1,) = report_of(Overall)
         report.calculate()
@@ -222,7 +233,9 @@ class TestAutoCalculation:
         class Overall(Criterion):
             def calculation(self) -> CriterionResult:
                 rating = self.sum_of_children()
-                return CriterionResult(channel=None, value=rating, rating=rating, color=None)
+                return CriterionResult(
+                    channel=None, value=rating, rating=rating, color=None
+                )
 
         report, (v1,) = report_of(Overall)
         overall = report.overall(v1)
@@ -259,7 +272,9 @@ class TestAutoCalculation:
 
             def calculation(self) -> CriterionResult:
                 rating = self.min_of_children()
-                return CriterionResult(channel=None, value=rating, rating=rating, color=None)
+                return CriterionResult(
+                    channel=None, value=rating, rating=rating, color=None
+                )
 
         report, (v1,) = report_of(Overall)
         report.calculate()
@@ -298,14 +313,18 @@ class TestAutoCalculation:
 
             def calculation(self) -> CriterionResult:
                 rating = 1.0 if self.hard_contact else 0.0
-                return CriterionResult(channel=None, value=rating, rating=rating, color=None)
+                return CriterionResult(
+                    channel=None, value=rating, rating=rating, color=None
+                )
 
         class Overall(Criterion):
             leaf = sub(Leaf)
 
             def calculation(self) -> CriterionResult:
                 rating = self.min_of_children()
-                return CriterionResult(channel=None, value=rating, rating=rating, color=None)
+                return CriterionResult(
+                    channel=None, value=rating, rating=rating, color=None
+                )
 
         report, (v1,) = report_of(Overall)
         report.overall(v1).leaf.hard_contact = False
@@ -385,8 +404,12 @@ class TestAggregation:
             missing = sub(rated(np.nan))
 
             def calculation(self) -> CriterionResult:
-                rating = self.mean_of_children(skip_missing="no rear occupant in this test")
-                return CriterionResult(channel=None, value=rating, rating=rating, color=None)
+                rating = self.mean_of_children(
+                    skip_missing="no rear occupant in this test"
+                )
+                return CriterionResult(
+                    channel=None, value=rating, rating=rating, color=None
+                )
 
         report, (v1,) = report_of(Overall)
         report.calculate()
@@ -402,7 +425,9 @@ class TestAggregation:
 
             def calculation(self) -> CriterionResult:
                 rating = self.mean_of_children(skip_missing="would be a lie")
-                return CriterionResult(channel=None, value=rating, rating=rating, color=None)
+                return CriterionResult(
+                    channel=None, value=rating, rating=rating, color=None
+                )
 
         report, (v1,) = report_of(Overall)
         report.calculate()
@@ -416,7 +441,9 @@ class TestAggregation:
 
             def calculation(self) -> CriterionResult:
                 rating = self.mean_of_children(skip_missing="whatever")
-                return CriterionResult(channel=None, value=rating, rating=rating, color=None)
+                return CriterionResult(
+                    channel=None, value=rating, rating=rating, color=None
+                )
 
         report, (v1,) = report_of(Overall)
         report.calculate()
@@ -429,7 +456,9 @@ class TestAggregation:
 
             def calculation(self) -> CriterionResult:
                 rating = self.min_of_children() + self.modifiers_sum()
-                return CriterionResult(channel=None, value=rating, rating=rating, color=None)
+                return CriterionResult(
+                    channel=None, value=rating, rating=rating, color=None
+                )
 
         report, (v1,) = report_of(Overall)
         report.calculate()
@@ -440,7 +469,9 @@ class TestAggregation:
         class Overall(Criterion):
             def calculation(self) -> CriterionResult:
                 rating = self.min_of_children()
-                return CriterionResult(channel=None, value=rating, rating=rating, color=None)
+                return CriterionResult(
+                    channel=None, value=rating, rating=rating, color=None
+                )
 
         report, (v1,) = report_of(Overall)
         report.calculate()
@@ -461,7 +492,9 @@ class TestAggregation:
                 self.criterion_a.calculate()
                 self.criterion_b.calculate()
                 rating = self.min_of_children()
-                return CriterionResult(channel=None, value=rating, rating=rating, color=None)
+                return CriterionResult(
+                    channel=None, value=rating, rating=rating, color=None
+                )
 
         report, (v1,) = report_of(Overall)
         report.calculate()
@@ -545,7 +578,9 @@ class TestContext:
         class Leaf(Criterion):
             def calculation(self) -> CriterionResult:
                 value = float(self.ctx.field("p"))
-                return CriterionResult(channel=None, value=value, rating=value, color=None)
+                return CriterionResult(
+                    channel=None, value=value, rating=value, color=None
+                )
 
         class Region(Criterion):
             leaf = sub(Leaf)
@@ -585,7 +620,9 @@ class TestContext:
         class Leaf(Criterion):
             def calculation(self) -> CriterionResult:
                 channel = self.require_channel(self.code("?{p}HEAD??00??ACRA"))
-                return CriterionResult(channel=channel, value=1.0, rating=1.0, color=None)
+                return CriterionResult(
+                    channel=channel, value=1.0, rating=1.0, color=None
+                )
 
         class Overall(Criterion):
             leaf = sub(Leaf)
@@ -735,7 +772,9 @@ class Correlation(Criterion):
 
     def calculation(self) -> CriterionResult:
         value = 1.0 if self._channel is not None else 0.0
-        return CriterionResult(channel=self._channel, value=value, rating=value, color=None)
+        return CriterionResult(
+            channel=self._channel, value=value, rating=value, color=None
+        )
 
 
 class Structural(Criterion):
@@ -769,7 +808,9 @@ class TestNoOccupant:
         class Overall(Criterion):
             def calculation(self) -> CriterionResult:
                 rating = self.sum_of_children()
-                return CriterionResult(channel=None, value=rating, rating=rating, color=None)
+                return CriterionResult(
+                    channel=None, value=rating, rating=rating, color=None
+                )
 
         report, (v1,) = report_of(Overall)
         overall = report.overall(v1)

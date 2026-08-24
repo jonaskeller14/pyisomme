@@ -44,7 +44,10 @@ class Page_Criterion_Values_Chart(Page_Figure):
         unique_limits = np.zeros(len(x_labels), dtype=bool)
         line_values = np.array(
             [
-                [abs(c.result.value) if c.result is not None else np.nan for c in criteria]
+                [
+                    abs(c.result.value) if c.result is not None else np.nan
+                    for c in criteria
+                ]
                 for isomme, criteria in self.criteria.items()
             ]
         )

@@ -96,9 +96,7 @@ class Overall(Criterion):
                     self.ctx.code("?{p}RIBSLE00??DSYC")
                 ).convert_unit("mm")
                 value = np.min(channel.get_data())
-                rating = self.limits.get_limit_min_rating(
-                    channel, interpolate=False
-                )
+                rating = self.limits.get_limit_min_rating(channel, interpolate=False)
                 color = self.limits.get_limit_min_color(channel)
                 return CriterionResult(
                     channel=channel,
@@ -126,9 +124,7 @@ class Overall(Criterion):
                     self.ctx.code("?{p}VCCRLE00??VEYC")
                 ).convert_unit("m/s")
                 value = np.min(channel.get_data())
-                rating = self.limits.get_limit_min_rating(
-                    channel, interpolate=False
-                )
+                rating = self.limits.get_limit_min_rating(channel, interpolate=False)
                 color = self.limits.get_limit_min_color(channel)
                 return CriterionResult(
                     channel=channel,
@@ -157,9 +153,7 @@ class Overall(Criterion):
                     self.ctx.code("?{p}ABDOLE00??FOYB")
                 ).convert_unit("kN")
                 value = np.min(channel.get_data())
-                rating = self.limits.get_limit_min_rating(
-                    channel, interpolate=False
-                )
+                rating = self.limits.get_limit_min_rating(channel, interpolate=False)
                 color = self.limits.get_limit_min_color(channel)
                 return CriterionResult(
                     channel=channel,

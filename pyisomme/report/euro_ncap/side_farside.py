@@ -5,6 +5,7 @@ from typing import Any
 
 import numpy as np
 
+from pyisomme.channel import Channel
 from pyisomme.isomme import Isomme
 from pyisomme.limit import Limit
 from pyisomme.report.criterion import Criterion, Role, sub
@@ -34,9 +35,10 @@ from pyisomme.report.report import Report
 logger = logging.getLogger(__name__)
 
 
-def result_channel(criterion: Criterion):
+def result_channel(criterion: Criterion) -> Channel | None:
     """Return a calculated channel, if this page is built after calculation."""
     return criterion.result.channel if criterion.result is not None else None
+
 
 P = manual(
     "1",
@@ -96,7 +98,7 @@ class Overall(Criterion):
         max_chest_score: float = 4
 
         def calculation(self) -> CriterionResult:
-            #TODO
+            # TODO
             value = float(np.nan)
             return CriterionResult(channel=None, value=value, rating=value, color=None)
 
@@ -222,12 +224,8 @@ class Overall(Criterion):
                     ]
 
                 def calculation(self) -> CriterionResult:
-                    channel = self.require_channel(
-                        self.ctx.code("?{p}TMONUP00??MOXB")
-                    )
-                    value = channel.get_data()[
-                        np.argmax(np.abs(channel.get_data()))
-                    ]
+                    channel = self.require_channel(self.ctx.code("?{p}TMONUP00??MOXB"))
+                    value = channel.get_data()[np.argmax(np.abs(channel.get_data()))]
                     rating = self.limits.get_limit_min_rating(channel)
                     color = self.limits.get_limit_min_color(channel)
                     return CriterionResult(
@@ -334,9 +332,7 @@ class Overall(Criterion):
                     channel = self.require_channel(
                         self.ctx.code("?{p}TMONLO00??MOXB")
                     ).convert_unit("N*m")
-                    value = channel.get_data()[
-                        np.argmax(np.abs(channel.get_data()))
-                    ]
+                    value = channel.get_data()[np.argmax(np.abs(channel.get_data()))]
                     rating = self.limits.get_limit_min_rating(channel)
                     color = self.limits.get_limit_min_color(channel)
                     return CriterionResult(
@@ -469,9 +465,7 @@ class Overall(Criterion):
                     self.ctx.code("?{p}PUBC0000??FOYB")
                 ).convert_unit("kN")
                 value = self.limits.get_limit_min_y(channel, unit="kN")
-                rating = self.limits.get_limit_min_rating(
-                    channel, interpolate=False
-                )
+                rating = self.limits.get_limit_min_rating(channel, interpolate=False)
                 color = self.limits.get_limit_min_color(channel)
                 return CriterionResult(
                     channel=channel,
@@ -522,9 +516,7 @@ class Overall(Criterion):
                     self.ctx.code("?{p}LUSP0000??FOYB")
                 ).convert_unit("kN")
                 value = self.limits.get_limit_min_y(channel, unit="kN")
-                rating = self.limits.get_limit_min_rating(
-                    channel, interpolate=False
-                )
+                rating = self.limits.get_limit_min_rating(channel, interpolate=False)
                 color = self.limits.get_limit_min_color(channel)
                 return CriterionResult(
                     channel=channel,
@@ -575,9 +567,7 @@ class Overall(Criterion):
                     self.ctx.code("?{p}LUSP0000??FOZB")
                 ).convert_unit("kN")
                 value = self.limits.get_limit_min_y(channel, unit="kN")
-                rating = self.limits.get_limit_min_rating(
-                    channel, interpolate=False
-                )
+                rating = self.limits.get_limit_min_rating(channel, interpolate=False)
                 color = self.limits.get_limit_min_color(channel)
                 return CriterionResult(
                     channel=channel,
@@ -628,9 +618,7 @@ class Overall(Criterion):
                     self.ctx.code("?{p}LUSP0000??MOXB")
                 ).convert_unit("Nm")
                 value = self.limits.get_limit_min_y(channel, unit="Nm")
-                rating = self.limits.get_limit_min_rating(
-                    channel, interpolate=False
-                )
+                rating = self.limits.get_limit_min_rating(channel, interpolate=False)
                 color = self.limits.get_limit_min_color(channel)
                 return CriterionResult(
                     channel=channel,

@@ -195,9 +195,17 @@ class Report(BaseReport, Generic[C]):
                     "name": criterion.name
                     if criterion.name is not None
                     else criterion.__class__.__name__,
-                    "value": json_encode(criterion.result.value if criterion.result is not None else None),
-                    "rating": json_encode(criterion.result.rating if criterion.result is not None else None),
-                    "color": json_encode(criterion.result.color if criterion.result is not None else None),
+                    "value": json_encode(
+                        criterion.result.value if criterion.result is not None else None
+                    ),
+                    "rating": json_encode(
+                        criterion.result.rating
+                        if criterion.result is not None
+                        else None
+                    ),
+                    "color": json_encode(
+                        criterion.result.color if criterion.result is not None else None
+                    ),
                     "status": criterion.status.name,
                 }
             results[f"{isomme_idx}: {isomme.test_number}"] = test_results

@@ -71,9 +71,7 @@ class Overall(Criterion):
                 self.criterion_pelvis.result.rating,
             ]
         )
-        rating = float(
-            np.interp(rating, [0, 16], [0, 16], left=0, right=np.nan)
-        )
+        rating = float(np.interp(rating, [0, 16], [0, 16], left=0, right=np.nan))
 
         # Modifier
 
@@ -155,9 +153,7 @@ class Overall(Criterion):
                     self.ctx.code("?{p}TRRI??00??DSYC")
                 ).convert_unit("mm")
                 value = np.min(channel.get_data())
-                rating = self.limits.get_limit_min_rating(
-                    channel, interpolate=True
-                )
+                rating = self.limits.get_limit_min_rating(channel, interpolate=True)
                 color = self.limits.get_limit_min_color(channel)
                 return CriterionResult(
                     channel=channel,
