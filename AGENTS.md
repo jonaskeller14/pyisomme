@@ -24,6 +24,7 @@ unrelated work. When a listed project is completed, remove or update its entry i
 - Do not commit unless the user explicitly asks. Leave changes for manual review and summarize changed
   files, verification performed, deviations, and open work.
 - Writing methods overwrite without warning; verify output paths before using them.
+- When using the GitHub CLI to write Markdown, use actual multiline input (for example, a PowerShell here-string), never literal `\n` escapes.
 
 ## Commands
 
