@@ -3,7 +3,7 @@
     "Overall": {
       "result": {
         "name": "Overall",
-        "value": "nan",
+        "value": 16.0,
         "rating": 16.0,
         "color": null,
         "status": "OK"
@@ -12,7 +12,7 @@
     "criterion_head": {
       "result": {
         "name": "Head",
-        "value": "nan",
+        "value": 4.0,
         "rating": 4.0,
         "color": null,
         "status": "OK"
@@ -39,7 +39,7 @@
     "criterion_chest": {
       "result": {
         "name": "Chest",
-        "value": "nan",
+        "value": 4.0,
         "rating": 4.0,
         "color": null,
         "status": "OK"
@@ -75,7 +75,7 @@
     "criterion_abdomen": {
       "result": {
         "name": "Abdomen",
-        "value": "nan",
+        "value": 4.0,
         "rating": 4.0,
         "color": null,
         "status": "OK"
@@ -102,7 +102,7 @@
     "criterion_pelvis": {
       "result": {
         "name": "Pelvis",
-        "value": "nan",
+        "value": 4.0,
         "rating": 4.0,
         "color": null,
         "status": "OK"
@@ -140,7 +140,7 @@
     "Overall": {
       "result": {
         "name": "Overall",
-        "value": "nan",
+        "value": 15.636983499249965,
         "rating": 15.636983499249965,
         "color": null,
         "status": "OK"
@@ -149,7 +149,7 @@
     "criterion_head": {
       "result": {
         "name": "Head",
-        "value": "nan",
+        "value": 4.0,
         "rating": 4.0,
         "color": null,
         "status": "OK"
@@ -176,7 +176,7 @@
     "criterion_chest": {
       "result": {
         "name": "Chest",
-        "value": "nan",
+        "value": 3.6369834992499657,
         "rating": 3.6369834992499657,
         "color": null,
         "status": "OK"
@@ -212,7 +212,7 @@
     "criterion_abdomen": {
       "result": {
         "name": "Abdomen",
-        "value": "nan",
+        "value": 4.0,
         "rating": 4.0,
         "color": null,
         "status": "OK"
@@ -239,7 +239,7 @@
     "criterion_pelvis": {
       "result": {
         "name": "Pelvis",
-        "value": "nan",
+        "value": 4.0,
         "rating": 4.0,
         "color": null,
         "status": "OK"
@@ -277,7 +277,7 @@
     "Overall": {
       "result": {
         "name": "Overall",
-        "value": "nan",
+        "value": 0.0,
         "rating": 0.0,
         "color": null,
         "status": "OK"
@@ -286,7 +286,7 @@
     "criterion_head": {
       "result": {
         "name": "Head",
-        "value": "nan",
+        "value": "-inf",
         "rating": "-inf",
         "color": null,
         "status": "OK"
@@ -313,7 +313,7 @@
     "criterion_chest": {
       "result": {
         "name": "Chest",
-        "value": "nan",
+        "value": "-inf",
         "rating": "-inf",
         "color": null,
         "status": "OK"
@@ -349,7 +349,7 @@
     "criterion_abdomen": {
       "result": {
         "name": "Abdomen",
-        "value": "nan",
+        "value": 1.1075,
         "rating": 1.1075,
         "color": null,
         "status": "OK"
@@ -376,7 +376,7 @@
     "criterion_pelvis": {
       "result": {
         "name": "Pelvis",
-        "value": "nan",
+        "value": 2.911989100817439,
         "rating": 2.911989100817439,
         "color": null,
         "status": "OK"

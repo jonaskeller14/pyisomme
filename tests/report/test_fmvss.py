@@ -107,8 +107,10 @@ class TestFMVSS208:
         ).criterion_driver.criterion_containment
 
         containment.calculate()
-        assert containment.rating == 0.0
+        assert containment.result is not None
+        assert containment.result.rating == 0.0
 
         containment.contained = True
         containment.calculate()
-        assert containment.rating == 1.0
+        assert containment.result is not None
+        assert containment.result.rating == 1.0

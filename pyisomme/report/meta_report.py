@@ -89,7 +89,12 @@ class MetaReport(BaseReport):
     def sub_rating(self, report: Report[Any]) -> float:
         """Return the NaN-propagating mean overall rating of a criterion report."""
         ratings = [
-            report.criterion_overall[isomme].rating for isomme in report.isomme_list
+            (
+                report.criterion_overall[isomme].result.rating
+                if report.criterion_overall[isomme].result is not None
+                else float("nan")
+            )
+            for isomme in report.isomme_list
         ]
         return float(np.mean(ratings)) if ratings else float(np.nan)
 

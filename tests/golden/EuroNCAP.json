@@ -13,7 +13,7 @@
       "Overall": {
         "result": {
           "name": "Overall",
-          "value": "nan",
+          "value": 6.49378580367487,
           "rating": 6.49378580367487,
           "color": null,
           "status": "OK"
@@ -30,7 +30,7 @@
         "criterion_head": {
           "result": {
             "name": "Head",
-            "value": "nan",
+            "value": 4.0,
             "rating": 4.0,
             "color": null,
             "status": "OK"
@@ -93,7 +93,7 @@
         "criterion_neck": {
           "result": {
             "name": "Neck",
-            "value": "nan",
+            "value": 4.0,
             "rating": 4.0,
             "color": null,
             "status": "OK"
@@ -129,7 +129,7 @@
         "criterion_chest": {
           "result": {
             "name": "Chest",
-            "value": "nan",
+            "value": 0.9875716073497401,
             "rating": 0.9875716073497401,
             "color": null,
             "status": "OK"
@@ -155,7 +155,7 @@
           "criterion_SteeringWheelContact": {
             "result": {
               "name": "Modifier Chest Steering Wheel Contact",
-              "value": "nan",
+              "value": 0,
               "rating": 0,
               "color": null,
               "status": "OK"
@@ -174,7 +174,7 @@
         "criterion_femur": {
           "result": {
             "name": "Femur",
-            "value": "nan",
+            "value": 4.0,
             "rating": 4.0,
             "color": null,
             "status": "OK"
@@ -228,7 +228,7 @@
         "criterion_head": {
           "result": {
             "name": "Head",
-            "value": "nan",
+            "value": 4.0,
             "rating": 4.0,
             "color": null,
             "status": "OK"
@@ -273,7 +273,7 @@
         "criterion_neck": {
           "result": {
             "name": "Neck",
-            "value": "nan",
+            "value": 4.0,
             "rating": 4.0,
             "color": null,
             "status": "OK"
@@ -309,7 +309,7 @@
         "criterion_chest": {
           "result": {
             "name": "Chest",
-            "value": "nan",
+            "value": 0.9875716073497401,
             "rating": 0.9875716073497401,
             "color": null,
             "status": "OK"
@@ -345,7 +345,7 @@
         "criterion_femur": {
           "result": {
             "name": "Femur",
-            "value": "nan",
+            "value": 4.0,
             "rating": 4.0,
             "color": null,
             "status": "OK"
@@ -390,7 +390,7 @@
         "criterion_head": {
           "result": {
             "name": "Head",
-            "value": "nan",
+            "value": 4.0,
             "rating": 4.0,
             "color": null,
             "status": "OK"
@@ -443,7 +443,7 @@
           "criterion_ExceedingForwardExcursionLine": {
             "result": {
               "name": "Modifier for Exceeding forward excursion line",
-              "value": "nan",
+              "value": 0,
               "rating": 0,
               "color": null,
               "status": "OK"
@@ -453,7 +453,7 @@
         "criterion_neck": {
           "result": {
             "name": "Neck",
-            "value": "nan",
+            "value": 4.0,
             "rating": 4.0,
             "color": null,
             "status": "OK"
@@ -489,7 +489,7 @@
         "criterion_chest": {
           "result": {
             "name": "Chest",
-            "value": "nan",
+            "value": 0.9875716073497401,
             "rating": 0.9875716073497401,
             "color": null,
             "status": "OK"
@@ -525,7 +525,7 @@
         "criterion_femur": {
           "result": {
             "name": "Femur",
-            "value": "nan",
+            "value": 4.0,
             "rating": 4.0,
             "color": null,
             "status": "OK"
@@ -582,7 +582,7 @@
       "Overall": {
         "result": {
           "name": "Overall",
-          "value": "nan",
+          "value": 0.0,
           "rating": 0.0,
           "color": null,
           "status": "OK"
@@ -599,7 +599,7 @@
         "criterion_head": {
           "result": {
             "name": "Head",
-            "value": "nan",
+            "value": "-inf",
             "rating": "-inf",
             "color": null,
             "status": "OK"
@@ -662,7 +662,7 @@
         "criterion_neck": {
           "result": {
             "name": "Neck",
-            "value": "nan",
+            "value": 3.566449511400651,
             "rating": 3.566449511400651,
             "color": null,
             "status": "OK"
@@ -698,7 +698,7 @@
         "criterion_chest": {
           "result": {
             "name": "Chest",
-            "value": "nan",
+            "value": "-inf",
             "rating": "-inf",
             "color": null,
             "status": "OK"
@@ -724,7 +724,7 @@
           "criterion_SteeringWheelContact": {
             "result": {
               "name": "Modifier Chest Steering Wheel Contact",
-              "value": "nan",
+              "value": 0,
               "rating": 0,
               "color": null,
               "status": "OK"
@@ -743,7 +743,7 @@
         "criterion_femur": {
           "result": {
             "name": "Femur",
-            "value": "nan",
+            "value": 4.0,
             "rating": 4.0,
             "color": null,
             "status": "OK"
@@ -797,7 +797,7 @@
         "criterion_head": {
           "result": {
             "name": "Head",
-            "value": "nan",
+            "value": "-inf",
             "rating": "-inf",
             "color": null,
             "status": "OK"
@@ -842,7 +842,7 @@
         "criterion_neck": {
           "result": {
             "name": "Neck",
-            "value": "nan",
+            "value": 3.566449511400651,
             "rating": 3.566449511400651,
             "color": null,
             "status": "OK"
@@ -878,7 +878,7 @@
         "criterion_chest": {
           "result": {
             "name": "Chest",
-            "value": "nan",
+            "value": "-inf",
             "rating": "-inf",
             "color": null,
             "status": "OK"
@@ -914,7 +914,7 @@
         "criterion_femur": {
           "result": {
             "name": "Femur",
-            "value": "nan",
+            "value": 4.0,
             "rating": 4.0,
             "color": null,
             "status": "OK"
@@ -959,7 +959,7 @@
         "criterion_head": {
           "result": {
             "name": "Head",
-            "value": "nan",
+            "value": "-inf",
             "rating": "-inf",
             "color": null,
             "status": "OK"
@@ -1012,7 +1012,7 @@
           "criterion_ExceedingForwardExcursionLine": {
             "result": {
               "name": "Modifier for Exceeding forward excursion line",
-              "value": "nan",
+              "value": 0,
               "rating": 0,
               "color": null,
               "status": "OK"
@@ -1022,7 +1022,7 @@
         "criterion_neck": {
           "result": {
             "name": "Neck",
-            "value": "nan",
+            "value": 3.891612377850163,
             "rating": 3.891612377850163,
             "color": null,
             "status": "OK"
@@ -1058,7 +1058,7 @@
         "criterion_chest": {
           "result": {
             "name": "Chest",
-            "value": "nan",
+            "value": "-inf",
             "rating": "-inf",
             "color": null,
             "status": "OK"
@@ -1094,7 +1094,7 @@
         "criterion_femur": {
           "result": {
             "name": "Femur",
-            "value": "nan",
+            "value": 4.0,
             "rating": 4.0,
             "color": null,
             "status": "OK"
@@ -1153,7 +1153,7 @@
       "Overall": {
         "result": {
           "name": "Overall",
-          "value": "nan",
+          "value": 7.5,
           "rating": 7.5,
           "color": null,
           "status": "OK"
@@ -1162,7 +1162,7 @@
       "criterion_driver": {
         "result": {
           "name": "Driver",
-          "value": "nan",
+          "value": 15.0,
           "rating": 15.0,
           "color": null,
           "status": "OK"
@@ -1170,7 +1170,7 @@
         "criterion_head_neck": {
           "result": {
             "name": "Head & Neck",
-            "value": "nan",
+            "value": 3.0,
             "rating": 3.0,
             "color": null,
             "status": "OK"
@@ -1178,7 +1178,7 @@
           "criterion_head": {
             "result": {
               "name": "Head",
-              "value": "nan",
+              "value": 3.0,
               "rating": 3.0,
               "color": null,
               "status": "OK"
@@ -1250,7 +1250,7 @@
           "criterion_neck": {
             "result": {
               "name": "Neck",
-              "value": "nan",
+              "value": 4.0,
               "rating": 4.0,
               "color": null,
               "status": "OK"
@@ -1287,7 +1287,7 @@
         "criterion_chest_abdomen": {
           "result": {
             "name": "Chest and Abdomen",
-            "value": "nan",
+            "value": 4.0,
             "rating": 4.0,
             "color": null,
             "status": "OK"
@@ -1295,7 +1295,7 @@
           "criterion_chest": {
             "result": {
               "name": "Chest",
-              "value": "nan",
+              "value": 4.0,
               "rating": 4.0,
               "color": null,
               "status": "OK"
@@ -1321,7 +1321,7 @@
             "criterion_SteeringWheelContact": {
               "result": {
                 "name": "Modifier Chest Steering Wheel Contact",
-                "value": "nan",
+                "value": 0,
                 "rating": 0,
                 "color": null,
                 "status": "OK"
@@ -1349,7 +1349,7 @@
           "criterion_abdomen": {
             "result": {
               "name": "Abdomen",
-              "value": "nan",
+              "value": 4,
               "rating": 4,
               "color": null,
               "status": "OK"
@@ -1368,7 +1368,7 @@
         "criterion_knee_femur_pelvis": {
           "result": {
             "name": "Knee, Femur and Pelvis",
-            "value": "nan",
+            "value": 4.0,
             "rating": 4.0,
             "color": null,
             "status": "OK"
@@ -1376,7 +1376,7 @@
           "criterion_pelvis": {
             "result": {
               "name": "Pelvis",
-              "value": "nan",
+              "value": 4.0,
               "rating": 4.0,
               "color": null,
               "status": "OK"
@@ -1394,7 +1394,7 @@
           "criterion_femur": {
             "result": {
               "name": "Femur",
-              "value": "nan",
+              "value": 4.0,
               "rating": 4.0,
               "color": null,
               "status": "OK"
@@ -1412,7 +1412,7 @@
           "criterion_knee": {
             "result": {
               "name": "Knee",
-              "value": "nan",
+              "value": 4.0,
               "rating": 4.0,
               "color": null,
               "status": "OK"
@@ -1458,7 +1458,7 @@
         "criterion_lowerleg_foot_ankle": {
           "result": {
             "name": "Lower Leg, Foot and Ankle",
-            "value": "nan",
+            "value": 4.0,
             "rating": 4.0,
             "color": null,
             "status": "OK"
@@ -1522,7 +1522,7 @@
       "criterion_passenger": {
         "result": {
           "name": "Passenger",
-          "value": "nan",
+          "value": 16.0,
           "rating": 16.0,
           "color": null,
           "status": "OK"
@@ -1710,7 +1710,7 @@
         "criterion_lowerleg": {
           "result": {
             "name": "Lower Leg",
-            "value": "nan",
+            "value": 4.0,
             "rating": 4.0,
             "color": null,
             "status": "OK"
@@ -1767,7 +1767,7 @@
       "Overall": {
         "result": {
           "name": "Overall",
-          "value": "nan",
+          "value": 5.589853435343534,
           "rating": 5.589853435343534,
           "color": null,
           "status": "OK"
@@ -1776,7 +1776,7 @@
       "criterion_driver": {
         "result": {
           "name": "Driver",
-          "value": "nan",
+          "value": 12.778666666666666,
           "rating": 12.778666666666666,
           "color": null,
           "status": "OK"
@@ -1784,7 +1784,7 @@
         "criterion_head_neck": {
           "result": {
             "name": "Head & Neck",
-            "value": "nan",
+            "value": 3.0,
             "rating": 3.0,
             "color": null,
             "status": "OK"
@@ -1792,7 +1792,7 @@
           "criterion_head": {
             "result": {
               "name": "Head",
-              "value": "nan",
+              "value": 3.0,
               "rating": 3.0,
               "color": null,
               "status": "OK"
@@ -1864,7 +1864,7 @@
           "criterion_neck": {
             "result": {
               "name": "Neck",
-              "value": "nan",
+              "value": 4.0,
               "rating": 4.0,
               "color": null,
               "status": "OK"
@@ -1901,7 +1901,7 @@
         "criterion_chest_abdomen": {
           "result": {
             "name": "Chest and Abdomen",
-            "value": "nan",
+            "value": 4.0,
             "rating": 4.0,
             "color": null,
             "status": "OK"
@@ -1909,7 +1909,7 @@
           "criterion_chest": {
             "result": {
               "name": "Chest",
-              "value": "nan",
+              "value": 4.0,
               "rating": 4.0,
               "color": null,
               "status": "OK"
@@ -1935,7 +1935,7 @@
             "criterion_SteeringWheelContact": {
               "result": {
                 "name": "Modifier Chest Steering Wheel Contact",
-                "value": "nan",
+                "value": 0,
                 "rating": 0,
                 "color": null,
                 "status": "OK"
@@ -1963,7 +1963,7 @@
           "criterion_abdomen": {
             "result": {
               "name": "Abdomen",
-              "value": "nan",
+              "value": 4,
               "rating": 4,
               "color": null,
               "status": "OK"
@@ -1982,7 +1982,7 @@
         "criterion_knee_femur_pelvis": {
           "result": {
             "name": "Knee, Femur and Pelvis",
-            "value": "nan",
+            "value": 2.2223333333333333,
             "rating": 2.2223333333333333,
             "color": null,
             "status": "OK"
@@ -1990,7 +1990,7 @@
           "criterion_pelvis": {
             "result": {
               "name": "Pelvis",
-              "value": "nan",
+              "value": 4.0,
               "rating": 4.0,
               "color": null,
               "status": "OK"
@@ -2008,7 +2008,7 @@
           "criterion_femur": {
             "result": {
               "name": "Femur",
-              "value": "nan",
+              "value": 4.0,
               "rating": 4.0,
               "color": null,
               "status": "OK"
@@ -2026,7 +2026,7 @@
           "criterion_knee": {
             "result": {
               "name": "Knee",
-              "value": "nan",
+              "value": 2.2223333333333333,
               "rating": 2.2223333333333333,
               "color": null,
               "status": "OK"
@@ -2072,7 +2072,7 @@
         "criterion_lowerleg_foot_ankle": {
           "result": {
             "name": "Lower Leg, Foot and Ankle",
-            "value": "nan",
+            "value": 3.5563333333333333,
             "rating": 3.5563333333333333,
             "color": null,
             "status": "OK"
@@ -2136,7 +2136,7 @@
       "criterion_passenger": {
         "result": {
           "name": "Passenger",
-          "value": "nan",
+          "value": 12.179706870687069,
           "rating": 12.179706870687069,
           "color": null,
           "status": "OK"
@@ -2324,7 +2324,7 @@
         "criterion_lowerleg": {
           "result": {
             "name": "Lower Leg",
-            "value": "nan",
+            "value": 3.5563333333333333,
             "rating": 3.5563333333333333,
             "color": null,
             "status": "OK"
@@ -2381,7 +2381,7 @@
       "Overall": {
         "result": {
           "name": "Overall",
-          "value": "nan",
+          "value": 0.0,
           "rating": 0.0,
           "color": null,
           "status": "OK"
@@ -2390,7 +2390,7 @@
       "criterion_driver": {
         "result": {
           "name": "Driver",
-          "value": "nan",
+          "value": "-inf",
           "rating": "-inf",
           "color": null,
           "status": "OK"
@@ -2398,7 +2398,7 @@
         "criterion_head_neck": {
           "result": {
             "name": "Head & Neck",
-            "value": "nan",
+            "value": "-inf",
             "rating": "-inf",
             "color": null,
             "status": "OK"
@@ -2406,7 +2406,7 @@
           "criterion_head": {
             "result": {
               "name": "Head",
-              "value": "nan",
+              "value": "-inf",
               "rating": "-inf",
               "color": null,
               "status": "OK"
@@ -2478,7 +2478,7 @@
           "criterion_neck": {
             "result": {
               "name": "Neck",
-              "value": "nan",
+              "value": 3.6672499999999997,
               "rating": 3.6672499999999997,
               "color": null,
               "status": "OK"
@@ -2515,7 +2515,7 @@
         "criterion_chest_abdomen": {
           "result": {
             "name": "Chest and Abdomen",
-            "value": "nan",
+            "value": -2.0,
             "rating": -2.0,
             "color": null,
             "status": "OK"
@@ -2523,7 +2523,7 @@
           "criterion_chest": {
             "result": {
               "name": "Chest",
-              "value": "nan",
+              "value": -2.0,
               "rating": -2.0,
               "color": null,
               "status": "OK"
@@ -2549,7 +2549,7 @@
             "criterion_SteeringWheelContact": {
               "result": {
                 "name": "Modifier Chest Steering Wheel Contact",
-                "value": "nan",
+                "value": 0,
                 "rating": 0,
                 "color": null,
                 "status": "OK"
@@ -2577,7 +2577,7 @@
           "criterion_abdomen": {
             "result": {
               "name": "Abdomen",
-              "value": "nan",
+              "value": 4,
               "rating": 4,
               "color": null,
               "status": "OK"
@@ -2596,7 +2596,7 @@
         "criterion_knee_femur_pelvis": {
           "result": {
             "name": "Knee, Femur and Pelvis",
-            "value": "nan",
+            "value": 0.0,
             "rating": 0.0,
             "color": null,
             "status": "OK"
@@ -2604,7 +2604,7 @@
           "criterion_pelvis": {
             "result": {
               "name": "Pelvis",
-              "value": "nan",
+              "value": 4.0,
               "rating": 4.0,
               "color": null,
               "status": "OK"
@@ -2622,7 +2622,7 @@
           "criterion_femur": {
             "result": {
               "name": "Femur",
-              "value": "nan",
+              "value": 3.78754988028731,
               "rating": 3.78754988028731,
               "color": null,
               "status": "OK"
@@ -2640,7 +2640,7 @@
           "criterion_knee": {
             "result": {
               "name": "Knee",
-              "value": "nan",
+              "value": 0.0,
               "rating": 0.0,
               "color": null,
               "status": "OK"
@@ -2686,7 +2686,7 @@
         "criterion_lowerleg_foot_ankle": {
           "result": {
             "name": "Lower Leg, Foot and Ankle",
-            "value": "nan",
+            "value": 1.329,
             "rating": 1.329,
             "color": null,
             "status": "OK"
@@ -2750,7 +2750,7 @@
       "criterion_passenger": {
         "result": {
           "name": "Passenger",
-          "value": "nan",
+          "value": "-inf",
           "rating": "-inf",
           "color": null,
           "status": "OK"
@@ -2938,7 +2938,7 @@
         "criterion_lowerleg": {
           "result": {
             "name": "Lower Leg",
-            "value": "nan",
+            "value": 1.329,
             "rating": 1.329,
             "color": null,
             "status": "OK"
@@ -2997,7 +2997,7 @@
       "Overall": {
         "result": {
           "name": "Overall",
-          "value": "nan",
+          "value": 16.0,
           "rating": 16.0,
           "color": null,
           "status": "OK"
@@ -3006,8 +3006,8 @@
       "criterion_head": {
         "result": {
           "name": "Head",
-          "value": "nan",
-          "rating": 4,
+          "value": 4.0,
+          "rating": 4.0,
           "color": null,
           "status": "OK"
         },
@@ -3042,7 +3042,7 @@
       "criterion_chest": {
         "result": {
           "name": "Chest",
-          "value": "nan",
+          "value": 4.0,
           "rating": 4.0,
           "color": null,
           "status": "OK"
@@ -3078,7 +3078,7 @@
       "criterion_abdomen": {
         "result": {
           "name": "Abdomen",
-          "value": "nan",
+          "value": 4.0,
           "rating": 4.0,
           "color": null,
           "status": "OK"
@@ -3105,7 +3105,7 @@
       "criterion_pelvis": {
         "result": {
           "name": "Pelvis",
-          "value": "nan",
+          "value": 4.0,
           "rating": 4.0,
           "color": null,
           "status": "OK"
@@ -3152,7 +3152,7 @@
       "Overall": {
         "result": {
           "name": "Overall",
-          "value": "nan",
+          "value": 15.636983499249965,
           "rating": 15.636983499249965,
           "color": null,
           "status": "OK"
@@ -3161,8 +3161,8 @@
       "criterion_head": {
         "result": {
           "name": "Head",
-          "value": "nan",
-          "rating": 4,
+          "value": 4.0,
+          "rating": 4.0,
           "color": null,
           "status": "OK"
         },
@@ -3197,7 +3197,7 @@
       "criterion_chest": {
         "result": {
           "name": "Chest",
-          "value": "nan",
+          "value": 3.6369834992499657,
           "rating": 3.6369834992499657,
           "color": null,
           "status": "OK"
@@ -3233,7 +3233,7 @@
       "criterion_abdomen": {
         "result": {
           "name": "Abdomen",
-          "value": "nan",
+          "value": 4.0,
           "rating": 4.0,
           "color": null,
           "status": "OK"
@@ -3260,7 +3260,7 @@
       "criterion_pelvis": {
         "result": {
           "name": "Pelvis",
-          "value": "nan",
+          "value": 4.0,
           "rating": 4.0,
           "color": null,
           "status": "OK"
@@ -3307,7 +3307,7 @@
       "Overall": {
         "result": {
           "name": "Overall",
-          "value": "nan",
+          "value": 0.0,
           "rating": 0.0,
           "color": null,
           "status": "OK"
@@ -3316,7 +3316,7 @@
       "criterion_head": {
         "result": {
           "name": "Head",
-          "value": "nan",
+          "value": "-inf",
           "rating": "-inf",
           "color": null,
           "status": "OK"
@@ -3352,7 +3352,7 @@
       "criterion_chest": {
         "result": {
           "name": "Chest",
-          "value": "nan",
+          "value": "-inf",
           "rating": "-inf",
           "color": null,
           "status": "OK"
@@ -3388,7 +3388,7 @@
       "criterion_abdomen": {
         "result": {
           "name": "Abdomen",
-          "value": "nan",
+          "value": 1.1075,
           "rating": 1.1075,
           "color": null,
           "status": "OK"
@@ -3415,7 +3415,7 @@
       "criterion_pelvis": {
         "result": {
           "name": "Pelvis",
-          "value": "nan",
+          "value": 2.911989100817439,
           "rating": 2.911989100817439,
           "color": null,
           "status": "OK"
@@ -3464,7 +3464,7 @@
       "Overall": {
         "result": {
           "name": "Overall",
-          "value": "nan",
+          "value": 16.0,
           "rating": 16.0,
           "color": null,
           "status": "OK"
@@ -3473,7 +3473,7 @@
       "criterion_head": {
         "result": {
           "name": "Head",
-          "value": "nan",
+          "value": 4.0,
           "rating": 4.0,
           "color": null,
           "status": "OK"
@@ -3500,7 +3500,7 @@
       "criterion_chest": {
         "result": {
           "name": "Chest",
-          "value": "nan",
+          "value": 4.0,
           "rating": 4.0,
           "color": null,
           "status": "OK"
@@ -3536,7 +3536,7 @@
       "criterion_abdomen": {
         "result": {
           "name": "Abdomen",
-          "value": "nan",
+          "value": 4.0,
           "rating": 4.0,
           "color": null,
           "status": "OK"
@@ -3563,7 +3563,7 @@
       "criterion_pelvis": {
         "result": {
           "name": "Pelvis",
-          "value": "nan",
+          "value": 4.0,
           "rating": 4.0,
           "color": null,
           "status": "OK"
@@ -3601,7 +3601,7 @@
       "Overall": {
         "result": {
           "name": "Overall",
-          "value": "nan",
+          "value": 15.636983499249965,
           "rating": 15.636983499249965,
           "color": null,
           "status": "OK"
@@ -3610,7 +3610,7 @@
       "criterion_head": {
         "result": {
           "name": "Head",
-          "value": "nan",
+          "value": 4.0,
           "rating": 4.0,
           "color": null,
           "status": "OK"
@@ -3637,7 +3637,7 @@
       "criterion_chest": {
         "result": {
           "name": "Chest",
-          "value": "nan",
+          "value": 3.6369834992499657,
           "rating": 3.6369834992499657,
           "color": null,
           "status": "OK"
@@ -3673,7 +3673,7 @@
       "criterion_abdomen": {
         "result": {
           "name": "Abdomen",
-          "value": "nan",
+          "value": 4.0,
           "rating": 4.0,
           "color": null,
           "status": "OK"
@@ -3700,7 +3700,7 @@
       "criterion_pelvis": {
         "result": {
           "name": "Pelvis",
-          "value": "nan",
+          "value": 4.0,
           "rating": 4.0,
           "color": null,
           "status": "OK"
@@ -3738,7 +3738,7 @@
       "Overall": {
         "result": {
           "name": "Overall",
-          "value": "nan",
+          "value": 0.0,
           "rating": 0.0,
           "color": null,
           "status": "OK"
@@ -3747,7 +3747,7 @@
       "criterion_head": {
         "result": {
           "name": "Head",
-          "value": "nan",
+          "value": "-inf",
           "rating": "-inf",
           "color": null,
           "status": "OK"
@@ -3774,7 +3774,7 @@
       "criterion_chest": {
         "result": {
           "name": "Chest",
-          "value": "nan",
+          "value": "-inf",
           "rating": "-inf",
           "color": null,
           "status": "OK"
@@ -3810,7 +3810,7 @@
       "criterion_abdomen": {
         "result": {
           "name": "Abdomen",
-          "value": "nan",
+          "value": 1.1075,
           "rating": 1.1075,
           "color": null,
           "status": "OK"
@@ -3837,7 +3837,7 @@
       "criterion_pelvis": {
         "result": {
           "name": "Pelvis",
-          "value": "nan",
+          "value": 2.911989100817439,
           "rating": 2.911989100817439,
           "color": null,
           "status": "OK"
@@ -3877,7 +3877,7 @@
       "Overall": {
         "result": {
           "name": "Overall",
-          "value": "nan",
+          "value": 4.0,
           "rating": 4.0,
           "color": null,
           "status": "OK"
@@ -3922,7 +3922,7 @@
       "criterion_neck": {
         "result": {
           "name": "Neck",
-          "value": "nan",
+          "value": 4.0,
           "rating": 4.0,
           "color": null,
           "status": "OK"
@@ -3930,7 +3930,7 @@
         "criterion_upper_neck": {
           "result": {
             "name": "Upper_Neck",
-            "value": "nan",
+            "value": 4.0,
             "rating": 4.0,
             "color": null,
             "status": "OK"
@@ -3966,7 +3966,7 @@
         "criterion_lower_neck": {
           "result": {
             "name": "Lower_Neck",
-            "value": "nan",
+            "value": 4.0,
             "rating": 4.0,
             "color": null,
             "status": "OK"
@@ -4003,7 +4003,7 @@
       "criterion_chest_abdomen": {
         "result": {
           "name": "Chest & Abdomen",
-          "value": "nan",
+          "value": 4.0,
           "rating": 4.0,
           "color": null,
           "status": "OK"
@@ -4030,8 +4030,8 @@
       "criterion_pelvis_lumbar_modifier": {
         "result": {
           "name": "Pelvis and Lumbar Modifier",
-          "value": "nan",
-          "rating": 0,
+          "value": 0.0,
+          "rating": 0.0,
           "color": null,
           "status": "OK"
         },
@@ -4077,7 +4077,7 @@
       "Overall": {
         "result": {
           "name": "Overall",
-          "value": "nan",
+          "value": 3.878994499749988,
           "rating": 3.878994499749988,
           "color": null,
           "status": "OK"
@@ -4122,7 +4122,7 @@
       "criterion_neck": {
         "result": {
           "name": "Neck",
-          "value": "nan",
+          "value": 4.0,
           "rating": 4.0,
           "color": null,
           "status": "OK"
@@ -4130,7 +4130,7 @@
         "criterion_upper_neck": {
           "result": {
             "name": "Upper_Neck",
-            "value": "nan",
+            "value": 4.0,
             "rating": 4.0,
             "color": null,
             "status": "OK"
@@ -4166,7 +4166,7 @@
         "criterion_lower_neck": {
           "result": {
             "name": "Lower_Neck",
-            "value": "nan",
+            "value": 4.0,
             "rating": 4.0,
             "color": null,
             "status": "OK"
@@ -4203,7 +4203,7 @@
       "criterion_chest_abdomen": {
         "result": {
           "name": "Chest & Abdomen",
-          "value": "nan",
+          "value": 3.6369834992499657,
           "rating": 3.6369834992499657,
           "color": null,
           "status": "OK"
@@ -4230,8 +4230,8 @@
       "criterion_pelvis_lumbar_modifier": {
         "result": {
           "name": "Pelvis and Lumbar Modifier",
-          "value": "nan",
-          "rating": 0,
+          "value": 0.0,
+          "rating": 0.0,
           "color": null,
           "status": "OK"
         },
@@ -4277,7 +4277,7 @@
       "Overall": {
         "result": {
           "name": "Overall",
-          "value": "nan",
+          "value": "-inf",
           "rating": "-inf",
           "color": null,
           "status": "OK"
@@ -4322,7 +4322,7 @@
       "criterion_neck": {
         "result": {
           "name": "Neck",
-          "value": "nan",
+          "value": 4.0,
           "rating": 4.0,
           "color": null,
           "status": "OK"
@@ -4330,7 +4330,7 @@
         "criterion_upper_neck": {
           "result": {
             "name": "Upper_Neck",
-            "value": "nan",
+            "value": 4.0,
             "rating": 4.0,
             "color": null,
             "status": "OK"
@@ -4366,7 +4366,7 @@
         "criterion_lower_neck": {
           "result": {
             "name": "Lower_Neck",
-            "value": "nan",
+            "value": 4.0,
             "rating": 4.0,
             "color": null,
             "status": "OK"
@@ -4403,7 +4403,7 @@
       "criterion_chest_abdomen": {
         "result": {
           "name": "Chest & Abdomen",
-          "value": "nan",
+          "value": "-inf",
           "rating": "-inf",
           "color": null,
           "status": "OK"
@@ -4430,8 +4430,8 @@
       "criterion_pelvis_lumbar_modifier": {
         "result": {
           "name": "Pelvis and Lumbar Modifier",
-          "value": "nan",
-          "rating": -4,
+          "value": -4.0,
+          "rating": -4.0,
           "color": null,
           "status": "OK"
         },

@@ -8,6 +8,7 @@ import numpy as np
 from pyisomme.isomme import Isomme
 from pyisomme.limit import Limit
 from pyisomme.report.criterion import Criterion, Role, sub
+from pyisomme.report.criterion_result import CriterionResult
 from pyisomme.report.ctx import from_input
 from pyisomme.report.euro_ncap.limits import (
     Limit_A,
@@ -60,31 +61,37 @@ class Overall(Criterion):
         if p is not None:
             self.set_derived_input("p", str(p).strip())
 
-    def calculation(self) -> None:
-        self.rating = np.sum(
+    def calculation(self) -> CriterionResult:
+        rating = np.sum(
             [
-                self.criterion_head.rating,
-                self.criterion_chest.rating,
-                self.criterion_abdomen.rating,
-                self.criterion_pelvis.rating,
+                self.criterion_head.result.rating,
+                self.criterion_chest.result.rating,
+                self.criterion_abdomen.result.rating,
+                self.criterion_pelvis.result.rating,
             ]
         )
-        self.rating = float(
-            np.interp(self.rating, [0, 16], [0, 16], left=0, right=np.nan)
+        rating = float(
+            np.interp(rating, [0, 16], [0, 16], left=0, right=np.nan)
         )
 
         # Modifier — §5.2.3 and §5.2.5 apply to the overall test score.
 
-        self.rating += np.sum(
+        rating += np.sum(
             [
-                self.criterion_side_head_protection_device.rating,
-                self.criterion_incorrect_airbag_deployment.rating,
-                self.criterion_door_opening_during_impact.rating,
+                self.criterion_side_head_protection_device.result.rating,
+                self.criterion_incorrect_airbag_deployment.result.rating,
+                self.criterion_door_opening_during_impact.result.rating,
             ]
         )
 
         # A modifier must not drive the load case below zero.
-        self.rating = float(np.max([0.0, self.rating]))
+        rating = float(np.max([0.0, rating]))
+        return CriterionResult(
+            channel=None,
+            value=rating,
+            rating=rating,
+            color=None,
+        )
 
     class Criterion_SideHeadProtectionDevice(Criterion):
         name = "Modifier for Side Head Protection Device"
@@ -113,11 +120,17 @@ class Overall(Criterion):
             ),
         ]
 
-        def calculation(self) -> None:
-            self.value = int(self.head_protection_device_insufficient_front) + int(
+        def calculation(self) -> CriterionResult:
+            value = int(self.head_protection_device_insufficient_front) + int(
                 self.head_protection_device_insufficient_rear
             )
-            self.rating = -2.0 * self.value
+            rating = -2.0 * value
+            return CriterionResult(
+                channel=None,
+                value=value,
+                rating=rating,
+                color=None,
+            )
 
     class Criterion_IncorrectAirbagDeployment(Criterion):
         name = "Modifier for Incorrect Airbag Deployment"
@@ -135,10 +148,16 @@ class Overall(Criterion):
             ),
         ]
 
-        def calculation(self) -> None:
-            self.value = self.number_of_body_regions_with_incorrect_airbag_deployment
-            self.rating = (
+        def calculation(self) -> CriterionResult:
+            value = self.number_of_body_regions_with_incorrect_airbag_deployment
+            rating = (
                 -1.0 * self.number_of_body_regions_with_incorrect_airbag_deployment
+            )
+            return CriterionResult(
+                channel=None,
+                value=value,
+                rating=rating,
+                color=None,
             )
 
     class Criterion_DoorOpeningDuringImpact(Criterion):
@@ -156,23 +175,29 @@ class Overall(Criterion):
             ),
         ]
 
-        def calculation(self) -> None:
-            self.value = self.number_of_door_openings_during_impact
-            self.rating = -1.0 * self.number_of_door_openings_during_impact
+        def calculation(self) -> CriterionResult:
+            value = self.number_of_door_openings_during_impact
+            rating = -1.0 * self.number_of_door_openings_during_impact
+            return CriterionResult(
+                channel=None,
+                value=value,
+                rating=rating,
+                color=None,
+            )
 
     class Criterion_Head(Criterion):
         name = "Head"
         max_rating = 4.0
         source = "§5.1.1.2"
 
-        def calculation(self) -> None:
+        def calculation(self) -> CriterionResult:
 
-            self.rating = np.min(
-                [
-                    self.criterion_hic_15.rating,
-                    self.criterion_head_acceleration.rating,
-                    self.criterion_direct_head_contact_with_the_pole.rating,
-                ]
+            rating = self.min_of_children()
+            return CriterionResult(
+                channel=None,
+                value=rating,
+                rating=rating,
+                color=None,
             )
 
         class Criterion_HIC_15(Criterion):
@@ -185,16 +210,22 @@ class Overall(Criterion):
                     Limit_C(codes, func=lambda x: 700.000, y_unit=1, lower=True),
                 ]
 
-            def calculation(self) -> None:
-                self.channel = self.require_channel(
+            def calculation(self) -> CriterionResult:
+                channel = self.require_channel(
                     self.ctx.code("?{p}HICR0015??00RX"),
                     self.ctx.code("?{p}HICRCG15??00RX"),
                 )
-                self.value = self.channel.get_data()[0]
-                self.rating = self.limits.get_limit_min_rating(
-                    self.channel, interpolate=False
+                value = channel.get_data()[0]
+                rating = self.limits.get_limit_min_rating(
+                    channel, interpolate=False
                 )
-                self.color = self.limits.get_limit_min_color(self.channel)
+                color = self.limits.get_limit_min_color(channel)
+                return CriterionResult(
+                    channel=channel,
+                    value=value,
+                    rating=rating,
+                    color=color,
+                )
 
         class Criterion_Head_Peak_Acceleration(Criterion):
             #: §5.1.1.2 caps the pole test on the *peak* resultant head acceleration.
@@ -209,16 +240,22 @@ class Overall(Criterion):
                     Limit_C(codes, func=lambda x: 80.000, y_unit=Unit(g0), lower=True),
                 ]
 
-            def calculation(self) -> None:
-                self.channel = self.require_channel(
+            def calculation(self) -> CriterionResult:
+                channel = self.require_channel(
                     self.ctx.code("?{p}HEAD??00??ACRA"),
                     self.ctx.code("?{p}HEADCG00??ACRA"),
                 ).convert_unit(Unit(g0))
-                self.value = np.max(self.channel.get_data())
-                self.rating = self.limits.get_limit_min_rating(
-                    self.channel, interpolate=False
+                value = np.max(channel.get_data())
+                rating = self.limits.get_limit_min_rating(
+                    channel, interpolate=False
                 )
-                self.color = self.limits.get_limit_min_color(self.channel)
+                color = self.limits.get_limit_min_color(channel)
+                return CriterionResult(
+                    channel=channel,
+                    value=value,
+                    rating=rating,
+                    color=color,
+                )
 
         class Criterion_DirectHeadContactWithThePole(Criterion):
             name = "Direct head contact with the pole"
@@ -234,9 +271,15 @@ class Overall(Criterion):
                 ),
             ]
 
-            def calculation(self) -> None:
-                self.value = self.direct_head_contact_with_the_pole
-                self.rating = -np.inf if self.direct_head_contact_with_the_pole else 4
+            def calculation(self) -> CriterionResult:
+                value = self.direct_head_contact_with_the_pole
+                rating = -np.inf if self.direct_head_contact_with_the_pole else 4
+                return CriterionResult(
+                    channel=None,
+                    value=value,
+                    rating=rating,
+                    color=None,
+                )
 
         criterion_hic_15 = sub(Criterion_HIC_15)
         criterion_head_acceleration = sub(Criterion_Head_Peak_Acceleration)
@@ -249,14 +292,14 @@ class Overall(Criterion):
         max_rating = 4.0
         source = "§5.1.2"
 
-        def calculation(self) -> None:
+        def calculation(self) -> CriterionResult:
 
-            self.rating = np.min(
-                [
-                    self.criterion_chest_lateral_compression.rating,
-                    self.criterion_chest_lateral_vc.rating,
-                    self.criterion_shoulder_lateral_force.rating,
-                ]
+            rating = self.min_of_children()
+            return CriterionResult(
+                channel=None,
+                value=rating,
+                rating=rating,
+                color=None,
             )
 
         class Criterion_Chest_Lateral_Compression(Criterion):
@@ -273,15 +316,21 @@ class Overall(Criterion):
                     Limit_G(codes, func=lambda x: -28.000, y_unit="mm", lower=True),
                 ]
 
-            def calculation(self) -> None:
-                self.channel = self.require_channel(
+            def calculation(self) -> CriterionResult:
+                channel = self.require_channel(
                     self.ctx.code("?{p}TRRI??00??DSYC")
                 ).convert_unit("mm")
-                self.value = np.min(self.channel.get_data())
-                self.rating = self.limits.get_limit_min_rating(
-                    self.channel, interpolate=True
+                value = np.min(channel.get_data())
+                rating = self.limits.get_limit_min_rating(
+                    channel, interpolate=True
                 )
-                self.color = self.limits.get_limit_min_color(self.channel)
+                color = self.limits.get_limit_min_color(channel)
+                return CriterionResult(
+                    channel=channel,
+                    value=value,
+                    rating=rating,
+                    color=color,
+                )
 
         class Criterion_Chest_Lateral_VC(Criterion):
             name = "Modifier Chest Lateral Viscous Criterion"
@@ -297,15 +346,21 @@ class Overall(Criterion):
                     Limit_P(codes, func=lambda x: 1, y_unit="m/s", lower=True),
                 ]
 
-            def calculation(self) -> None:
-                self.channel = self.require_channel(self.ctx.code("?{p}VCCR??00??VEYC"))
-                self.value = self.channel.get_data()[
-                    np.argmax(np.abs(self.channel.get_data()))
+            def calculation(self) -> CriterionResult:
+                channel = self.require_channel(self.ctx.code("?{p}VCCR??00??VEYC"))
+                value = channel.get_data()[
+                    np.argmax(np.abs(channel.get_data()))
                 ]
-                self.rating = self.limits.get_limit_min_rating(
-                    self.channel, interpolate=False
+                rating = self.limits.get_limit_min_rating(
+                    channel, interpolate=False
                 )
-                self.color = self.limits.get_limit_min_color(self.channel)
+                color = self.limits.get_limit_min_color(channel)
+                return CriterionResult(
+                    channel=channel,
+                    value=value,
+                    rating=rating,
+                    color=color,
+                )
 
         class Criterion_Shoulder_Lateral_Force(Criterion):
             name = "Modifier Shoulder Lateral Force"
@@ -323,17 +378,23 @@ class Overall(Criterion):
                     Limit_P(codes, func=lambda x: 3.0, y_unit="kN", lower=True),
                 ]
 
-            def calculation(self) -> None:
-                self.channel = self.require_channel(
+            def calculation(self) -> CriterionResult:
+                channel = self.require_channel(
                     self.ctx.code("?{p}SHLD0000??FOYB")
                 ).convert_unit("kN")
-                self.value = self.channel.get_data()[
-                    np.argmax(np.abs(self.channel.get_data()))
+                value = channel.get_data()[
+                    np.argmax(np.abs(channel.get_data()))
                 ]
-                self.rating = self.limits.get_limit_min_rating(
-                    self.channel, interpolate=False
+                rating = self.limits.get_limit_min_rating(
+                    channel, interpolate=False
                 )
-                self.color = self.limits.get_limit_min_color(self.channel)
+                color = self.limits.get_limit_min_color(channel)
+                return CriterionResult(
+                    channel=channel,
+                    value=value,
+                    rating=rating,
+                    color=color,
+                )
 
         criterion_chest_lateral_compression = sub(Criterion_Chest_Lateral_Compression)
         criterion_chest_lateral_vc = sub(Criterion_Chest_Lateral_VC)
@@ -344,13 +405,14 @@ class Overall(Criterion):
         max_rating = 4.0
         source = "§5.1.3"
 
-        def calculation(self) -> None:
+        def calculation(self) -> CriterionResult:
 
-            self.rating = np.min(
-                [
-                    self.criterion_abdomen_lateral_compression.rating,
-                    self.criterion_abdomen_lateral_vc.rating,
-                ]
+            rating = self.min_of_children()
+            return CriterionResult(
+                channel=None,
+                value=rating,
+                rating=rating,
+                color=None,
             )
 
         class Criterion_Abdomen_Lateral_Compression(Criterion):
@@ -367,15 +429,21 @@ class Overall(Criterion):
                     Limit_G(codes, func=lambda x: -47, y_unit="mm", lower=True),
                 ]
 
-            def calculation(self) -> None:
-                self.channel = self.require_channel(
+            def calculation(self) -> CriterionResult:
+                channel = self.require_channel(
                     self.ctx.code("?{p}ABRI??00??DSYC")
                 ).convert_unit("mm")
-                self.value = np.min(self.channel.get_data())
-                self.rating = self.limits.get_limit_min_rating(
-                    self.channel, interpolate=True
+                value = np.min(channel.get_data())
+                rating = self.limits.get_limit_min_rating(
+                    channel, interpolate=True
                 )
-                self.color = self.limits.get_limit_min_color(self.channel)
+                color = self.limits.get_limit_min_color(channel)
+                return CriterionResult(
+                    channel=channel,
+                    value=value,
+                    rating=rating,
+                    color=color,
+                )
 
         class Criterion_Abdomen_Lateral_VC(Criterion):
             name = "Modifier Abdomen Lateral Viscous Criterion"
@@ -391,15 +459,21 @@ class Overall(Criterion):
                     Limit_P(codes, func=lambda x: 1, y_unit="m/s", lower=True),
                 ]
 
-            def calculation(self) -> None:
-                self.channel = self.require_channel(self.ctx.code("?{p}VCAR??00??VEYC"))
-                self.value = self.channel.get_data()[
-                    np.argmax(np.abs(self.channel.get_data()))
+            def calculation(self) -> CriterionResult:
+                channel = self.require_channel(self.ctx.code("?{p}VCAR??00??VEYC"))
+                value = channel.get_data()[
+                    np.argmax(np.abs(channel.get_data()))
                 ]
-                self.rating = self.limits.get_limit_min_rating(
-                    self.channel, interpolate=False
+                rating = self.limits.get_limit_min_rating(
+                    channel, interpolate=False
                 )
-                self.color = self.limits.get_limit_min_color(self.channel)
+                color = self.limits.get_limit_min_color(channel)
+                return CriterionResult(
+                    channel=channel,
+                    value=value,
+                    rating=rating,
+                    color=color,
+                )
 
         criterion_abdomen_lateral_compression = sub(
             Criterion_Abdomen_Lateral_Compression
@@ -411,9 +485,15 @@ class Overall(Criterion):
         max_rating = 4.0
         source = "§5.1.4"
 
-        def calculation(self) -> None:
+        def calculation(self) -> CriterionResult:
 
-            self.rating = self.criterion_pubic_symphysis_force.rating
+            rating = self.criterion_pubic_symphysis_force.result.rating
+            return CriterionResult(
+                channel=None,
+                value=rating,
+                rating=rating,
+                color=None,
+            )
 
         class Criterion_Pubic_Symphysis_Force(Criterion):
             name = "Pubic Symphysis Force"
@@ -435,17 +515,23 @@ class Overall(Criterion):
                     Limit_C(codes, func=lambda x: 2.800, y_unit="kN", lower=True),
                 ]
 
-            def calculation(self) -> None:
-                self.channel = self.require_channel(
+            def calculation(self) -> CriterionResult:
+                channel = self.require_channel(
                     self.ctx.code("?{p}PUBC0000??FOYB")
                 ).convert_unit("kN")
-                self.value = self.channel.get_data()[
-                    np.argmax(np.abs(self.channel.get_data()))
+                value = channel.get_data()[
+                    np.argmax(np.abs(channel.get_data()))
                 ]
-                self.rating = self.limits.get_limit_min_rating(
-                    self.channel, interpolate=True
+                rating = self.limits.get_limit_min_rating(
+                    channel, interpolate=True
                 )
-                self.color = self.limits.get_limit_min_color(self.channel)
+                color = self.limits.get_limit_min_color(channel)
+                return CriterionResult(
+                    channel=channel,
+                    value=value,
+                    rating=rating,
+                    color=color,
+                )
 
         criterion_pubic_symphysis_force = sub(Criterion_Pubic_Symphysis_Force)
 

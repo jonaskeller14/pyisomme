@@ -51,7 +51,7 @@
       "result": {
         "name": "Overall",
         "value": 0.853,
-        "rating": "nan",
+        "rating": 0.853,
         "color": null,
         "status": "OK"
       }
@@ -60,7 +60,7 @@
       "result": {
         "name": "11HEAD0000H3ACXD",
         "value": 0.853,
-        "rating": "nan",
+        "rating": 0.853,
         "color": "green",
         "status": "OK"
       }
@@ -69,7 +69,7 @@
       "result": {
         "name": "11HEAD0000H3ACYD",
         "value": 0.885,
-        "rating": "nan",
+        "rating": 0.885,
         "color": "green",
         "status": "OK"
       }
@@ -78,7 +78,7 @@
       "result": {
         "name": "11HEAD0000H3ACZD",
         "value": 0.89,
-        "rating": "nan",
+        "rating": 0.89,
         "color": "green",
         "status": "OK"
       }
@@ -87,7 +87,7 @@
       "result": {
         "name": "11CHST0000H3DSXD",
         "value": 1.0,
-        "rating": "nan",
+        "rating": 1.0,
         "color": "green",
         "status": "OK"
       }
@@ -98,7 +98,7 @@
       "result": {
         "name": "Overall",
         "value": 0.563,
-        "rating": "nan",
+        "rating": 0.563,
         "color": null,
         "status": "OK"
       }
@@ -107,7 +107,7 @@
       "result": {
         "name": "11HEAD0000H3ACXD",
         "value": 0.563,
-        "rating": "nan",
+        "rating": 0.563,
         "color": "orange",
         "status": "OK"
       }
@@ -116,7 +116,7 @@
       "result": {
         "name": "11HEAD0000H3ACYD",
         "value": 0.577,
-        "rating": "nan",
+        "rating": 0.577,
         "color": "orange",
         "status": "OK"
       }
@@ -125,7 +125,7 @@
       "result": {
         "name": "11HEAD0000H3ACZD",
         "value": 0.588,
-        "rating": "nan",
+        "rating": 0.588,
         "color": "orange",
         "status": "OK"
       }
@@ -134,7 +134,7 @@
       "result": {
         "name": "11CHST0000H3DSXD",
         "value": 1.0,
-        "rating": "nan",
+        "rating": 1.0,
         "color": "green",
         "status": "OK"
       }

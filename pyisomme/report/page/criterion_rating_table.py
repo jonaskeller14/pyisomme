@@ -13,4 +13,4 @@ class Page_Criterion_Rating_Table(Page_Criterion_Table):
 
     @staticmethod
     def cell_text(criterion: Criterion) -> str:
-        return f"{criterion.rating:.1f}"
+        return "n/a" if criterion.result is None else f"{criterion.result.rating:.1f}"

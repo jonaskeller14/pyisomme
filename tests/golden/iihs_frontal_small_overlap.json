@@ -20,7 +20,7 @@
       "criterion_head_neck": {
         "result": {
           "name": "Head and neck",
-          "value": "nan",
+          "value": 0.0,
           "rating": 0.0,
           "color": "green",
           "status": "OK"
@@ -92,7 +92,7 @@
       "criterion_chest": {
         "result": {
           "name": "Chest",
-          "value": "nan",
+          "value": 0.0,
           "rating": 0.0,
           "color": "green",
           "status": "OK"
@@ -137,7 +137,7 @@
       "criterion_thigh_hip": {
         "result": {
           "name": "Thigh and hip",
-          "value": "nan",
+          "value": 0.0,
           "rating": 0.0,
           "color": "green",
           "status": "OK"
@@ -164,7 +164,7 @@
       "criterion_leg_foot": {
         "result": {
           "name": "Leg and foot",
-          "value": "nan",
+          "value": 0.0,
           "rating": 0.0,
           "color": "green",
           "status": "OK"
@@ -247,7 +247,7 @@
       "criterion_head_neck": {
         "result": {
           "name": "Head and neck",
-          "value": "nan",
+          "value": 0.0,
           "rating": 0.0,
           "color": "green",
           "status": "OK"
@@ -319,7 +319,7 @@
       "criterion_chest": {
         "result": {
           "name": "Chest",
-          "value": "nan",
+          "value": 0.0,
           "rating": 0.0,
           "color": "green",
           "status": "OK"
@@ -364,7 +364,7 @@
       "criterion_thigh_hip": {
         "result": {
           "name": "Thigh and hip",
-          "value": "nan",
+          "value": 0.0,
           "rating": 0.0,
           "color": "green",
           "status": "OK"
@@ -391,7 +391,7 @@
       "criterion_leg_foot": {
         "result": {
           "name": "Leg and foot",
-          "value": "nan",
+          "value": 0.0,
           "rating": 0.0,
           "color": "green",
           "status": "OK"
@@ -474,7 +474,7 @@
       "criterion_head_neck": {
         "result": {
           "name": "Head and neck",
-          "value": "nan",
+          "value": -20.0,
           "rating": -20.0,
           "color": "red",
           "status": "OK"
@@ -546,7 +546,7 @@
       "criterion_chest": {
         "result": {
           "name": "Chest",
-          "value": "nan",
+          "value": -10.0,
           "rating": -10.0,
           "color": "orange",
           "status": "OK"
@@ -591,7 +591,7 @@
       "criterion_thigh_hip": {
         "result": {
           "name": "Thigh and hip",
-          "value": "nan",
+          "value": 0.0,
           "rating": 0.0,
           "color": "green",
           "status": "OK"
@@ -618,7 +618,7 @@
       "criterion_leg_foot": {
         "result": {
           "name": "Leg and foot",
-          "value": "nan",
+          "value": -4.0,
           "rating": -4.0,
           "color": "red",
           "status": "OK"

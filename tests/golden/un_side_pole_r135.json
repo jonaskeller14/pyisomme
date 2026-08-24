@@ -3,7 +3,7 @@
     "Overall": {
       "result": {
         "name": "Overall",
-        "value": "nan",
+        "value": 1.0,
         "rating": 1.0,
         "color": null,
         "status": "OK"
@@ -12,7 +12,7 @@
     "criterion_dummy": {
       "result": {
         "name": "Dummy",
-        "value": "nan",
+        "value": 1.0,
         "rating": 1.0,
         "color": null,
         "status": "OK"
@@ -77,7 +77,7 @@
     "Overall": {
       "result": {
         "name": "Overall",
-        "value": "nan",
+        "value": 1.0,
         "rating": 1.0,
         "color": null,
         "status": "OK"
@@ -86,7 +86,7 @@
     "criterion_dummy": {
       "result": {
         "name": "Dummy",
-        "value": "nan",
+        "value": 1.0,
         "rating": 1.0,
         "color": null,
         "status": "OK"
@@ -151,7 +151,7 @@
     "Overall": {
       "result": {
         "name": "Overall",
-        "value": "nan",
+        "value": 0.0,
         "rating": 0.0,
         "color": null,
         "status": "OK"
@@ -160,7 +160,7 @@
     "criterion_dummy": {
       "result": {
         "name": "Dummy",
-        "value": "nan",
+        "value": 0.0,
         "rating": 0.0,
         "color": null,
         "status": "OK"

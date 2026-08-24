@@ -20,7 +20,7 @@
       "criterion_head_neck": {
         "result": {
           "name": "Head and neck",
-          "value": "nan",
+          "value": 0.0,
           "rating": 0.0,
           "color": "green",
           "status": "OK"
@@ -56,7 +56,7 @@
       "criterion_torso": {
         "result": {
           "name": "Torso",
-          "value": "nan",
+          "value": 0.0,
           "rating": 0.0,
           "color": "green",
           "status": "OK"
@@ -119,7 +119,7 @@
       "criterion_head_neck": {
         "result": {
           "name": "Head and neck",
-          "value": "nan",
+          "value": 0.0,
           "rating": 0.0,
           "color": "green",
           "status": "OK"
@@ -155,7 +155,7 @@
       "criterion_torso": {
         "result": {
           "name": "Torso",
-          "value": "nan",
+          "value": 0.0,
           "rating": 0.0,
           "color": "green",
           "status": "OK"
@@ -238,7 +238,7 @@
       "criterion_head_neck": {
         "result": {
           "name": "Head and neck",
-          "value": "nan",
+          "value": 0.0,
           "rating": 0.0,
           "color": "green",
           "status": "OK"
@@ -274,7 +274,7 @@
       "criterion_torso": {
         "result": {
           "name": "Torso",
-          "value": "nan",
+          "value": -2.0,
           "rating": -2.0,
           "color": "yellow",
           "status": "OK"
@@ -337,7 +337,7 @@
       "criterion_head_neck": {
         "result": {
           "name": "Head and neck",
-          "value": "nan",
+          "value": 0.0,
           "rating": 0.0,
           "color": "green",
           "status": "OK"
@@ -373,7 +373,7 @@
       "criterion_torso": {
         "result": {
           "name": "Torso",
-          "value": "nan",
+          "value": -2.0,
           "rating": -2.0,
           "color": "yellow",
           "status": "OK"
@@ -456,7 +456,7 @@
       "criterion_head_neck": {
         "result": {
           "name": "Head and neck",
-          "value": "nan",
+          "value": -35.0,
           "rating": -35.0,
           "color": "red",
           "status": "OK"
@@ -492,7 +492,7 @@
       "criterion_torso": {
         "result": {
           "name": "Torso",
-          "value": "nan",
+          "value": -35.0,
           "rating": -35.0,
           "color": "red",
           "status": "OK"
@@ -555,7 +555,7 @@
       "criterion_head_neck": {
         "result": {
           "name": "Head and neck",
-          "value": "nan",
+          "value": -35.0,
           "rating": -35.0,
           "color": "red",
           "status": "OK"
@@ -591,7 +591,7 @@
       "criterion_torso": {
         "result": {
           "name": "Torso",
-          "value": "nan",
+          "value": -35.0,
           "rating": -35.0,
           "color": "red",
           "status": "OK"

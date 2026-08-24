@@ -4,6 +4,7 @@ from typing import Any
 
 from pyisomme.isomme import Isomme
 from pyisomme.report.criterion import Criterion, Role, sub
+from pyisomme.report.criterion_result import CriterionResult
 from pyisomme.report.ctx import from_input
 from pyisomme.report.iihs.frontal import Criterion_H350M_Injury
 from pyisomme.report.iihs.limits import Limit_A, Limit_G, Limit_M, Limit_P
@@ -67,16 +68,22 @@ class Overall(Criterion):
             ),
         ]
 
-        def calculation(self) -> None:
-            self.value = 6.0 if self.automatic_poor else float(self.demerits)
-            if self.value <= 1:
-                self.rating, self.color = 0.0, Limit_G.color
-            elif self.value <= 3:
-                self.rating, self.color = -2.0, Limit_A.color
-            elif self.value <= 5:
-                self.rating, self.color = -6.0, Limit_M.color
+        def calculation(self) -> CriterionResult:
+            value = 6.0 if self.automatic_poor else float(self.demerits)
+            if value <= 1:
+                rating, color = 0.0, Limit_G.color
+            elif value <= 3:
+                rating, color = -2.0, Limit_A.color
+            elif value <= 5:
+                rating, color = -6.0, Limit_M.color
             else:
-                self.rating, self.color = -10.0, Limit_P.color
+                rating, color = -10.0, Limit_P.color
+            return CriterionResult(
+                channel=None,
+                value=value,
+                rating=rating,
+                color=color,
+            )
 
     class Criterion_Structure(Criterion):
         name = "Vehicle structure"
@@ -108,7 +115,7 @@ class Overall(Criterion):
             ),
         ]
 
-        def calculation(self) -> None:
+        def calculation(self) -> CriterionResult:
             if self.intrusion_rating not in (1, 2, 3, 4):
                 raise ValueError("intrusion_rating must be 1 (Poor) through 4 (Good)")
             category = (
@@ -116,25 +123,37 @@ class Overall(Criterion):
                 if self.integrity_failure
                 else max(1, self.intrusion_rating - self.qualitative_downgrades)
             )
-            self.value = category
-            self.rating, self.color = {
+            value = category
+            rating, color = {
                 4: (0.0, Limit_G.color),
                 3: (-2.0, Limit_A.color),
                 2: (-6.0, Limit_M.color),
                 1: (-10.0, Limit_P.color),
             }[category]
+            return CriterionResult(
+                channel=None,
+                value=value,
+                rating=rating,
+                color=color,
+            )
 
-    def calculation(self) -> None:
-        self.rating = self.sum_of_children()
-        self.value = -self.rating
-        if self.value <= 3:
-            self.color = Limit_G.color
-        elif self.value <= 9:
-            self.color = Limit_A.color
-        elif self.value <= 19:
-            self.color = Limit_M.color
+    def calculation(self) -> CriterionResult:
+        rating = self.sum_of_children()
+        value = -rating
+        if value <= 3:
+            color = Limit_G.color
+        elif value <= 9:
+            color = Limit_A.color
+        elif value <= 19:
+            color = Limit_M.color
         else:
-            self.color = Limit_P.color
+            color = Limit_P.color
+        return CriterionResult(
+            channel=None,
+            value=value,
+            rating=rating,
+            color=color,
+        )
 
     class Criterion_Driver(Criterion_H350M_Injury):
         name = "Driver"

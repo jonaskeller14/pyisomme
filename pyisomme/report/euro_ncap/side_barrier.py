@@ -8,6 +8,7 @@ import numpy as np
 from pyisomme.isomme import Isomme
 from pyisomme.limit import Limit
 from pyisomme.report.criterion import Criterion, Role, sub
+from pyisomme.report.criterion_result import CriterionResult
 from pyisomme.report.ctx import from_input
 from pyisomme.report.euro_ncap.frontal_50kmh import (
     Criterion_Head_a3ms as Criterion_Head_a3ms_F50,
@@ -61,30 +62,36 @@ class Overall(Criterion):
         if p is not None:
             self.set_derived_input("p", str(p).strip())
 
-    def calculation(self) -> None:
-        self.rating = np.sum(
+    def calculation(self) -> CriterionResult:
+        rating = np.sum(
             [
-                self.criterion_head.rating,
-                self.criterion_chest.rating,
-                self.criterion_abdomen.rating,
-                self.criterion_pelvis.rating,
+                self.criterion_head.result.rating,
+                self.criterion_chest.result.rating,
+                self.criterion_abdomen.result.rating,
+                self.criterion_pelvis.result.rating,
             ]
         )
-        self.rating = float(
-            np.interp(self.rating, [0, 16], [0, 16], left=0, right=np.nan)
+        rating = float(
+            np.interp(rating, [0, 16], [0, 16], left=0, right=np.nan)
         )
 
         # Modifier
 
-        self.rating += np.sum(
+        rating += np.sum(
             [
-                self.criterion_incorrect_airbag_deployment.rating,
-                self.criterion_door_opening_during_impact.rating,
+                self.criterion_incorrect_airbag_deployment.result.rating,
+                self.criterion_door_opening_during_impact.result.rating,
             ]
         )
 
         # A modifier must not drive the load case below zero.
-        self.rating = float(np.max([0.0, self.rating]))
+        rating = float(np.max([0.0, rating]))
+        return CriterionResult(
+            channel=None,
+            value=rating,
+            rating=rating,
+            color=None,
+        )
 
     class Criterion_Head(Criterion):
         name = "Head"
@@ -93,13 +100,14 @@ class Overall(Criterion):
         #: exceedance on the same sliding scale as the frontal tests.
         source = "§5.1.1.1"
 
-        def calculation(self) -> None:
+        def calculation(self) -> CriterionResult:
 
-            self.rating = np.min(
-                [
-                    self.criterion_hic_15.rating,
-                    self.criterion_head_acceleration.rating,
-                ]
+            rating = self.min_of_children()
+            return CriterionResult(
+                channel=None,
+                value=rating,
+                rating=rating,
+                color=None,
             )
 
         class Criterion_HIC_15(Criterion_HIC_15_F50):
@@ -116,14 +124,14 @@ class Overall(Criterion):
         max_rating = 4.0
         source = "§5.1.2"
 
-        def calculation(self) -> None:
+        def calculation(self) -> CriterionResult:
 
-            self.rating = np.min(
-                [
-                    self.criterion_chest_lateral_compression.rating,
-                    self.criterion_chest_lateral_vc.rating,
-                    self.criterion_shoulder_lateral_force.rating,
-                ]
+            rating = self.min_of_children()
+            return CriterionResult(
+                channel=None,
+                value=rating,
+                rating=rating,
+                color=None,
             )
 
         class Criterion_Chest_Lateral_Compression(Criterion):
@@ -142,15 +150,21 @@ class Overall(Criterion):
                     Limit_G(codes, func=lambda x: -28.000, y_unit="mm", lower=True),
                 ]
 
-            def calculation(self) -> None:
-                self.channel = self.require_channel(
+            def calculation(self) -> CriterionResult:
+                channel = self.require_channel(
                     self.ctx.code("?{p}TRRI??00??DSYC")
                 ).convert_unit("mm")
-                self.value = np.min(self.channel.get_data())
-                self.rating = self.limits.get_limit_min_rating(
-                    self.channel, interpolate=True
+                value = np.min(channel.get_data())
+                rating = self.limits.get_limit_min_rating(
+                    channel, interpolate=True
                 )
-                self.color = self.limits.get_limit_min_color(self.channel)
+                color = self.limits.get_limit_min_color(channel)
+                return CriterionResult(
+                    channel=channel,
+                    value=value,
+                    rating=rating,
+                    color=color,
+                )
 
         class Criterion_Chest_Lateral_VC(
             Overall_Side_Pole.Criterion_Chest.Criterion_Chest_Lateral_VC
@@ -171,13 +185,14 @@ class Overall(Criterion):
         max_rating = 4.0
         source = "§5.1.3"
 
-        def calculation(self) -> None:
+        def calculation(self) -> CriterionResult:
 
-            self.rating = np.min(
-                [
-                    self.criterion_abdomen_lateral_compression.rating,
-                    self.criterion_abdomen_lateral_vc.rating,
-                ]
+            rating = self.min_of_children()
+            return CriterionResult(
+                channel=None,
+                value=rating,
+                rating=rating,
+                color=None,
             )
 
         class Criterion_Abdomen_Lateral_Compression(
@@ -200,9 +215,15 @@ class Overall(Criterion):
         max_rating = 4.0
         source = "§5.1.4"
 
-        def calculation(self) -> None:
+        def calculation(self) -> CriterionResult:
 
-            self.rating = self.criterion_pubic_symphysis_force.rating
+            rating = self.criterion_pubic_symphysis_force.result.rating
+            return CriterionResult(
+                channel=None,
+                value=rating,
+                rating=rating,
+                color=None,
+            )
 
         class Criterion_Pubic_Symphysis_Force(
             Overall_Side_Pole.Criterion_Pelvis.Criterion_Pubic_Symphysis_Force

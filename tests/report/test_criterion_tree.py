@@ -12,6 +12,7 @@ from pyisomme import Channel, Isomme, create_sample
 from pyisomme.errors import InvalidCodeError, MissingData, Status
 from pyisomme.limit import Limit
 from pyisomme.report.criterion import Criterion, Role, sub
+from pyisomme.report.criterion_result import CriterionResult
 from pyisomme.report.ctx import Ctx, from_input, where
 from pyisomme.report.manual import Manual, manual
 from pyisomme.report.report import Report
@@ -35,9 +36,9 @@ class Rated(Criterion):
     name = "Rated"
     calls: int = 0
 
-    def calculation(self) -> None:
+    def calculation(self) -> CriterionResult:
         self.calls += 1
-        self.value = self.rating
+        return CriterionResult(channel=None, value=self.rating, rating=self.rating, color=None)
 
 
 def rated(
@@ -165,15 +166,16 @@ class TestAutoCalculation:
         class Overall(Criterion):
             child = sub(rated(3.0))
 
-            def calculation(self) -> None:
+            def calculation(self) -> CriterionResult:
                 # No `self.child.calculate()` — that is the point.
-                self.rating = self.child.rating
+                return CriterionResult(channel=None, value=self.min_of_children(), rating=self.min_of_children(), color=None)
 
         report, (v1,) = report_of(Overall)
         report.calculate()
         assert report.overall(v1).child.calls == 1
         assert report.overall(v1).child.status == Status.OK
-        assert report.overall(v1).rating == 3.0
+        assert report.overall(v1).result is not None
+        assert report.overall(v1).result.rating == 3.0
 
     def test_children_are_calculated_before_the_parent(self) -> None:
         order: list[str] = []
@@ -199,31 +201,36 @@ class TestAutoCalculation:
         class Branch(Criterion):
             leaf = sub(rated(2.0))
 
-            def calculation(self) -> None:
-                self.rating = self.leaf.rating
+            def calculation(self) -> CriterionResult:
+                rating = self.min_of_children()
+                return CriterionResult(channel=None, value=rating, rating=rating, color=None)
 
         class Overall(Criterion):
             branch = sub(Branch)
 
-            def calculation(self) -> None:
-                self.rating = self.branch.rating
+            def calculation(self) -> CriterionResult:
+                rating = self.min_of_children()
+                return CriterionResult(channel=None, value=rating, rating=rating, color=None)
 
         report, (v1,) = report_of(Overall)
         report.calculate()
-        assert report.overall(v1).rating == 2.0
+        assert report.overall(v1).result is not None
+        assert report.overall(v1).result.rating == 2.0
         assert report.overall(v1).branch.leaf.calls == 1
 
     def test_added_children_are_calculated(self) -> None:
         class Overall(Criterion):
-            def calculation(self) -> None:
-                self.rating = self.sum_of_children()
+            def calculation(self) -> CriterionResult:
+                rating = self.sum_of_children()
+                return CriterionResult(channel=None, value=rating, rating=rating, color=None)
 
         report, (v1,) = report_of(Overall)
         overall = report.overall(v1)
         overall.add_child("one", rated(1.0)(report, v1))
         overall.add_child("two", rated(2.0)(report, v1))
         report.calculate()
-        assert overall.rating == 3.0
+        assert overall.result is not None
+        assert overall.result.rating == 3.0
         assert [child.calls for _, child in overall.get_children()] == [1, 1]
 
     def test_legacy_children_are_not_calculated_twice(self) -> None:
@@ -250,8 +257,9 @@ class TestAutoCalculation:
             broken = sub(Broken)
             fine = sub(rated(4.0))
 
-            def calculation(self) -> None:
-                self.rating = self.fine.rating
+            def calculation(self) -> CriterionResult:
+                rating = self.min_of_children()
+                return CriterionResult(channel=None, value=rating, rating=rating, color=None)
 
         report, (v1,) = report_of(Overall)
         report.calculate()
@@ -288,19 +296,22 @@ class TestAutoCalculation:
         class Leaf(Criterion):
             hard_contact: Manual[bool, manual(True, doc="…")]
 
-            def calculation(self) -> None:
-                self.rating = 1.0 if self.hard_contact else 0.0
+            def calculation(self) -> CriterionResult:
+                rating = 1.0 if self.hard_contact else 0.0
+                return CriterionResult(channel=None, value=rating, rating=rating, color=None)
 
         class Overall(Criterion):
             leaf = sub(Leaf)
 
-            def calculation(self) -> None:
-                self.rating = self.leaf.rating
+            def calculation(self) -> CriterionResult:
+                rating = self.min_of_children()
+                return CriterionResult(channel=None, value=rating, rating=rating, color=None)
 
         report, (v1,) = report_of(Overall)
         report.overall(v1).leaf.hard_contact = False
         report.calculate()
-        assert report.overall(v1).rating == 0.0
+        assert report.overall(v1).result is not None
+        assert report.overall(v1).result.rating == 0.0
 
 
 class Mixed(Criterion):
@@ -311,8 +322,9 @@ class Mixed(Criterion):
     bad = sub(rated(2.0, name="Bad"))
     penalty = sub(rated(-1.0, Role.MODIFIER, name="Penalty"))
 
-    def calculation(self) -> None:
-        self.rating = self.min_of_children() + self.modifiers_sum()
+    def calculation(self) -> CriterionResult:
+        rating = self.min_of_children() + self.modifiers_sum()
+        return CriterionResult(channel=None, value=rating, rating=rating, color=None)
 
 
 class TestAggregation:
@@ -323,7 +335,8 @@ class TestAggregation:
         assert overall.min_of_children() == 2.0
         assert overall.sum_of_children() == 6.0
         assert overall.modifiers_sum() == -1.0
-        assert overall.rating == 1.0
+        assert overall.result is not None
+        assert overall.result.rating == 1.0
 
     def test_aggregate_children_count_towards_the_headline(self) -> None:
         class Overall(Criterion):
@@ -335,6 +348,7 @@ class TestAggregation:
                 pass
 
         report, (v1,) = report_of(Overall)
+        report.calculate()
         assert sorted(report.overall(v1).ratings_of_children()) == [1.0, 4.0]
         assert report.overall(v1).ratings_of_children(Role.MODIFIER) == [-2.0]
 
@@ -370,15 +384,15 @@ class TestAggregation:
             fine = sub(rated(4.0))
             missing = sub(rated(np.nan))
 
-            def calculation(self) -> None:
-                self.rating = self.mean_of_children(
-                    skip_missing="no rear occupant in this test"
-                )
+            def calculation(self) -> CriterionResult:
+                rating = self.mean_of_children(skip_missing="no rear occupant in this test")
+                return CriterionResult(channel=None, value=rating, rating=rating, color=None)
 
         report, (v1,) = report_of(Overall)
         report.calculate()
         overall = report.overall(v1)
-        assert overall.rating == 4.0
+        assert overall.result is not None
+        assert overall.result.rating == 4.0
         assert overall.skip_missing == "no rear occupant in this test"
 
     def test_skip_missing_stays_unset_when_nothing_was_skipped(self) -> None:
@@ -386,44 +400,52 @@ class TestAggregation:
             one = sub(rated(4.0))
             two = sub(rated(2.0))
 
-            def calculation(self) -> None:
-                self.rating = self.mean_of_children(skip_missing="would be a lie")
+            def calculation(self) -> CriterionResult:
+                rating = self.mean_of_children(skip_missing="would be a lie")
+                return CriterionResult(channel=None, value=rating, rating=rating, color=None)
 
         report, (v1,) = report_of(Overall)
         report.calculate()
-        assert report.overall(v1).rating == 3.0
+        assert report.overall(v1).result is not None
+        assert report.overall(v1).result.rating == 3.0
         assert report.overall(v1).skip_missing is None
 
     def test_all_missing_stays_nan_even_when_tolerated(self) -> None:
         class Overall(Criterion):
             one = sub(rated(np.nan))
 
-            def calculation(self) -> None:
-                self.rating = self.mean_of_children(skip_missing="whatever")
+            def calculation(self) -> CriterionResult:
+                rating = self.mean_of_children(skip_missing="whatever")
+                return CriterionResult(channel=None, value=rating, rating=rating, color=None)
 
         report, (v1,) = report_of(Overall)
         report.calculate()
-        assert np.isnan(report.overall(v1).rating)
+        assert report.overall(v1).result is not None
+        assert np.isnan(report.overall(v1).result.rating)
 
     def test_modifiers_sum_is_zero_without_modifiers(self) -> None:
         class Overall(Criterion):
             leaf = sub(rated(4.0))
 
-            def calculation(self) -> None:
-                self.rating = self.min_of_children() + self.modifiers_sum()
+            def calculation(self) -> CriterionResult:
+                rating = self.min_of_children() + self.modifiers_sum()
+                return CriterionResult(channel=None, value=rating, rating=rating, color=None)
 
         report, (v1,) = report_of(Overall)
         report.calculate()
-        assert report.overall(v1).rating == 4.0
+        assert report.overall(v1).result is not None
+        assert report.overall(v1).result.rating == 4.0
 
     def test_min_over_no_children_is_nan_not_an_exception(self) -> None:
         class Overall(Criterion):
-            def calculation(self) -> None:
-                self.rating = self.min_of_children()
+            def calculation(self) -> CriterionResult:
+                rating = self.min_of_children()
+                return CriterionResult(channel=None, value=rating, rating=rating, color=None)
 
         report, (v1,) = report_of(Overall)
         report.calculate()
-        assert np.isnan(report.overall(v1).rating)
+        assert report.overall(v1).result is not None
+        assert np.isnan(report.overall(v1).result.rating)
         assert report.overall(v1).status == Status.OK
 
     def test_legacy_children_are_aggregated_too(self) -> None:
@@ -435,14 +457,16 @@ class TestAggregation:
                 self.criterion_a = rated(4.0)(report, isomme)
                 self.criterion_b = rated(2.0)(report, isomme)
 
-            def calculation(self) -> None:
+            def calculation(self) -> CriterionResult:
                 self.criterion_a.calculate()
                 self.criterion_b.calculate()
-                self.rating = self.min_of_children()
+                rating = self.min_of_children()
+                return CriterionResult(channel=None, value=rating, rating=rating, color=None)
 
         report, (v1,) = report_of(Overall)
         report.calculate()
-        assert report.overall(v1).rating == 2.0
+        assert report.overall(v1).result is not None
+        assert report.overall(v1).result.rating == 2.0
 
 
 #: Declared once and referenced twice — by the ``Manual[...]`` annotation and by the
@@ -457,8 +481,9 @@ class Occupant(Criterion):
 
     name = "Occupant"
 
-    def calculation(self) -> None:
-        self.value = self.ctx.field("p")  # pyright: ignore[reportAttributeAccessIssue]
+    def calculation(self) -> CriterionResult:
+        value = self.ctx.field("p")
+        return CriterionResult(channel=None, value=value, rating=0.0, color=None)  # type: ignore[arg-type]
 
 
 class Seated(Criterion):
@@ -492,30 +517,35 @@ class TestContext:
         report, (v1,) = report_of(Seated)
         report.calculate()
         overall = report.overall(v1)
-        assert overall.driver.value == "1"
-        assert overall.front_passenger.value == "3"
+        assert overall.driver.result is not None
+        assert overall.front_passenger.result is not None
+        assert overall.driver.result.value == "1"
+        assert overall.front_passenger.result.value == "3"
 
     def test_a_position_set_after_construction_is_honoured(self) -> None:
         """F15, properly: no rebuild_child(), no sync_positions()."""
         report, (v1,) = report_of(Seated)
         report.overall(v1).p_driver = "2"
         report.calculate()
-        assert report.overall(v1).driver.value == "2"
+        assert report.overall(v1).driver.result is not None
+        assert report.overall(v1).driver.result.value == "2"
 
     def test_a_lettered_seat_is_a_position_like_any_other(self) -> None:
         """``?A…`` is a valid channel code — the reason a position is a `str`, not an `int`."""
         report, (v1,) = report_of(Seated)
         report.overall(v1).p_driver = "A"
         report.calculate()
-        assert report.overall(v1).driver.value == "A"
+        assert report.overall(v1).driver.result is not None
+        assert report.overall(v1).driver.result.value == "A"
         assert (
             report.overall(v1).driver.code("?{p}HEAD??00??ACRA") == "?AHEAD??00??ACRA"
         )
 
     def test_children_inherit_the_context(self) -> None:
         class Leaf(Criterion):
-            def calculation(self) -> None:
-                self.value = float(self.ctx.field("p"))
+            def calculation(self) -> CriterionResult:
+                value = float(self.ctx.field("p"))
+                return CriterionResult(channel=None, value=value, rating=value, color=None)
 
         class Region(Criterion):
             leaf = sub(Leaf)
@@ -533,7 +563,8 @@ class TestContext:
         report, (v1,) = report_of(Overall)
         report.overall(v1).p_driver = "4"
         report.calculate()
-        assert report.overall(v1).driver.leaf.value == 4.0
+        assert report.overall(v1).driver.leaf.result is not None
+        assert report.overall(v1).driver.leaf.result.value == 4.0
 
     def test_where_is_a_second_source_needing_no_framework_change(self) -> None:
         report, (v1,) = report_of(Seated)
@@ -552,9 +583,9 @@ class TestContext:
 
     def test_a_missing_field_is_n_a_naming_it(self) -> None:
         class Leaf(Criterion):
-            def calculation(self) -> None:
-                self.channel = self.require_channel(self.code("?{p}HEAD??00??ACRA"))
-                self.value = 1.0
+            def calculation(self) -> CriterionResult:
+                channel = self.require_channel(self.code("?{p}HEAD??00??ACRA"))
+                return CriterionResult(channel=channel, value=1.0, rating=1.0, color=None)
 
         class Overall(Criterion):
             leaf = sub(Leaf)
@@ -567,7 +598,7 @@ class TestContext:
         leaf = report.overall(v1).leaf
         assert leaf.status == Status.NA
         assert "p" in str(leaf.na_reason)
-        assert np.isnan(leaf.value)
+        assert leaf.result is None
 
     def test_a_missing_seat_input_is_n_a_not_a_silent_default(self) -> None:
         class Overall(Criterion):
@@ -597,7 +628,8 @@ class TestContext:
         report, (v1,) = report_of(Overall)
         report.overall(v1).p_driver = "5"
         report.calculate()
-        assert report.overall(v1).driver.value == "5"
+        assert report.overall(v1).driver.result is not None
+        assert report.overall(v1).driver.result.value == "5"
 
     def test_a_declaration_is_an_identity_not_a_value(self) -> None:
         """
@@ -651,7 +683,8 @@ class TestContext:
         report, (v1,) = report_of(Seated)
         report.set_inputs({"T0": {"p_driver": "2", "p_front_passenger": "5"}})
         report.calculate()
-        assert report.overall(v1).front_passenger.value == "5"
+        assert report.overall(v1).front_passenger.result is not None
+        assert report.overall(v1).front_passenger.result.value == "5"
         assert report.get_inputs()["T0"]["p_driver"] == "2"
 
     def test_a_saved_int_position_is_refused(self) -> None:
@@ -681,9 +714,9 @@ class Vehicle(Criterion):
     source = "§4.4"
     role = Role.MODIFIER
 
-    def calculation(self) -> None:
-        self.channel = self.require_channel(self.code("10SILELEOU00DSX0"))
-        self.rating = 0.0
+    def calculation(self) -> CriterionResult:
+        channel = self.require_channel(self.code("10SILELEOU00DSX0"))
+        return CriterionResult(channel=channel, value=0.0, rating=0.0, color=None)
 
 
 class Correlation(Criterion):
@@ -700,9 +733,9 @@ class Correlation(Criterion):
         super().__init__(report, isomme)
         self._channel = channel
 
-    def calculation(self) -> None:
-        self.value = 1.0 if self._channel is not None else 0.0
-        self.rating = self.value
+    def calculation(self) -> CriterionResult:
+        value = 1.0 if self._channel is not None else 0.0
+        return CriterionResult(channel=self._channel, value=value, rating=value, color=None)
 
 
 class Structural(Criterion):
@@ -711,8 +744,9 @@ class Structural(Criterion):
     source = "§5"
     vehicle = sub(Vehicle)
 
-    def calculation(self) -> None:
-        self.rating = self.modifiers_sum()
+    def calculation(self) -> CriterionResult:
+        rating = self.modifiers_sum()
+        return CriterionResult(channel=None, value=rating, rating=rating, color=None)
 
 
 class TestNoOccupant:
@@ -728,12 +762,14 @@ class TestNoOccupant:
         # The empty Isomme carries no channel, so the modifier is n/a and its nan
         # propagates into the aggregate (G9) — nothing here ever asked for an occupant.
         assert overall.vehicle.status == Status.NA
-        assert np.isnan(overall.rating)
+        assert overall.result is not None
+        assert np.isnan(overall.result.rating)
 
     def test_a_correlation_style_criterion_needs_no_context(self) -> None:
         class Overall(Criterion):
-            def calculation(self) -> None:
-                self.rating = self.sum_of_children()
+            def calculation(self) -> CriterionResult:
+                rating = self.sum_of_children()
+                return CriterionResult(channel=None, value=rating, rating=rating, color=None)
 
         report, (v1,) = report_of(Overall)
         overall = report.overall(v1)
@@ -741,7 +777,8 @@ class TestNoOccupant:
         overall.add_child("curve_1", Correlation(report, v1, channel))
         overall.add_child("curve_2", Correlation(report, v1, channel))
         report.calculate()
-        assert overall.rating == 2.0
+        assert overall.result is not None
+        assert overall.result.rating == 2.0
 
 
 def constant(value: float) -> Limit:

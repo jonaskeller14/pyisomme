@@ -14,6 +14,7 @@ from pyisomme.errors import (
 )
 from pyisomme.isomme import Isomme
 from pyisomme.report.criterion import Criterion
+from pyisomme.report.criterion_result import CriterionResult
 
 
 class _FakeReport:
@@ -48,10 +49,10 @@ class TestCriterionOutcomes:
     @pytest.fixture
     def make_criterion(
         self, fake_report: _FakeReport, empty_isomme: Isomme
-    ) -> typing.Callable[[typing.Callable[..., None]], Criterion]:
+    ) -> typing.Callable[[typing.Callable[..., CriterionResult]], Criterion]:
         """Factory fixture that binds a custom calculation method to a fresh Criterion."""
 
-        def _factory(calculation_func: typing.Callable[..., None]) -> Criterion:
+        def _factory(calculation_func: typing.Callable[..., CriterionResult]) -> Criterion:
             criterion = Criterion(fake_report, empty_isomme)
             criterion.calculation = types.MethodType(calculation_func, criterion)
             return criterion
@@ -64,18 +65,18 @@ class TestCriterionOutcomes:
         assert Criterion(fake_report, empty_isomme).status is Status.PENDING
 
     def test_ok(self, make_criterion) -> None:
-        def calculation(self: Criterion) -> None:
-            self.value = 1.0
-            self.rating = 2.0
+        def calculation(self: Criterion) -> CriterionResult:
+            return CriterionResult(channel=None, value=1.0, rating=2.0, color=None)
 
         c = make_criterion(calculation)
         c.calculate()
 
         assert c.status is Status.OK
-        assert c.value == 1.0
+        assert c.result is not None
+        assert c.result.value == 1.0
 
     def test_missing_data_via_require_channel(self, make_criterion) -> None:
-        def calculation(self: Criterion) -> None:
+        def calculation(self: Criterion) -> CriterionResult:
             self.require_channel("11HEAD??00??ACRA")  # not present in an empty Isomme
 
         c = make_criterion(calculation)
@@ -83,10 +84,10 @@ class TestCriterionOutcomes:
 
         assert c.status is Status.NA
         assert isinstance(c.na_reason, MissingData)
-        assert np.isnan(c.value)
+        assert c.result is None
 
     def test_missing_data_via_require_test_info(self, make_criterion) -> None:
-        def calculation(self: Criterion) -> None:
+        def calculation(self: Criterion) -> CriterionResult:
             self.require_test_info("Driver position object 1")
 
         c = make_criterion(calculation)
@@ -95,17 +96,19 @@ class TestCriterionOutcomes:
         assert c.status is Status.NA
 
     def test_require_returns_value_when_present(self, make_criterion) -> None:
-        def calculation(self: Criterion) -> None:
-            self.value = self.require(42, "something")
+        def calculation(self: Criterion) -> CriterionResult:
+            value = self.require(42, "something")
+            return CriterionResult(channel=None, value=value, rating=value, color=None)
 
         c = make_criterion(calculation)
         c.calculate()
 
         assert c.status is Status.OK
-        assert c.value == 42
+        assert c.result is not None
+        assert c.result.value == 42
 
     def test_unexpected_error(self, make_criterion) -> None:
-        def calculation(self: Criterion) -> None:
+        def calculation(self: Criterion) -> CriterionResult:
             raise RuntimeError("boom")
 
         c = make_criterion(calculation)

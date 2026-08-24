@@ -11,8 +11,8 @@ class Page_Criterion_Values_Table(Page_Criterion_Table):
 
     @staticmethod
     def row_label(criterion: Criterion) -> str:
-        return f"{criterion.name} [{criterion.channel.unit if criterion.channel is not None else np.nan}]"
+        return f"{criterion.name} [{criterion.result.channel.unit if criterion.result is not None and criterion.result.channel is not None else np.nan}]"
 
     @staticmethod
     def cell_text(criterion: Criterion) -> str:
-        return f"{criterion.value:.4g}"
+        return "n/a" if criterion.result is None else f"{criterion.result.value:.4g}"

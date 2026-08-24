@@ -169,10 +169,17 @@ class Report(BaseReport, Generic[C]):
             print(isomme)
             for path, criterion in self.criterion_overall[isomme].walk():
                 intend = "\t" * (path.count("/") + 2 if path else 1)
+                result = criterion.result
+                value = result.value if result is not None else float("nan")
+                rating = result.rating if result is not None else float("nan")
+                unit = (
+                    result.channel.unit
+                    if result is not None and result.channel is not None
+                    else ""
+                )
                 print(
                     f"{intend}{criterion.name if criterion.name is not None else criterion.__class__.__name__}: "
-                    f"Value={criterion.value:.5g} [{criterion.channel.unit if criterion.channel is not None else ''}] "
-                    f"Rating={criterion.rating:.5g}"
+                    f"Value={value:.5g} [{unit}] Rating={rating:.5g}"
                 )
 
     def json_results(self) -> dict[str, Any]:
@@ -188,9 +195,9 @@ class Report(BaseReport, Generic[C]):
                     "name": criterion.name
                     if criterion.name is not None
                     else criterion.__class__.__name__,
-                    "value": json_encode(criterion.value),
-                    "rating": json_encode(criterion.rating),
-                    "color": json_encode(criterion.color),
+                    "value": json_encode(criterion.result.value if criterion.result is not None else None),
+                    "rating": json_encode(criterion.result.rating if criterion.result is not None else None),
+                    "color": json_encode(criterion.result.color if criterion.result is not None else None),
                     "status": criterion.status.name,
                 }
             results[f"{isomme_idx}: {isomme.test_number}"] = test_results

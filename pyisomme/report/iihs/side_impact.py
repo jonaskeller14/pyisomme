@@ -10,6 +10,7 @@ from pyisomme.channel import Channel, time_intersect
 from pyisomme.isomme import Isomme
 from pyisomme.limit import Limit
 from pyisomme.report.criterion import Criterion, Role, sub
+from pyisomme.report.criterion_result import CriterionResult
 from pyisomme.report.ctx import from_input
 from pyisomme.report.iihs.limits import (
     Limit_A,
@@ -79,13 +80,19 @@ class Criterion_Head_Neck(Criterion):
                 Limit_P(codes, lambda x: 935, y_unit=1, lower=True, rating=-35),
             ]
 
-        def calculation(self) -> None:
-            self.channel = self.require_channel(self.ctx.code("?{p}HICR0015??00RX"))
-            self.value = float(self.channel.get_data()[0])
-            self.rating = self.limits.get_limit_min_rating(
-                self.channel, interpolate=False
+        def calculation(self) -> CriterionResult:
+            channel = self.require_channel(self.ctx.code("?{p}HICR0015??00RX"))
+            value = float(channel.get_data()[0])
+            rating = self.limits.get_limit_min_rating(
+                channel, interpolate=False
             )
-            self.color = self.limits.get_limit_min_color(self.channel)
+            color = self.limits.get_limit_min_color(channel)
+            return CriterionResult(
+                channel=channel,
+                value=value,
+                rating=rating,
+                color=color,
+            )
 
     class Criterion_Neck_Tension(Criterion):
         name = "Neck axial tension"
@@ -102,15 +109,21 @@ class Criterion_Head_Neck(Criterion):
                 Limit_P(codes, lambda x: 2.9, y_unit="kN", lower=True, rating=-35),
             ]
 
-        def calculation(self) -> None:
-            self.channel = self.require_channel(
+        def calculation(self) -> CriterionResult:
+            channel = self.require_channel(
                 self.ctx.code("?{p}NECKUP00??FOZB")
             ).convert_unit("kN")
-            self.value = float(np.max(self.channel.get_data()))
-            self.rating = self.limits.get_limit_min_rating(
-                self.channel, interpolate=False
+            value = float(np.max(channel.get_data()))
+            rating = self.limits.get_limit_min_rating(
+                channel, interpolate=False
             )
-            self.color = self.limits.get_limit_min_color(self.channel)
+            color = self.limits.get_limit_min_color(channel)
+            return CriterionResult(
+                channel=channel,
+                value=value,
+                rating=rating,
+                color=color,
+            )
 
     class Criterion_Neck_Compression(Criterion):
         name = "Neck axial compression"
@@ -124,24 +137,36 @@ class Criterion_Head_Neck(Criterion):
                 Limit_P(codes, lambda x: -3.5, y_unit="kN", upper=True, rating=-35),
             ]
 
-        def calculation(self) -> None:
-            self.channel = self.require_channel(
+        def calculation(self) -> CriterionResult:
+            channel = self.require_channel(
                 self.ctx.code("?{p}NECKUP00??FOZB")
             ).convert_unit("kN")
-            self.value = float(-np.min(self.channel.get_data()))
-            self.rating = self.limits.get_limit_min_rating(
-                self.channel, interpolate=False
+            value = float(-np.min(channel.get_data()))
+            rating = self.limits.get_limit_min_rating(
+                channel, interpolate=False
             )
-            self.color = self.limits.get_limit_min_color(self.channel)
+            color = self.limits.get_limit_min_color(channel)
+            return CriterionResult(
+                channel=channel,
+                value=value,
+                rating=rating,
+                color=color,
+            )
 
-    def calculation(self) -> None:
-        self.rating = self.min_of_children()
-        self.color = {
+    def calculation(self) -> CriterionResult:
+        rating = self.min_of_children()
+        color = {
             0.0: Limit_G.color,
             -2.0: Limit_A.color,
             -10.0: Limit_M.color,
             -35.0: Limit_P.color,
-        }.get(self.rating)
+        }.get(rating)
+        return CriterionResult(
+            channel=None,
+            value=rating,
+            rating=rating,
+            color=color,
+        )
 
     criterion_hic_15 = sub(Criterion_HIC_15)
     criterion_neck_tension = sub(Criterion_Neck_Tension)
@@ -176,7 +201,7 @@ class Criterion_Torso(Criterion):
                 Limit_P(codes, lambda x: 48, y_unit="mm", lower=True, rating=-35),
             ]
 
-        def calculation(self) -> None:
+        def calculation(self) -> CriterionResult:
             channels = [
                 self.require_channel(code)
                 for code in self.ctx.codes(*RIB_DEFLECTION_CODES)
@@ -185,19 +210,25 @@ class Criterion_Torso(Criterion):
                 float(np.max(np.abs(channel.get_data(unit="mm"))))
                 for channel in channels
             ]
-            self.value = float(np.mean(peaks))
-            self.channel = Channel(channels[0].code, pd.DataFrame([self.value]), "mm")
-            self.rating = self.limits.get_limit_min_rating(
-                self.channel, interpolate=False
+            value = float(np.mean(peaks))
+            channel = Channel(channels[0].code, pd.DataFrame([value]), "mm")
+            rating = self.limits.get_limit_min_rating(
+                channel, interpolate=False
             )
-            self.color = self.limits.get_limit_min_color(self.channel)
+            color = self.limits.get_limit_min_color(channel)
             peak = float(np.max(peaks))
             if peak > 55:
-                self.rating, self.color = -35.0, Limit_P.color
+                rating, color = -35.0, Limit_P.color
             elif peak > 50:
-                self.rating = min(self.rating, -10.0)
-                if self.rating == -10.0:
-                    self.color = Limit_M.color
+                rating = min(rating, -10.0)
+                if rating == -10.0:
+                    color = Limit_M.color
+            return CriterionResult(
+                channel=channel,
+                value=value,
+                rating=rating,
+                color=color,
+            )
 
     class Criterion_Rib_Deflection_Rate(Criterion):
         name = "Rib deflection rate"
@@ -214,7 +245,7 @@ class Criterion_Torso(Criterion):
                 Limit_P(codes, lambda x: 11.5, y_unit="m/s", lower=True, rating=-35),
             ]
 
-        def calculation(self) -> None:
+        def calculation(self) -> CriterionResult:
             channels = [
                 self.require_channel(code)
                 for code in self.ctx.codes(*RIB_DEFLECTION_CODES)
@@ -231,15 +262,21 @@ class Criterion_Torso(Criterion):
                 self.limits.get_limit_min_rating(channel, interpolate=False)
                 for channel in rate_channels
             ]
-            self.channel = rate_channels[int(np.argmin(ratings))]
-            self.value = float(
+            channel = rate_channels[int(np.argmin(ratings))]
+            value = float(
                 max(
                     np.max(np.abs(channel.get_data(unit="m/s")))
                     for channel in rate_channels
                 )
             )
-            self.rating = min(ratings)
-            self.color = self.limits.get_limit_min_color(self.channel)
+            rating = min(ratings)
+            color = self.limits.get_limit_min_color(channel)
+            return CriterionResult(
+                channel=channel,
+                value=value,
+                rating=rating,
+                color=color,
+            )
 
     class Criterion_Viscous_Criterion(Criterion):
         name = "Viscous criterion"
@@ -256,7 +293,7 @@ class Criterion_Torso(Criterion):
                 Limit_P(codes, lambda x: 1.4, y_unit="m/s", lower=True, rating=-35),
             ]
 
-        def calculation(self) -> None:
+        def calculation(self) -> CriterionResult:
             channels = [
                 self.require_channel(code)
                 for code in self.ctx.codes(*RIB_DEFLECTION_CODES)
@@ -279,28 +316,40 @@ class Criterion_Torso(Criterion):
                 self.limits.get_limit_min_rating(channel, interpolate=False)
                 for channel in vc_channels
             ]
-            self.channel = vc_channels[int(np.argmin(ratings))]
-            assert self.channel is not None
-            self.channel = self.channel.convert_unit("m/s")
-            self.value = float(np.max(np.abs(self.channel.get_data())))
-            self.rating = min(ratings)
-            self.color = self.limits.get_limit_min_color(self.channel)
+            channel = vc_channels[int(np.argmin(ratings))]
+            assert channel is not None
+            channel = channel.convert_unit("m/s")
+            value = float(np.max(np.abs(channel.get_data())))
+            rating = min(ratings)
+            color = self.limits.get_limit_min_color(channel)
+            return CriterionResult(
+                channel=channel,
+                value=value,
+                rating=rating,
+                color=color,
+            )
 
-    def calculation(self) -> None:
-        self.rating = self.min_of_children()
+    def calculation(self) -> CriterionResult:
+        rating = self.min_of_children()
         if self.shoulder_bottoming:
-            self.rating = {
+            rating = {
                 0.0: -2.0,
                 -2.0: -10.0,
                 -10.0: -35.0,
                 -35.0: -35.0,
-            }[self.rating]
-        self.color = {
+            }[rating]
+        color = {
             0.0: Limit_G.color,
             -2.0: Limit_A.color,
             -10.0: Limit_M.color,
             -35.0: Limit_P.color,
-        }[self.rating]
+        }[rating]
+        return CriterionResult(
+            channel=None,
+            value=rating,
+            rating=rating,
+            color=color,
+        )
 
     criterion_rib_deflection = sub(Criterion_Rib_Deflection)
     criterion_rib_deflection_rate = sub(Criterion_Rib_Deflection_Rate)
@@ -322,7 +371,7 @@ class Criterion_Pelvis(Criterion):
             Limit_P(codes, lambda x: 6.0, y_unit="kN", lower=True, rating=-10),
         ]
 
-    def calculation(self) -> None:
+    def calculation(self) -> CriterionResult:
         channels = [
             self.require_channel(code)
             for code in self.ctx.codes(
@@ -342,12 +391,18 @@ class Criterion_Pelvis(Criterion):
             ],
             axis=0,
         )
-        self.value = float(np.max(combined))
-        self.channel = Channel(
+        value = float(np.max(combined))
+        channel = Channel(
             channels[0].code, pd.DataFrame(combined, index=time), "kN"
         )
-        self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
-        self.color = self.limits.get_limit_min_color(self.channel)
+        rating = self.limits.get_limit_min_rating(channel, interpolate=False)
+        color = self.limits.get_limit_min_color(channel)
+        return CriterionResult(
+            channel=channel,
+            value=value,
+            rating=rating,
+            color=color,
+        )
 
 
 class Criterion_Head_Protection(Criterion):
@@ -393,18 +448,24 @@ class Criterion_Head_Protection(Criterion):
         ),
     ]
 
-    def calculation(self) -> None:
+    def calculation(self) -> CriterionResult:
         if self.direct_mdb_contact or not self.head_contained:
-            self.rating, self.color = -22.0, Limit_P.color
+            rating, color = -22.0, Limit_P.color
         elif not self.head_protection_system_equipped:
-            self.rating, self.color = -10.0, Limit_M.color
+            rating, color = -10.0, Limit_M.color
         elif self.interior_contact and self.head_acceleration_over_70g:
-            self.rating, self.color = -10.0, Limit_M.color
+            rating, color = -10.0, Limit_M.color
         elif self.interior_contact or self.head_acceleration_over_70g:
-            self.rating, self.color = -2.0, Limit_A.color
+            rating, color = -2.0, Limit_A.color
         else:
-            self.rating, self.color = 0.0, Limit_G.color
-        self.value = -self.rating
+            rating, color = 0.0, Limit_G.color
+        value = -rating
+        return CriterionResult(
+            channel=None,
+            value=value,
+            rating=rating,
+            color=color,
+        )
 
 
 class Criterion_Occupant(Criterion):
@@ -412,9 +473,15 @@ class Criterion_Occupant(Criterion):
     role = Role.AGGREGATE
     aggregation = "sum"
 
-    def calculation(self) -> None:
-        self.rating = self.sum_of_children()
-        self.value = -self.rating
+    def calculation(self) -> CriterionResult:
+        rating = self.sum_of_children()
+        value = -rating
+        return CriterionResult(
+            channel=None,
+            value=value,
+            rating=rating,
+            color=None,
+        )
 
     criterion_head_neck = sub(Criterion_Head_Neck, role=Role.AGGREGATE)
     criterion_torso = sub(Criterion_Torso, role=Role.AGGREGATE)
@@ -468,11 +535,13 @@ class Overall(Criterion):
             ),
         ]
 
-        def calculation(self) -> None:
+        def calculation(self) -> CriterionResult:
             distance = self.b_pillar_to_seat_centerline_cm
             if np.isnan(distance):
-                self.rating = float(np.nan)
-                return
+                rating = float(np.nan)
+                return CriterionResult(
+                    channel=None, value=distance, rating=rating, color=None
+                )
             elif distance > 18.0:
                 rating, color = 0.0, Limit_G.color
             elif distance >= 14.0:
@@ -490,20 +559,32 @@ class Overall(Criterion):
                     -10.0: (-22.0, Limit_P.color),
                     -22.0: (-22.0, Limit_P.color),
                 }[rating]
-            self.value = distance
-            self.rating, self.color = rating, color
+            value = distance
+            rating, color = rating, color
+            return CriterionResult(
+                channel=None,
+                value=value,
+                rating=rating,
+                color=color,
+            )
 
-    def calculation(self) -> None:
-        self.rating = self.sum_of_children()
-        self.value = -self.rating
-        if self.value <= 8:
-            self.color = Limit_G.color
-        elif self.value <= 20:
-            self.color = Limit_A.color
-        elif self.value <= 34:
-            self.color = Limit_M.color
+    def calculation(self) -> CriterionResult:
+        rating = self.sum_of_children()
+        value = -rating
+        if value <= 8:
+            color = Limit_G.color
+        elif value <= 20:
+            color = Limit_A.color
+        elif value <= 34:
+            color = Limit_M.color
         else:
-            self.color = Limit_P.color
+            color = Limit_P.color
+        return CriterionResult(
+            channel=None,
+            value=value,
+            rating=rating,
+            color=color,
+        )
 
     criterion_driver = sub(
         Criterion_Occupant,

@@ -3,7 +3,7 @@
     "Overall": {
       "result": {
         "name": "Overall",
-        "value": "nan",
+        "value": 4.0,
         "rating": 4.0,
         "color": null,
         "status": "OK"
@@ -48,7 +48,7 @@
     "criterion_neck": {
       "result": {
         "name": "Neck",
-        "value": "nan",
+        "value": 4.0,
         "rating": 4.0,
         "color": null,
         "status": "OK"
@@ -56,7 +56,7 @@
       "criterion_upper_neck": {
         "result": {
           "name": "Upper_Neck",
-          "value": "nan",
+          "value": 4.0,
           "rating": 4.0,
           "color": null,
           "status": "OK"
@@ -92,7 +92,7 @@
       "criterion_lower_neck": {
         "result": {
           "name": "Lower_Neck",
-          "value": "nan",
+          "value": 4.0,
           "rating": 4.0,
           "color": null,
           "status": "OK"
@@ -129,7 +129,7 @@
     "criterion_chest_abdomen": {
       "result": {
         "name": "Chest & Abdomen",
-        "value": "nan",
+        "value": 4.0,
         "rating": 4.0,
         "color": null,
         "status": "OK"
@@ -156,8 +156,8 @@
     "criterion_pelvis_lumbar_modifier": {
       "result": {
         "name": "Pelvis and Lumbar Modifier",
-        "value": "nan",
-        "rating": 0,
+        "value": 0.0,
+        "rating": 0.0,
         "color": null,
         "status": "OK"
       },
@@ -203,7 +203,7 @@
     "Overall": {
       "result": {
         "name": "Overall",
-        "value": "nan",
+        "value": 3.878994499749988,
         "rating": 3.878994499749988,
         "color": null,
         "status": "OK"
@@ -248,7 +248,7 @@
     "criterion_neck": {
       "result": {
         "name": "Neck",
-        "value": "nan",
+        "value": 4.0,
         "rating": 4.0,
         "color": null,
         "status": "OK"
@@ -256,7 +256,7 @@
       "criterion_upper_neck": {
         "result": {
           "name": "Upper_Neck",
-          "value": "nan",
+          "value": 4.0,
           "rating": 4.0,
           "color": null,
           "status": "OK"
@@ -292,7 +292,7 @@
       "criterion_lower_neck": {
         "result": {
           "name": "Lower_Neck",
-          "value": "nan",
+          "value": 4.0,
           "rating": 4.0,
           "color": null,
           "status": "OK"
@@ -329,7 +329,7 @@
     "criterion_chest_abdomen": {
       "result": {
         "name": "Chest & Abdomen",
-        "value": "nan",
+        "value": 3.6369834992499657,
         "rating": 3.6369834992499657,
         "color": null,
         "status": "OK"
@@ -356,8 +356,8 @@
     "criterion_pelvis_lumbar_modifier": {
       "result": {
         "name": "Pelvis and Lumbar Modifier",
-        "value": "nan",
-        "rating": 0,
+        "value": 0.0,
+        "rating": 0.0,
         "color": null,
         "status": "OK"
       },
@@ -403,7 +403,7 @@
     "Overall": {
       "result": {
         "name": "Overall",
-        "value": "nan",
+        "value": "-inf",
         "rating": "-inf",
         "color": null,
         "status": "OK"
@@ -448,7 +448,7 @@
     "criterion_neck": {
       "result": {
         "name": "Neck",
-        "value": "nan",
+        "value": 4.0,
         "rating": 4.0,
         "color": null,
         "status": "OK"
@@ -456,7 +456,7 @@
       "criterion_upper_neck": {
         "result": {
           "name": "Upper_Neck",
-          "value": "nan",
+          "value": 4.0,
           "rating": 4.0,
           "color": null,
           "status": "OK"
@@ -492,7 +492,7 @@
       "criterion_lower_neck": {
         "result": {
           "name": "Lower_Neck",
-          "value": "nan",
+          "value": 4.0,
           "rating": 4.0,
           "color": null,
           "status": "OK"
@@ -529,7 +529,7 @@
     "criterion_chest_abdomen": {
       "result": {
         "name": "Chest & Abdomen",
-        "value": "nan",
+        "value": "-inf",
         "rating": "-inf",
         "color": null,
         "status": "OK"
@@ -556,8 +556,8 @@
     "criterion_pelvis_lumbar_modifier": {
       "result": {
         "name": "Pelvis and Lumbar Modifier",
-        "value": "nan",
-        "rating": -4,
+        "value": -4.0,
+        "rating": -4.0,
         "color": null,
         "status": "OK"
       },

@@ -15,6 +15,7 @@ from pyisomme.info import InfoValue
 from pyisomme.isomme import Isomme
 from pyisomme.limit import Limit
 from pyisomme.limits import Limits
+from pyisomme.report.criterion_result import CriterionResult
 from pyisomme.report.ctx import Ctx, CtxSource
 from pyisomme.report.manual import (
     InputSpec,
@@ -142,10 +143,6 @@ class sub(Generic[C]):
 class Criterion:
     name: str | None = None
     limits: Limits
-    channel: Channel | None = None
-    value: float = np.nan
-    rating: float = np.nan
-    color: str | tuple[Any, ...] | None = None
     status: Status = Status.PENDING
     na_reason: MissingData | None = None
     report: Report[Any]
@@ -169,11 +166,15 @@ class Criterion:
     _parent: Criterion | None = None
     #: This criterion's ``at=``, or ``None`` to inherit the parent's context unchanged.
     _ctx_source: CtxSource | None = None
+    _result: CriterionResult | None
 
     def __init__(self, report: Report[Any], isomme: Isomme) -> None:
         self.report = report
         self.isomme = isomme
         self.limits = Limits(name=report.name, limit_list=[])
+        self._result = None
+        self.status = Status.PENDING
+        self.na_reason = None
 
         # Tree is built, so it is complete and mutable before calculate()
         children = self._child_map()
@@ -479,7 +480,19 @@ class Criterion:
     def prepare(self) -> None:
         """Run before this criterion's children are calculated. Does nothing by default."""
 
-    def calculate(self) -> None:
+    @property
+    def result(self) -> CriterionResult | None:
+        """The last successful calculation result, or None otherwise."""
+        return self._result
+
+    def _clear_result(self) -> None:
+        """Discard a previous result before or after an unsuccessful run."""
+        self._result = None
+
+    def calculate(self) -> CriterionResult | None:
+        self._clear_result()
+        self.status = Status.PENDING
+        self.na_reason = None
         try:
             logger.debug(f"Calculate {self}")
             self.prepare()
@@ -487,20 +500,26 @@ class Criterion:
             for name, child in list(self._child_map().items()):
                 logger.debug(f"Calculate {self}.{name}")
                 child.calculate()
-            self.calculation()
+            result = self.calculation()
+            self._result = result
             self.status = Status.OK
+            return result
         except MissingData as missing:
             # Expected: this test simply does not contain the required input.
+            self._clear_result()
             self.status = Status.NA
             self.na_reason = missing
             logger.info(f"{self}: n/a ({missing})")
         except Exception as error_message:
             # Unexpected: a real bug or corrupt input. Surface it loudly.
+            self._clear_result()
             self.status = Status.ERROR
             logger.exception(f"{self}:{error_message}")
+        return None
 
     @abstractmethod
-    def calculation(self) -> None:
+    def calculation(self) -> CriterionResult:
+        """Produce the criterion's complete successful result."""
         pass
 
     # -- aggregation -------------------------------------------------------- #
@@ -516,7 +535,17 @@ class Criterion:
         return [child for _, child in self.get_children() if child.role in wanted]
 
     def ratings_of_children(self, *roles: Role) -> list[float]:
-        return [child.rating for child in self.children_by_role(*roles)]
+        return self.ratings_of(*self.children_by_role(*roles))
+
+    @staticmethod
+    def ratings_of(*criteria: Criterion) -> list[float]:
+        """Ratings of explicit criteria, using NaN for unavailable results."""
+        return [
+            criterion.result.rating
+            if criterion.result is not None
+            else float(np.nan)
+            for criterion in criteria
+        ]
 
     def _empty(self, what: str, roles: Sequence[Role]) -> float:
         wanted = ", ".join(str(role) for role in (roles or SCORING_ROLES))
@@ -527,6 +556,11 @@ class Criterion:
         """Worst child rating — the usual body-region rule. NaN propagates."""
         ratings = self.ratings_of_children(*roles)
         return float(np.min(ratings)) if ratings else self._empty("min", roles)
+
+    def min_of(self, *criteria: Criterion) -> float:
+        """Worst rating among explicit criteria. NaN propagates."""
+        ratings = self.ratings_of(*criteria)
+        return float(np.min(ratings)) if ratings else self._empty("min", ())
 
     def max_of_children(self, *roles: Role) -> float:
         """Best child rating. NaN propagates."""

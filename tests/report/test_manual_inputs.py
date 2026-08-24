@@ -7,7 +7,9 @@ from contextlib import redirect_stdout
 import pytest
 
 import pyisomme
+from pyisomme.errors import Status
 from pyisomme.report.criterion import Criterion
+from pyisomme.report.criterion_result import CriterionResult
 from pyisomme.report.euro_ncap.frontal_50kmh import EuroNCAP_Frontal_50kmh
 from pyisomme.report.euro_ncap.frontal_mpdb import EuroNCAP_Frontal_MPDB
 from pyisomme.report.manual import Manual, declared_inputs, manual, settable_names
@@ -105,12 +107,14 @@ class TestSetattrGuard:
         head.hard_contact = False
         assert head.hard_contact is False
 
-    def test_framework_fields_stay_assignable(self, report_50kmh, v1) -> None:
+    def test_calculation_result_is_read_only(self, report_50kmh, v1) -> None:
         overall = report_50kmh.overall(v1)
-        overall.value = 1.0
-        overall.rating = 2.0
-        overall.color = "green"
-        assert (overall.value, overall.rating, overall.color) == (1.0, 2.0, "green")
+        result = CriterionResult(channel=None, value=1.0, rating=2.0, color="green")
+
+        assert overall.result is None
+        with pytest.raises(AttributeError):
+            overall.result = result
+        assert overall.status is Status.PENDING
 
     def test_private_names_are_exempt(self, report_50kmh, v1) -> None:
         report_50kmh.overall(v1)._scratch = 1
@@ -181,8 +185,8 @@ class TestEnumeration:
         report_a.calculate()
         report_b.calculate()
         assert (
-            report_a.overall(a1).criterion_door_opening_during_impact.rating
-            == report_b.overall(b1).criterion_door_opening_during_impact.rating
+            report_a.overall(a1).criterion_door_opening_during_impact.result
+            == report_b.overall(b1).criterion_door_opening_during_impact.result
         )
 
     def test_unknown_test_is_refused(self, report_50kmh) -> None:
@@ -383,7 +387,7 @@ class TestDerivedVsUserSetPositions:
 class TestFrameworkInternals:
     def test_settable_names_include_annotations_and_attributes(self) -> None:
         names = settable_names(EuroNCAP_Frontal_50kmh.Criterion_Overall)
-        assert "value" in names  # annotated on Criterion, never assigned there
+        assert "_result" in names  # storage for the immutable calculation result
         assert "name" in names  # plain class attribute
         assert "p_driver" in names  # manual input, declared without a value
 
@@ -398,8 +402,14 @@ class TestFrameworkInternals:
             name = "Local"
             flag: Manual[bool, manual(False, doc="a locally declared input")]
 
-            def calculation(self) -> None:
-                self.value = 1.0 if self.flag else 0.0
+            def calculation(self) -> CriterionResult:
+                value = 1.0 if self.flag else 0.0
+                return CriterionResult(
+                    channel=None,
+                    value=value,
+                    rating=value,
+                    color=None,
+                )
 
         class LocalReport(Report[Local]):
             _name = "Local"
@@ -410,12 +420,14 @@ class TestFrameworkInternals:
         criterion = report.overall(isomme)
 
         assert criterion.flag is False
-        criterion.calculate()
-        assert criterion.value == 0.0
+        result = criterion.calculate()
+        assert result is not None
+        assert result.value == 0.0
 
         criterion.flag = True
-        criterion.calculate()
-        assert criterion.value == 1.0
+        result = criterion.calculate()
+        assert result is not None
+        assert result.value == 1.0
 
         with pytest.raises(AttributeError):
             criterion.flg = True  # pyright: ignore[reportArgumentType]

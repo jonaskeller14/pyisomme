@@ -10,6 +10,7 @@ from pyisomme.channel import Channel
 from pyisomme.correlation import Correlation_ISO18571
 from pyisomme.isomme import Isomme
 from pyisomme.report.criterion import Criterion, Role
+from pyisomme.report.criterion_result import CriterionResult
 from pyisomme.report.page import Page_Cover, Page_Criterion_Table
 from pyisomme.report.report import Report
 from pyisomme.report.report_protocol import ReportProtocol
@@ -70,11 +71,19 @@ class Overall(Criterion):
             if isinstance(child, Overall.Criterion_Curve_Correlation)
         ]
 
-    def calculation(self) -> None:
+    def calculation(self) -> CriterionResult:
         if not self.is_comparison:
-            return
+            return CriterionResult(
+                channel=None, value=float(np.nan), rating=float(np.nan), color=None
+            )
 
-        self.value = np.nanmin([criterion.value for criterion in self.criteria])
+        value = np.nanmin([criterion.result.value for criterion in self.criteria])
+        return CriterionResult(
+            channel=None,
+            value=value,
+            rating=value,
+            color=None,
+        )
 
     class Criterion_Curve_Correlation(Criterion):
         name = "Correlation"
@@ -95,27 +104,37 @@ class Overall(Criterion):
             self.channel_r = channel_r
             self.channel_c = channel_c
 
-        def calculation(self) -> None:
+        def calculation(self) -> CriterionResult:
+            value = float(np.nan)
+            color = None
             if self.isomme == self.report.isomme_list[0]:
                 # The reference test is not correlated against itself. The guard used to
                 # sit in `Overall.calculation()`, which skipped the whole loop; now that
                 # the framework owns the children it has to live where the work is.
-                return
+                return CriterionResult(
+                    channel=None, value=value, rating=value, color=color
+                )
             if (
                 self.channel_r is not None
                 and self.channel_c is not None
                 and self.channel_r is not self.channel_c
             ):
-                self.value = Correlation_ISO18571(
+                value = Correlation_ISO18571(
                     reference_channel=self.channel_r, comparison_channel=self.channel_c
                 ).overall_rating()
-                self.color = (
+                color = (
                     "green"
-                    if self.value > 0.75
+                    if value > 0.75
                     else "orange"
-                    if self.value > 0.5
+                    if value > 0.5
                     else "red"
                 )
+            return CriterionResult(
+                channel=None,
+                value=value,
+                rating=value,
+                color=color,
+            )
 
 
 PROTOCOL_ISO_18571_2024 = ReportProtocol(
@@ -149,7 +168,7 @@ class Correlation(Report[Overall]):
         name = "Correlation Overall Rating Table"
         title = "Correlation Overall Rating"
         row_label = staticmethod(lambda criterion: f"{criterion.name}")
-        cell_text = staticmethod(lambda criterion: f"{criterion.value:.1%}")
+        cell_text = staticmethod(lambda criterion: f"{criterion.result.value:.1%}")
 
         def __init__(self, report: Correlation) -> None:
             super().__init__(report)

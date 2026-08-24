@@ -22,6 +22,7 @@ from pyisomme.calculate import calculate_p_head_hic15_ais_3plus
 from pyisomme.isomme import Isomme
 from pyisomme.limit import Limit
 from pyisomme.report.criterion import Criterion, Role, sub
+from pyisomme.report.criterion_result import CriterionResult
 from pyisomme.report.ctx import from_input
 from pyisomme.report.manual import Manual, manual
 from pyisomme.report.report import Report
@@ -64,30 +65,35 @@ class Overall(Criterion):
             self.set_derived_input("p_driver", str(p_driver).strip())
         self.set_derived_input("p_passenger", "1" if self.p_driver != "1" else "3")
 
-    def calculation(self) -> None:
+    def calculation(self) -> CriterionResult:
         # Criterion_Passenger is referenced but never defined -- one of the two reasons
         # this report is a stub (see module docstring). Kept visible rather than deleted;
         # once it exists it is wired beside the driver with
         #     criterion_passenger = sub(Criterion_Passenger, role=Role.AGGREGATE,
         #                               at=from_input(P_PASSENGER))
-        self.rating = float(
-            np.mean(
-                [
-                    self.criterion_driver.rating,
-                    self.criterion_passenger.rating,  # type: ignore[attr-defined]
-                ]
-            )
-        )  # relative risk (RR)
+        rating = self.mean_of_children()  # relative risk (RR)
+        return CriterionResult(
+            channel=None,
+            value=rating,
+            rating=rating,
+            color=None,
+        )
 
     class Criterion_Driver(Criterion):
         name = "Driver"
         role = Role.AGGREGATE
 
-        def calculation(self) -> None:
-            self.value = 1 - (1 - self.criterion_head.value) * (
-                1 - self.criterion_chest.value
-            ) * (1 - self.criterion_femur.value) * (1 - self.criterion_neck.value)
-            self.rating = self.value / 0.15  # relative risk (RR)
+        def calculation(self) -> CriterionResult:
+            value = 1 - (1 - self.criterion_head.result.value) * (
+                1 - self.criterion_chest.result.value
+            ) * (1 - self.criterion_femur.result.value) * (1 - self.criterion_neck.result.value)
+            rating = value / 0.15  # relative risk (RR)
+            return CriterionResult(
+                channel=None,
+                value=value,
+                rating=rating,
+                color=None,
+            )
 
         class Criterion_Head(Criterion):
             name = "Head"
@@ -111,18 +117,24 @@ class Overall(Criterion):
                     ),
                 ]
 
-            def calculation(self) -> None:
-                self.channel = calculate_p_head_hic15_ais_3plus(
+            def calculation(self) -> CriterionResult:
+                channel = calculate_p_head_hic15_ais_3plus(
                     self.require_channel(
                         self.ctx.code("?{p}HEAD0000??ACRA"),
                         self.ctx.code("?{p}HEADCG00??ACRA"),
                     ),
                     dummy="H3",
                 )
-                self.value = np.max(self.channel.get_data())
-                self.rating = self.limits.get_limit_min_rating(
-                    self.channel, interpolate=True
+                value = np.max(channel.get_data())
+                rating = self.limits.get_limit_min_rating(
+                    channel, interpolate=True
                 )  # stars
+                return CriterionResult(
+                    channel=channel,
+                    value=value,
+                    rating=rating,
+                    color=None,
+                )
 
         # Chest/femur/neck are empty `pass` placeholders: they have no calculation().
         # The other reason this report is a stub.

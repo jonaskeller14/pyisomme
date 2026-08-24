@@ -19,6 +19,7 @@ import numpy as np
 from pyisomme.isomme import Isomme
 from pyisomme.limit import Limit
 from pyisomme.report.criterion import Criterion, Role, sub
+from pyisomme.report.criterion_result import CriterionResult
 from pyisomme.report.ctx import from_input
 from pyisomme.report.fmvss.limits import Limit_Fail, Limit_Pass
 from pyisomme.report.fmvss.protocols import PROTOCOL_2022_10_14
@@ -121,10 +122,16 @@ class Criterion_Containment(_FMVSSCriterion):
         ),
     ]
 
-    def calculation(self) -> None:
-        self.value = float(self.contained)
-        self.rating = float(self.contained)
-        self.color = Limit_Pass.color if self.contained else Limit_Fail.color
+    def calculation(self) -> CriterionResult:
+        value = float(self.contained)
+        rating = float(self.contained)
+        color = Limit_Pass.color if self.contained else Limit_Fail.color
+        return CriterionResult(
+            channel=None,
+            value=value,
+            rating=rating,
+            color=color,
+        )
 
 
 class Criterion_HIC15(_FMVSSCriterion):
@@ -138,11 +145,17 @@ class Criterion_HIC15(_FMVSSCriterion):
             Limit_Fail(codes, func=lambda x: 700, y_unit=1, lower=True),
         ]
 
-    def calculation(self) -> None:
-        self.channel = self.require_channel(self.dummy_code("?{p}HICR0015{dummy}00RX"))
-        self.value = float(np.max(self.channel.get_data()))
-        self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
-        self.color = self.limits.get_limit_min_color(self.channel)
+    def calculation(self) -> CriterionResult:
+        channel = self.require_channel(self.dummy_code("?{p}HICR0015{dummy}00RX"))
+        value = float(np.max(channel.get_data()))
+        rating = self.limits.get_limit_min_rating(channel, interpolate=False)
+        color = self.limits.get_limit_min_color(channel)
+        return CriterionResult(
+            channel=channel,
+            value=value,
+            rating=rating,
+            color=color,
+        )
 
 
 class Criterion_Chest_a3ms(_FMVSSCriterion):
@@ -159,13 +172,19 @@ class Criterion_Chest_a3ms(_FMVSSCriterion):
             Limit_Fail(codes, func=lambda x: 60, y_unit=Unit(g0), lower=True),
         ]
 
-    def calculation(self) -> None:
-        self.channel = self.require_channel(
+    def calculation(self) -> CriterionResult:
+        channel = self.require_channel(
             self.dummy_code("?{p}CHST003C{dummy}ACRX")
         ).convert_unit(Unit(g0))
-        self.value = float(np.max(self.channel.get_data()))
-        self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
-        self.color = self.limits.get_limit_min_color(self.channel)
+        value = float(np.max(channel.get_data()))
+        rating = self.limits.get_limit_min_rating(channel, interpolate=False)
+        color = self.limits.get_limit_min_color(channel)
+        return CriterionResult(
+            channel=channel,
+            value=value,
+            rating=rating,
+            color=color,
+        )
 
 
 class Criterion_Chest_Deflection(_FMVSSCriterion):
@@ -180,16 +199,22 @@ class Criterion_Chest_Deflection(_FMVSSCriterion):
             Limit_Pass(codes, func=lambda x: threshold, y_unit="mm", lower=True),
         ]
 
-    def calculation(self) -> None:
-        self.channel = self.require_channel(
+    def calculation(self) -> CriterionResult:
+        channel = self.require_channel(
             *self.dummy_codes(
                 "?{p}CHST0003{dummy}DSXC",
                 "?{p}CHST0000{dummy}DSXC",
             )
         ).convert_unit("mm")
-        self.value = float(np.min(self.channel.get_data()))
-        self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
-        self.color = self.limits.get_limit_min_color(self.channel)
+        value = float(np.min(channel.get_data()))
+        rating = self.limits.get_limit_min_rating(channel, interpolate=False)
+        color = self.limits.get_limit_min_color(channel)
+        return CriterionResult(
+            channel=channel,
+            value=value,
+            rating=rating,
+            color=color,
+        )
 
 
 class Criterion_Nij(_FMVSSCriterion):
@@ -209,11 +234,17 @@ class Criterion_Nij(_FMVSSCriterion):
             Limit_Fail(codes, func=lambda x: 1.0, y_unit=1, lower=True),
         ]
 
-    def calculation(self) -> None:
-        self.channel = self.require_channel(self.dummy_code("?{p}NIJCIP00{dummy}00YB"))
-        self.value = float(np.max(self.channel.get_data()))
-        self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
-        self.color = self.limits.get_limit_min_color(self.channel)
+    def calculation(self) -> CriterionResult:
+        channel = self.require_channel(self.dummy_code("?{p}NIJCIP00{dummy}00YB"))
+        value = float(np.max(channel.get_data()))
+        rating = self.limits.get_limit_min_rating(channel, interpolate=False)
+        color = self.limits.get_limit_min_color(channel)
+        return CriterionResult(
+            channel=channel,
+            value=value,
+            rating=rating,
+            color=color,
+        )
 
 
 class Criterion_Neck_Tension(_FMVSSCriterion):
@@ -228,13 +259,19 @@ class Criterion_Neck_Tension(_FMVSSCriterion):
             Limit_Fail(codes, func=lambda x: threshold, y_unit="N", lower=True),
         ]
 
-    def calculation(self) -> None:
-        self.channel = self.require_channel(
+    def calculation(self) -> CriterionResult:
+        channel = self.require_channel(
             self.dummy_code("?{p}NECKUP00{dummy}FOZB")
         ).convert_unit("N")
-        self.value = float(np.max(self.channel.get_data()))
-        self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
-        self.color = self.limits.get_limit_min_color(self.channel)
+        value = float(np.max(channel.get_data()))
+        rating = self.limits.get_limit_min_rating(channel, interpolate=False)
+        color = self.limits.get_limit_min_color(channel)
+        return CriterionResult(
+            channel=channel,
+            value=value,
+            rating=rating,
+            color=color,
+        )
 
 
 class Criterion_Neck_Compression(_FMVSSCriterion):
@@ -249,13 +286,19 @@ class Criterion_Neck_Compression(_FMVSSCriterion):
             Limit_Pass(codes, func=lambda x: threshold, y_unit="N", lower=True),
         ]
 
-    def calculation(self) -> None:
-        self.channel = self.require_channel(
+    def calculation(self) -> CriterionResult:
+        channel = self.require_channel(
             self.dummy_code("?{p}NECKUP00{dummy}FOZB")
         ).convert_unit("N")
-        self.value = float(np.min(self.channel.get_data()))
-        self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
-        self.color = self.limits.get_limit_min_color(self.channel)
+        value = float(np.min(channel.get_data()))
+        rating = self.limits.get_limit_min_rating(channel, interpolate=False)
+        color = self.limits.get_limit_min_color(channel)
+        return CriterionResult(
+            channel=channel,
+            value=value,
+            rating=rating,
+            color=color,
+        )
 
 
 class Criterion_Femur_Force(_FMVSSCriterion):
@@ -269,13 +312,19 @@ class Criterion_Femur_Force(_FMVSSCriterion):
             Limit_Pass(codes, func=lambda x: threshold, y_unit="N", lower=True),
         ]
 
-    def calculation(self) -> None:
-        self.channel = self.require_channel(
+    def calculation(self) -> CriterionResult:
+        channel = self.require_channel(
             self.dummy_code(f"?{{p}}FEMR{self.side}00{{dummy}}FOZB")
         ).convert_unit("N")
-        self.value = float(np.min(self.channel.get_data()))
-        self.rating = self.limits.get_limit_min_rating(self.channel, interpolate=False)
-        self.color = self.limits.get_limit_min_color(self.channel)
+        value = float(np.min(channel.get_data()))
+        rating = self.limits.get_limit_min_rating(channel, interpolate=False)
+        color = self.limits.get_limit_min_color(channel)
+        return CriterionResult(
+            channel=channel,
+            value=value,
+            rating=rating,
+            color=color,
+        )
 
 
 class Criterion_Femur_Axial_Force(_FMVSSCriterion):
@@ -294,11 +343,17 @@ class Criterion_Femur_Axial_Force(_FMVSSCriterion):
     criterion_left = sub(Criterion_Left)
     criterion_right = sub(Criterion_Right)
 
-    def calculation(self) -> None:
-        self.rating = self.min_of_children()
-        self.value = self.rating
-        if not np.isnan(self.rating):
-            self.color = Limit_Pass.color if self.rating else Limit_Fail.color
+    def calculation(self) -> CriterionResult:
+        rating = self.min_of_children()
+        value = rating
+        if not np.isnan(rating):
+            color = Limit_Pass.color if rating else Limit_Fail.color
+        return CriterionResult(
+            channel=None,
+            value=value,
+            rating=rating,
+            color=color,
+        )
 
 
 class Criterion_Occupant(_FMVSSCriterion):
@@ -327,11 +382,17 @@ class Criterion_Occupant(_FMVSSCriterion):
         )
         self.set_derived_input("dummy_type", dummy_type)
 
-    def calculation(self) -> None:
-        self.rating = self.min_of_children()
-        self.value = self.rating
-        if not np.isnan(self.rating):
-            self.color = Limit_Pass.color if self.rating else Limit_Fail.color
+    def calculation(self) -> CriterionResult:
+        rating = self.min_of_children()
+        value = rating
+        if not np.isnan(rating):
+            color = Limit_Pass.color if rating else Limit_Fail.color
+        return CriterionResult(
+            channel=None,
+            value=value,
+            rating=rating,
+            color=color,
+        )
 
 
 class Overall(_FMVSSCriterion):
@@ -354,11 +415,17 @@ class Overall(_FMVSSCriterion):
         self.criterion_driver.prepare()
         self.criterion_passenger.prepare()
 
-    def calculation(self) -> None:
-        self.rating = self.min_of_children()
-        self.value = self.rating
-        if not np.isnan(self.rating):
-            self.color = Limit_Pass.color if self.rating else Limit_Fail.color
+    def calculation(self) -> CriterionResult:
+        rating = self.min_of_children()
+        value = rating
+        if not np.isnan(rating):
+            color = Limit_Pass.color if rating else Limit_Fail.color
+        return CriterionResult(
+            channel=None,
+            value=value,
+            rating=rating,
+            color=color,
+        )
 
     criterion_driver = sub(
         Criterion_Occupant,
@@ -434,9 +501,9 @@ class FMVSS_208(Report[Overall]):
     class Page_Compliance_Table(Page_Criterion_Rating_Table):
         @staticmethod
         def cell_text(criterion: Criterion) -> str:
-            if np.isnan(criterion.rating):
+            if np.isnan(criterion.result.rating):
                 return "n/a"
-            return "Pass" if criterion.rating else "Fail"
+            return "Pass" if criterion.result.rating else "Fail"
 
     class Page_Overall_Compliance(Page_Compliance_Table):
         report: FMVSS_208

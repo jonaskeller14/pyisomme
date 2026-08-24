@@ -32,15 +32,13 @@ class TestIIHSBoundaries:
         report = IIHS_Frontal_Small_Overlap([isomme])
         driver = report.overall(isomme).criterion_driver
 
-        driver.criterion_chest.criterion_vc.calculation()
-        driver.criterion_head_neck.criterion_shear_corridor.calculation()
+        vc_result = driver.criterion_chest.criterion_vc.calculation()
+        shear_result = driver.criterion_head_neck.criterion_shear_corridor.calculation()
 
-        assert driver.criterion_chest.criterion_vc.rating == -10.0
-        assert driver.criterion_chest.criterion_vc.color == Limit_M.color
-        assert driver.criterion_head_neck.criterion_shear_corridor.rating == -2.0
-        assert (
-            driver.criterion_head_neck.criterion_shear_corridor.color == Limit_A.color
-        )
+        assert vc_result.rating == -10.0
+        assert vc_result.color == Limit_M.color
+        assert shear_result.rating == -2.0
+        assert shear_result.color == Limit_A.color
 
 
 class TestIIHSModerateOverlap:
@@ -59,11 +57,11 @@ class TestIIHSModerateOverlap:
         ).criterion_rear_passenger.criterion_chest.criterion_chest_index
 
         criterion.dynamic_belt_position_mm = 37.0
-        criterion.calculation()
+        result = criterion.calculation()
 
-        assert criterion.value == 44.0
-        assert criterion.rating == -10.0
-        assert criterion.color == Limit_M.color
+        assert result.value == 44.0
+        assert result.rating == -10.0
+        assert result.color == Limit_M.color
 
 
 class TestIIHSSideImpact:
@@ -92,18 +90,18 @@ class TestIIHSSideImpact:
         criterion.b_pillar_to_seat_centerline_cm = distance
         criterion.door_opened = False
         criterion.integrity_failure = False
-        criterion.calculation()
+        result = criterion.calculation()
 
-        assert criterion.rating == expected
+        assert result.rating == expected
 
     def test_door_downgrade(self, setup_report) -> None:
         isomme, report = setup_report
         criterion = report.overall(isomme).criterion_structure
         criterion.b_pillar_to_seat_centerline_cm = 18.01
         criterion.door_opened = True
-        criterion.calculation()
+        result = criterion.calculation()
 
-        assert criterion.rating == -2.0
+        assert result.rating == -2.0
 
     def test_pelvis_requires_both_force_channels(self, setup_report) -> None:
         isomme, report = setup_report
@@ -125,13 +123,13 @@ class TestIIHSSideImpact:
         criterion = report.overall(isomme).criterion_driver.criterion_head_protection
 
         criterion.interior_contact = True
-        criterion.calculation()
-        assert criterion.rating == -2.0
+        result = criterion.calculation()
+        assert result.rating == -2.0
 
         criterion.head_acceleration_over_70g = True
-        criterion.calculation()
-        assert criterion.rating == -10.0
+        result = criterion.calculation()
+        assert result.rating == -10.0
 
         criterion.direct_mdb_contact = True
-        criterion.calculation()
-        assert criterion.rating == -22.0
+        result = criterion.calculation()
+        assert result.rating == -22.0

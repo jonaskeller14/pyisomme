@@ -40,8 +40,8 @@ class Page_Criterion_Table(Page_Figure):
         ]
         cell_colors = [
             [
-                (*to_rgb(criterion.color), 0.5)
-                if criterion.color is not None
+                (*to_rgb(criterion.result.color), 0.5)
+                if criterion.result is not None and criterion.result.color is not None
                 else TRANSPARENT
                 for criterion in (self.criteria[isomme][idx] for isomme in isomme_list)
             ]

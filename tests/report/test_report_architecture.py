@@ -11,6 +11,7 @@ from pptx.presentation import Presentation
 from pyisomme import Isomme
 from pyisomme.report.base_report import BaseReport
 from pyisomme.report.criterion import Criterion
+from pyisomme.report.criterion_result import CriterionResult
 from pyisomme.report.meta_report import MetaReport
 from pyisomme.report.page import Page
 from pyisomme.report.report import Report
@@ -22,8 +23,8 @@ PROTOCOL = ReportProtocol(version="test", sources=())
 class Overall(Criterion):
     name = "Overall"
 
-    def calculation(self) -> None:
-        self.rating = 1.0
+    def calculation(self) -> CriterionResult:
+        return CriterionResult(channel=None, value=1.0, rating=1.0, color=None)
 
 
 class NamedPage(Page[BaseReport]):
@@ -76,7 +77,9 @@ class TestReportHierarchy:
         assert isinstance(report, BaseReport)
         assert report.calculate() is report
         for child in dummy_reports.values():
-            assert child.overall(child.isomme_list[0]).rating == 1.0
+            result = child.overall(child.isomme_list[0]).result
+            assert result is not None
+            assert result.rating == 1.0
         assert report.rating is None
         assert report.ratings == {}
 
