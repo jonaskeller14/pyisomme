@@ -16,7 +16,7 @@ from tqdm.contrib.logging import logging_redirect_tqdm
 
 from pyisomme.channel import Channel, create_sample
 from pyisomme.code import Code
-from pyisomme.errors import InvalidCodeError
+from pyisomme.errors import InvalidCodeError, ParsingChannelStatus
 from pyisomme.info import Info, InfoInput, InfoValue
 from pyisomme.parsing import parse_chn, parse_mme, parse_xxx
 from pyisomme.providers import PROVIDERS
@@ -166,47 +166,88 @@ class Isomme:
         self.channel_info = parse_chn(source.read_text(chn_name))
 
         # 001
-        self.channels = []  # in case channel exist trough constructor, use extend()
-        with logging_redirect_tqdm():
-            for key in tqdm(
-                fnmatch.filter(self.channel_info.keys(), "Name of channel *"),
-                desc=f"Read Channel of {self.test_number}",
-            ):
-                channel_reference = self.channel_info[key]
-                if not isinstance(channel_reference, str):
-                    raise ValueError(
-                        f"Invalid channel reference in CHN data for {key!r}: "
-                        f"expected a string, got {channel_reference!r}"
-                    )
-                code = channel_reference.split()[0].split("/")[0]
-                if len(channel_code_patterns) != 0:
-                    skip = True
-                    for channel_code_pattern in channel_code_patterns:
-                        if fnmatch.fnmatch(code, channel_code_pattern):
-                            skip = False
-                            break
-                    if skip:
-                        continue
-
-                channel_number_match = re.search(r"Name of channel (\d*)", key)
-                if channel_number_match is None:
-                    raise ValueError(f"Invalid channel number in CHN data: {key}")
-                channel_number = channel_number_match.groups()[0]
-                xxx_pattern = str(
-                    Path(chn_name).parent.joinpath(
-                        f"{self.test_number}.{channel_number}"
-                    )
+        xxx_names = []
+        channel_keys = fnmatch.filter(self.channel_info.keys(), "Name of channel *")
+        for key in channel_keys:
+            channel_reference = self.channel_info[key]
+            if not isinstance(channel_reference, str):
+                raise ValueError(
+                    f"Invalid channel reference in CHN data for {key!r}: "
+                    f"expected a string, got {channel_reference!r}"
                 )
-                xxx_names = fnmatch.filter(names, xxx_pattern)
-                if len(xxx_names) == 0:
-                    logger.critical(
-                        f"Channel file '{self.test_number}.{channel_number}' not found."
-                    )
+            code = channel_reference.split()[0].split("/")[0]
+            if len(channel_code_patterns) != 0:
+                skip = True
+                for channel_code_pattern in channel_code_patterns:
+                    if fnmatch.fnmatch(code, channel_code_pattern):
+                        skip = False
+                        break
+                if skip:
                     continue
 
-                xxx_name = xxx_names[0]
-                logger.debug(xxx_name)
-                self.channels.append(parse_xxx(source.read_text(xxx_name), isomme=self))
+            channel_number_match = re.search(r"Name of channel (\d*)", key)
+            if channel_number_match is None:
+                raise ValueError(f"Invalid channel number in CHN data: {key}")
+            channel_number = channel_number_match.groups()[0]
+            xxx_pattern = str(
+                Path(chn_name).parent.joinpath(f"{self.test_number}.{channel_number}")
+            )
+            xxx_name_candidates = fnmatch.filter(names, xxx_pattern)
+            if len(xxx_name_candidates) == 0:
+                logger.critical(
+                    f"Channel file '{self.test_number}.{channel_number}' not found."
+                )
+                continue
+            xxx_names.append(xxx_name_candidates[0])
+
+        parsed_channels: list[tuple[Channel, ParsingChannelStatus]] = []
+        with logging_redirect_tqdm():
+            with tqdm(
+                total=len(xxx_names), desc=f"Read Channel of {self.test_number}"
+            ) as pbar:
+                for xxx_name in xxx_names:
+                    logger.debug(xxx_name)
+                    channel, parse_status = parse_xxx(source.read_text(xxx_name))
+                    parsed_channels.append((channel, parse_status))
+                    if parse_status == ParsingChannelStatus.OK:
+                        pbar.update(1)
+
+                self.channels = [channel for channel, _ in parsed_channels]
+                for pending_channel, parse_status in parsed_channels:
+                    if parse_status == ParsingChannelStatus.OK:
+                        continue
+                    reference_channel_code_value = pending_channel.info.get(
+                        "Reference channel name"
+                    )
+                    reference_channel_code = (
+                        reference_channel_code_value
+                        if isinstance(reference_channel_code_value, str)
+                        else None
+                    )
+                    if reference_channel_code is None:
+                        logger.error(
+                            f"[{pending_channel.code}] 'Reference channel name' is missing or invalid -> using sample index"
+                        )
+                        continue
+                    reference_channel = self.get_channel(reference_channel_code)
+                    if reference_channel is None:
+                        logger.error(
+                            f"[{pending_channel.code}] 'Reference channel name' mentioned Channel {reference_channel_code} is missing -> using sample index"
+                        )
+                        continue
+                    reference_data = reference_channel.get_data()
+                    if len(reference_data) != len(pending_channel.data):
+                        logger.error(
+                            f"[{pending_channel.code}] Reference channel {reference_channel_code} has "
+                            f"{len(reference_data)} samples, expected {len(pending_channel.data)} "
+                            "-> using sample index"
+                        )
+                        continue
+                    pending_channel.data.index = reference_data
+                    pending_channel.data = pending_channel.data[
+                        ~pending_channel.data.index.duplicated(keep="first")
+                    ].sort_index()
+                    pbar.update(1)
         return self
 
     def read_from_mme(self, mme_path: Path, *channel_code_patterns) -> Isomme:

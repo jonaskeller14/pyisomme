@@ -97,3 +97,31 @@ class Status(enum.Enum):
 
     def __str__(self) -> str:
         return self.value
+
+
+class ParsingTimeStatus(enum.Enum):
+    IMPLICIT = "implicit"
+    IMPLICIT_FIRST_SAMPLE_AND_INTERVAL_MISSING = (
+        "Declared 'implicit' but 'Time of first sample' and 'Sampling interval' missing"
+    )
+    IMPLICIT_ASSUME_FIRST_SAMPLE_ZERO = (
+        "Declared 'implicit' but 'Time of first sample' missing, assume = '0'"
+    )
+    IMPLICIT_SAMPLING_INTERVAL_MISSING = (
+        "Declared 'implicit' but 'Sampling interval' missing"
+    )
+    EXPLICIT = "explicit"
+    EXPLICIT_REF_CHANNEL_NAME_MISSING = (
+        "Declared 'explicit' but 'Reference channel name' missing"
+    )
+    ASSUMED_IMPLICIT = "Assumed 'Reference channel' = 'implicit'"
+    ASSUMED_IMPLICIT_WITH_START_ZERO = (
+        "Assumed 'Reference channel' = 'implicit' with 'Time of first sample' = 0"
+    )
+    ASSUMED_EXPLICIT = "Assumed 'Reference channel' = 'explicit'"
+    NO_TIME_INFO = "No Timing Information"
+
+
+class ParsingChannelStatus(enum.Enum):
+    OK = "ok"
+    EXPLICIT_TIME_RESOLUTION_PENDING = "explicit time resolution pending"

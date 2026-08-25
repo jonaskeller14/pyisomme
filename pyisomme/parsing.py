@@ -8,44 +8,14 @@ import numpy as np
 import pandas as pd
 
 from pyisomme.channel import Channel
-from pyisomme.errors import MalformedFileError
+from pyisomme.errors import MalformedFileError, ParsingChannelStatus, ParsingTimeStatus
 from pyisomme.info import Info, InfoValue
 
 logger = logging.getLogger(__name__)
 
 
-#: Prefix used when :func:`parse_xxx` records an ingest-normalization assumption. The
-#: note is appended to the **standard** ISO/TS 13499 ``Comments`` field (a repeatable
-#: free-text keyword already present in .mme/.chn/.001 headers) rather than a custom key,
-#: so exported files stay format-conformant. The prefix keeps the note distinguishable
-#: from authored comments and lets :func:`get_normalization_notes` recover it — an
-#: auditable "normalization log": convention drift is resolved once, here at the ingest
-#: boundary, and the decision travels with the channel instead of being re-derived
-#: downstream.
 NORMALIZATION_COMMENT_PREFIX = "Normalization: "
-
-#: One ``name:value`` header line of a .mme/.chn/.001 file.
-#:
-#: The keyword must not contain a colon, so the split lands on the **first** colon and the
-#: whole remainder is the value. Spelling the trailing character as ``[^:\s]`` rather than
-#: ``\S`` matters: ``\S`` matches a colon too, which let the engine backtrack past the real
-#: separator and split a value like ``Comments  :Dummy: Hybrid III`` at its *second* colon —
-#: yielding the keyword ``"Comments  :Dummy"`` (column padding and all) and silently losing
-#: the front of the value. Values legitimately contain colons (``Time zero: first contact``,
-#: ``2026-05-14T10:30:00``, ``10:32:45``), so that is not a rare shape.
 HEADER_LINE_PATTERN = re.compile(r"([^:]*[^:\s])\s*:(.*)")
-
-
-def get_normalization_notes(channel) -> list[str]:
-    """Return the ingest-normalization assumptions recorded on ``channel`` (may be empty)."""
-    n = len(NORMALIZATION_COMMENT_PREFIX)
-    return [
-        value[n:]
-        for name, value in channel.info
-        if name == "Comments"
-        and isinstance(value, str)
-        and value.startswith(NORMALIZATION_COMMENT_PREFIX)
-    ]
 
 
 def parse_mme(text: str) -> Info:
@@ -106,8 +76,8 @@ def parse_header_and_data(text: str) -> tuple[Info, np.ndarray]:
 
 
 def resolve_time_axis(
-    info: Info, n: int, isomme
-) -> tuple[np.ndarray | None, str | None]:
+    info: Info, n: int
+) -> tuple[np.ndarray | None, ParsingTimeStatus]:
     """
     Reconstruct a channel's time axis from its header, centralizing *every*
     reference-channel / timing convention in one place (the ingest normalization
@@ -141,66 +111,46 @@ def resolve_time_axis(
     def implicit_axis(first: float, interval: float) -> np.ndarray:
         return np.linspace(first, first + (n - 1) * interval, n)
 
-    def explicit_axis(reference_code: str) -> np.ndarray | None:
-        reference_channel = isomme.get_channel(reference_code)
-        return None if reference_channel is None else reference_channel.get_data()
-
     # 1. Convention explicitly declared in the file: honor it (no assumption). A declared
     #    convention with missing/unresolvable timing is reported so it is not silent.
     if reference == "implicit":
         if time_of_first_sample is None:
-            return (
-                None,
-                "declared 'implicit' but 'Time of first sample' missing; using sample index",
-            )
+            if sampling_interval is None:
+                return (
+                    None,
+                    ParsingTimeStatus.IMPLICIT_FIRST_SAMPLE_AND_INTERVAL_MISSING,
+                )
+            else:
+                return implicit_axis(
+                    0, sampling_interval
+                ), ParsingTimeStatus.IMPLICIT_ASSUME_FIRST_SAMPLE_ZERO
         if sampling_interval is None:
-            return (
-                None,
-                "declared 'implicit' but 'Sampling interval' missing; using sample index",
-            )
-        return implicit_axis(time_of_first_sample, sampling_interval), None
+            return None, ParsingTimeStatus.IMPLICIT_SAMPLING_INTERVAL_MISSING
+        return implicit_axis(
+            time_of_first_sample, sampling_interval
+        ), ParsingTimeStatus.IMPLICIT
     if reference == "explicit":
         if reference_channel_code is None:
-            return (
-                None,
-                "declared 'explicit' but 'Reference channel name' missing; using sample index",
-            )
-        index = explicit_axis(reference_channel_code)
-        if index is None:
-            return (
-                None,
-                f"declared 'explicit' but reference channel '{reference_channel_code}' not available; using sample index",
-            )
-        return index, None
+            return None, ParsingTimeStatus.EXPLICIT_REF_CHANNEL_NAME_MISSING
+        return None, ParsingTimeStatus.EXPLICIT
 
     # 2. Convention undeclared: infer it from whichever fields are present, and record it.
     if time_of_first_sample is not None and sampling_interval is not None:
-        return (
-            implicit_axis(time_of_first_sample, sampling_interval),
-            "assumed 'Reference channel' = 'implicit' (timing present, convention undeclared)",
-        )
+        return implicit_axis(
+            time_of_first_sample, sampling_interval
+        ), ParsingTimeStatus.ASSUMED_IMPLICIT
     if sampling_interval is not None:
-        return (
-            implicit_axis(0, sampling_interval),
-            "assumed 'Reference channel' = 'implicit' with 'Time of first sample' = 0",
-        )
+        return implicit_axis(
+            0, sampling_interval
+        ), ParsingTimeStatus.ASSUMED_IMPLICIT_WITH_START_ZERO
     if reference_channel_code is not None:
-        index = explicit_axis(reference_channel_code)
-        if index is not None:
-            return (
-                index,
-                f"assumed 'Reference channel' = 'explicit' -> '{reference_channel_code}'",
-            )
-        return (
-            None,
-            f"assumed 'explicit' but reference channel '{reference_channel_code}' not available; using sample index",
-        )
+        return None, ParsingTimeStatus.ASSUMED_EXPLICIT
 
     # 3. No timing information at all.
-    return None, "no timing information; using sample index"
+    return None, ParsingTimeStatus.NO_TIME_INFO
 
 
-def parse_xxx(text: str, isomme) -> Channel:
+def parse_xxx(text: str) -> tuple[Channel, ParsingChannelStatus]:
     info, array = parse_header_and_data(text)
     code_value = info.get("Channel code")
     if not isinstance(code_value, str):
@@ -209,25 +159,51 @@ def parse_xxx(text: str, isomme) -> Channel:
     unit_value = info.get("Unit")
     unit = unit_value if isinstance(unit_value, str) else None
 
-    index, note = resolve_time_axis(info, len(array), isomme)
+    index, time_status = resolve_time_axis(info, len(array))
+
+    is_tirs = code[2:6] == "TIRS"
+    if not is_tirs and time_status in (
+        ParsingTimeStatus.EXPLICIT,
+        ParsingTimeStatus.ASSUMED_EXPLICIT,
+    ):
+        status = ParsingChannelStatus.EXPLICIT_TIME_RESOLUTION_PENDING
+    else:
+        status = ParsingChannelStatus.OK
+
+    if is_tirs:
+        pass  # A sample index is the canonical shape for a time reference channel.
+    elif time_status == ParsingTimeStatus.ASSUMED_IMPLICIT:
+        logger.warning(f"[{code}] {time_status.value}")
+        info["Reference channel"] = "implicit"
+        info["Comments"] = NORMALIZATION_COMMENT_PREFIX + time_status.value
+    elif time_status == ParsingTimeStatus.ASSUMED_EXPLICIT:
+        logger.warning(f"[{code}] {time_status.value}")
+        info["Reference channel"] = "explicit"
+        info["Comments"] = NORMALIZATION_COMMENT_PREFIX + time_status.value
+    elif time_status == ParsingTimeStatus.IMPLICIT_ASSUME_FIRST_SAMPLE_ZERO:
+        logger.warning(f"[{code}] {time_status.value}")
+        info["Time of first sample"] = 0.0
+        info["Comments"] = NORMALIZATION_COMMENT_PREFIX + time_status.value
+    elif time_status == ParsingTimeStatus.ASSUMED_IMPLICIT_WITH_START_ZERO:
+        logger.warning(f"[{code}] {time_status.value}")
+        info["Reference channel"] = "implicit"
+        info["Time of first sample"] = 0.0
+        info["Comments"] = NORMALIZATION_COMMENT_PREFIX + time_status.value
+    elif time_status in (
+        ParsingTimeStatus.IMPLICIT_SAMPLING_INTERVAL_MISSING,
+        ParsingTimeStatus.EXPLICIT_REF_CHANNEL_NAME_MISSING,
+        ParsingTimeStatus.NO_TIME_INFO,
+        ParsingTimeStatus.IMPLICIT_FIRST_SAMPLE_AND_INTERVAL_MISSING,
+    ):
+        logger.error(f"[{code}] {time_status.value} -> using sample index")
+        info["Comments"] = NORMALIZATION_COMMENT_PREFIX + time_status.value
 
     if index is None:
-        # No time axis could be reconstructed -> fall back to a plain sample index.
-        # For TIRS (time-reference) channels this is the expected, canonical shape, so it
-        # is not flagged; for anything else the assumption is logged and recorded so a
-        # silently-wrong time axis can never pass unnoticed.
-        is_tirs = isinstance(code, str) and code[2:6] == "TIRS"
-        if not is_tirs and note is not None:
-            logger.warning(f"[{code}] {note}")
-            info["Comments"] = NORMALIZATION_COMMENT_PREFIX + note
         data = pd.DataFrame(array)
-        data = data[~data.index.duplicated(keep="first")].sort_index()
-        return Channel(code, data, unit=unit, info=info)
+    else:
+        data = pd.DataFrame(array, index=index)
 
-    if note is not None:
-        logger.info(f"[{code}] {note}")
-        info["Comments"] = NORMALIZATION_COMMENT_PREFIX + note
-    return Channel(code, pd.DataFrame(array, index=index), unit=unit, info=info)
+    return Channel(code, data, unit=unit, info=info), status
 
 
 def get_value(text: str) -> InfoValue:

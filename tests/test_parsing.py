@@ -1,5 +1,6 @@
 import logging
 import math
+import shutil
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -9,7 +10,7 @@ import pytest
 import pyisomme
 from pyisomme.errors import MalformedFileError
 from pyisomme.parsing import (
-    get_normalization_notes,
+    NORMALIZATION_COMMENT_PREFIX,
     parse_mme,
     parse_xxx,
     resolve_time_axis,
@@ -33,6 +34,18 @@ SAMPLING_INTERVAL = 0.0001
 TIME_OF_FIRST_SAMPLE = -0.0005
 TIMES = [TIME_OF_FIRST_SAMPLE + i * SAMPLING_INTERVAL for i in range(N_SAMPLES)]
 DROPPED_SAMPLE_IDX = 12  # the one ``NOVALUE`` in the chest channel
+
+
+def get_normalization_notes(channel) -> list[str]:
+    """Return the ingest-normalization assumptions recorded on ``channel`` (may be empty)."""
+    n = len(NORMALIZATION_COMMENT_PREFIX)
+    return [
+        value[n:]
+        for name, value in channel.info
+        if name == "Comments"
+        and isinstance(value, str)
+        and value.startswith(NORMALIZATION_COMMENT_PREFIX)
+    ]
 
 
 @dataclass(frozen=True)
@@ -203,6 +216,25 @@ class TestEncodingContainer:
     def test_zip(self, encoding_data):
         self.check_all(self.read_fixture(encoding_data, ".zip"), encoding_data)
 
+    def test_explicit_reference_channel_may_follow_referencing_channel(self, tmp_path):
+        fixture_path = tmp_path / "reference-after-channel"
+        shutil.copytree(FIXTURES / "ascii", fixture_path)
+        chn_path = fixture_path / "Channel" / "test.chn"
+        lines = chn_path.read_text(encoding="ascii").splitlines()
+        chn_path.write_text(
+            "\n".join([lines[0], lines[1], lines[3], lines[2], lines[4]]) + "\n",
+            encoding="ascii",
+        )
+
+        isomme = pyisomme.Isomme().read(fixture_path)
+
+        assert [str(channel.code) for channel in isomme.channels] == [
+            "11HEADCG0000ACXP",
+            "11TIRS000000TIRP",
+            "11CHST0000H3DSXP",
+        ]
+        np.testing.assert_allclose(isomme.channels[0].data.index, TIMES)
+
     @pytest.mark.parametrize("encoding_data", [ENCODINGS[-1]], ids=["utf-8"])
     def test_bom_does_not_leak_into_the_first_keyword(self, encoding_data):
         raw = (FIXTURES / encoding_data.fixture_name / "test.mme").read_bytes()
@@ -290,7 +322,7 @@ class TestTimeAxisNormalization:
 
     @pytest.mark.parametrize("unit", ["g", "g0"])
     def test_gravity_unit_spellings_are_read_as_standard_gravity(self, unit):
-        channel = parse_xxx(
+        channel, _ = parse_xxx(
             self._channel_text(
                 [
                     "Channel code                :11HEADCG0000ACXP",
@@ -299,7 +331,6 @@ class TestTimeAxisNormalization:
                 ],
                 [0.0, 1.0],
             ),
-            pyisomme.Isomme(),
         )
 
         assert channel.unit == pyisomme.Unit(pyisomme.g0)
@@ -314,7 +345,7 @@ class TestTimeAxisNormalization:
             ],
             [0.0, 1.0, 2.0, 3.0],
         )
-        channel = parse_xxx(text, pyisomme.Isomme())
+        channel, _ = parse_xxx(text)
         # 4 samples from -0.05 with step 0.01 -> last sample at -0.05 + 3*0.01 = -0.02
         np.testing.assert_allclose(channel.data.index, [-0.05, -0.04, -0.03, -0.02])
         # Fully specified -> no assumption recorded.
@@ -329,7 +360,7 @@ class TestTimeAxisNormalization:
             ],
             [0.0, 1.0, 2.0, 3.0],
         )
-        channel = parse_xxx(text, pyisomme.Isomme())
+        channel, _ = parse_xxx(text)
         # step stays 0.01 (last sample 0.03), not the old n*dt=0.04 endpoint bug.
         np.testing.assert_allclose(channel.data.index, [0.0, 0.01, 0.02, 0.03])
         assert len(get_normalization_notes(channel)) == 1
@@ -342,7 +373,7 @@ class TestTimeAxisNormalization:
             ],
             [0.0, 1.0, 2.0],
         )
-        channel = parse_xxx(text, pyisomme.Isomme())
+        channel, _ = parse_xxx(text)
         np.testing.assert_allclose(channel.data.index, [0.0, 0.01, 0.02])
         assert "Time of first sample" in get_normalization_notes(channel)[0]
 
@@ -351,7 +382,7 @@ class TestTimeAxisNormalization:
             ["Channel code                :11HEADCG0000ACXP"],
             [10.0, 11.0, 12.0],
         )
-        channel = parse_xxx(text, pyisomme.Isomme())
+        channel, _ = parse_xxx(text)
         np.testing.assert_array_equal(channel.data.index, [0, 1, 2])
         assert len(get_normalization_notes(channel)) == 1
 
@@ -360,7 +391,7 @@ class TestTimeAxisNormalization:
             ["Channel code                :11TIRS000000TIRP"],
             [0.0, 1.0, 2.0],
         )
-        channel = parse_xxx(text, pyisomme.Isomme())
+        channel, _ = parse_xxx(text)
         np.testing.assert_array_equal(channel.data.index, [0, 1, 2])
         # Sample index is the expected shape for a time-reference channel -> not flagged.
         assert get_normalization_notes(channel) == []
@@ -374,7 +405,7 @@ class TestTimeAxisNormalization:
             ["not_a_number", 1.0],
         )
         with pytest.raises(MalformedFileError):
-            parse_xxx(text, pyisomme.Isomme())
+            parse_xxx(text)
 
     def test_note_recorded_in_standard_comments_field_without_clobbering(self):
         text = self._channel_text(
@@ -385,7 +416,7 @@ class TestTimeAxisNormalization:
             ],
             [0.0, 1.0, 2.0],
         )
-        channel = parse_xxx(text, pyisomme.Isomme())
+        channel, _ = parse_xxx(text)
         comments = [v for k, v in channel.info if k == "Comments"]
         # Authored comment preserved; normalization note appended as a second Comments line.
         assert "DRIVER HEAD CG X ACCELERATION" in comments
@@ -393,6 +424,6 @@ class TestTimeAxisNormalization:
 
     def test_resolve_time_axis_returns_note_for_undeclared_convention(self):
         info = pyisomme.Info([("Sampling interval", 0.01)])
-        index, note = resolve_time_axis(info, 3, pyisomme.Isomme())
+        index, note = resolve_time_axis(info, 3)
         assert index is not None
         assert note is not None
