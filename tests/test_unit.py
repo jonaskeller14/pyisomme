@@ -9,6 +9,7 @@ from astropy.constants import g0 as ASTROPY_G0_CONSTANT  # type: ignore
 
 from pyisomme import Unit, g0
 from pyisomme.channel import Channel
+from pyisomme.unit import _parse_unit_string
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
@@ -60,6 +61,16 @@ class TestStringSanitizationAndEdgeCases:
     def test_whitespace_dash_sanitization(self):
         unit_obj = Unit(" - ")
         assert unit_obj._astropy_unit == u.Unit("1")
+
+    def test_repeated_sanitized_strings_use_cache(self):
+        _parse_unit_string.cache_clear()
+
+        Unit("°/s")
+        Unit("deg/s")
+
+        cache_info = _parse_unit_string.cache_info()
+        assert cache_info.misses == 1
+        assert cache_info.hits == 1
 
     def test_legacy(self):
         Unit("Nm")

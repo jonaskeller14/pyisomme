@@ -1,3 +1,4 @@
+from functools import lru_cache
 from typing import Any
 
 import astropy.units as u
@@ -17,6 +18,12 @@ u.add_enabled_units([g0_unit])
 
 # Export g0 to keep compatibility with existing imports
 g0 = g0_unit
+
+
+@lru_cache(maxsize=256)
+def _parse_unit_string(unit_input: str) -> Any:
+    """Parse and reuse Astropy units for repeated string representations."""
+    return u.Unit(unit_input)
 
 
 class Unit:
@@ -48,7 +55,11 @@ class Unit:
             self._astropy_unit = unit_input
         else:
             # Handles strings, ints, floats natively via Astropy
-            self._astropy_unit = u.Unit(unit_input)
+            self._astropy_unit = (
+                _parse_unit_string(unit_input)
+                if isinstance(unit_input, str)
+                else u.Unit(unit_input)
+            )
 
     def to(self, other, value=1.0, equivalencies=None):
         """
