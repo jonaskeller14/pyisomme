@@ -226,7 +226,12 @@ class Channel:
             # Variables used
             samples = self.get_data()
             number_of_samples = len(samples)
-            sample_rate = self.info.get("Sampling interval")
+            if number_of_samples < 4:
+                raise ValueError(
+                    "ISO-6487 filtering requires at least 4 samples; "
+                    f"received {number_of_samples}."
+                )
+            sample_rate = self.info.get("Sampling interval")  # Sampling interval in seconds
             if isinstance(sample_rate, bool) or not isinstance(
                 sample_rate, (int, float)
             ):
@@ -235,7 +240,7 @@ class Channel:
                     f"Sampling interval not found in channel info. Set sampling interval to mean diff: {sample_rate}."
                 )
 
-            number_of_add_points = 0.01 * sample_rate
+            number_of_add_points = 0.01 / sample_rate
             number_of_add_points = int(
                 min([max([number_of_add_points, 100]), number_of_samples - 1])
             )

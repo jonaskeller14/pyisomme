@@ -246,6 +246,89 @@ class TestChannel:
             copy.deepcopy(source).cfc("B", method=method)
             assert list(source.info) == before, method
 
+    @pytest.mark.parametrize("number_of_samples", [1, 2, 3])
+    def test_cfc_iso_rejects_records_too_short_for_initialization(
+        self, number_of_samples
+    ):
+        channel = Channel(
+            code="11HEAD0000H3ACX0",
+            data=pd.DataFrame(
+                {"sample": np.arange(number_of_samples, dtype=float)},
+                index=np.arange(number_of_samples, dtype=float) * 0.001,
+            ),
+            unit="m/s^2",
+            info=[("Sampling interval", 0.001)],
+        )
+
+        with pytest.raises(
+            ValueError,
+            match=rf"requires at least 4 samples; received {number_of_samples}",
+        ):
+            channel.cfc("D")
+
+    @pytest.mark.parametrize(
+        ("sample_interval", "expected"),
+        [
+            (
+                0.0002,
+                [
+                    1.48321254e-07,
+                    2.61816363e-05,
+                    -6.38119165e-04,
+                    3.96220503e-04,
+                    1.47244270e-01,
+                    8.52995200e-01,
+                    9.99207300e-01,
+                    8.52995200e-01,
+                    1.47244270e-01,
+                    3.96220503e-04,
+                    -6.38119165e-04,
+                    2.61816363e-05,
+                    1.48321254e-07,
+                ],
+            ),
+            (
+                0.00005,
+                [
+                    -4.60034070e-04,
+                    -2.54617907e-02,
+                    6.65788200e-02,
+                    7.16604800e-02,
+                    2.56477200e-01,
+                    7.68644900e-01,
+                    8.68268300e-01,
+                    7.68634200e-01,
+                    2.56447084e-01,
+                    7.16584849e-02,
+                    6.65793724e-02,
+                    -2.51078839e-02,
+                    8.19262430e-05,
+                ],
+            ),
+        ],
+    )
+    def test_cfc_iso_matches_reference_vectors_at_multiple_sampling_rates(
+        self, sample_interval, expected
+    ):
+        time = np.arange(401) * sample_interval
+        samples = np.zeros(401)
+        samples[100:301] = np.sin(np.linspace(0, np.pi, 201)) ** 2
+        channel = Channel(
+            code="11HEAD0000H3ACX0",
+            data=pd.DataFrame({"sample": samples}, index=time),
+            unit="m/s^2",
+            info=[("Sampling interval", sample_interval)],
+        )
+
+        filtered = channel.cfc("D").get_data()
+
+        np.testing.assert_allclose(
+            filtered[[0, 50, 99, 100, 125, 175, 200, 225, 275, 300, 301, 350, 400]],
+            expected,
+            rtol=2e-7,
+            atol=1e-9,
+        )
+
     def test_get_value_is_float_get_data_is_ndarray(self):
         source = create_sample(code="11HEAD0000H3ACXP", mode="sin")
         assert isinstance(source.get_value(t=0.0), float)
