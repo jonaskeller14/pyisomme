@@ -582,7 +582,7 @@ class Channel:
         return self
 
     def auto_offset_y(self, t: float = 0) -> Channel:
-        return self.offset_y(offset=self.get_value(t=t))
+        return self.offset_y(offset=-self.get_value(t=t))
 
     def offset_x(self, offset: float) -> Channel:
         self.data = pd.DataFrame(self.data.values, index=self.data.index + offset)
@@ -597,32 +597,23 @@ class Channel:
         if not isinstance(other, Channel):
             return False
 
-        # # Check code identity (optional, if code is part of channel equality)
-        # if getattr(self, "code", None) != getattr(other, "code", None):
-        #     return False
+        if self.code != other.code:
+            return False
 
-        # Unit compatibility check
         if self.unit.physical_type != other.unit.physical_type:
             return False
 
-        # Index / timestamp alignment check
         if not self.data.index.equals(other.data.index):
             return False
 
-        # Compare values with floating-point tolerance using unit conversion
-        try:
-            val_self = self.get_data()
-            val_other = other.get_data(unit=self.unit)
-            return bool(
-                np.allclose(val_self, val_other, rtol=1e-5, atol=1e-8, equal_nan=True)
-            )
-        except Exception:
-            return False
+        val_self = self.get_data()
+        val_other = other.get_data(unit=self.unit)
+        return np.allclose(val_self, val_other, rtol=1e-5, atol=1e-8, equal_nan=True)
 
     def __ne__(self, other) -> bool:
         return not self.__eq__(other)
 
-    def __neg__(self):
+    def __neg__(self) -> Channel:
         return Channel(
             self.code,
             -self.data,

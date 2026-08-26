@@ -6,7 +6,7 @@ from typing import Literal
 import numpy as np
 import pandas as pd
 
-from pyisomme.channel import Channel
+from pyisomme.channel import Channel, time_intersect
 from pyisomme.utils import debug_logging
 
 logger = logging.getLogger("pyisomme.calculate")
@@ -56,13 +56,11 @@ def calculate_bric(
             "Average of CSDM and MPS": 42.87,
         }[method]  # rad/s
 
-    c_av_x = c_av_x.convert_unit("rad/s")
-    c_av_y = c_av_y.convert_unit("rad/s")
-    c_av_z = c_av_z.convert_unit("rad/s")
+    time = time_intersect(c_av_x, c_av_y, c_av_z)
 
-    av_x = c_av_x.get_data()
-    av_y = c_av_y.get_data()
-    av_z = c_av_z.get_data()
+    av_x = c_av_x.get_data(t=time, unit="rad/s")
+    av_y = c_av_y.get_data(t=time, unit="rad/s")
+    av_z = c_av_z.get_data(t=time, unit="rad/s")
 
     bric = np.sqrt(
         (np.max(np.abs(av_x)) / critical_av_x) ** 2
@@ -80,14 +78,8 @@ def calculate_bric(
         data=pd.DataFrame([bric]),
         info=[
             ("Data source", "calculation"),
-            (
-                ".Analysis start time",
-                np.min([c_av_x.data.index, c_av_y.data.index, c_av_z.data.index]),
-            ),
-            (
-                ".Analysis end time",
-                np.max([c_av_x.data.index, c_av_y.data.index, c_av_z.data.index]),
-            ),
+            (".Analysis start time", time[0]),
+            (".Analysis end time", time[-1]),
             (".Channel 001", c_av_x.code),
             (".Channel 002", c_av_y.code),
             (".Channel 003", c_av_z.code),

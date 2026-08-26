@@ -36,6 +36,10 @@ class TestCode:
         assert Code("11HEAD0000H3ACXA").is_valid()
         assert not Code("11HEAD0000??ACXA").is_valid()
 
+    def test_is_filterable(self):
+        assert Code("11HEAD0000H3ACXA").is_filterable()
+        assert not Code("11HEAD0000H3ACXX").is_filterable()
+
     def test_get_default_unit(self):
         assert Code("11HEAD0000H3ACXA").get_default_unit() == Unit("m/s^2")
 

@@ -7,6 +7,7 @@ import logging
 import os
 import re
 import shutil
+import tempfile
 from collections.abc import Iterable
 from pathlib import Path
 from typing import Any, Literal
@@ -293,13 +294,12 @@ class Isomme:
         with TarSource(tar_path, mode) as source:
             return self._read_from_source(source, *channel_code_patterns)
 
-    def write_mme(self, path: str | Path, *channel_code_patterns) -> Isomme:
+    def _write_mme(self, path: Path, *channel_code_patterns) -> None:
         channels = (
             self.get_channels(*channel_code_patterns)
             if len(channel_code_patterns) != 0
             else self.channels
         )
-        path = Path(path)
 
         if path.stem != self.test_number:
             logger.warning(
@@ -342,63 +342,62 @@ class Isomme:
         # CHN
         with open(path.parent.joinpath("Channel", f"{path.stem}.chn"), "w") as chn_file:
             channel_info.write(chn_file)
-        return self
 
-    def write_folder(self, path: str | Path, *channel_code_patterns) -> Isomme:
-        path = Path(path)
-        self.write_mme(path.joinpath(f"{self.test_number}.mme"), *channel_code_patterns)
-        return self
+    def _write_folder(self, path: Path, *channel_code_patterns) -> None:
+        self._write_mme(
+            path.joinpath(f"{self.test_number}.mme"), *channel_code_patterns
+        )
 
-    def write_zip(self, path: str | Path, *channel_code_patterns) -> Isomme:
-        path = Path(path)
-        folder_path = path.parent.joinpath(path.stem)
-        self.write_folder(folder_path, *channel_code_patterns)
-        shutil.make_archive(str(folder_path), "zip", str(folder_path), logger=logger)
-        shutil.rmtree(folder_path)
-        return self
+    def _write_archive(
+        self,
+        path: Path,
+        archive_format: Literal["zip", "tar", "gztar"],
+        *channel_code_patterns,
+    ) -> None:
+        """Write an archive without touching sibling directories or partial output."""
+        path.parent.mkdir(parents=True, exist_ok=True)
 
-    def write_tar(self, path: str | Path, *channel_code_patterns) -> Isomme:
-        path = Path(path)
-        folder_path = path.parent.joinpath(path.stem)
-        self.write(folder_path, *channel_code_patterns)
-        shutil.make_archive(str(folder_path), "tar", folder_path)
-        shutil.rmtree(folder_path)
-        return self
-
-    def write_tar_gz(self, path: str | Path, *channel_code_patterns) -> Isomme:
-        path = Path(path)
-        folder_path = str(path).removesuffix(".tar.gz")
-        self.write(folder_path, *channel_code_patterns)
-        shutil.make_archive(folder_path, "gztar", folder_path)
-        shutil.rmtree(folder_path)
-        return self
+        with tempfile.TemporaryDirectory(dir=path.parent) as temporary_directory:
+            temporary_path = Path(temporary_directory)
+            folder_path = temporary_path / "isomme"
+            self._write_folder(folder_path, *channel_code_patterns)
+            archive_path = Path(
+                shutil.make_archive(
+                    str(temporary_path / "archive"),
+                    archive_format,
+                    root_dir=folder_path,
+                    logger=logger if archive_format == "zip" else None,
+                )
+            )
+            os.replace(archive_path, path)
 
     def write(self, path: str | Path, *channel_code_patterns) -> Isomme:
         """
-        Write ISO-MME data to files.
-        :param path: output path where to save the ISO-MME data (.mme, folder or .zip)
+        Write ISO-MME data to a file, folder, or archive.
+        :param path: output path where to save the ISO-MME data (.mme, folder, .zip, .tar, or .tar.gz)
         :param channel_code_patterns: (optional) only export specific channels identified by code-pattern
         :return:
         """
         path = Path(path)
         if path.suffix.lower() == ".mme":
-            return self.write_mme(path, *channel_code_patterns)
+            self._write_mme(path, *channel_code_patterns)
         elif path.suffix == "":
-            return self.write_folder(path, *channel_code_patterns)
+            self._write_folder(path, *channel_code_patterns)
         elif path.suffix.lower() == ".zip":
-            return self.write_zip(path, *channel_code_patterns)
+            self._write_archive(path, "zip", *channel_code_patterns)
         elif path.suffix.lower() == ".tar":
-            return self.write_tar(path, *channel_code_patterns)
+            self._write_archive(path, "tar", *channel_code_patterns)
         elif (
             len(path.suffixes) >= 2
             and path.suffixes[-1].lower() == ".gz"
             and path.suffixes[-2].lower() == ".tar"
         ):
-            return self.write_tar_gz(path, *channel_code_patterns)
+            self._write_archive(path, "gztar", *channel_code_patterns)
         else:
             raise NotImplementedError(
                 f"{path.suffix} is not supported. Only .mme/folder/.zip/.tar/.tar.gz are supported."
             )
+        return self
 
     def extend(self, *others) -> Isomme:
         """

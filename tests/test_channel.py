@@ -90,6 +90,12 @@ class TestChannel:
 
         assert c_1 == c_2
 
+    def test_eq_requires_same_code(self):
+        c_1 = Channel(code="11HEAD0000H3ACXA", data=pd.DataFrame([1]), unit="m")
+        c_2 = Channel(code="11HEAD0000H3ACYA", data=pd.DataFrame([1000]), unit="mm")
+
+        assert c_1 != c_2
+
     def test_ne(self):
         c_1 = Channel(code="????????????????", data=pd.DataFrame([1]), unit="m")
         c_2 = Channel(code="????????????????", data=pd.DataFrame([1]), unit="mm")
@@ -200,6 +206,48 @@ class TestChannel:
         assert isinstance(source.get_value(t=0.0), float)
         assert isinstance(source.get_data(t=0.0), np.ndarray)
         assert isinstance(source.get_data(), np.ndarray)
+
+    def test_scale_and_offset_methods_transform_the_expected_axis(self):
+        channel = Channel(
+            code="11HEAD0000H3ACXP",
+            data=pd.DataFrame({"sample": [5.0, 6.0]}, index=[0.0, 0.1]),
+            unit="m/s^2",
+        )
+
+        assert channel.scale_y(2.0) is channel
+        np.testing.assert_array_equal(channel.get_data(), [10.0, 12.0])
+        np.testing.assert_array_equal(channel.data.index, [0.0, 0.1])
+
+        assert channel.offset_y(-3.0) is channel
+        np.testing.assert_array_equal(channel.get_data(), [7.0, 9.0])
+
+        assert channel.scale_x(2.0) is channel
+        np.testing.assert_array_equal(channel.data.index, [0.0, 0.2])
+
+        assert channel.offset_x(-0.1) is channel
+        np.testing.assert_array_equal(channel.data.index, [-0.1, 0.1])
+
+    def test_auto_offset_y_zeros_value_at_requested_time(self):
+        channel = Channel(
+            code="11HEAD0000H3ACXP",
+            data=pd.DataFrame({"sample": [5.0, 6.0]}, index=[0.0, 0.1]),
+            unit="m/s^2",
+        )
+
+        assert channel.auto_offset_y(t=0.0) is channel
+        np.testing.assert_array_equal(channel.get_data(), [0.0, 1.0])
+        assert channel.get_value(t=0.0) == 0.0
+
+    def test_crop_limits_channel_to_requested_time_range(self):
+        channel = Channel(
+            code="11HEAD0000H3ACXP",
+            data=pd.DataFrame({"sample": [1.0, 2.0, 3.0]}, index=[0.0, 0.1, 0.2]),
+            unit="m/s^2",
+        )
+
+        assert channel.crop(x_min=0.1, x_max=0.2) is channel
+        np.testing.assert_array_equal(channel.data.index, [0.1, 0.2])
+        np.testing.assert_array_equal(channel.get_data(), [2.0, 3.0])
 
     def test_getitem_index_types(self):
         c0 = create_sample(code="11HEAD0000H3ACXP", mode="sin")

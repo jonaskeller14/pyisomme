@@ -83,14 +83,16 @@ def calculate_tibia_index(
         ),
         data=pd.DataFrame(t_i, index=time),
         unit="1",
-        info=[
-            (
-                "Data source",
-                "calculation",
-            ),
+        info=
+        [
+            ("Data source", "calculation"),
+            (".Analysis start time", time[0]),
+            (".Analysis end time", time[-1]),
+            (".Mrc", m_r_c),
+            (".Fzc", f_z_c),
             (".Channel 001", channel_MOX.code),
             (".Channel 002", channel_MOY.code),
-            (".hannel 003", channel_FOZ.code),
+            (".Channel 003", channel_FOZ.code),
         ],
     )
 

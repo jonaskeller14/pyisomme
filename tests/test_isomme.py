@@ -58,6 +58,34 @@ class TestIsomme:
             "11HEAD000000ACXP"
         ]
 
+    @pytest.mark.parametrize("name", ["results.zip", "results.tar", "results.tar.gz"])
+    def test_archive_write_preserves_sibling_directory(self, tmp_path, name):
+        isomme = Isomme(test_number="synthetic")
+        path = tmp_path / name
+        sibling_directory = tmp_path / "results"
+        sibling_directory.mkdir()
+        sentinel = sibling_directory / "keep.txt"
+        sentinel.write_text("unrelated user data")
+        path.write_text("previous archive")
+
+        isomme.write(path)
+
+        assert sentinel.read_text() == "unrelated user data"
+        assert path.is_file()
+        assert path.read_bytes() != b"previous archive"
+
+    def test_write_is_the_only_public_writer(self):
+        isomme = Isomme()
+
+        for method_name in (
+            "write_mme",
+            "write_folder",
+            "write_zip",
+            "write_tar",
+            "write_tar_gz",
+        ):
+            assert not hasattr(isomme, method_name)
+
     def test_write_normalizes_standard_gravity_unit_to_g(self, tmp_path):
         isomme = Isomme(
             test_number="synthetic",
@@ -138,6 +166,18 @@ class TestIsomme:
         assert len(isomme.channels) == 3 and "11HEAD0000H3ACX0" in [
             c.code for c in isomme.channels
         ]
+
+    def test_delete_duplicates_keeps_unfiltered_equal_signal(self):
+        isomme = Isomme(
+            channels=[
+                Channel(code="11HEAD0000H3ACXA", data=pd.DataFrame([1.0])),
+                Channel(code="11HEAD0000H3ACX0", data=pd.DataFrame([1.0])),
+            ]
+        )
+
+        isomme.delete_duplicates(filter_class_duplicates=True)
+
+        assert [channel.code for channel in isomme.channels] == ["11HEAD0000H3ACX0"]
 
     def test_get_channel_calculates_resultant(self):
         time = [0.0, 0.01, 0.02]
@@ -235,3 +275,17 @@ class TestIsomme:
         assert filtered is not None
         assert filtered.code.filter_class == "A"
         assert filtered.code == "11HEAD0000H3ACXA"
+
+    def test_get_channel_does_not_use_more_heavily_filtered_channel(self):
+        isomme = Isomme(
+            channels=[
+                Channel(
+                    code="11HEAD0000H3ACXB",
+                    data=pd.DataFrame([0.0, 1.0, 2.0], index=[0.0, 0.01, 0.02]),
+                    unit="g",
+                ),
+            ]
+        )
+
+        # A class B signal cannot be used to create the less-filtered class A signal.
+        assert isomme.get_channel("11HEAD0000H3ACXA") is None
