@@ -5,10 +5,12 @@ import logging
 import re
 import warnings
 from fnmatch import fnmatch
+from numbers import Real
 from typing import Literal
 
 import numpy as np
 import pandas as pd
+from astropy.units import UnitConversionError
 from matplotlib import pyplot as plt
 from scipy import interpolate as scipy_interpolate
 from scipy.integrate import cumulative_trapezoid
@@ -40,9 +42,39 @@ class Channel:
         info: InfoInput | None = None,
     ):
         self.set_code(code)
+        self._validate_data(data)
         self.data = data
         self.set_unit(unit)
         self.info = Info(info) if info is not None else Info()
+
+    @staticmethod
+    def _validate_data(data: pd.DataFrame) -> None:
+        """Ensure that ``data`` represents one well-defined sampled signal.
+
+        A Channel stores time in its DataFrame index and exactly one numeric
+        value series in its sole column.  Enforcing this at construction keeps
+        interpolation, numerical operations, unit conversion, and serialization
+        consistent.
+        """
+        if not isinstance(data, pd.DataFrame):
+            raise TypeError("Channel data must be a pandas DataFrame")
+        if data.empty:
+            raise ValueError("Channel data must contain at least one sample")
+        if data.shape[1] != 1:
+            raise ValueError("Channel data must contain exactly one value column")
+        if not pd.api.types.is_numeric_dtype(data.iloc[:, 0]):
+            raise TypeError("Channel values must be numeric")
+        if not all(
+            isinstance(time, Real) and not isinstance(time, (bool, np.bool_))
+            for time in data.index
+        ):
+            raise TypeError("Channel time index must be numeric")
+        if data.index.hasnans:
+            raise ValueError("Channel time index must not contain missing values")
+        if not data.index.is_monotonic_increasing or not data.index.is_unique:
+            raise ValueError(
+                "Channel time index must be strictly increasing and unique"
+            )
 
     def __str__(self):
         return self.code
@@ -108,7 +140,9 @@ class Channel:
                 f"{self}. Not possible to convert units when current unit is None."
             )
 
-        self.data.iloc[:, :] = self.unit.to(other=new_unit, value=self.data.to_numpy())  # pyright: ignore[reportArgumentType]
+        self.data.iloc[:, 0] = self.unit.to(
+            other=new_unit, value=self.data.iloc[:, 0].to_numpy()
+        )
         self.unit = Unit(new_unit)
         return self
 
@@ -624,29 +658,19 @@ class Channel:
     def __add__(self, other) -> Channel:
         if isinstance(other, Channel):
             t = time_intersect(self, other)
-            if self.unit.physical_type == other.unit.physical_type:
-                return Channel(
-                    code=self.code,
-                    data=pd.DataFrame(
-                        self.get_data(t) + other.get_data(t, unit=self.unit), index=t
-                    ),
-                    unit=self.unit,
-                    info=self.info
-                    + [("Calculation History", f"{self.code} + {other.code}")],
+            if not self.unit.is_equivalent(other.unit):
+                raise UnitConversionError(
+                    f"Cannot add channels with incompatible units: {self.unit} and {other.unit}"
                 )
-            else:
-                logger.warning(
-                    f"Adding channels with non compatible physical units: {self.unit} and {other.unit}"
-                )
-                return Channel(
-                    code=self.code,
-                    data=pd.DataFrame(
-                        self.get_data(t=t) + other.get_data(t=t), index=t
-                    ),
-                    unit=self.unit,
-                    info=self.info
-                    + [("Calculation History", f"{self.code} + {other.code}")],
-                )
+            return Channel(
+                code=self.code,
+                data=pd.DataFrame(
+                    self.get_data(t) + other.get_data(t, unit=self.unit), index=t
+                ),
+                unit=self.unit,
+                info=self.info
+                + [("Calculation History", f"{self.code} + {other.code}")],
+            )
         elif isinstance(other, (int, float)):
             return Channel(
                 code=self.code,
@@ -662,29 +686,19 @@ class Channel:
     def __sub__(self, other) -> Channel:
         if isinstance(other, Channel):
             t = time_intersect(self, other)
-            if self.unit.physical_type == other.unit.physical_type:
-                return Channel(
-                    code=self.code,
-                    data=pd.DataFrame(
-                        self.get_data(t) - other.get_data(t, unit=self.unit), index=t
-                    ),
-                    unit=self.unit,
-                    info=self.info
-                    + [("Calculation History", f"{self.code} - {other.code}")],
+            if not self.unit.is_equivalent(other.unit):
+                raise UnitConversionError(
+                    f"Cannot subtract channels with incompatible units: {self.unit} and {other.unit}"
                 )
-            else:
-                logger.warning(
-                    f"Subtracting channels with non compatible physical units: {self.unit} and {other.unit}"
-                )
-                return Channel(
-                    code=self.code,
-                    data=pd.DataFrame(
-                        self.get_data(t=t) - other.get_data(t=t), index=t
-                    ),
-                    unit=self.unit,
-                    info=self.info
-                    + [("Calculation History", f"{self.code} - {other.code}")],
-                )
+            return Channel(
+                code=self.code,
+                data=pd.DataFrame(
+                    self.get_data(t) - other.get_data(t, unit=self.unit), index=t
+                ),
+                unit=self.unit,
+                info=self.info
+                + [("Calculation History", f"{self.code} - {other.code}")],
+            )
         elif isinstance(other, (int, float)):
             return Channel(
                 code=self.code,
@@ -771,7 +785,7 @@ class Channel:
         return Channel(
             code=self.code,
             data=calculated_data,
-            unit=self.unit,
+            unit=self.unit**power,
             info=self.info + [("Calculation History", history_str)],
         )
 

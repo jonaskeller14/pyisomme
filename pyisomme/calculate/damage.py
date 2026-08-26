@@ -123,7 +123,9 @@ def calculate_damage(
     # Create scalar channels
     damage_x_max = Channel(
         code=damage_x.code.set(filter_class="X"),
-        data=pd.DataFrame([damage_x.data.max()], index=[damage_x.data.idxmax()]),
+        data=pd.DataFrame(
+            [damage_x.data.max().iloc[0]], index=[damage_x.data.idxmax().iloc[0]]
+        ),
         unit=damage_x.unit,
         info=damage_x.info.add(
             {
@@ -135,7 +137,9 @@ def calculate_damage(
     )
     damage_y_max = Channel(
         code=damage_y.code.set(filter_class="X"),
-        data=pd.DataFrame([damage_y.data.max()], index=[damage_y.data.idxmax()]),
+        data=pd.DataFrame(
+            [damage_y.data.max().iloc[0]], index=[damage_y.data.idxmax().iloc[0]]
+        ),
         unit=damage_y.unit,
         info=damage_y.info.add(
             {
@@ -147,7 +151,9 @@ def calculate_damage(
     )
     damage_z_max = Channel(
         code=damage_z.code.set(filter_class="X"),
-        data=pd.DataFrame([damage_z.data.max()], index=[damage_z.data.idxmax()]),
+        data=pd.DataFrame(
+            [damage_z.data.max().iloc[0]], index=[damage_z.data.idxmax().iloc[0]]
+        ),
         unit=damage_z.unit,
         info=damage_z.info.add(
             {
@@ -159,7 +165,9 @@ def calculate_damage(
     )
     damage_r_max = Channel(
         code=damage_r.code.set(filter_class="X"),
-        data=pd.DataFrame([damage_r.data.max()], index=[damage_r.data.idxmax()]),
+        data=pd.DataFrame(
+            [damage_r.data.max().iloc[0]], index=[damage_r.data.idxmax().iloc[0]]
+        ),
         unit=damage_r.unit,
         info=damage_r.info.add(
             {

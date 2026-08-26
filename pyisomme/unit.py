@@ -1,7 +1,8 @@
 from functools import lru_cache
-from typing import Any
+from typing import Any, Union
 
 import astropy.units as u
+import numpy.typing as npt
 from astropy.constants import (
     g0 as ASTROPY_G0,  # pyright: ignore[reportAttributeAccessIssue]
 )
@@ -61,7 +62,12 @@ class Unit:
                 else u.Unit(unit_input)
             )
 
-    def to(self, other, value=1.0, equivalencies=None):
+    def to(
+        self,
+        other: Any,
+        value: Union[float, npt.ArrayLike] = 1.0,
+        equivalencies: Any = None,
+    ) -> Union[float, npt.NDArray[Any]]:
         """
         Return the value(s) converted from this unit to `other` unit.
 
@@ -82,6 +88,11 @@ class Unit:
             target = Unit(other)._astropy_unit
 
         return self._astropy_unit.to(target, value=value, equivalencies=equivalencies)  # pyright: ignore[reportCallIssue]
+
+    def is_equivalent(self, other, equivalencies=None) -> bool:
+        """Return whether this unit can be converted to ``other``."""
+        target = other._astropy_unit if isinstance(other, Unit) else other
+        return self._astropy_unit.is_equivalent(target, equivalencies=equivalencies)
 
     # Automatically delegate all standard Astropy Unit attributes & methods.
     def __getattr__(self, name):
@@ -109,6 +120,9 @@ class Unit:
             other = Unit(other)
         other_raw = other._astropy_unit if isinstance(other, Unit) else other
         return Unit(self._astropy_unit / other_raw)
+
+    def __pow__(self, power):
+        return Unit(self._astropy_unit**power)
 
     def __rmul__(self, other):
         return Unit(Unit(other)._astropy_unit * self._astropy_unit)

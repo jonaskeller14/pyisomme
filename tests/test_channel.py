@@ -23,13 +23,36 @@ logging.basicConfig(
 
 class TestChannel:
     def test_init(self):
-        Channel(code="11HEAD0000H3ACXP", data=pd.DataFrame([]))
+        data = pd.DataFrame([0.0])
+        Channel(code="11HEAD0000H3ACXP", data=data)
         # < 16 chars
-        Channel(code="11HEAD0000H3", data=pd.DataFrame([]))
+        Channel(code="11HEAD0000H3", data=data)
         # > 16 chars
-        Channel(code="11HEAD0000H3ACXP123", data=pd.DataFrame([]))
+        Channel(code="11HEAD0000H3ACXP123", data=data)
         # invalid chars
-        Channel(code="TOTAL_ENERGY", data=pd.DataFrame([]))
+        Channel(code="TOTAL_ENERGY", data=data)
+
+    @pytest.mark.parametrize(
+        ("data", "error", "message"),
+        [
+            (pd.DataFrame(), ValueError, "at least one sample"),
+            (pd.DataFrame({"a": [1.0], "b": [2.0]}), ValueError, "one value column"),
+            (pd.DataFrame({"sample": ["invalid"]}), TypeError, "values must be numeric"),
+            (pd.DataFrame({"sample": [1.0]}, index=["invalid"]), TypeError, "time index must be numeric"),
+            (pd.DataFrame({"sample": [1.0, 2.0]}, index=[0.1, 0.0]), ValueError, "strictly increasing"),
+            (pd.DataFrame({"sample": [1.0, 2.0]}, index=[0.0, 0.0]), ValueError, "strictly increasing"),
+        ],
+    )
+    def test_init_rejects_invalid_signal_data(self, data, error, message):
+        with pytest.raises(error, match=message):
+            Channel(code="11HEAD0000H3ACXP", data=data)
+
+    def test_init_accepts_numeric_object_time_index(self):
+        data = pd.DataFrame({"sample": [1.0]}, index=pd.Index([0.0], dtype=object))
+
+        channel = Channel(code="11HEAD0000H3ACXP", data=data)
+
+        assert channel.data is data
 
     def test_create_sample_pulse_has_baseline_peak_and_frequency_content(self):
         channel = create_sample(
@@ -74,7 +97,7 @@ class TestChannel:
     def test_get_info(self):
         channel = Channel(
             code="11HEAD0000H3ACXP",
-            data=pd.DataFrame([]),
+            data=pd.DataFrame([0.0]),
             info=[("Time of first sample", -0.030399999)],
         )
         assert channel.get_info("Time of first sample") == channel.get_info(
@@ -109,12 +132,34 @@ class TestChannel:
         assert (c_1 + c_2).get_data(unit="m") == 2
         assert (c_1 + 1).get_data(unit="m") == 2
 
+    def test_add_rejects_incompatible_units(self):
+        distance = Channel(code="????????????????", data=pd.DataFrame([1]), unit="m")
+        duration = Channel(code="????????????????", data=pd.DataFrame([1]), unit="s")
+
+        with pytest.raises(u.UnitConversionError, match="Cannot add"):
+            distance + duration # pyright: ignore[reportUnusedExpression]
+
     def test_sub(self):
         c_1 = Channel(code="????????????????", data=pd.DataFrame([1]), unit="m")
         c_2 = Channel(code="????????????????", data=pd.DataFrame([1000]), unit="mm")
 
         assert (c_1 - c_2).get_data(unit="m") == 0
         assert (c_1 - 1).get_data(unit="m") == 0
+
+    def test_sub_rejects_incompatible_units(self):
+        distance = Channel(code="????????????????", data=pd.DataFrame([1]), unit="m")
+        duration = Channel(code="????????????????", data=pd.DataFrame([1]), unit="s")
+
+        with pytest.raises(u.UnitConversionError, match="Cannot subtract"):
+            distance - duration # pyright: ignore[reportUnusedExpression]
+
+    def test_power_updates_unit(self):
+        distance = Channel(code="????????????????", data=pd.DataFrame([3]), unit="m")
+
+        squared = distance**2
+
+        assert squared.unit == Unit("m2")
+        assert squared.get_data() == 9
 
     def test_calculation_history_add_mul(self):
         c_1 = Channel(code="11HEAD0000H3ACXA", data=pd.DataFrame([1]), unit="m")

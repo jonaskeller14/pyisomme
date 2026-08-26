@@ -348,6 +348,72 @@ class Isomme:
             path.joinpath(f"{self.test_number}.mme"), *channel_code_patterns
         )
 
+    @staticmethod
+    def _backup_path(parent: Path) -> Path:
+        """Reserve an unused sibling path for a rollback copy."""
+        backup_path = Path(tempfile.mkdtemp(prefix=".pyisomme-backup-", dir=parent))
+        backup_path.rmdir()
+        return backup_path
+
+    @staticmethod
+    def _remove_path(path: Path) -> None:
+        if path.is_dir():
+            shutil.rmtree(path)
+        elif path.exists():
+            path.unlink()
+
+    def _replace_outputs_transactionally(
+        self, replacements: list[tuple[Path, Path]]
+    ) -> None:
+        """Replace output paths together, restoring previous outputs on failure."""
+        backups: dict[Path, Path] = {}
+        placed: list[tuple[Path, Path]] = []
+        try:
+            for destination, _ in replacements:
+                if destination.exists():
+                    backup_path = self._backup_path(destination.parent)
+                    os.replace(destination, backup_path)
+                    backups[destination] = backup_path
+
+            for destination, source in replacements:
+                os.replace(source, destination)
+                placed.append((destination, source))
+        except Exception:
+            for destination, source in reversed(placed):
+                os.replace(destination, source)
+            for destination, backup_path in backups.items():
+                os.replace(backup_path, destination)
+            raise
+        else:
+            for backup_path in backups.values():
+                self._remove_path(backup_path)
+
+    def _write_mme_transactionally(
+        self, path: Path, *channel_code_patterns
+    ) -> None:
+        """Write an MME file and its Channel directory without partial output."""
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(dir=path.parent) as temporary_directory:
+            temporary_path = Path(temporary_directory)
+            temporary_mme_path = temporary_path / path.name
+            self._write_mme(temporary_mme_path, *channel_code_patterns)
+            self._replace_outputs_transactionally(
+                [
+                    (path, temporary_mme_path),
+                    (path.parent / "Channel", temporary_path / "Channel"),
+                ]
+            )
+
+    def _write_folder_transactionally(
+        self, path: Path, *channel_code_patterns
+    ) -> None:
+        """Write a folder container without replacing its prior contents on failure."""
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(dir=path.parent) as temporary_directory:
+            temporary_path = Path(temporary_directory) / "isomme"
+            self._write_folder(temporary_path, *channel_code_patterns)
+            self._replace_outputs_transactionally([(path, temporary_path)])
+
     def _write_archive(
         self,
         path: Path,
@@ -380,9 +446,9 @@ class Isomme:
         """
         path = Path(path)
         if path.suffix.lower() == ".mme":
-            self._write_mme(path, *channel_code_patterns)
+            self._write_mme_transactionally(path, *channel_code_patterns)
         elif path.suffix == "":
-            self._write_folder(path, *channel_code_patterns)
+            self._write_folder_transactionally(path, *channel_code_patterns)
         elif path.suffix.lower() == ".zip":
             self._write_archive(path, "zip", *channel_code_patterns)
         elif path.suffix.lower() == ".tar":
@@ -531,27 +597,33 @@ class Isomme:
             for channel in self.channels:
                 if fnmatch.fnmatch(channel.code, code_pattern):
                     return channel
-            # 2. Filter Channel
-            if filter and fnmatch.fnmatch(code_pattern, "*[ABCD]"):
-                for channel in self.channels:
-                    if fnmatch.fnmatch(channel.code, code_pattern[:-1] + "?"):
-                        return channel.cfc(code_pattern[-1])
+
             try:
-                code_pattern = Code(code_pattern)
+                code = Code(code_pattern)
             except InvalidCodeError:
                 continue
+
+            # 2. Filter Channel
+            if filter and code.is_filterable():
+                source_pattern = code.set(filter_class="?")
+                for channel in self.channels:
+                    if fnmatch.fnmatch(channel.code, source_pattern):
+                        filtered_channel = channel.cfc(code.filter_class)
+                        if fnmatch.fnmatch(filtered_channel.code, code_pattern):
+                            return filtered_channel
+
             # 3. Calculate Channel
             if calculate:
                 for provider in PROVIDERS:
-                    if provider.matches(code_pattern):
-                        built_channel = provider.build(self, code_pattern)
+                    if provider.matches(code):
+                        built_channel = provider.build(self, code)
                         if built_channel is not None:
                             return built_channel
 
             # 4. Differentiate
             if differentiate:
                 try:
-                    code_integrated = code_pattern.integrate()
+                    code_integrated = code.integrate()
                 except NotImplementedError as error:
                     logger.debug(error)
                 else:
@@ -563,14 +635,18 @@ class Isomme:
                     )
                     if channel_int is not None:
                         try:
-                            return channel_int.differentiate()
+                            differentiated_channel = channel_int.differentiate()
+                            if fnmatch.fnmatch(
+                                differentiated_channel.code, code_pattern
+                            ):
+                                return differentiated_channel
                         except (AttributeError, NotImplementedError) as error:
                             logger.debug(error)
 
             # 5. Integrate
             if integrate:
                 try:
-                    code_differentiated = code_pattern.differentiate()
+                    code_differentiated = code.differentiate()
                 except NotImplementedError as error:
                     logger.debug(error)
                 else:
@@ -582,7 +658,9 @@ class Isomme:
                     )
                     if channel_dif is not None:
                         try:
-                            return channel_dif.integrate()
+                            integrated_channel = channel_dif.integrate()
+                            if fnmatch.fnmatch(integrated_channel.code, code_pattern):
+                                return integrated_channel
                         except (AttributeError, NotImplementedError) as error:
                             logger.debug(error)
 
@@ -599,9 +677,8 @@ class Isomme:
         integrate: bool = False,
     ) -> list[Channel]:
         """
-        Get all channels by channel code patter. All Wildcards are supported.
+        Get all channels by channel code pattern. All wildcards are supported.
         A list of all matching channels will be returned.
-        Filtering and Calculations are not supported yet. See 'get_channel()' instead.
         :param code_patterns:
         :param filter:
         :param calculate:
@@ -609,30 +686,50 @@ class Isomme:
         :param integrate:
         :return: list of Channels
         """
-        channel_list = []
+        channel_list: list[Channel] = []
         for code_pattern in code_patterns:
             # 1. Channel does exist already
             for channel in self.channels:
-                if fnmatch.fnmatch(channel.code, code_pattern):
+                if (
+                    fnmatch.fnmatch(channel.code, code_pattern)
+                    and channel not in channel_list
+                ):
                     channel_list.append(channel)
+
+            try:
+                code = Code(code_pattern)
+            except InvalidCodeError:
+                continue
+
             # 2. Filter Channel
-            if filter:
+            if filter and code.is_filterable():
+                source_pattern = code.set(filter_class="?")
                 for channel in self.channels:
                     if channel in channel_list:
                         continue
-                    if fnmatch.fnmatch(channel.code, code_pattern[:-1] + "?"):
-                        channel_list.append(channel.cfc(code_pattern[-1]))
+                    if fnmatch.fnmatch(channel.code, source_pattern):
+                        filtered_channel = channel.cfc(code.filter_class)
+                        if (
+                            fnmatch.fnmatch(filtered_channel.code, code_pattern)
+                            and filtered_channel.code
+                            not in [result.code for result in channel_list]
+                        ):
+                            channel_list.append(filtered_channel)
 
-            try:
-                code_pattern = Code(code_pattern)
-            except InvalidCodeError:
-                continue
             # 3. Calculate Channel
             if calculate:
-                calculated_channel = self.get_channel(code_pattern)
+                calculated_channel = self.get_channel(
+                    code,
+                    filter=filter,
+                    calculate=calculate,
+                    differentiate=differentiate,
+                    integrate=integrate,
+                )
                 if (
                     calculated_channel is not None
                     and calculated_channel not in channel_list
+                    and calculated_channel.code
+                    not in [result.code for result in channel_list]
                 ):
                     channel_list.append(calculated_channel)
 
@@ -640,12 +737,18 @@ class Isomme:
             if differentiate:
                 try:
                     for channel in self.get_channels(
-                        code_pattern.integrate(),
+                        code.integrate(),
                         filter=filter,
                         calculate=calculate,
                         integrate=False,
                     ):
-                        channel_list.append(channel.differentiate())
+                        differentiated_channel = channel.differentiate()
+                        if (
+                            fnmatch.fnmatch(differentiated_channel.code, code_pattern)
+                            and differentiated_channel.code
+                            not in [result.code for result in channel_list]
+                        ):
+                            channel_list.append(differentiated_channel)
                 except (AttributeError, NotImplementedError) as error:
                     logger.debug(error)
 
@@ -653,12 +756,18 @@ class Isomme:
             if integrate:
                 try:
                     for channel in self.get_channels(
-                        code_pattern.differentiate(),
+                        code.differentiate(),
                         filter=filter,
                         calculate=calculate,
                         differentiate=False,
                     ):
-                        channel_list.append(channel.integrate())
+                        integrated_channel = channel.integrate()
+                        if (
+                            fnmatch.fnmatch(integrated_channel.code, code_pattern)
+                            and integrated_channel.code
+                            not in [result.code for result in channel_list]
+                        ):
+                            channel_list.append(integrated_channel)
                 except (AttributeError, NotImplementedError) as error:
                     logger.debug(error)
         return channel_list

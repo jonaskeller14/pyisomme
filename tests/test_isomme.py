@@ -74,6 +74,29 @@ class TestIsomme:
         assert path.is_file()
         assert path.read_bytes() != b"previous archive"
 
+    @pytest.mark.parametrize("name", ["synthetic.mme", "folder"])
+    def test_write_preserves_existing_output_when_export_fails(
+        self, tmp_path, name, monkeypatch
+    ):
+        isomme = Isomme(
+            test_number="synthetic",
+            channels=[Channel("11HEAD000000ACXP", pd.DataFrame([1.0]), "g")],
+        )
+        path = tmp_path / name
+        output_file = path if path.suffix else path / "synthetic.mme"
+        output_file.parent.mkdir(parents=True, exist_ok=True)
+        output_file.write_text("previous output")
+
+        def fail_write(*args, **kwargs):
+            raise RuntimeError("export failed")
+
+        monkeypatch.setattr(Channel, "write", fail_write)
+
+        with pytest.raises(RuntimeError, match="export failed"):
+            isomme.write(path)
+
+        assert output_file.read_text() == "previous output"
+
     def test_write_is_the_only_public_writer(self):
         isomme = Isomme()
 
@@ -128,23 +151,23 @@ class TestIsomme:
     def test_extend(self):
         isomme_1 = Isomme(
             channels=[
-                Channel(code="11HEAD0000H3ACXA", data=pd.DataFrame([])),
-                Channel(code="11HEAD0000H3ACYA", data=pd.DataFrame([])),
+                Channel(code="11HEAD0000H3ACXA", data=pd.DataFrame([0.0])),
+                Channel(code="11HEAD0000H3ACYA", data=pd.DataFrame([0.0])),
             ]
         )
         isomme_2 = Isomme(
             channels=[
-                Channel(code="11HEAD0000H3ACZA", data=pd.DataFrame([])),
+                Channel(code="11HEAD0000H3ACZA", data=pd.DataFrame([0.0])),
             ]
         )
         isomme_1.extend(isomme_2)
         assert len(isomme_1.channels) == 3
-        channel = Channel(code="13HEAD0000H3ACXA", data=pd.DataFrame([]))
+        channel = Channel(code="13HEAD0000H3ACXA", data=pd.DataFrame([0.0]))
         isomme_1.extend(channel)
         assert len(isomme_1.channels) == 4
         channel_list = [
-            Channel(code="13HEAD0000H3ACYA", data=pd.DataFrame([])),
-            Channel(code="13HEAD0000H3ACZA", data=pd.DataFrame([])),
+            Channel(code="13HEAD0000H3ACYA", data=pd.DataFrame([0.0])),
+            Channel(code="13HEAD0000H3ACZA", data=pd.DataFrame([0.0])),
         ]
         isomme_1.extend(channel_list)
         assert len(isomme_1.channels) == 6
@@ -289,3 +312,35 @@ class TestIsomme:
 
         # A class B signal cannot be used to create the less-filtered class A signal.
         assert isomme.get_channel("11HEAD0000H3ACXA") is None
+
+    def test_get_channels_does_not_filter_non_filterable_code(self):
+        source = Channel(
+            code="11HEAD0000H3ACXA",
+            data=pd.DataFrame([0.0, 1.0, 2.0], index=[0.0, 0.01, 0.02]),
+            unit="g",
+        )
+        isomme = Isomme(channels=[source])
+
+        assert isomme.get_channels("11HEAD0000H3ACXX") == []
+
+    def test_get_channels_honors_filter_policy(self):
+        source = Channel(
+            code="11HEAD0000H3ACX0",
+            data=pd.DataFrame([0.0, 1.0, 2.0], index=[0.0, 0.01, 0.02]),
+            unit="g",
+        )
+        isomme = Isomme(channels=[source])
+
+        assert isomme.get_channels("11HEAD0000H3ACXA", filter=False) == []
+
+    def test_get_channels_deduplicates_overlapping_patterns(self):
+        channel = Channel(
+            code="11HEAD0000H3ACXA",
+            data=pd.DataFrame([0.0, 1.0, 2.0], index=[0.0, 0.01, 0.02]),
+            unit="g",
+        )
+        isomme = Isomme(channels=[channel])
+
+        assert isomme.get_channels(
+            "11HEAD0000H3ACXA", "11HEAD????H3ACXA"
+        ) == [channel]
