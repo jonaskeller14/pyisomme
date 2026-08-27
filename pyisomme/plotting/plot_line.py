@@ -16,7 +16,7 @@ from matplotlib.figure import Figure
 
 from pyisomme.code import Code, combine_codes
 from pyisomme.limit import Limit
-from pyisomme.limits import Limits, limit_list_sort, limit_list_unique
+from pyisomme.limit_set import LimitSet, limit_list_sort, limit_list_unique
 from pyisomme.plotting.plot import Plot
 from pyisomme.unit import Unit
 
@@ -35,7 +35,7 @@ class Plot_Line(Plot):
     ylim: tuple[float, float] | None
     sharex: bool
     sharey: bool
-    limits: dict[Isomme, Limits] | None = None
+    limits: dict[Isomme, LimitSet] | None = None
     legend: bool = True
 
     def __init__(
@@ -49,7 +49,7 @@ class Plot_Line(Plot):
         sharey: bool = False,
         figsize: tuple[float, float] = (10, 10),
         legend: bool | None = None,
-        limits: Limits | dict[Isomme, Limits] | None = None,
+        limits: LimitSet | dict[Isomme, LimitSet] | None = None,
     ):
         super().__init__(figsize=figsize, nrows=nrows, ncols=ncols)
 
@@ -77,7 +77,7 @@ class Plot_Line(Plot):
 
         if isinstance(limits, dict):
             self.limits = limits
-        elif isinstance(limits, Limits):
+        elif isinstance(limits, LimitSet):
             self.limits = {isomme: limits for isomme in self.isomme_list}
 
         if legend is not None:
@@ -263,7 +263,7 @@ class Plot_Line(Plot):
     ) -> None:
         x = np.linspace(*xlim, 1000)
         # TODO: replace infinity values with ylim values to get vertical lines
-        limit_list = limit_list_sort(limit_list)
+        limit_list = limit_list_sort(limit_list, x=x, x_unit=x_unit, y_unit=y_unit)
         limit_list = limit_list_unique(limit_list, x=x, x_unit=x_unit, y_unit=y_unit)
 
         for limit in limit_list:
@@ -287,7 +287,7 @@ class Plot_Line(Plot):
         x = np.linspace(*xlim, 1000)
         y_min, y_max = ylim
 
-        limit_list = limit_list_sort(limit_list)
+        limit_list = limit_list_sort(limit_list, x=x, x_unit=x_unit, y_unit=y_unit)
         limit_list = limit_list_unique(limit_list, x=x, x_unit=x_unit, y_unit=y_unit)
 
         for idx, limit in enumerate(limit_list):
@@ -359,7 +359,7 @@ class Plot_Line(Plot):
         x = np.linspace(*xlim, 1000)
         x0 = x[0]
 
-        limit_list = limit_list_sort(limit_list)
+        limit_list = limit_list_sort(limit_list, x=x, x_unit=x_unit, y_unit=y_unit)
         limit_list = limit_list_unique(limit_list, x=x, x_unit=x_unit, y_unit=y_unit)
 
         for limit in limit_list:

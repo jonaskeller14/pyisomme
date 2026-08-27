@@ -368,7 +368,7 @@
           "name": "Chest Lateral Compression",
           "value": -60.0,
           "rating": "-inf",
-          "color": "red",
+          "color": "gray",
           "status": "OK"
         }
       },

@@ -82,8 +82,9 @@ class Criterion_HIC_15(Criterion):
             *self.ctx.codes("?{p}HICR0015??00RX", "?{p}HICRCG15??00RX")
         )
         value = channel.get_data()[0]
-        rating = self.limits.get_limit_min_rating(channel, interpolate=True)
-        color = self.limits.get_limit_min_color(channel)
+        evaluation = self.limits.evaluate(channel)
+        rating = evaluation.get_limit_min_rating(interpolate=True)
+        color = evaluation.get_limit_min_color()
         return CriterionResult(
             channel=channel,
             value=value,
@@ -111,8 +112,9 @@ class Criterion_Head_a3ms(Criterion):
             *self.ctx.codes("?{p}HEAD003C??ACRX", "?{p}HEADCG3C??ACRX")
         ).convert_unit(Unit(g0))
         value = channel.get_data()[0]
-        rating = self.limits.get_limit_min_rating(channel, interpolate=True)
-        color = self.limits.get_limit_min_color(channel)
+        evaluation = self.limits.evaluate(channel)
+        rating = evaluation.get_limit_min_rating(interpolate=True)
+        color = evaluation.get_limit_min_color()
         return CriterionResult(
             channel=channel,
             value=value,
@@ -173,8 +175,9 @@ class Criterion_Chest_Deflection(Criterion):
             *self.ctx.codes("?{p}CHST0003??DSXC", "?{p}CHST0000??DSXC")
         ).convert_unit("mm")
         value = np.min(channel.get_data())
-        rating = self.limits.get_limit_min_rating(channel, interpolate=True)
-        color = self.limits.get_limit_min_color(channel)
+        evaluation = self.limits.evaluate(channel)
+        rating = evaluation.get_limit_min_rating(interpolate=True)
+        color = evaluation.get_limit_min_color()
         return CriterionResult(
             channel=channel,
             value=value,
@@ -202,8 +205,9 @@ class Criterion_Chest_VC(Criterion):
             *self.ctx.codes("?{p}VCCR0003??VEXC", "?{p}VCCR0000??VEXC")
         ).convert_unit("m/s")
         value = channel.get_data()[np.argmax(np.abs(channel.get_data()))]
-        rating = self.limits.get_limit_min_rating(channel, interpolate=True)
-        color = self.limits.get_limit_min_color(channel)
+        evaluation = self.limits.evaluate(channel)
+        rating = evaluation.get_limit_min_rating(interpolate=True)
+        color = evaluation.get_limit_min_color()
         return CriterionResult(
             channel=channel,
             value=value,
@@ -244,8 +248,9 @@ class Criterion_ShoulderBeltLoad(Criterion):
             self.ctx.code("?{p}SEBE????B3FO[X0]D")
         ).convert_unit("kN")
         value = np.max(channel.get_data())
-        rating = self.limits.get_limit_min_rating(channel)
-        color = self.limits.get_limit_min_color(channel)
+        evaluation = self.limits.evaluate(channel)
+        rating = evaluation.get_limit_min_rating()
+        color = evaluation.get_limit_min_color()
         return CriterionResult(
             channel=channel,
             value=value,
@@ -276,8 +281,9 @@ class Criterion_Femur_Axial_Force(Criterion):
                 self.ctx.code("?{p}FEMRLE00??FOZB")
             ).convert_unit("kN")
             value = np.min(channel.get_data())
-            rating = self.limits.get_limit_min_rating(channel, interpolate=True)
-            color = self.limits.get_limit_min_color(channel)
+            evaluation = self.limits.evaluate(channel)
+            rating = evaluation.get_limit_min_rating(interpolate=True)
+            color = evaluation.get_limit_min_color()
             return CriterionResult(
                 channel=channel,
                 value=value,
@@ -303,8 +309,9 @@ class Criterion_Femur_Axial_Force(Criterion):
                 self.ctx.code("?{p}FEMRRI00??FOZB")
             ).convert_unit("kN")
             value = np.min(channel.get_data())
-            rating = self.limits.get_limit_min_rating(channel, interpolate=True)
-            color = self.limits.get_limit_min_color(channel)
+            evaluation = self.limits.evaluate(channel)
+            rating = evaluation.get_limit_min_rating(interpolate=True)
+            color = evaluation.get_limit_min_color()
             return CriterionResult(
                 channel=channel,
                 value=value,
@@ -708,8 +715,9 @@ class Overall(Criterion):
                         self.ctx.code("?{p}NECKUP00??MOYB")
                     ).convert_unit("Nm")
                     value = np.min(channel.get_data())
-                    rating = self.limits.get_limit_min_rating(channel)
-                    color = self.limits.get_limit_min_color(channel)
+                    evaluation = self.limits.evaluate(channel)
+                    rating = evaluation.get_limit_min_rating()
+                    color = evaluation.get_limit_min_color()
                     return CriterionResult(
                         channel=channel,
                         value=value,
@@ -736,8 +744,9 @@ class Overall(Criterion):
                         self.ctx.code("?{p}NECKUP00??FOZA")
                     ).convert_unit("kN")
                     value = np.max(channel.get_data())
-                    rating = self.limits.get_limit_min_rating(channel)
-                    color = self.limits.get_limit_min_color(channel)
+                    evaluation = self.limits.evaluate(channel)
+                    rating = evaluation.get_limit_min_rating()
+                    color = evaluation.get_limit_min_color()
                     return CriterionResult(
                         channel=channel,
                         value=value,
@@ -770,8 +779,9 @@ class Overall(Criterion):
                         self.ctx.code("?{p}NECKUP00??FOXA")
                     ).convert_unit("kN")
                     value = channel.get_data()[np.argmax(np.abs(channel.get_data()))]
-                    rating = self.limits.get_limit_min_rating(channel)
-                    color = self.limits.get_limit_min_color(channel)
+                    evaluation = self.limits.evaluate(channel)
+                    rating = evaluation.get_limit_min_rating()
+                    color = evaluation.get_limit_min_color()
                     return CriterionResult(
                         channel=channel,
                         value=value,
@@ -1014,8 +1024,9 @@ class Overall(Criterion):
                         self.ctx.code("?{p}NECKUP00??MOYB")
                     ).convert_unit("Nm")
                     value = np.min(channel.get_data())
-                    rating = self.limits.get_limit_min_rating(channel)
-                    color = self.limits.get_limit_min_color(channel)
+                    evaluation = self.limits.evaluate(channel)
+                    rating = evaluation.get_limit_min_rating()
+                    color = evaluation.get_limit_min_color()
                     return CriterionResult(
                         channel=channel,
                         value=value,
@@ -1041,8 +1052,9 @@ class Overall(Criterion):
                         self.ctx.code("?{p}NECKUP00??FOZA")
                     ).convert_unit("kN")
                     value = np.max(channel.get_data())
-                    rating = self.limits.get_limit_min_rating(channel)
-                    color = self.limits.get_limit_min_color(channel)
+                    evaluation = self.limits.evaluate(channel)
+                    rating = evaluation.get_limit_min_rating()
+                    color = evaluation.get_limit_min_color()
                     return CriterionResult(
                         channel=channel,
                         value=value,
@@ -1073,8 +1085,9 @@ class Overall(Criterion):
                         self.ctx.code("?{p}NECKUP00??FOXA")
                     ).convert_unit("kN")
                     value = channel.get_data()[np.argmax(np.abs(channel.get_data()))]
-                    rating = self.limits.get_limit_min_rating(channel)
-                    color = self.limits.get_limit_min_color(channel)
+                    evaluation = self.limits.evaluate(channel)
+                    rating = evaluation.get_limit_min_rating()
+                    color = evaluation.get_limit_min_color()
                     return CriterionResult(
                         channel=channel,
                         value=value,
@@ -1329,10 +1342,11 @@ class Overall(Criterion):
                     ).convert_unit("Nm")
                     value = np.min(channel.get_data())
                     # Rescale the 4 pt. block onto the rear passenger's 2 pt. budget.
+                    evaluation = self.limits.evaluate(channel)
                     rating = (
-                        self.limits.get_limit_min_rating(channel) * self.max_rating / 4
+                        evaluation.get_limit_min_rating() * self.max_rating / 4
                     )
-                    color = self.limits.get_limit_min_color(channel)
+                    color = evaluation.get_limit_min_color()
                     return CriterionResult(
                         channel=channel,
                         value=value,
@@ -1363,10 +1377,11 @@ class Overall(Criterion):
                     ).convert_unit("kN")
                     value = np.max(channel.get_data())
                     # Rescale the 4 pt. block onto the rear passenger's 1 pt. budget.
+                    evaluation = self.limits.evaluate(channel)
                     rating = (
-                        self.limits.get_limit_min_rating(channel) * self.max_rating / 4
+                        evaluation.get_limit_min_rating() * self.max_rating / 4
                     )
-                    color = self.limits.get_limit_min_color(channel)
+                    color = evaluation.get_limit_min_color()
                     return CriterionResult(
                         channel=channel,
                         value=value,
@@ -1402,10 +1417,11 @@ class Overall(Criterion):
                     ).convert_unit("kN")
                     value = channel.get_data()[np.argmax(np.abs(channel.get_data()))]
                     # Rescale the 4 pt. block onto the rear passenger's 1 pt. budget.
+                    evaluation = self.limits.evaluate(channel)
                     rating = (
-                        self.limits.get_limit_min_rating(channel) * self.max_rating / 4
+                        evaluation.get_limit_min_rating() * self.max_rating / 4
                     )
-                    color = self.limits.get_limit_min_color(channel)
+                    color = evaluation.get_limit_min_color()
                     return CriterionResult(
                         channel=channel,
                         value=value,

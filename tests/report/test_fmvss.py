@@ -11,14 +11,14 @@ ReportFactory = Callable[..., FMVSS_208]
 
 
 def threshold(criterion) -> float:
-    return float(criterion.limits.limit_list[0].func(0.0))
+    return float(criterion.limits.limits[0].func(0.0))
 
 
 def limit_patterns(criterion) -> list[str]:
     return [
         pattern
         for _, node in criterion.walk()
-        for limit in node.limits.limit_list
+        for limit in node.limits.limits
         for pattern in limit.code_patterns or ()
     ]
 

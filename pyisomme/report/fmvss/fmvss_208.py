@@ -148,8 +148,9 @@ class Criterion_HIC15(_FMVSSCriterion):
     def calculation(self) -> CriterionResult:
         channel = self.require_channel(self.dummy_code("?{p}HICR0015{dummy}00RX"))
         value = float(np.max(channel.get_data()))
-        rating = self.limits.get_limit_min_rating(channel, interpolate=False)
-        color = self.limits.get_limit_min_color(channel)
+        evaluation = self.limits.evaluate(channel)
+        rating = evaluation.get_limit_min_rating(interpolate=False)
+        color = evaluation.get_limit_min_color()
         return CriterionResult(
             channel=channel,
             value=value,
@@ -177,8 +178,9 @@ class Criterion_Chest_a3ms(_FMVSSCriterion):
             self.dummy_code("?{p}CHST003C{dummy}ACRX")
         ).convert_unit(Unit(g0))
         value = float(np.max(channel.get_data()))
-        rating = self.limits.get_limit_min_rating(channel, interpolate=False)
-        color = self.limits.get_limit_min_color(channel)
+        evaluation = self.limits.evaluate(channel)
+        rating = evaluation.get_limit_min_rating(interpolate=False)
+        color = evaluation.get_limit_min_color()
         return CriterionResult(
             channel=channel,
             value=value,
@@ -207,8 +209,9 @@ class Criterion_Chest_Deflection(_FMVSSCriterion):
             )
         ).convert_unit("mm")
         value = float(np.min(channel.get_data()))
-        rating = self.limits.get_limit_min_rating(channel, interpolate=False)
-        color = self.limits.get_limit_min_color(channel)
+        evaluation = self.limits.evaluate(channel)
+        rating = evaluation.get_limit_min_rating(interpolate=False)
+        color = evaluation.get_limit_min_color()
         return CriterionResult(
             channel=channel,
             value=value,
@@ -237,8 +240,9 @@ class Criterion_Nij(_FMVSSCriterion):
     def calculation(self) -> CriterionResult:
         channel = self.require_channel(self.dummy_code("?{p}NIJCIP00{dummy}00YB"))
         value = float(np.max(channel.get_data()))
-        rating = self.limits.get_limit_min_rating(channel, interpolate=False)
-        color = self.limits.get_limit_min_color(channel)
+        evaluation = self.limits.evaluate(channel)
+        rating = evaluation.get_limit_min_rating(interpolate=False)
+        color = evaluation.get_limit_min_color()
         return CriterionResult(
             channel=channel,
             value=value,
@@ -264,8 +268,9 @@ class Criterion_Neck_Tension(_FMVSSCriterion):
             self.dummy_code("?{p}NECKUP00{dummy}FOZB")
         ).convert_unit("N")
         value = float(np.max(channel.get_data()))
-        rating = self.limits.get_limit_min_rating(channel, interpolate=False)
-        color = self.limits.get_limit_min_color(channel)
+        evaluation = self.limits.evaluate(channel)
+        rating = evaluation.get_limit_min_rating(interpolate=False)
+        color = evaluation.get_limit_min_color()
         return CriterionResult(
             channel=channel,
             value=value,
@@ -291,8 +296,9 @@ class Criterion_Neck_Compression(_FMVSSCriterion):
             self.dummy_code("?{p}NECKUP00{dummy}FOZB")
         ).convert_unit("N")
         value = float(np.min(channel.get_data()))
-        rating = self.limits.get_limit_min_rating(channel, interpolate=False)
-        color = self.limits.get_limit_min_color(channel)
+        evaluation = self.limits.evaluate(channel)
+        rating = evaluation.get_limit_min_rating(interpolate=False)
+        color = evaluation.get_limit_min_color()
         return CriterionResult(
             channel=channel,
             value=value,
@@ -317,8 +323,9 @@ class Criterion_Femur_Force(_FMVSSCriterion):
             self.dummy_code(f"?{{p}}FEMR{self.side}00{{dummy}}FOZB")
         ).convert_unit("N")
         value = float(np.min(channel.get_data()))
-        rating = self.limits.get_limit_min_rating(channel, interpolate=False)
-        color = self.limits.get_limit_min_color(channel)
+        evaluation = self.limits.evaluate(channel)
+        rating = evaluation.get_limit_min_rating(interpolate=False)
+        color = evaluation.get_limit_min_color()
         return CriterionResult(
             channel=channel,
             value=value,

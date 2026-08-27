@@ -4,6 +4,7 @@ import itertools
 import logging
 from abc import abstractmethod
 from collections.abc import Iterator, Sequence
+from dataclasses import replace
 from enum import Enum
 from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast, overload
 
@@ -14,7 +15,7 @@ from pyisomme.errors import MissingData, Status
 from pyisomme.info import InfoValue
 from pyisomme.isomme import Isomme
 from pyisomme.limit import Limit
-from pyisomme.limits import Limits
+from pyisomme.limit_set import LimitSet
 from pyisomme.report.criterion_result import CriterionResult
 from pyisomme.report.ctx import Ctx, CtxSource
 from pyisomme.report.manual import (
@@ -142,7 +143,7 @@ class sub(Generic[C]):
 
 class Criterion:
     name: str | None = None
-    limits: Limits
+    limits: LimitSet
     status: Status = Status.PENDING
     na_reason: MissingData | None = None
     report: Report[Any]
@@ -171,7 +172,7 @@ class Criterion:
     def __init__(self, report: Report[Any], isomme: Isomme) -> None:
         self.report = report
         self.isomme = isomme
-        self.limits = Limits(name=report.name, limit_list=[])
+        self.limits = LimitSet(name=report.name)
         self._result = None
         self.status = Status.PENDING
         self.na_reason = None
@@ -441,8 +442,9 @@ class Criterion:
         return value
 
     def extend_limit_list(self, limit_list: list[Limit]) -> None:
-        self.limits.limit_list.extend(limit_list)
-        self.report.limits[self.isomme].limit_list.extend(limit_list)
+        limits = tuple(limit_list)
+        self.limits = self.limits.extend(limits)
+        self.report.limits[self.isomme] = self.report.limits[self.isomme].extend(limits)
 
     def define_limits(self) -> list[Limit]:
         """
@@ -464,13 +466,16 @@ class Criterion:
         """
         if type(self).define_limits is Criterion.define_limits:
             return
-        stale = {id(limit) for limit in self.limits.limit_list}
+        stale = {id(limit) for limit in self.limits.limits}
         if stale:
-            report_limits = self.report.limits[self.isomme].limit_list
-            report_limits[:] = [
-                limit for limit in report_limits if id(limit) not in stale
-            ]
-            self.limits.limit_list.clear()
+            report_limit_set = self.report.limits[self.isomme]
+            self.report.limits[self.isomme] = replace(
+                report_limit_set,
+                limits=tuple(
+                    limit for limit in report_limit_set.limits if id(limit) not in stale
+                ),
+            )
+            self.limits = replace(self.limits, limits=())
         self.extend_limit_list(self.define_limits())
 
     def build_limits(self) -> None:

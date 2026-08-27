@@ -186,8 +186,9 @@ class Overall(Criterion):
                         self.ctx.code("?{p}NECKUP00??FOZA")
                     ).convert_unit("kN")
                     value = np.max(channel.get_data())
-                    rating = self.limits.get_limit_min_rating(channel)
-                    color = self.limits.get_limit_min_color(channel)
+                    evaluation = self.limits.evaluate(channel)
+                    rating = evaluation.get_limit_min_rating()
+                    color = evaluation.get_limit_min_color()
                     return CriterionResult(
                         channel=channel,
                         value=value,
@@ -226,8 +227,9 @@ class Overall(Criterion):
                 def calculation(self) -> CriterionResult:
                     channel = self.require_channel(self.ctx.code("?{p}TMONUP00??MOXB"))
                     value = channel.get_data()[np.argmax(np.abs(channel.get_data()))]
-                    rating = self.limits.get_limit_min_rating(channel)
-                    color = self.limits.get_limit_min_color(channel)
+                    evaluation = self.limits.evaluate(channel)
+                    rating = evaluation.get_limit_min_rating()
+                    color = evaluation.get_limit_min_color()
                     return CriterionResult(
                         channel=channel,
                         value=value,
@@ -250,8 +252,9 @@ class Overall(Criterion):
                         self.ctx.code("?{p}TMONUP00??MOYB")
                     ).convert_unit("N*m")
                     value = np.min(channel.get_data())
-                    rating = self.limits.get_limit_min_rating(channel)
-                    color = self.limits.get_limit_min_color(channel)
+                    evaluation = self.limits.evaluate(channel)
+                    rating = evaluation.get_limit_min_rating()
+                    color = evaluation.get_limit_min_color()
                     return CriterionResult(
                         channel=channel,
                         value=value,
@@ -291,8 +294,9 @@ class Overall(Criterion):
                         self.ctx.code("?{p}NECKLO00??FOZA")
                     ).convert_unit("kN")
                     value = np.max(channel.get_data())
-                    rating = self.limits.get_limit_min_rating(channel)
-                    color = self.limits.get_limit_min_color(channel)
+                    evaluation = self.limits.evaluate(channel)
+                    rating = evaluation.get_limit_min_rating()
+                    color = evaluation.get_limit_min_color()
                     return CriterionResult(
                         channel=channel,
                         value=value,
@@ -333,8 +337,9 @@ class Overall(Criterion):
                         self.ctx.code("?{p}TMONLO00??MOXB")
                     ).convert_unit("N*m")
                     value = channel.get_data()[np.argmax(np.abs(channel.get_data()))]
-                    rating = self.limits.get_limit_min_rating(channel)
-                    color = self.limits.get_limit_min_color(channel)
+                    evaluation = self.limits.evaluate(channel)
+                    rating = evaluation.get_limit_min_rating()
+                    color = evaluation.get_limit_min_color()
                     return CriterionResult(
                         channel=channel,
                         value=value,
@@ -357,8 +362,9 @@ class Overall(Criterion):
                         self.ctx.code("?{p}TMONLO00??MOYB")
                     ).convert_unit("N*m")
                     value = np.min(channel.get_data())
-                    rating = self.limits.get_limit_min_rating(channel)
-                    color = self.limits.get_limit_min_color(channel)
+                    evaluation = self.limits.evaluate(channel)
+                    rating = evaluation.get_limit_min_rating()
+                    color = evaluation.get_limit_min_color()
                     return CriterionResult(
                         channel=channel,
                         value=value,
@@ -464,9 +470,10 @@ class Overall(Criterion):
                 channel = self.require_channel(
                     self.ctx.code("?{p}PUBC0000??FOYB")
                 ).convert_unit("kN")
-                value = self.limits.get_limit_min_y(channel, unit="kN")
-                rating = self.limits.get_limit_min_rating(channel, interpolate=False)
-                color = self.limits.get_limit_min_color(channel)
+                evaluation = self.limits.evaluate(channel)
+                value = evaluation.get_limit_min_y(unit="kN")
+                rating = evaluation.get_limit_min_rating(interpolate=False)
+                color = evaluation.get_limit_min_color()
                 return CriterionResult(
                     channel=channel,
                     value=value,
@@ -515,9 +522,10 @@ class Overall(Criterion):
                 channel = self.require_channel(
                     self.ctx.code("?{p}LUSP0000??FOYB")
                 ).convert_unit("kN")
-                value = self.limits.get_limit_min_y(channel, unit="kN")
-                rating = self.limits.get_limit_min_rating(channel, interpolate=False)
-                color = self.limits.get_limit_min_color(channel)
+                evaluation = self.limits.evaluate(channel)
+                value = evaluation.get_limit_min_y(unit="kN")
+                rating = evaluation.get_limit_min_rating(interpolate=False)
+                color = evaluation.get_limit_min_color()
                 return CriterionResult(
                     channel=channel,
                     value=value,
@@ -566,9 +574,10 @@ class Overall(Criterion):
                 channel = self.require_channel(
                     self.ctx.code("?{p}LUSP0000??FOZB")
                 ).convert_unit("kN")
-                value = self.limits.get_limit_min_y(channel, unit="kN")
-                rating = self.limits.get_limit_min_rating(channel, interpolate=False)
-                color = self.limits.get_limit_min_color(channel)
+                evaluation = self.limits.evaluate(channel)
+                value = evaluation.get_limit_min_y(unit="kN")
+                rating = evaluation.get_limit_min_rating(interpolate=False)
+                color = evaluation.get_limit_min_color()
                 return CriterionResult(
                     channel=channel,
                     value=value,
@@ -617,9 +626,10 @@ class Overall(Criterion):
                 channel = self.require_channel(
                     self.ctx.code("?{p}LUSP0000??MOXB")
                 ).convert_unit("Nm")
-                value = self.limits.get_limit_min_y(channel, unit="Nm")
-                rating = self.limits.get_limit_min_rating(channel, interpolate=False)
-                color = self.limits.get_limit_min_color(channel)
+                evaluation = self.limits.evaluate(channel)
+                value = evaluation.get_limit_min_y(unit="Nm")
+                rating = evaluation.get_limit_min_rating(interpolate=False)
+                color = evaluation.get_limit_min_color()
                 return CriterionResult(
                     channel=channel,
                     value=value,

@@ -7,7 +7,7 @@ from tqdm.auto import tqdm
 from tqdm.contrib.logging import logging_redirect_tqdm
 
 from pyisomme.isomme import Isomme
-from pyisomme.limits import Limits
+from pyisomme.limit_set import LimitSet
 from pyisomme.report.base_report import BaseReport
 from pyisomme.report.criterion import Criterion
 from pyisomme.report.describe import describe_report
@@ -32,7 +32,7 @@ class Report(BaseReport, Generic[C]):
 
     isomme_list: list[Isomme]
 
-    _limits: dict[Isomme, Limits]
+    _limits: dict[Isomme, LimitSet]
     criterion_overall: dict[Isomme, C]
 
     _protocol: ReportProtocol
@@ -54,7 +54,7 @@ class Report(BaseReport, Generic[C]):
             self.protocol_version = protocol_version
 
         self._limits = {
-            isomme: Limits(name=self._name or "Unnamed Limits", limit_list=[])
+            isomme: LimitSet(name=self._name or "Unnamed Limits")
             for isomme in isomme_list
         }
 
@@ -219,7 +219,7 @@ class Report(BaseReport, Generic[C]):
         return describe_report(self)
 
     @property
-    def limits(self) -> dict[Isomme, Limits]:
+    def limits(self) -> dict[Isomme, LimitSet]:
         return self._limits
 
     @property

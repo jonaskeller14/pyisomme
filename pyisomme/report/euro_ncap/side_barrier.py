@@ -153,8 +153,9 @@ class Overall(Criterion):
                     self.ctx.code("?{p}TRRI??00??DSYC")
                 ).convert_unit("mm")
                 value = np.min(channel.get_data())
-                rating = self.limits.get_limit_min_rating(channel, interpolate=True)
-                color = self.limits.get_limit_min_color(channel)
+                evaluation = self.limits.evaluate(channel)
+                rating = evaluation.get_limit_min_rating(interpolate=True)
+                color = evaluation.get_limit_min_color()
                 return CriterionResult(
                     channel=channel,
                     value=value,

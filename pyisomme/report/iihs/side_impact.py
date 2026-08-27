@@ -83,8 +83,9 @@ class Criterion_Head_Neck(Criterion):
         def calculation(self) -> CriterionResult:
             channel = self.require_channel(self.ctx.code("?{p}HICR0015??00RX"))
             value = float(channel.get_data()[0])
-            rating = self.limits.get_limit_min_rating(channel, interpolate=False)
-            color = self.limits.get_limit_min_color(channel)
+            evaluation = self.limits.evaluate(channel)
+            rating = evaluation.get_limit_min_rating(interpolate=False)
+            color = evaluation.get_limit_min_color()
             return CriterionResult(
                 channel=channel,
                 value=value,
@@ -112,8 +113,9 @@ class Criterion_Head_Neck(Criterion):
                 self.ctx.code("?{p}NECKUP00??FOZB")
             ).convert_unit("kN")
             value = float(np.max(channel.get_data()))
-            rating = self.limits.get_limit_min_rating(channel, interpolate=False)
-            color = self.limits.get_limit_min_color(channel)
+            evaluation = self.limits.evaluate(channel)
+            rating = evaluation.get_limit_min_rating(interpolate=False)
+            color = evaluation.get_limit_min_color()
             return CriterionResult(
                 channel=channel,
                 value=value,
@@ -138,8 +140,9 @@ class Criterion_Head_Neck(Criterion):
                 self.ctx.code("?{p}NECKUP00??FOZB")
             ).convert_unit("kN")
             value = float(-np.min(channel.get_data()))
-            rating = self.limits.get_limit_min_rating(channel, interpolate=False)
-            color = self.limits.get_limit_min_color(channel)
+            evaluation = self.limits.evaluate(channel)
+            rating = evaluation.get_limit_min_rating(interpolate=False)
+            color = evaluation.get_limit_min_color()
             return CriterionResult(
                 channel=channel,
                 value=value,
@@ -206,8 +209,9 @@ class Criterion_Torso(Criterion):
             ]
             value = float(np.mean(peaks))
             channel = Channel(channels[0].code, pd.DataFrame([value]), "mm")
-            rating = self.limits.get_limit_min_rating(channel, interpolate=False)
-            color = self.limits.get_limit_min_color(channel)
+            evaluation = self.limits.evaluate(channel)
+            rating = evaluation.get_limit_min_rating(interpolate=False)
+            color = evaluation.get_limit_min_color()
             peak = float(np.max(peaks))
             if peak > 55:
                 rating, color = -35.0, Limit_P.color
@@ -385,8 +389,9 @@ class Criterion_Pelvis(Criterion):
         )
         value = float(np.max(combined))
         channel = Channel(channels[0].code, pd.DataFrame(combined, index=time), "kN")
-        rating = self.limits.get_limit_min_rating(channel, interpolate=False)
-        color = self.limits.get_limit_min_color(channel)
+        evaluation = self.limits.evaluate(channel)
+        rating = evaluation.get_limit_min_rating(interpolate=False)
+        color = evaluation.get_limit_min_color()
         return CriterionResult(
             channel=channel,
             value=value,

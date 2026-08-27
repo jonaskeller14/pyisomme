@@ -35,7 +35,7 @@ def derived_max_rating(criterion: Criterion) -> float | None:
     """
     ratings = [
         float(limit.rating)
-        for limit in criterion.limits.limit_list
+        for limit in criterion.limits.limits
         if limit.rating is not None and not math.isnan(float(limit.rating))
     ]
     return max(ratings) if ratings else None

@@ -7,7 +7,7 @@ from typing_extensions import override
 
 from pyisomme.channel import Channel
 from pyisomme.isomme import Isomme
-from pyisomme.limits import Limits
+from pyisomme.limit_set import LimitSet
 from pyisomme.plotting import Plot_Line
 from pyisomme.report.page.figure import Page_Figure
 
@@ -23,10 +23,10 @@ class Page_Plot_nxn(Page_Figure):
     sharey: bool = False
     xlim: tuple[float | int, float | int] | None = None
     ylim: tuple[float | int, float | int] | None = None
-    limits: Limits | dict[Isomme, Limits] | None = None
+    limits: LimitSet | dict[Isomme, LimitSet] | None = None
 
     def __init__(
-        self, report: Report[Any], limits: Limits | dict[Isomme, Limits] | None = None
+        self, report: Report[Any], limits: LimitSet | dict[Isomme, LimitSet] | None = None
     ) -> None:
         super().__init__(report)
         if self.title is None:

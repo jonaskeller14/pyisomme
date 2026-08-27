@@ -85,7 +85,7 @@ def blocks(criterion: Criterion) -> dict[tuple[str, ...], list[Limit]]:
     rows on both sides of zero; :func:`sides` splits it.
     """
     grouped: dict[tuple[str, ...], list[Limit]] = defaultdict(list)
-    for limit in criterion.limits.limit_list:
+    for limit in criterion.limits.limits:
         grouped[tuple(limit.code_patterns or ())].append(limit)
     return dict(grouped)
 

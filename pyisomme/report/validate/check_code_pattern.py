@@ -27,7 +27,7 @@ def check_code_pattern(path: str, criterion: Criterion) -> Iterator[Issue]:
     the wrong length silently matches nothing at all — the criterion then rates
     against an empty limit set and blames the channel.
     """
-    for limit in criterion.limits.limit_list:
+    for limit in criterion.limits.limits:
         label = limit.name or type(limit).__name__
         if not limit.code_patterns:
             yield Issue(
@@ -36,7 +36,7 @@ def check_code_pattern(path: str, criterion: Criterion) -> Iterator[Issue]:
                 path,
                 f"{label} declares no code_patterns, so `Limits.find_limits` can never "
                 f"reach it — it only works if the criterion reads it out of "
-                f"`self.limits.limit_list` directly.",
+                f"`self.limits.limits` directly.",
             )
             continue
         for pattern in limit.code_patterns:
