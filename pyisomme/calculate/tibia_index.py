@@ -8,6 +8,7 @@ import pandas as pd
 from pyisomme.calculate.resultant import calculate_resultant
 from pyisomme.channel import Channel, time_intersect
 from pyisomme.errors import UnsupportedCalculationError
+from pyisomme.unit import Unit
 from pyisomme.utils import debug_logging
 
 logger = logging.getLogger("pyisomme.calculate")
@@ -83,8 +84,7 @@ def calculate_tibia_index(
         ),
         data=pd.DataFrame(t_i, index=time),
         unit="1",
-        info=
-        [
+        info=[
             ("Data source", "calculation"),
             (".Analysis start time", time[0]),
             (".Analysis end time", time[-1]),
@@ -115,9 +115,9 @@ def calculate_adjusted_upper_tibia_moment_My(
             f"Dummy {dummy} not supported by {calculate_adjusted_upper_tibia_moment_My.__name__}"
         )
 
-    return (
-        channel_MOY.convert_unit("Nm") - channel_FOZ.convert_unit("N") * 0.02832
-    )  # FIXME: Incompatible Units
+    return channel_MOY.convert_unit("Nm") - channel_FOZ.convert_unit(
+        "N"
+    ) * 0.02832 * Unit("m")
 
 
 @debug_logging(logger)
@@ -138,9 +138,9 @@ def calculate_adjusted_lower_tibia_moment_My(
             f"Dummy {dummy} not supported by {calculate_adjusted_lower_tibia_moment_My.__name__}"
         )
 
-    return (
-        channel_MOY.convert_unit("Nm") + channel_FOZ.convert_unit("N") * 0.006398
-    )  # FIXME: Incompatible Units
+    return channel_MOY.convert_unit("Nm") + channel_FOZ.convert_unit(
+        "N"
+    ) * 0.006398 * Unit("m")
 
 
 @debug_logging(logger)
