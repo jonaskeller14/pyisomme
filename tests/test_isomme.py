@@ -93,6 +93,18 @@ class TestIsomme:
         assert "\ufffd" in (tmp_path / "synthetic.mme").read_text(encoding="utf-8")
         assert Isomme().read(tmp_path / "synthetic.mme").test_info == isomme.test_info
 
+    def test_write_uses_lowercase_chn_suffix(self, tmp_path):
+        isomme = Isomme(
+            test_number="synthetic",
+            channels=[Channel("11HEAD000000ACXP", pd.DataFrame([1.0]), "g")],
+        )
+
+        isomme.write(tmp_path / "synthetic.mme")
+
+        assert "synthetic.chn" in {
+            channel_file.name for channel_file in (tmp_path / "Channel").iterdir()
+        }
+
     def test_write_uses_multiple_worker_threads(self, tmp_path, monkeypatch):
         isomme = Isomme(
             test_number="synthetic",

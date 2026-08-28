@@ -419,7 +419,7 @@ class Isomme:
 
         written_paths = [
             # TXT files
-            self._write_txt(path.parent / f"{path.stem}.TXT", self.text_txt),
+            self._write_txt(path.parent / f"{path.stem}.txt", self.text_txt),
             self._write_txt(path.parent / "Channel/CHANNEL.TXT", self.channel_txt),
             self._write_txt(path.parent / "Diagram/DIAGRAM.TXT", self.diagram_txt),
             self._write_txt(path.parent / "Movie/MOVIE.TXT", self.movie_txt),
@@ -427,13 +427,13 @@ class Isomme:
             self._write_txt(path.parent / "Report/REPORT.TXT", self.report_txt),
             self._write_txt(path.parent / "Static/STATIC.TXT", self.static_txt),
             # MII
-            self._write_mii(path.parent / f"Movie/{path.stem}.MII"),
+            self._write_mii(path.parent / f"Movie/{path.stem}.mii"),
             # PHO
-            self._write_pho(path.parent / f"Photo/{path.stem}.PHO"),
+            self._write_pho(path.parent / f"Photo/{path.stem}.pho"),
             # SD1
-            self._write_sd1(path.parent / f"Static/{path.stem}.SD1"),
+            self._write_sd1(path.parent / f"Static/{path.stem}.sd1"),
             # CHN
-            self._write_chn(path.parent / f"Channel/{path.stem}.CHN", channel_info),
+            self._write_chn(path.parent / f"Channel/{path.stem}.chn", channel_info),
         ]
 
         # 001
@@ -525,6 +525,9 @@ class Isomme:
                     channel_directory / f"{test_number}.{channel_idx:03}",
                 )
             )
+
+        if not channel_writes:
+            return
 
         # Each channel has its own output file, so these writes can safely overlap.
         with logging_redirect_tqdm():
