@@ -230,6 +230,9 @@ def build_euroncap_side_farside() -> EuroNCAP_Side_FarSide:
                 channels=[
                     create_sample(code="11HICR0015H300RX", y_range=(0, 500)).scale_y(scale_y),
                     create_sample(code="11HEAD003CH3ACRX", y_range=(0, 100)).scale_y(scale_y),
+                    create_sample(code="11HEAD0000H3AVXA", mode="sin", y_range=(-10, 10)).scale_y(scale_y),
+                    create_sample(code="11HEAD0000H3AVYA", mode="sin", y_range=(-10, 10)).scale_y(scale_y),
+                    create_sample(code="11HEAD0000H3AVZA", mode="sin", y_range=(-10, 10)).scale_y(scale_y),
                     create_sample(code="11NECKUP00H3FOZA", y_range=(-1000, 1000)).scale_y(scale_y),
                     create_sample(code="11TMONUP00H3MOXB", y_range=(-20, 20)).scale_y(scale_y),
                     create_sample(code="11TMONUP00H3MOYB", y_range=(-20, 20)).scale_y(scale_y),

@@ -16,7 +16,10 @@ from pyisomme.report.euro_ncap.frontal_50kmh import (
     Criterion_HIC_15 as Criterion_HIC_15_F50,
 )
 from pyisomme.report.euro_ncap.limits import Limit_A, Limit_G, Limit_M, Limit_P, Limit_W
-from pyisomme.report.euro_ncap.protocols import PROTOCOL_FARSIDE_2_4
+from pyisomme.report.euro_ncap.protocols import (
+    PROTOCOL_FARSIDE_2_4,
+    PROTOCOL_FARSIDE_2_5,
+)
 from pyisomme.report.euro_ncap.side_barrier import Overall as Overall_Side_Barrier
 from pyisomme.report.euro_ncap.side_pole import (
     EuroNCAP_Side_Pole,
@@ -70,7 +73,6 @@ class Overall(Criterion):
             self.set_derived_input("p", str(p).strip())
 
     def calculation(self) -> CriterionResult:
-
         rating = np.sum(
             [
                 Criterion.rating_of(self.criterion_head),
@@ -79,11 +81,14 @@ class Overall(Criterion):
             ]
         )
 
-        # Modifier
+        # §7.4.1 modifier applies to the 12-point sled-test score.
         rating += Criterion.rating_of(self.criterion_pelvis_lumbar_modifier)
 
-        # Scale max. points of 12 down to 4
+        # §7.1 scales the 12-point sled-test score down to the 4-point far-side
+        # contribution. §7.4.2 then deducts from that final score.
         rating = rating / 3
+        rating += Criterion.rating_of(self.criterion_occupant_to_occupant_protection)
+        rating = float(np.max([0.0, rating]))
         return CriterionResult(
             channel=None,
             value=rating,
@@ -93,23 +98,115 @@ class Overall(Criterion):
 
     class Criterion_Head_Excursion(Criterion):
         name = "Head Excursion"
+        source = "§7.2"
+        far_side_countermeasure: Manual[
+            bool,
+            manual(
+                False,
+                source="test report",
+                doc=(
+                    "Is a far-side countermeasure fitted? This selects the applicable "
+                    "§7.2 head-excursion score-cap table."
+                ),
+            ),
+        ]
+        excursion_zone: Manual[
+            str,
+            manual(
+                "green",
+                source="high-speed video",
+                doc=(
+                    "Peak head-excursion zone: capping, red, orange, yellow, or green."
+                ),
+            ),
+        ]
+        red_line_more_than_125_mm_outboard: Manual[
+            bool,
+            manual(
+                False,
+                source="test set-up measurement",
+                doc=(
+                    "For a red-zone excursion with a countermeasure, is the red line "
+                    "more than 125 mm outboard of the orange line?"
+                ),
+            ),
+        ]
         max_head_score: float = 4
         max_neck_score: float = 4
         max_chest_score: float = 4
 
         def calculation(self) -> CriterionResult:
-            # TODO
-            value = float(np.nan)
+            zone = self.excursion_zone.lower().replace("-", "_").replace(" ", "_")
+            if self.far_side_countermeasure:
+                if zone == "red" and self.red_line_more_than_125_mm_outboard:
+                    zone = "red_over_125"
+                score_caps = {
+                    "capping": (0.0, 0.0, 0.0),
+                    "red": (0.0, 4.0, 0.0),
+                    "red_over_125": (2.0, 4.0, 0.0),
+                    "orange": (3.0, 3.0, 3.0),
+                    "yellow": (4.0, 4.0, 4.0),
+                    "green": (4.0, 4.0, 4.0),
+                }
+            else:
+                score_caps = {
+                    "capping": (0.0, 0.0, 0.0),
+                    "red": (0.0, 1.0, 0.0),
+                    "orange": (1.0, 1.0, 1.0),
+                    "yellow": (2.0, 2.0, 2.0),
+                    "green": (4.0, 4.0, 4.0),
+                }
+
+            try:
+                (
+                    self.max_head_score,
+                    self.max_neck_score,
+                    self.max_chest_score,
+                ) = score_caps[zone]
+            except KeyError as error:
+                valid_zones = ", ".join(("capping", "red", "orange", "yellow", "green"))
+                raise ValueError(
+                    f"Unknown head-excursion zone {self.excursion_zone!r}; "
+                    f"expected one of {valid_zones}."
+                ) from error
+
+            value = self.max_head_score + self.max_neck_score + self.max_chest_score
             return CriterionResult(channel=None, value=value, rating=value, color=None)
 
     class Criterion_Head(Criterion):
         report: EuroNCAP_Side_FarSide
         name = "Head"
-        # TODO hard contact
+        source = "§7.3.1"
+        hard_contact: Manual[
+            bool,
+            manual(
+                True,
+                source="high-speed video",
+                doc=(
+                    "Was hard head contact observed? A resultant 3 ms acceleration above "
+                    "80 g forces this to True regardless."
+                ),
+            ),
+        ]
 
         def calculation(self) -> CriterionResult:
+            head_a3ms_rating = Criterion.rating_of(self.criterion_head_a3ms)
+            if Criterion.value_of(self.criterion_head_a3ms) > 80:
+                logger.info(
+                    "Hard head contact assumed for p=%s in %s",
+                    self.ctx.field("p"),
+                    self.isomme,
+                )
+                self.hard_contact = True
 
-            rating = value = self.min_of_children()
+            # §7.3.1 scores HIC15 only with direct contact; resultant 3 ms
+            # acceleration is always scored. DAMAGE is monitoring-only.
+            if self.hard_contact:
+                value = rating = min(
+                    Criterion.rating_of(self.criterion_hic_15), head_a3ms_rating
+                )
+            else:
+                value = rating = head_a3ms_rating
 
             # Downscaling
             rating = (
@@ -132,8 +229,23 @@ class Overall(Criterion):
         class Criterion_Head_a3ms(Criterion_Head_a3ms_F50):
             pass
 
+        class Criterion_DAMAGE(Criterion):
+            name = "Head DAMAGE (monitoring)"
+            source = "§7.3.1.1"
+
+            def calculation(self) -> CriterionResult:
+                channel = self.require_channel(self.ctx.code("?{p}HEADDAMA??AARA"))
+                value = np.max(channel.get_data())
+                return CriterionResult(
+                    channel=channel,
+                    value=value,
+                    rating=0.0,
+                    color=None,
+                )
+
         criterion_hic_15 = sub(Criterion_HIC_15)
         criterion_head_a3ms = sub(Criterion_Head_a3ms)
+        criterion_damage = sub(Criterion_DAMAGE)
 
     class Criterion_Neck(Criterion):
         report: EuroNCAP_Side_FarSide
@@ -642,6 +754,74 @@ class Overall(Criterion):
         criterion_lumbar_fz = sub(Criterion_Lumbar_Fz)
         criterion_lumbar_mx = sub(Criterion_Lumbar_Mx)
 
+    class Criterion_Occupant_to_Occupant_Protection(Criterion):
+        name = "Modifier for Occupant-to-Occupant Protection"
+        role = Role.MODIFIER
+        source = "§7.4.2"
+        excursion_countermeasure_lacks_interaction_protection: Manual[
+            bool,
+            manual(
+                False,
+                source="dual-occupancy assessment",
+                doc=(
+                    "A far-side countermeasure limits excursion but does not provide "
+                    "meaningful occupant-to-occupant head protection. −1 final point."
+                ),
+            ),
+        ]
+        dual_occupancy_head_interaction: Manual[
+            bool,
+            manual(
+                False,
+                source="dual-occupancy high-speed video",
+                doc=(
+                    "Either dummy head contacted the adjacent occupant, or the head lower "
+                    "performance limits were exceeded. −1 final point."
+                ),
+            ),
+        ]
+        countermeasure_asymmetric: Manual[
+            bool,
+            manual(
+                False,
+                source="dual-occupancy assessment",
+                doc=(
+                    "The occupant-interaction countermeasure lacks equivalent protection "
+                    "for impacts on both sides. −1 final point."
+                ),
+            ),
+        ]
+        protection_zone_not_met: Manual[
+            bool,
+            manual(
+                False,
+                source="dual-occupancy assessment",
+                doc=(
+                    "The required occupant-interaction protection zone was not demonstrated. "
+                    "−1 final point."
+                ),
+            ),
+        ]
+
+        def calculation(self) -> CriterionResult:
+            failed = self.excursion_countermeasure_lacks_interaction_protection or any(
+                (
+                    self.dual_occupancy_head_interaction,
+                    self.countermeasure_asymmetric,
+                    self.protection_zone_not_met,
+                )
+            )
+            value = float(failed)
+            # §7.4.2 is a single final-score deduction. The two applicability routes
+            # must not stack when an assessment records more than one failure.
+            rating = -value
+            return CriterionResult(
+                channel=None,
+                value=value,
+                rating=rating,
+                color=None,
+            )
+
     criterion_head_excursion = sub(Criterion_Head_Excursion)
     criterion_head = sub(Criterion_Head)
     criterion_neck = sub(Criterion_Neck)
@@ -649,12 +829,15 @@ class Overall(Criterion):
     criterion_pelvis_lumbar_modifier = sub(
         Criterion_Pelvis_Lumbar_Modifier, role=Role.MODIFIER
     )
+    criterion_occupant_to_occupant_protection = sub(
+        Criterion_Occupant_to_Occupant_Protection, role=Role.MODIFIER
+    )
 
 
 class EuroNCAP_Side_FarSide(Report[Overall]):
     _name = "Euro NCAP | Far Side Occupant Protection Sled Test"
-    _protocol = PROTOCOL_FARSIDE_2_4
-    _protocols = (PROTOCOL_FARSIDE_2_4,)
+    _protocol = PROTOCOL_FARSIDE_2_5
+    _protocols = (PROTOCOL_FARSIDE_2_4, PROTOCOL_FARSIDE_2_5)
     Criterion_Overall = Overall
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
@@ -666,6 +849,7 @@ class EuroNCAP_Side_FarSide(Report[Overall]):
             self.Page_Rating_Table(self),
             self.Page_Values_Table(self),
             self.Page_Head_Acceleration(self),
+            self.Page_Head_DAMAGE(self),
             self.Page_Upper_Neck(self),
             self.Page_Lower_Neck(self),
             self.Page_Chest_Lateral_Compression(self),
@@ -749,6 +933,9 @@ class EuroNCAP_Side_FarSide(Report[Overall]):
                     ].criterion_head.criterion_head_a3ms,
                     self.report.criterion_overall[
                         isomme
+                    ].criterion_head.criterion_damage,
+                    self.report.criterion_overall[
+                        isomme
                     ].criterion_neck.criterion_upper_neck.criterion_tension_fz,
                     self.report.criterion_overall[
                         isomme
@@ -815,6 +1002,28 @@ class EuroNCAP_Side_FarSide(Report[Overall]):
 
     class Page_Head_Acceleration(EuroNCAP_Side_Pole.Page_Head_Acceleration):
         pass
+
+    class Page_Head_DAMAGE(Page_Plot_nxn):
+        report: EuroNCAP_Side_FarSide
+        name = "Head DAMAGE"
+        title = "Head DAMAGE"
+        nrows = 1
+        ncols = 1
+
+        def __init__(self, report: EuroNCAP_Side_FarSide) -> None:
+            super().__init__(report)
+            self.channels = {
+                isomme: [
+                    [
+                        result_channel(
+                            self.report.criterion_overall[
+                                isomme
+                            ].criterion_head.criterion_damage
+                        )
+                    ],
+                ]
+                for isomme in self.report.isomme_list
+            }
 
     class Page_Upper_Neck(Page_Plot_nxn):
         report: EuroNCAP_Side_FarSide

@@ -2,8 +2,8 @@
   "Overall": {
     "result": {
       "name": "Overall",
-      "value": "-inf",
-      "rating": "-inf",
+      "value": 18.145754755014433,
+      "rating": 18.145754755014433,
       "color": null,
       "status": "OK"
     }
@@ -617,7 +617,7 @@
             "result": {
               "name": "Head a3ms",
               "value": 79.07226564622867,
-              "rating": 0.46230182083318117,
+              "rating": 0.46230182083318105,
               "color": "brown",
               "status": "OK"
             }
@@ -815,7 +815,7 @@
             "result": {
               "name": "Head a3ms",
               "value": 79.07226564622867,
-              "rating": 0.46230182083318117,
+              "rating": 0.46230182083318105,
               "color": "brown",
               "status": "OK"
             }
@@ -977,7 +977,7 @@
             "result": {
               "name": "Head a3ms",
               "value": 79.07226564622867,
-              "rating": 0.46230182083318117,
+              "rating": 0.46230182083318105,
               "color": "brown",
               "status": "OK"
             }
@@ -1349,8 +1349,8 @@
           "criterion_abdomen": {
             "result": {
               "name": "Abdomen",
-              "value": 4,
-              "rating": 4,
+              "value": 4.0,
+              "rating": 4.0,
               "color": null,
               "status": "OK"
             },
@@ -1358,7 +1358,7 @@
               "result": {
                 "name": "Abdomen Compression",
                 "value": -15.0,
-                "rating": 4,
+                "rating": 4.0,
                 "color": "green",
                 "status": "OK"
               }
@@ -1963,8 +1963,8 @@
           "criterion_abdomen": {
             "result": {
               "name": "Abdomen",
-              "value": 4,
-              "rating": 4,
+              "value": 4.0,
+              "rating": 4.0,
               "color": null,
               "status": "OK"
             },
@@ -1972,7 +1972,7 @@
               "result": {
                 "name": "Abdomen Compression",
                 "value": -30.0,
-                "rating": 4,
+                "rating": 4.0,
                 "color": "green",
                 "status": "OK"
               }
@@ -2577,8 +2577,8 @@
           "criterion_abdomen": {
             "result": {
               "name": "Abdomen",
-              "value": 4,
-              "rating": 4,
+              "value": 4.0,
+              "rating": 4.0,
               "color": null,
               "status": "OK"
             },
@@ -2586,7 +2586,7 @@
               "result": {
                 "name": "Abdomen Compression",
                 "value": -60.0,
-                "rating": 4,
+                "rating": 4.0,
                 "color": "green",
                 "status": "OK"
               }
@@ -2622,8 +2622,8 @@
           "criterion_femur": {
             "result": {
               "name": "Femur",
-              "value": 3.78754988028731,
-              "rating": 3.78754988028731,
+              "value": 3.7875498802873104,
+              "rating": 3.7875498802873104,
               "color": null,
               "status": "OK"
             },
@@ -2631,7 +2631,7 @@
               "result": {
                 "name": "Femur Compression",
                 "value": -4.0,
-                "rating": 3.78754988028731,
+                "rating": 3.7875498802873104,
                 "color": "yellow",
                 "status": "OK"
               }
@@ -2902,7 +2902,7 @@
             "result": {
               "name": "Femur Compression",
               "value": -4.0,
-              "rating": 3.78754988028731,
+              "rating": 3.7875498802873104,
               "color": "yellow",
               "status": "OK"
             }
@@ -3015,7 +3015,7 @@
           "result": {
             "name": "HIC 15",
             "value": 125.0,
-            "rating": 4,
+            "rating": 4.0,
             "color": "green",
             "status": "OK"
           }
@@ -3024,7 +3024,7 @@
           "result": {
             "name": "Head Peak Acceleration",
             "value": 5.0985810648896415,
-            "rating": 4,
+            "rating": 4.0,
             "color": "green",
             "status": "OK"
           }
@@ -3060,7 +3060,7 @@
           "result": {
             "name": "Modifier Chest Lateral Viscous Criterion",
             "value": 0.25,
-            "rating": 4,
+            "rating": 4.0,
             "color": "green",
             "status": "OK"
           }
@@ -3069,7 +3069,7 @@
           "result": {
             "name": "Modifier Shoulder Lateral Force",
             "value": 0.5,
-            "rating": 4,
+            "rating": 4.0,
             "color": "green",
             "status": "OK"
           }
@@ -3096,7 +3096,7 @@
           "result": {
             "name": "Modifier Abdomen Lateral Viscous Criterion",
             "value": 0.25,
-            "rating": 4,
+            "rating": 4.0,
             "color": "green",
             "status": "OK"
           }
@@ -3170,7 +3170,7 @@
           "result": {
             "name": "HIC 15",
             "value": 250.0,
-            "rating": 4,
+            "rating": 4.0,
             "color": "green",
             "status": "OK"
           }
@@ -3179,7 +3179,7 @@
           "result": {
             "name": "Head Peak Acceleration",
             "value": 10.197162129779283,
-            "rating": 4,
+            "rating": 4.0,
             "color": "green",
             "status": "OK"
           }
@@ -3215,7 +3215,7 @@
           "result": {
             "name": "Modifier Chest Lateral Viscous Criterion",
             "value": 0.5,
-            "rating": 4,
+            "rating": 4.0,
             "color": "green",
             "status": "OK"
           }
@@ -3224,7 +3224,7 @@
           "result": {
             "name": "Modifier Shoulder Lateral Force",
             "value": 1.0,
-            "rating": 4,
+            "rating": 4.0,
             "color": "green",
             "status": "OK"
           }
@@ -3251,7 +3251,7 @@
           "result": {
             "name": "Modifier Abdomen Lateral Viscous Criterion",
             "value": 0.5,
-            "rating": 4,
+            "rating": 4.0,
             "color": "green",
             "status": "OK"
           }
@@ -3334,7 +3334,7 @@
           "result": {
             "name": "Head Peak Acceleration",
             "value": 20.394324259558566,
-            "rating": 4,
+            "rating": 4.0,
             "color": "green",
             "status": "OK"
           }
@@ -3370,7 +3370,7 @@
           "result": {
             "name": "Modifier Chest Lateral Viscous Criterion",
             "value": 1.0,
-            "rating": 4,
+            "rating": 4.0,
             "color": "green",
             "status": "OK"
           }
@@ -3379,7 +3379,7 @@
           "result": {
             "name": "Modifier Shoulder Lateral Force",
             "value": 2.0,
-            "rating": 4,
+            "rating": 4.0,
             "color": "green",
             "status": "OK"
           }
@@ -3406,7 +3406,7 @@
           "result": {
             "name": "Modifier Abdomen Lateral Viscous Criterion",
             "value": 1.0,
-            "rating": 4,
+            "rating": 4.0,
             "color": "green",
             "status": "OK"
           }
@@ -3518,7 +3518,7 @@
           "result": {
             "name": "Modifier Chest Lateral Viscous Criterion",
             "value": 0.25,
-            "rating": 4,
+            "rating": 4.0,
             "color": "green",
             "status": "OK"
           }
@@ -3527,7 +3527,7 @@
           "result": {
             "name": "Modifier Shoulder Lateral Force",
             "value": 0.5,
-            "rating": 4,
+            "rating": 4.0,
             "color": "green",
             "status": "OK"
           }
@@ -3554,7 +3554,7 @@
           "result": {
             "name": "Modifier Abdomen Lateral Viscous Criterion",
             "value": 0.25,
-            "rating": 4,
+            "rating": 4.0,
             "color": "green",
             "status": "OK"
           }
@@ -3655,7 +3655,7 @@
           "result": {
             "name": "Modifier Chest Lateral Viscous Criterion",
             "value": 0.5,
-            "rating": 4,
+            "rating": 4.0,
             "color": "green",
             "status": "OK"
           }
@@ -3664,7 +3664,7 @@
           "result": {
             "name": "Modifier Shoulder Lateral Force",
             "value": 1.0,
-            "rating": 4,
+            "rating": 4.0,
             "color": "green",
             "status": "OK"
           }
@@ -3691,7 +3691,7 @@
           "result": {
             "name": "Modifier Abdomen Lateral Viscous Criterion",
             "value": 0.5,
-            "rating": 4,
+            "rating": 4.0,
             "color": "green",
             "status": "OK"
           }
@@ -3792,7 +3792,7 @@
           "result": {
             "name": "Modifier Chest Lateral Viscous Criterion",
             "value": 1.0,
-            "rating": 4,
+            "rating": 4.0,
             "color": "green",
             "status": "OK"
           }
@@ -3801,7 +3801,7 @@
           "result": {
             "name": "Modifier Shoulder Lateral Force",
             "value": 2.0,
-            "rating": 4,
+            "rating": 4.0,
             "color": "green",
             "status": "OK"
           }
@@ -3828,7 +3828,7 @@
           "result": {
             "name": "Modifier Abdomen Lateral Viscous Criterion",
             "value": 1.0,
-            "rating": 4,
+            "rating": 4.0,
             "color": "green",
             "status": "OK"
           }
@@ -3886,8 +3886,8 @@
       "criterion_head_excursion": {
         "result": {
           "name": "Head Excursion",
-          "value": "nan",
-          "rating": "nan",
+          "value": 12.0,
+          "rating": 12.0,
           "color": null,
           "status": "OK"
         }
@@ -3915,6 +3915,15 @@
             "value": 2.5492905324448207,
             "rating": 4.0,
             "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_damage": {
+          "result": {
+            "name": "Head DAMAGE (monitoring)",
+            "value": 0.04065602736235212,
+            "rating": 0.0,
+            "color": null,
             "status": "OK"
           }
         }
@@ -4039,7 +4048,7 @@
           "result": {
             "name": "Modifier Pubic Symphysis",
             "value": 0.0,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -4048,7 +4057,7 @@
           "result": {
             "name": "Modifier Lumbar Fy",
             "value": -0.5,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -4057,7 +4066,7 @@
           "result": {
             "name": "Modifier Lumbar Fz",
             "value": -0.5,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -4066,10 +4075,19 @@
           "result": {
             "name": "Modifier Lumbar Mx",
             "value": -10.0,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
+        }
+      },
+      "criterion_occupant_to_occupant_protection": {
+        "result": {
+          "name": "Modifier for Occupant-to-Occupant Protection",
+          "value": 0.0,
+          "rating": -0.0,
+          "color": null,
+          "status": "OK"
         }
       }
     },
@@ -4086,8 +4104,8 @@
       "criterion_head_excursion": {
         "result": {
           "name": "Head Excursion",
-          "value": "nan",
-          "rating": "nan",
+          "value": 12.0,
+          "rating": 12.0,
           "color": null,
           "status": "OK"
         }
@@ -4115,6 +4133,15 @@
             "value": 5.0985810648896415,
             "rating": 4.0,
             "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_damage": {
+          "result": {
+            "name": "Head DAMAGE (monitoring)",
+            "value": 0.0813116160034074,
+            "rating": 0.0,
+            "color": null,
             "status": "OK"
           }
         }
@@ -4239,7 +4266,7 @@
           "result": {
             "name": "Modifier Pubic Symphysis",
             "value": 0.0,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -4248,7 +4275,7 @@
           "result": {
             "name": "Modifier Lumbar Fy",
             "value": -1.0,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -4257,7 +4284,7 @@
           "result": {
             "name": "Modifier Lumbar Fz",
             "value": -1.0,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -4266,10 +4293,19 @@
           "result": {
             "name": "Modifier Lumbar Mx",
             "value": -20.0,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
+        }
+      },
+      "criterion_occupant_to_occupant_protection": {
+        "result": {
+          "name": "Modifier for Occupant-to-Occupant Protection",
+          "value": 0.0,
+          "rating": -0.0,
+          "color": null,
+          "status": "OK"
         }
       }
     },
@@ -4277,8 +4313,8 @@
       "Overall": {
         "result": {
           "name": "Overall",
-          "value": "-inf",
-          "rating": "-inf",
+          "value": 0.0,
+          "rating": 0.0,
           "color": null,
           "status": "OK"
         }
@@ -4286,8 +4322,8 @@
       "criterion_head_excursion": {
         "result": {
           "name": "Head Excursion",
-          "value": "nan",
-          "rating": "nan",
+          "value": 12.0,
+          "rating": 12.0,
           "color": null,
           "status": "OK"
         }
@@ -4315,6 +4351,15 @@
             "value": 10.197162129779283,
             "rating": 4.0,
             "color": "green",
+            "status": "OK"
+          }
+        },
+        "criterion_damage": {
+          "result": {
+            "name": "Head DAMAGE (monitoring)",
+            "value": 0.16262013625628685,
+            "rating": 0.0,
+            "color": null,
             "status": "OK"
           }
         }
@@ -4439,7 +4484,7 @@
           "result": {
             "name": "Modifier Pubic Symphysis",
             "value": 0.0,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -4448,7 +4493,7 @@
           "result": {
             "name": "Modifier Lumbar Fy",
             "value": 2.0,
-            "rating": -4,
+            "rating": -4.0,
             "color": "green",
             "status": "OK"
           }
@@ -4457,7 +4502,7 @@
           "result": {
             "name": "Modifier Lumbar Fz",
             "value": -2.0,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -4466,10 +4511,19 @@
           "result": {
             "name": "Modifier Lumbar Mx",
             "value": -40.0,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
+        }
+      },
+      "criterion_occupant_to_occupant_protection": {
+        "result": {
+          "name": "Modifier for Occupant-to-Occupant Protection",
+          "value": 0.0,
+          "rating": -0.0,
+          "color": null,
+          "status": "OK"
         }
       }
     }

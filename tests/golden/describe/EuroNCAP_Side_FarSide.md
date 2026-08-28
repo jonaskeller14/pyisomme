@@ -3,11 +3,11 @@
 | property | value |
 | --- | --- |
 | name | Euro NCAP \| Far Side Occupant Protection Sled Test |
-| protocol | 2.4 |
-| protocols | 2.4 |
+| protocol | 2.5 |
+| protocols | 2.4, 2.5 |
 | overall criterion | `Overall` |
-| available_pages | Page_Cover, Page_Values_Chart, Page_Rating_Table, Page_Values_Table, Page_Head_Acceleration, Page_Upper_Neck, Page_Lower_Neck, Page_Chest_Lateral_Compression, Page_Abdomen_Lateral_Compression, Page_Lumbar_Force, Page_Pubic_Symphysis_Force |
-| selected_pages | Page_Cover, Page_Values_Chart, Page_Rating_Table, Page_Values_Table, Page_Head_Acceleration, Page_Upper_Neck, Page_Lower_Neck, Page_Chest_Lateral_Compression, Page_Abdomen_Lateral_Compression, Page_Lumbar_Force, Page_Pubic_Symphysis_Force |
+| available_pages | Page_Cover, Page_Values_Chart, Page_Rating_Table, Page_Values_Table, Page_Head_Acceleration, Page_Head_DAMAGE, Page_Upper_Neck, Page_Lower_Neck, Page_Chest_Lateral_Compression, Page_Abdomen_Lateral_Compression, Page_Lumbar_Force, Page_Pubic_Symphysis_Force |
+| selected_pages | Page_Cover, Page_Values_Chart, Page_Rating_Table, Page_Values_Table, Page_Head_Acceleration, Page_Head_DAMAGE, Page_Upper_Neck, Page_Lower_Neck, Page_Chest_Lateral_Compression, Page_Abdomen_Lateral_Compression, Page_Lumbar_Force, Page_Pubic_Symphysis_Force |
 
 ## `Overall` — Overall
 
@@ -25,19 +25,33 @@ Manual inputs:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Head_Excursion` | — | — | — |
+| `Criterion_Head_Excursion` | §7.2 | — | — |
+
+Manual inputs:
+
+| input | type | default | unit | source | doc |
+| --- | --- | --- | --- | --- | --- |
+| excursion_zone | str | 'green' | — | high-speed video | Peak head-excursion zone: capping, red, orange, yellow, or green. |
+| far_side_countermeasure | bool | False | — | test report | Is a far-side countermeasure fitted? This selects the applicable §7.2 head-excursion score-cap table. |
+| red_line_more_than_125_mm_outboard | bool | False | — | test set-up measurement | For a red-zone excursion with a countermeasure, is the red line more than 125 mm outboard of the orange line? |
 
 ## `criterion_head` — Head
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Head` | — | — | — |
+| `Criterion_Head` | §7.3.1 | — | — |
+
+Manual inputs:
+
+| input | type | default | unit | source | doc |
+| --- | --- | --- | --- | --- | --- |
+| hard_contact | bool | True | — | high-speed video | Was hard head contact observed? A resultant 3 ms acceleration above 80 g forces this to True regardless. |
 
 ## `criterion_head/criterion_hic_15` — HIC 15
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_HIC_15` | — | 4 (from limits) | — |
+| `Criterion_HIC_15` | §7.3.1 (inherited) | 4 (from limits) | — |
 
 Limits for `?1HICR0015??00RX`, `?1HICRCG15??00RX`:
 
@@ -54,7 +68,7 @@ Limits for `?1HICR0015??00RX`, `?1HICRCG15??00RX`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Head_a3ms` | — | 4 (from limits) | — |
+| `Criterion_Head_a3ms` | §7.3.1 (inherited) | 4 (from limits) | — |
 
 Limits for `?1HEAD003C??ACR?`, `?1HEADCG3C??ACR?`:
 
@@ -66,6 +80,12 @@ Limits for `?1HEAD003C??ACR?`, `?1HEADCG3C??ACR?`:
 | Weak | 77.333 | 1.329 | brown | lower | g0 | - |
 | Poor | 80 | 0 | red | — | g0 | - |
 | Capping | 80 | -inf | gray | lower | g0 | - |
+
+## `criterion_head/criterion_damage` — Head DAMAGE (monitoring)
+
+| class | source | max rating | aggregation |
+| --- | --- | --- | --- |
+| `Criterion_DAMAGE` | §7.3.1.1 | — | — |
 
 ## `criterion_neck` — Neck
 
@@ -280,3 +300,18 @@ Limits for `?1LUSP0000??MOX?`:
 | -4 pt. Modifier | -120 | -4 | red | upper | Nm | - |
 | 0 pt. Modifier | 120 | 0 | green | upper | Nm | - |
 | -4 pt. Modifier | 120 | -4 | red | lower | Nm | - |
+
+## `criterion_occupant_to_occupant_protection` — Modifier for Occupant-to-Occupant Protection
+
+| class | source | max rating | aggregation |
+| --- | --- | --- | --- |
+| `Criterion_Occupant_to_Occupant_Protection` | §7.4.2 | — | — |
+
+Manual inputs:
+
+| input | type | default | unit | source | doc |
+| --- | --- | --- | --- | --- | --- |
+| countermeasure_asymmetric | bool | False | — | dual-occupancy assessment | The occupant-interaction countermeasure lacks equivalent protection for impacts on both sides. −1 final point. |
+| dual_occupancy_head_interaction | bool | False | — | dual-occupancy high-speed video | Either dummy head contacted the adjacent occupant, or the head lower performance limits were exceeded. −1 final point. |
+| excursion_countermeasure_lacks_interaction_protection | bool | False | — | dual-occupancy assessment | A far-side countermeasure limits excursion but does not provide meaningful occupant-to-occupant head protection. −1 final point. |
+| protection_zone_not_met | bool | False | — | dual-occupancy assessment | The required occupant-interaction protection zone was not demonstrated. −1 final point. |

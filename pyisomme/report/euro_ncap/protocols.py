@@ -26,3 +26,12 @@ PROTOCOL_FARSIDE_2_4 = ReportProtocol(
         "references/Euro-NCAP/euro-ncap-far-side-test-and-assessment-protocol-v24.pdf",
     ),
 )
+
+PROTOCOL_FARSIDE_2_5 = ReportProtocol(
+    version="2.5",
+    name="Version 2.5 - Far Side Occupant Test & Assessment Protocol",
+    date=date(2023, 12, 5),
+    sources=(
+        "references/Euro-NCAP/euro_ncap_far_side_test_and_assessment_protocol_v25_ade7091eed.pdf",
+    ),
+)
