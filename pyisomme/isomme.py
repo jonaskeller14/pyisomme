@@ -10,7 +10,7 @@ import shutil
 import tempfile
 from collections.abc import Iterable
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Any, Literal
 
 from tqdm.auto import tqdm
@@ -20,7 +20,15 @@ from pyisomme.channel import Channel, create_sample
 from pyisomme.code import Code
 from pyisomme.errors import InvalidCodeError, ParsingChannelStatus
 from pyisomme.info import Info, InfoInput, InfoValue
-from pyisomme.parsing import parse_chn, parse_mme, parse_xxx
+from pyisomme.parsing import (
+    parse_chn,
+    parse_mii,
+    parse_mme,
+    parse_pho,
+    parse_sd1,
+    parse_txt,
+    parse_xxx,
+)
 from pyisomme.providers import PROVIDERS
 from pyisomme.sources import ArchiveSource, FolderSource, TarSource, ZipSource
 from pyisomme.utils import debug_logging
@@ -28,11 +36,32 @@ from pyisomme.utils import debug_logging
 logger = logging.getLogger(__name__)
 
 
+def _find_member(
+    names: Iterable[str], path: PurePosixPath, description: str
+) -> str | None:
+    """Find one case-insensitive container member, warning about duplicates."""
+    expected = path.as_posix().casefold()
+    matches = [name for name in names if name.casefold() == expected]
+    if len(matches) > 1:
+        logger.warning("Multiple %s found: %s. Only the first is used.", description, matches)
+    return matches[0] if matches else None
+
+
 class Isomme:
     test_number: str | None
     test_info: Info
     channels: list[Channel]
-    channel_info: Info
+    channel_info: Info | None
+    text_txt: str | None
+    channel_txt: str | None
+    diagram_txt: str | None
+    movie_txt: str | None
+    photo_txt: str | None
+    report_txt: str | None
+    static_txt: str | None
+    movie_mii: Info | None
+    photo_pho: Info | None
+    static_sd1: Info | None
 
     def __init__(
         self,
@@ -40,6 +69,16 @@ class Isomme:
         test_info: InfoInput | None = None,
         channels: list[Channel] | None = None,
         channel_info: InfoInput | None = None,
+        text_txt: str | None = None,
+        channel_txt: str | None = None,
+        diagram_txt: str | None = None,
+        movie_txt: str | None = None,
+        photo_txt: str | None = None,
+        report_txt: str | None = None,
+        static_txt: str | None = None,
+        movie_mii: InfoInput | None = None,
+        photo_pho: InfoInput | None = None,
+        static_sd1: InfoInput | None = None,
     ):
         """
         Create empty Isomme object.
@@ -47,7 +86,17 @@ class Isomme:
         self.test_number = test_number
         self.test_info = Info() if test_info is None else Info(test_info)
         self.channels = [] if channels is None else channels
-        self.channel_info = Info() if channel_info is None else Info(channel_info)
+        self.channel_info = None if channel_info is None else Info(channel_info)
+        self.text_txt = text_txt
+        self.channel_txt = channel_txt
+        self.diagram_txt = diagram_txt
+        self.movie_txt = movie_txt
+        self.photo_txt = photo_txt
+        self.report_txt = report_txt
+        self.static_txt = static_txt
+        self.movie_mii = None if movie_mii is None else Info(movie_mii)
+        self.photo_pho = None if photo_pho is None else Info(photo_pho)
+        self.static_sd1 = None if static_sd1 is None else Info(static_sd1)
 
     def get_test_info(self, *labels) -> InfoValue:
         """
@@ -74,6 +123,8 @@ class Isomme:
         :param labels: key to find information in dict
         :return: first match or None
         """
+        if self.channel_info is None:
+            return None
         for label in labels:
             for key in self.channel_info.keys():
                 if fnmatch.fnmatch(key, label):
@@ -97,31 +148,59 @@ class Isomme:
         :return:
         """
         path = Path(path).absolute()
-
+        suffixes = [suffix.lower() for suffix in path.suffixes]
         if not path.exists():
             raise FileNotFoundError(path)
+        if path.is_dir():
+            self.read_from_folder(path, *channel_code_patterns)
         elif path.suffix.lower() == ".mme":
             self.read_from_mme(path, *channel_code_patterns)
-        elif path.suffix == "":
-            self.read_from_folder(path, *channel_code_patterns)
+        elif suffixes[-2:] == [".tar", ".gz"]:
+            self.read_from_tarfile(path, *channel_code_patterns, mode="r:gz")
         elif path.suffix.lower() == ".zip":
             self.read_from_zip(path, *channel_code_patterns)
+        elif path.suffix.lower() == ".tar":
+            self.read_from_tarfile(path, *channel_code_patterns, mode="r")
         elif path.suffix.lower() == ".chn":
             self.read_from_chn(path, *channel_code_patterns)
         elif re.fullmatch(r"\.\d+", path.suffix):
             self.read_from_xxx(path, *channel_code_patterns)
-        elif path.suffix.lower() == ".tar":
-            self.read_from_tarfile(path, *channel_code_patterns, mode="r")
-        elif (
-            len(path.suffixes) >= 2
-            and path.suffixes[-1].lower() == ".gz"
-            and path.suffixes[-2].lower() == ".tar"
-        ):
-            self.read_from_tarfile(path, *channel_code_patterns, mode="r:gz")
         else:
             raise NotImplementedError(f"Could not read path: {path}")
         logger.info(f"Reading '{path}' done. Number of channel: {len(self.channels)}")
         return self
+
+    def _read_mme(self, source: ArchiveSource, mme_name: str | None) -> tuple[str, Info, str]:
+        if mme_name is None:
+            mme_names = fnmatch.filter(source.names, "*.[mM][mM][eE]")
+            if len(mme_names) == 0:
+                raise FileNotFoundError("No .mme file found.")
+            elif len(mme_names) > 1:
+                raise Exception("Multiple .mme files found.")
+            mme_name = mme_names[0]
+        test_number = Path(mme_name).stem
+        test_info = parse_mme(source.read_text(mme_name))
+        return test_number, test_info, mme_name
+
+    def _read_txt(self, source: ArchiveSource, path: PurePosixPath) -> str | None:
+        member_name = _find_member(source.names, path, str(path))
+        return None if member_name is None else parse_txt(source.read_text(member_name))
+
+    def _read_mii(self, source: ArchiveSource, path: PurePosixPath) -> Info | None:
+        member_name = _find_member(source.names, path, str(path))
+        return None if member_name is None else parse_mii(source.read_text(member_name))
+
+    def _read_pho(self, source: ArchiveSource, path: PurePosixPath) -> Info | None:
+        member_name = _find_member(source.names, path, str(path))
+        return None if member_name is None else parse_pho(source.read_text(member_name))
+
+    def _read_sd1(self, source: ArchiveSource, path: PurePosixPath) -> Info | None:
+        member_name = _find_member(source.names, path, str(path))
+        return None if member_name is None else parse_sd1(source.read_text(member_name))
+
+    def _read_chn(self, source: ArchiveSource, path: PurePosixPath) -> Info | None:
+        chn_name = _find_member(source.names, path, "CHN file")
+        return None if chn_name is None else parse_chn(source.read_text(chn_name))
 
     def _read_from_source(
         self, source: ArchiveSource, *channel_code_patterns, mme_name: str | None = None
@@ -137,38 +216,49 @@ class Isomme:
         :param channel_code_patterns: (optional) only read channels matching these patterns
         :param mme_name: known .mme member name (filesystem case); if ``None`` it is located
         """
-        names = source.names()
-
         # MME
-        if mme_name is None:
-            mme_names = fnmatch.filter(names, "*.[mM][mM][eE]")
-            if len(mme_names) == 0:
-                raise FileNotFoundError("No .mme file found.")
-            elif len(mme_names) > 1:
-                raise Exception("Multiple .mme files found.")
-            mme_name = mme_names[0]
-        self.test_number = Path(mme_name).stem
-        self.test_info = parse_mme(source.read_text(mme_name))
+        self.test_number, self.test_info, mme_name = self._read_mme(source, mme_name)
+
+        # TXT files
+        test_root = PurePosixPath(mme_name).parent
+        self.text_txt = self._read_txt(source, test_root / f"{self.test_number}.TXT")
+        self.channel_txt = self._read_txt(source, test_root / "Channel/CHANNEL.TXT")
+        self.diagram_txt = self._read_txt(source, test_root / "Diagram/DIAGRAM.TXT")
+        self.movie_txt = self._read_txt(source, test_root / "Movie/MOVIE.TXT")
+        self.photo_txt = self._read_txt(source, test_root / "Photo/PHOTO.TXT")
+        self.report_txt = self._read_txt(source, test_root / "Report/REPORT.TXT")
+        self.static_txt = self._read_txt(source, test_root / "Static/STATIC.TXT")
+
+        # MII
+        self.movie_mii = self._read_mii(source, test_root / f"Movie/{self.test_number}.MII")
+
+        # PHO
+        self.photo_pho = self._read_pho(source, test_root / f"Photo/{self.test_number}.PHO")
+
+        # SD1
+        self.static_sd1 = self._read_sd1(source, test_root / f"Static/{self.test_number}.SD1")
 
         # CHN
-        chn_pattern = str(
-            Path(mme_name).parent.joinpath(
-                "[cC][hH][aA][nN][nN][eE][lL]*", f"{self.test_number}.[cC][hH][nN]"
-            )
-        )
-        chn_names = fnmatch.filter(names, chn_pattern)
-        if len(chn_names) == 0:
-            raise FileNotFoundError("No .chn file found.")
-        elif len(chn_names) > 1:
-            logger.warning(
-                f"Multiple .chn file found. {chn_names}. Only first will be considered."
-            )
-
-        chn_name = chn_names[0]
-        self.channel_info = parse_chn(source.read_text(chn_name))
+        self.channel_info = self._read_chn(source, test_root / f"Channel/{self.test_number}.CHN")
 
         # 001
-        xxx_names = []
+        if self.channel_info is None:
+            self.channels = []
+        else:
+            self.channels = self._read_channels(
+                source, test_root / "Channel", channel_code_patterns
+            )
+        return self
+
+    def _read_channels(
+        self,
+        source: ArchiveSource,
+        channel_directory: PurePosixPath,
+        channel_code_patterns: tuple[str, ...],
+    ) -> list[Channel]:
+        """Read the channels referenced by the current CHN metadata."""
+        assert self.channel_info is not None
+        xxx_names: list[str] = []
         channel_keys = fnmatch.filter(self.channel_info.keys(), "Name of channel *")
         for key in channel_keys:
             channel_reference = self.channel_info[key]
@@ -191,16 +281,17 @@ class Isomme:
             if channel_number_match is None:
                 raise ValueError(f"Invalid channel number in CHN data: {key}")
             channel_number = channel_number_match.groups()[0]
-            xxx_pattern = str(
-                Path(chn_name).parent.joinpath(f"{self.test_number}.{channel_number}")
+            xxx_name = _find_member(
+                source.names,
+                channel_directory / f"{self.test_number}.{channel_number}",
+                f"channel file {self.test_number}.{channel_number}",
             )
-            xxx_name_candidates = fnmatch.filter(names, xxx_pattern)
-            if len(xxx_name_candidates) == 0:
+            if xxx_name is None:
                 logger.critical(
                     f"Channel file '{self.test_number}.{channel_number}' not found."
                 )
                 continue
-            xxx_names.append(xxx_name_candidates[0])
+            xxx_names.append(xxx_name)
 
         parsed_channels: list[tuple[Channel, ParsingChannelStatus]] = []
         with logging_redirect_tqdm():
@@ -214,7 +305,7 @@ class Isomme:
                     if parse_status == ParsingChannelStatus.OK:
                         pbar.update(1)
 
-                self.channels = [channel for channel, _ in parsed_channels]
+                channels = [channel for channel, _ in parsed_channels]
                 for pending_channel, parse_status in parsed_channels:
                     if parse_status == ParsingChannelStatus.OK:
                         continue
@@ -231,7 +322,14 @@ class Isomme:
                             f"[{pending_channel.code}] 'Reference channel name' is missing or invalid -> using sample index"
                         )
                         continue
-                    reference_channel = self.get_channel(reference_channel_code)
+                    reference_channel = next(
+                        (
+                            channel
+                            for channel in channels
+                            if str(channel.code) == reference_channel_code
+                        ),
+                        None,
+                    )
                     if reference_channel is None:
                         logger.error(
                             f"[{pending_channel.code}] 'Reference channel name' mentioned Channel {reference_channel_code} is missing -> using sample index"
@@ -250,7 +348,7 @@ class Isomme:
                         ~pending_channel.data.index.duplicated(keep="first")
                     ].sort_index()
                     pbar.update(1)
-        return self
+        return channels
 
     def read_from_mme(self, mme_path: Path, *channel_code_patterns) -> Isomme:
         mme_path = Path(mme_path)
@@ -315,38 +413,120 @@ class Isomme:
         os.makedirs(path.parent, exist_ok=True)
 
         # MME
-        with open(path, "w") as mme_file:
+        self._write_mme_file(path)
+
+        channel_info = self._channel_info_for_write(channels)
+
+        written_paths = [
+            # TXT files
+            self._write_txt(path.parent / f"{path.stem}.TXT", self.text_txt),
+            self._write_txt(path.parent / "Channel/CHANNEL.TXT", self.channel_txt),
+            self._write_txt(path.parent / "Diagram/DIAGRAM.TXT", self.diagram_txt),
+            self._write_txt(path.parent / "Movie/MOVIE.TXT", self.movie_txt),
+            self._write_txt(path.parent / "Photo/PHOTO.TXT", self.photo_txt),
+            self._write_txt(path.parent / "Report/REPORT.TXT", self.report_txt),
+            self._write_txt(path.parent / "Static/STATIC.TXT", self.static_txt),
+            # MII
+            self._write_mii(path.parent / f"Movie/{path.stem}.MII"),
+            # PHO
+            self._write_pho(path.parent / f"Photo/{path.stem}.PHO"),
+            # SD1
+            self._write_sd1(path.parent / f"Static/{path.stem}.SD1"),
+            # CHN
+            self._write_chn(path.parent / f"Channel/{path.stem}.CHN", channel_info),
+        ]
+
+        # 001
+        self._write_channels(
+            path.parent / "Channel", path.stem, channels, max_workers
+        )
+
+        relative_paths = [
+            written_path.relative_to(path.parent)
+            for written_path in written_paths
+            if written_path is not None
+        ]
+        return relative_paths
+
+    def _write_mme_file(self, path: Path) -> None:
+        with open(path, "w", encoding="utf-8") as mme_file:
             self.test_info.write(mme_file)
 
-        # Channel-Folder
-        os.makedirs(path.parent.joinpath("Channel"), exist_ok=True)
+    @staticmethod
+    def _write_txt(path: Path, text: str | None) -> Path | None:
+        if text is None:
+            return None
+        path.parent.mkdir(parents=True, exist_ok=True)
+        # Comment files are opaque strings, so preserve their line endings instead of
+        # applying the platform text-mode newline conversion.
+        with open(path, "w", encoding="utf-8", newline="") as text_file:
+            text_file.write(text)
+        return path
 
-        # Update Channel Info
-        channel_info = copy.deepcopy(self.channel_info)
+    @staticmethod
+    def _write_info_file(path: Path, info: Info | None) -> Path | None:
+        if info is None:
+            return None
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with open(path, "w", encoding="utf-8") as info_file:
+            info.write(info_file)
+        return path
+
+    def _write_mii(self, path: Path) -> Path | None:
+        return self._write_info_file(path, self.movie_mii)
+
+    def _write_pho(self, path: Path) -> Path | None:
+        return self._write_info_file(path, self.photo_pho)
+
+    def _write_sd1(self, path: Path) -> Path | None:
+        return self._write_info_file(path, self.static_sd1)
+
+    def _channel_info_for_write(self, channels: list[Channel]) -> Info | None:
+        if self.channel_info is None and not channels:
+            return None
+
+        channel_info = (
+            Info() if self.channel_info is None else copy.deepcopy(self.channel_info)
+        )
         for info in channel_info[:]:
-            name, value = info
+            name, _ = info
             if "Name of channel" in name:
                 channel_info.remove(info)
         channel_info.update({"Number of channels": len(channels)})
-
-        # Build the channel metadata in its deterministic file order before the
-        # independent channel files are handed to worker threads.
-        channel_writes: list[tuple[Channel, Path]] = []
         for channel_idx, channel in enumerate(channels, 1):
             channel_info[f"Name of channel {channel_idx:03}"] = channel.code + (
                 f" / {channel.get_info('Name of the channel')}"
                 if channel.get_info("Name of the channel") is not None
                 else ""
             )
+        return channel_info
+
+    def _write_chn(self, path: Path, channel_info: Info | None) -> Path | None:
+        if channel_info is None:
+            return None
+        path.parent.mkdir(exist_ok=True)
+        with open(path, "w", encoding="utf-8") as chn_file:
+            channel_info.write(chn_file)
+        return path
+
+    def _write_channels(
+        self,
+        channel_directory: Path,
+        test_number: str,
+        channels: list[Channel],
+        max_workers: int | None,
+    ) -> None:
+        """Write the numbered channel data files."""
+        channel_writes: list[tuple[Channel, Path]] = []
+        for channel_idx, channel in enumerate(channels, 1):
             channel_writes.append(
                 (
                     channel,
-                    path.parent.joinpath("Channel", f"{path.stem}.{channel_idx:03}"),
+                    channel_directory / f"{test_number}.{channel_idx:03}",
                 )
             )
 
-        # 001 - each channel has its own output file, so these writes can safely
-        # overlap. Calling future.result() also re-raises errors in this thread.
+        # Each channel has its own output file, so these writes can safely overlap.
         with logging_redirect_tqdm():
             with ThreadPoolExecutor(max_workers=max_workers) as executor:
                 futures = [
@@ -360,9 +540,6 @@ class Isomme:
                 ):
                     future.result()
 
-        # CHN
-        with open(path.parent.joinpath("Channel", f"{path.stem}.chn"), "w") as chn_file:
-            channel_info.write(chn_file)
 
     def _write_folder(
         self,
@@ -422,17 +599,31 @@ class Isomme:
         *channel_code_patterns,
         max_workers: int | None = None,
     ) -> None:
-        """Write an MME file and its Channel directory without partial output."""
+        """Write an MME container and its present companion files transactionally."""
         path.parent.mkdir(parents=True, exist_ok=True)
         with tempfile.TemporaryDirectory(dir=path.parent) as temporary_directory:
             temporary_path = Path(temporary_directory)
             temporary_mme_path = temporary_path / path.name
-            self._write_mme(temporary_mme_path, *channel_code_patterns)
+            written_paths = self._write_mme(
+                temporary_mme_path,
+                *channel_code_patterns,
+                max_workers=max_workers,
+            )
+            replacements = [(path, temporary_mme_path)]
+            temporary_channel_directory = temporary_path / "Channel"
+            if temporary_channel_directory.exists():
+                replacements.append((path.parent / "Channel", temporary_channel_directory))
+            # Channel is exchanged as a whole above.  Replacing other files
+            # individually avoids deleting media beside their MII/PHO metadata.
+            for relative_path in written_paths:
+                if relative_path.parts[0].casefold() != "channel":
+                    destination = path.parent / relative_path
+                    destination.parent.mkdir(parents=True, exist_ok=True)
+                    replacements.append(
+                        (destination, temporary_path / relative_path)
+                    )
             self._replace_outputs_transactionally(
-                [
-                    (path, temporary_mme_path),
-                    (path.parent / "Channel", temporary_path / "Channel"),
-                ]
+                replacements
             )
 
     def _write_folder_transactionally(

@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from pyisomme import Channel, Isomme, Unit, g0
+from pyisomme import Channel, Isomme, Unit, g0, read
 
 
 class TestIsomme:
@@ -81,6 +81,17 @@ class TestIsomme:
         assert [str(channel.code) for channel in written.channels] == [
             "11HEAD000000ACXP"
         ]
+
+    def test_write_handles_unicode_metadata(self, tmp_path):
+        isomme = Isomme(
+            test_number="synthetic",
+            test_info=[("Comments", "unreadable source character: \ufffd")],
+        )
+
+        isomme.write(tmp_path / "synthetic.mme")
+
+        assert "\ufffd" in (tmp_path / "synthetic.mme").read_text(encoding="utf-8")
+        assert Isomme().read(tmp_path / "synthetic.mme").test_info == isomme.test_info
 
     def test_write_uses_multiple_worker_threads(self, tmp_path, monkeypatch):
         isomme = Isomme(
@@ -178,6 +189,39 @@ class TestIsomme:
 
         written = Isomme().read(tmp_path / "synthetic.mme")
         assert written.channels[0].unit == Unit(g0)
+
+    @pytest.mark.parametrize("name", ["synthetic.mme", "synthetic.zip", "folder"])
+    def test_round_trips_container_without_channel_directory(self, tmp_path, name):
+        isomme = Isomme(test_number="synthetic", text_txt="no measured channels\n")
+
+        isomme.write(tmp_path / name)
+        written = Isomme().read(tmp_path / name)
+
+        assert written.channel_info is None
+        assert written.channels == []
+        assert written.text_txt == "no measured channels\n"
+        if name == "synthetic.mme":
+            assert not (tmp_path / "Channel").exists()
+
+    @pytest.mark.parametrize("name", ["synthetic.mme", "synthetic.zip", "folder"])
+    def test_round_trips_companion_files(self, tmp_path, name):
+        isomme = Isomme(
+            test_number="synthetic",
+            text_txt="test notes\r\n",
+            movie_txt="movie notes\n",
+            movie_mii=[("Number of movies", 1), ("Comments", "unvalidated")],
+            photo_pho={"Number of photos": 1},
+            static_sd1={"Number of measurements": 1},
+        )
+
+        isomme.write(tmp_path / name)
+        written = Isomme().read(tmp_path / name)
+
+        assert written.text_txt == isomme.text_txt
+        assert written.movie_txt == isomme.movie_txt
+        assert written.movie_mii == isomme.movie_mii
+        assert written.photo_pho == isomme.photo_pho
+        assert written.static_sd1 == isomme.static_sd1
 
     def test_get_test_info(self):
         isomme = Isomme(test_info=[("Laboratory test ref. number", "98/7707")])

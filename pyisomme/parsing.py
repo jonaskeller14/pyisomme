@@ -40,6 +40,26 @@ def parse_chn(text: str) -> Info:
     return parse_mme(text)
 
 
+def parse_mii(text: str) -> Info:
+    """Parse a moving-image information file without validating its descriptors."""
+    return parse_mme(text)
+
+
+def parse_pho(text: str) -> Info:
+    """Parse a photo information file without validating its descriptors."""
+    return parse_mme(text)
+
+
+def parse_sd1(text: str) -> Info:
+    """Parse a static-data information file without validating its descriptors."""
+    return parse_mme(text)
+
+
+def parse_txt(text: str) -> str:
+    """Keep an ISO-MME comment file verbatim after decoding."""
+    return text
+
+
 def parse_header_and_data(text: str) -> tuple[Info, np.ndarray]:
     """
     Split a channel file into its ``Info`` header and its numeric data column.

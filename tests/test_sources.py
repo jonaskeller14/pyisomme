@@ -63,7 +63,10 @@ class TestArchiveSources:
         self, request: pytest.FixtureRequest, source_fixture: str
     ) -> None:
         source = request.getfixturevalue(source_fixture)
-        names = set(source.names())
+        names = source.names
+
+        assert isinstance(names, tuple)
+        assert source.names is names
 
         for name, content in SAMPLE_MEMBERS.items():
             assert name in names

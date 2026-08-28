@@ -543,7 +543,7 @@ class Channel:
         return self + offset
 
     def write(self, xxx_path):
-        with open(xxx_path, "w") as xxx_file:
+        with open(xxx_path, "w", encoding="utf-8") as xxx_file:
             self.info.update(
                 {
                     "Channel code": self.code,
