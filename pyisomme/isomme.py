@@ -9,6 +9,7 @@ import re
 import shutil
 import tempfile
 from collections.abc import Iterable
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Any, Literal
 
@@ -294,7 +295,12 @@ class Isomme:
         with TarSource(tar_path, mode) as source:
             return self._read_from_source(source, *channel_code_patterns)
 
-    def _write_mme(self, path: Path, *channel_code_patterns) -> None:
+    def _write_mme(
+        self,
+        path: Path,
+        *channel_code_patterns,
+        max_workers: int | None = None,
+    ) -> list[Path]:
         channels = (
             self.get_channels(*channel_code_patterns)
             if len(channel_code_patterns) != 0
@@ -323,29 +329,51 @@ class Isomme:
                 channel_info.remove(info)
         channel_info.update({"Number of channels": len(channels)})
 
-        # 001 - iterate over channels
+        # Build the channel metadata in its deterministic file order before the
+        # independent channel files are handed to worker threads.
+        channel_writes: list[tuple[Channel, Path]] = []
+        for channel_idx, channel in enumerate(channels, 1):
+            channel_info[f"Name of channel {channel_idx:03}"] = channel.code + (
+                f" / {channel.get_info('Name of the channel')}"
+                if channel.get_info("Name of the channel") is not None
+                else ""
+            )
+            channel_writes.append(
+                (
+                    channel,
+                    path.parent.joinpath("Channel", f"{path.stem}.{channel_idx:03}"),
+                )
+            )
+
+        # 001 - each channel has its own output file, so these writes can safely
+        # overlap. Calling future.result() also re-raises errors in this thread.
         with logging_redirect_tqdm():
-            for channel_idx, channel in tqdm(
-                enumerate(channels, 1),
-                desc=f"Write Channel of {self.test_number}",
-                total=len(channels),
-            ):
-                channel_info[f"Name of channel {channel_idx:03}"] = channel.code + (
-                    f" / {channel.get_info('Name of the channel')}"
-                    if channel.get_info("Name of the channel") is not None
-                    else ""
-                )
-                channel.write(
-                    path.parent.joinpath("Channel", f"{path.stem}.{channel_idx:03}")
-                )
+            with ThreadPoolExecutor(max_workers=max_workers) as executor:
+                futures = [
+                    executor.submit(channel.write, channel_path)
+                    for channel, channel_path in channel_writes
+                ]
+                for future in tqdm(
+                    as_completed(futures),
+                    desc=f"Write Channel of {self.test_number}",
+                    total=len(futures),
+                ):
+                    future.result()
 
         # CHN
         with open(path.parent.joinpath("Channel", f"{path.stem}.chn"), "w") as chn_file:
             channel_info.write(chn_file)
 
-    def _write_folder(self, path: Path, *channel_code_patterns) -> None:
+    def _write_folder(
+        self,
+        path: Path,
+        *channel_code_patterns,
+        max_workers: int | None = None,
+    ) -> None:
         self._write_mme(
-            path.joinpath(f"{self.test_number}.mme"), *channel_code_patterns
+            path.joinpath(f"{self.test_number}.mme"),
+            *channel_code_patterns,
+            max_workers=max_workers,
         )
 
     @staticmethod
@@ -389,7 +417,10 @@ class Isomme:
                 self._remove_path(backup_path)
 
     def _write_mme_transactionally(
-        self, path: Path, *channel_code_patterns
+        self,
+        path: Path,
+        *channel_code_patterns,
+        max_workers: int | None = None,
     ) -> None:
         """Write an MME file and its Channel directory without partial output."""
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -405,13 +436,20 @@ class Isomme:
             )
 
     def _write_folder_transactionally(
-        self, path: Path, *channel_code_patterns
+        self,
+        path: Path,
+        *channel_code_patterns,
+        max_workers: int | None = None,
     ) -> None:
         """Write a folder container without replacing its prior contents on failure."""
         path.parent.mkdir(parents=True, exist_ok=True)
         with tempfile.TemporaryDirectory(dir=path.parent) as temporary_directory:
             temporary_path = Path(temporary_directory) / "isomme"
-            self._write_folder(temporary_path, *channel_code_patterns)
+            self._write_folder(
+                temporary_path,
+                *channel_code_patterns,
+                max_workers=max_workers,
+            )
             self._replace_outputs_transactionally([(path, temporary_path)])
 
     def _write_archive(
@@ -419,6 +457,7 @@ class Isomme:
         path: Path,
         archive_format: Literal["zip", "tar", "gztar"],
         *channel_code_patterns,
+        max_workers: int | None = None,
     ) -> None:
         """Write an archive without touching sibling directories or partial output."""
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -426,7 +465,11 @@ class Isomme:
         with tempfile.TemporaryDirectory(dir=path.parent) as temporary_directory:
             temporary_path = Path(temporary_directory)
             folder_path = temporary_path / "isomme"
-            self._write_folder(folder_path, *channel_code_patterns)
+            self._write_folder(
+                folder_path,
+                *channel_code_patterns,
+                max_workers=max_workers,
+            )
             archive_path = Path(
                 shutil.make_archive(
                     str(temporary_path / "archive"),
@@ -437,28 +480,45 @@ class Isomme:
             )
             os.replace(archive_path, path)
 
-    def write(self, path: str | Path, *channel_code_patterns) -> Isomme:
+    def write(
+        self,
+        path: str | Path,
+        *channel_code_patterns,
+        max_workers: int | None = None,
+    ) -> Isomme:
         """
         Write ISO-MME data to a file, folder, or archive.
         :param path: output path where to save the ISO-MME data (.mme, folder, .zip, .tar, or .tar.gz)
         :param channel_code_patterns: (optional) only export specific channels identified by code-pattern
+        :param max_workers: maximum number of channel-writer threads; ``None`` uses
+            :class:`ThreadPoolExecutor`'s default and ``1`` disables concurrency
         :return:
         """
         path = Path(path)
         if path.suffix.lower() == ".mme":
-            self._write_mme_transactionally(path, *channel_code_patterns)
+            self._write_mme_transactionally(
+                path, *channel_code_patterns, max_workers=max_workers
+            )
         elif path.suffix == "":
-            self._write_folder_transactionally(path, *channel_code_patterns)
+            self._write_folder_transactionally(
+                path, *channel_code_patterns, max_workers=max_workers
+            )
         elif path.suffix.lower() == ".zip":
-            self._write_archive(path, "zip", *channel_code_patterns)
+            self._write_archive(
+                path, "zip", *channel_code_patterns, max_workers=max_workers
+            )
         elif path.suffix.lower() == ".tar":
-            self._write_archive(path, "tar", *channel_code_patterns)
+            self._write_archive(
+                path, "tar", *channel_code_patterns, max_workers=max_workers
+            )
         elif (
             len(path.suffixes) >= 2
             and path.suffixes[-1].lower() == ".gz"
             and path.suffixes[-2].lower() == ".tar"
         ):
-            self._write_archive(path, "gztar", *channel_code_patterns)
+            self._write_archive(
+                path, "gztar", *channel_code_patterns, max_workers=max_workers
+            )
         else:
             raise NotImplementedError(
                 f"{path.suffix} is not supported. Only .mme/folder/.zip/.tar/.tar.gz are supported."
@@ -832,23 +892,43 @@ def read(
     channel_code_patterns: list[str] | None = None,
     recursive: bool = True,
     merge: bool = True,
+    max_workers: int | None = None,
 ) -> list[Isomme]:
+    """Read independent ISO-MME containers concurrently.
+
+    ``max_workers=None`` uses :class:`ThreadPoolExecutor`'s default. Pass ``1``
+    for sequential execution. Results retain the order in which the input paths
+    were discovered, even when worker threads finish in a different order.
+    """
     all_paths: list[str] = []
     for path in paths:
-        all_paths += glob.glob(path, recursive=recursive)
-    unique_paths = set(all_paths)
+        all_paths += glob.glob(os.fspath(path), recursive=recursive)
+    unique_paths = list(dict.fromkeys(all_paths))
 
     channel_code_patterns = (
         [] if channel_code_patterns is None else channel_code_patterns
     )
 
-    iso_list = []
+    ordered_results: list[Isomme | None] = [None] * len(unique_paths)
     with logging_redirect_tqdm():
-        for path in tqdm(unique_paths, desc="Reading"):
-            try:
-                iso_list.append(Isomme().read(path, *channel_code_patterns))
-            except Exception as e:
-                logger.critical(e)
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            future_indices = {
+                executor.submit(
+                    Isomme().read, path, *channel_code_patterns
+                ): path_index
+                for path_index, path in enumerate(unique_paths)
+            }
+            for future in tqdm(
+                as_completed(future_indices),
+                desc="Reading",
+                total=len(future_indices),
+            ):
+                try:
+                    ordered_results[future_indices[future]] = future.result()
+                except Exception as error:
+                    logger.critical(error)
+
+    iso_list = [isomme for isomme in ordered_results if isomme is not None]
 
     if merge:
         iso_list = merge_duplicate_isommes(iso_list)

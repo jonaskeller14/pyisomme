@@ -1,4 +1,5 @@
 from pathlib import Path
+from threading import Barrier, Lock, get_ident
 
 import numpy as np
 import pandas as pd
@@ -33,6 +34,29 @@ class TestIsomme:
             "11HEADCG0000ACXP"
         ]
 
+    def test_read_uses_multiple_worker_threads(self, tmp_path, monkeypatch):
+        paths = [tmp_path / "first.mme", tmp_path / "second.mme"]
+        for path in paths:
+            path.touch()
+
+        barrier = Barrier(2)
+        thread_ids = set()
+        thread_ids_lock = Lock()
+
+        def fake_read(self, path, *channel_code_patterns):
+            with thread_ids_lock:
+                thread_ids.add(get_ident())
+            barrier.wait(timeout=10)
+            self.test_number = Path(path).stem
+            return self
+
+        monkeypatch.setattr(Isomme, "read", fake_read)
+
+        isommes = read(*paths, merge=False, max_workers=2)
+
+        assert [isomme.test_number for isomme in isommes] == ["first", "second"]
+        assert len(thread_ids) == 2
+
     @pytest.mark.parametrize(
         "name",
         [
@@ -57,6 +81,31 @@ class TestIsomme:
         assert [str(channel.code) for channel in written.channels] == [
             "11HEAD000000ACXP"
         ]
+
+    def test_write_uses_multiple_worker_threads(self, tmp_path, monkeypatch):
+        isomme = Isomme(
+            test_number="synthetic",
+            channels=[
+                Channel("11HEAD000000ACXP", pd.DataFrame([1.0, 2.0]), "g"),
+                Channel("13CHST000000DSXP", pd.DataFrame([3.0, 4.0]), "m"),
+            ],
+        )
+        barrier = Barrier(2)
+        thread_ids = set()
+        thread_ids_lock = Lock()
+        original_write = Channel.write
+
+        def synchronized_write(self, path):
+            with thread_ids_lock:
+                thread_ids.add(get_ident())
+            barrier.wait(timeout=10)
+            return original_write(self, path)
+
+        monkeypatch.setattr(Channel, "write", synchronized_write)
+
+        isomme.write(tmp_path / "synthetic.mme", max_workers=2)
+
+        assert len(thread_ids) == 2
 
     @pytest.mark.parametrize("name", ["results.zip", "results.tar", "results.tar.gz"])
     def test_archive_write_preserves_sibling_directory(self, tmp_path, name):

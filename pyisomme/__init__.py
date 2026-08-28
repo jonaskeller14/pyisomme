@@ -3,6 +3,7 @@ from pyisomme.channel import *
 from pyisomme.code import *
 from pyisomme.correlation import Correlation_ISO18571
 from pyisomme.errors import *
+from pyisomme.info import *
 from pyisomme.isomme import *
 from pyisomme.limit import *
 from pyisomme.limit_evaluation import *
