@@ -4,7 +4,10 @@ import logging
 from typing import Any
 
 import numpy as np
+from matplotlib.figure import Figure
+from typing_extensions import override
 
+from pyisomme.calculate import calculate_damage
 from pyisomme.channel import Channel
 from pyisomme.isomme import Isomme
 from pyisomme.limit import Limit
@@ -36,11 +39,6 @@ from pyisomme.report.page import (
 from pyisomme.report.report import Report
 
 logger = logging.getLogger(__name__)
-
-
-def result_channel(criterion: Criterion) -> Channel | None:
-    """Return a calculated channel, if this page is built after calculation."""
-    return Criterion.channel_of(criterion) if criterion.result is not None else None
 
 
 P = manual(
@@ -233,8 +231,16 @@ class Overall(Criterion):
             name = "Head DAMAGE (monitoring)"
             source = "§7.3.1.1"
 
+            def damage_channels(self) -> tuple[Channel, ...]:
+                """Calculate the X/Y/Z/resultant DAMAGE traces from head angular data."""
+                return calculate_damage(
+                    self.require_channel(self.ctx.code("?{p}HEAD0000??AAXA")),
+                    self.require_channel(self.ctx.code("?{p}HEAD0000??AAYA")),
+                    self.require_channel(self.ctx.code("?{p}HEAD0000??AAZA")),
+                )
+
             def calculation(self) -> CriterionResult:
-                channel = self.require_channel(self.ctx.code("?{p}HEADDAMA??AARA"))
+                channel = self.damage_channels()[3]
                 value = np.max(channel.get_data())
                 return CriterionResult(
                     channel=channel,
@@ -1007,23 +1013,29 @@ class EuroNCAP_Side_FarSide(Report[Overall]):
         report: EuroNCAP_Side_FarSide
         name = "Head DAMAGE"
         title = "Head DAMAGE"
-        nrows = 1
-        ncols = 1
+        nrows = 2
+        ncols = 2
+        sharey = True
 
         def __init__(self, report: EuroNCAP_Side_FarSide) -> None:
             super().__init__(report)
+            # DAMAGE is calculated from angular velocity traces during report
+            # calculation, so resolve the derived channels only when the page renders.
+            # All four time histories are required by §7.3.1.1 monitoring.
+            self.channels = {}
+
+        @override
+        def figure(self, figsize: tuple[float, float]) -> Figure:
             self.channels = {
                 isomme: [
-                    [
-                        result_channel(
-                            self.report.criterion_overall[
-                                isomme
-                            ].criterion_head.criterion_damage
-                        )
-                    ],
+                    [channel]
+                    for channel in self.report.criterion_overall[
+                        isomme
+                    ].criterion_head.criterion_damage.damage_channels()[:4]
                 ]
                 for isomme in self.report.isomme_list
             }
+            return super().figure(figsize)
 
     class Page_Upper_Neck(Page_Plot_nxn):
         report: EuroNCAP_Side_FarSide
@@ -1036,27 +1048,9 @@ class EuroNCAP_Side_FarSide(Report[Overall]):
             super().__init__(report)
             self.channels = {
                 isomme: [
-                    [
-                        result_channel(
-                            self.report.criterion_overall[
-                                isomme
-                            ].criterion_neck.criterion_upper_neck.criterion_tension_fz
-                        )
-                    ],
-                    [
-                        result_channel(
-                            self.report.criterion_overall[
-                                isomme
-                            ].criterion_neck.criterion_upper_neck.criterion_lateral_flexion_mxoc
-                        )
-                    ],
-                    [
-                        result_channel(
-                            self.report.criterion_overall[
-                                isomme
-                            ].criterion_neck.criterion_upper_neck.criterion_extension_myoc
-                        )
-                    ],
+                    [f"?{self.report.criterion_overall[isomme].p}NECKUP00??FOZA"],
+                    [f"?{self.report.criterion_overall[isomme].p}TMONUP00??MOXB"],
+                    [f"?{self.report.criterion_overall[isomme].p}TMONUP00??MOYB"],
                 ]
                 for isomme in self.report.isomme_list
             }
@@ -1072,27 +1066,9 @@ class EuroNCAP_Side_FarSide(Report[Overall]):
             super().__init__(report)
             self.channels = {
                 isomme: [
-                    [
-                        result_channel(
-                            self.report.criterion_overall[
-                                isomme
-                            ].criterion_neck.criterion_lower_neck.criterion_tension_fz
-                        )
-                    ],
-                    [
-                        result_channel(
-                            self.report.criterion_overall[
-                                isomme
-                            ].criterion_neck.criterion_lower_neck.criterion_lateral_flexion_mx
-                        )
-                    ],
-                    [
-                        result_channel(
-                            self.report.criterion_overall[
-                                isomme
-                            ].criterion_neck.criterion_lower_neck.criterion_extension_my_base
-                        )
-                    ],
+                    [f"?{self.report.criterion_overall[isomme].p}NECKLO00??FOZA"],
+                    [f"?{self.report.criterion_overall[isomme].p}TMONLO00??MOXB"],
+                    [f"?{self.report.criterion_overall[isomme].p}TMONLO00??MOYB"],
                 ]
                 for isomme in self.report.isomme_list
             }
@@ -1118,27 +1094,9 @@ class EuroNCAP_Side_FarSide(Report[Overall]):
             super().__init__(report)
             self.channels = {
                 isomme: [
-                    [
-                        result_channel(
-                            self.report.criterion_overall[
-                                isomme
-                            ].criterion_pelvis_lumbar_modifier.criterion_lumbar_fy
-                        )
-                    ],
-                    [
-                        result_channel(
-                            self.report.criterion_overall[
-                                isomme
-                            ].criterion_pelvis_lumbar_modifier.criterion_lumbar_fz
-                        )
-                    ],
-                    [
-                        result_channel(
-                            self.report.criterion_overall[
-                                isomme
-                            ].criterion_pelvis_lumbar_modifier.criterion_lumbar_mx
-                        )
-                    ],
+                    [f"?{self.report.criterion_overall[isomme].p}LUSP0000??FOYB"],
+                    [f"?{self.report.criterion_overall[isomme].p}LUSP0000??FOZB"],
+                    [f"?{self.report.criterion_overall[isomme].p}LUSP0000??MOXB"],
                 ]
                 for isomme in self.report.isomme_list
             }

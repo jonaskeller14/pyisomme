@@ -21,7 +21,7 @@
         "result": {
           "name": "Head Performance Criterion (HPC 36)",
           "value": 125.0,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -30,7 +30,7 @@
         "result": {
           "name": "Head a3ms",
           "value": 2.5492905324448207,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -66,7 +66,7 @@
         "result": {
           "name": "Chest Deflection",
           "value": -15.0,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -75,7 +75,7 @@
         "result": {
           "name": "Chest VC",
           "value": -0.25,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -84,7 +84,7 @@
         "result": {
           "name": "Femur Compression",
           "value": -1.0,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -102,7 +102,7 @@
         "result": {
           "name": "Head Performance Criterion (HPC 36)",
           "value": 125.0,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -111,7 +111,7 @@
         "result": {
           "name": "Head a3ms",
           "value": 2.5492905324448207,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -120,7 +120,7 @@
         "result": {
           "name": "Neck Fz tension",
           "value": 0.5,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -129,7 +129,7 @@
         "result": {
           "name": "Neck Fx shear",
           "value": 0.5,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -147,7 +147,7 @@
         "result": {
           "name": "Chest Deflection",
           "value": -15.0,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -156,7 +156,7 @@
         "result": {
           "name": "Chest VC",
           "value": -0.25,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -165,7 +165,7 @@
         "result": {
           "name": "Femur Compression",
           "value": -1.0,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -194,7 +194,7 @@
         "result": {
           "name": "Head Performance Criterion (HPC 36)",
           "value": 250.0,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -203,7 +203,7 @@
         "result": {
           "name": "Head a3ms",
           "value": 5.0985810648896415,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -239,7 +239,7 @@
         "result": {
           "name": "Chest Deflection",
           "value": -30.0,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -248,7 +248,7 @@
         "result": {
           "name": "Chest VC",
           "value": -0.5,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -257,7 +257,7 @@
         "result": {
           "name": "Femur Compression",
           "value": -2.0,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -275,7 +275,7 @@
         "result": {
           "name": "Head Performance Criterion (HPC 36)",
           "value": 250.0,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -284,7 +284,7 @@
         "result": {
           "name": "Head a3ms",
           "value": 5.0985810648896415,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -293,7 +293,7 @@
         "result": {
           "name": "Neck Fz tension",
           "value": 1.0,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -302,7 +302,7 @@
         "result": {
           "name": "Neck Fx shear",
           "value": 1.0,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -320,7 +320,7 @@
         "result": {
           "name": "Chest Deflection",
           "value": -30.0,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -329,7 +329,7 @@
         "result": {
           "name": "Chest VC",
           "value": -0.5,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -338,7 +338,7 @@
         "result": {
           "name": "Femur Compression",
           "value": -2.0,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -367,7 +367,7 @@
         "result": {
           "name": "Head Performance Criterion (HPC 36)",
           "value": 500.0,
-          "rating": false,
+          "rating": 0.0,
           "color": "green",
           "status": "OK"
         }
@@ -376,7 +376,7 @@
         "result": {
           "name": "Head a3ms",
           "value": 10.197162129779283,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -412,7 +412,7 @@
         "result": {
           "name": "Chest Deflection",
           "value": -60.0,
-          "rating": false,
+          "rating": 0.0,
           "color": "red",
           "status": "OK"
         }
@@ -421,7 +421,7 @@
         "result": {
           "name": "Chest VC",
           "value": -1.0,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -430,7 +430,7 @@
         "result": {
           "name": "Femur Compression",
           "value": -4.0,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -448,7 +448,7 @@
         "result": {
           "name": "Head Performance Criterion (HPC 36)",
           "value": 500.0,
-          "rating": false,
+          "rating": 0.0,
           "color": "green",
           "status": "OK"
         }
@@ -457,7 +457,7 @@
         "result": {
           "name": "Head a3ms",
           "value": 10.197162129779283,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -466,7 +466,7 @@
         "result": {
           "name": "Neck Fz tension",
           "value": 2.0,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -475,7 +475,7 @@
         "result": {
           "name": "Neck Fx shear",
           "value": 2.0,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -493,7 +493,7 @@
         "result": {
           "name": "Chest Deflection",
           "value": -60.0,
-          "rating": false,
+          "rating": 0.0,
           "color": "red",
           "status": "OK"
         }
@@ -502,7 +502,7 @@
         "result": {
           "name": "Chest VC",
           "value": -1.0,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -511,7 +511,7 @@
         "result": {
           "name": "Femur Compression",
           "value": -4.0,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }

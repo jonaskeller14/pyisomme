@@ -29,7 +29,7 @@
           "result": {
             "name": "HIC15",
             "value": 125.0,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -38,7 +38,7 @@
           "result": {
             "name": "Neck axial tension",
             "value": 0.5,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -47,7 +47,7 @@
           "result": {
             "name": "Neck axial compression",
             "value": 0.5,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -65,7 +65,7 @@
           "result": {
             "name": "Average peak rib deflection",
             "value": 15.0,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -74,7 +74,7 @@
           "result": {
             "name": "Rib deflection rate",
             "value": 0.23561906144096456,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -83,7 +83,7 @@
           "result": {
             "name": "Viscous criterion",
             "value": 0.016634690597454836,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -93,7 +93,7 @@
         "result": {
           "name": "Pelvis",
           "value": 1.0,
-          "rating": 0,
+          "rating": 0.0,
           "color": "green",
           "status": "OK"
         }
@@ -128,7 +128,7 @@
           "result": {
             "name": "HIC15",
             "value": 125.0,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -137,7 +137,7 @@
           "result": {
             "name": "Neck axial tension",
             "value": 0.5,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -146,7 +146,7 @@
           "result": {
             "name": "Neck axial compression",
             "value": 0.5,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -164,7 +164,7 @@
           "result": {
             "name": "Average peak rib deflection",
             "value": 15.0,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -173,7 +173,7 @@
           "result": {
             "name": "Rib deflection rate",
             "value": 0.23561906144096456,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -182,7 +182,7 @@
           "result": {
             "name": "Viscous criterion",
             "value": 0.016634690597454836,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -192,7 +192,7 @@
         "result": {
           "name": "Pelvis",
           "value": 1.0,
-          "rating": 0,
+          "rating": 0.0,
           "color": "green",
           "status": "OK"
         }
@@ -247,7 +247,7 @@
           "result": {
             "name": "HIC15",
             "value": 250.0,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -256,7 +256,7 @@
           "result": {
             "name": "Neck axial tension",
             "value": 1.0,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -265,7 +265,7 @@
           "result": {
             "name": "Neck axial compression",
             "value": 1.0,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -283,7 +283,7 @@
           "result": {
             "name": "Average peak rib deflection",
             "value": 30.0,
-            "rating": -2,
+            "rating": -2.0,
             "color": "yellow",
             "status": "OK"
           }
@@ -292,7 +292,7 @@
           "result": {
             "name": "Rib deflection rate",
             "value": 0.4712381228819291,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -301,7 +301,7 @@
           "result": {
             "name": "Viscous criterion",
             "value": 0.06653876238981934,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -311,7 +311,7 @@
         "result": {
           "name": "Pelvis",
           "value": 2.0,
-          "rating": 0,
+          "rating": 0.0,
           "color": "green",
           "status": "OK"
         }
@@ -346,7 +346,7 @@
           "result": {
             "name": "HIC15",
             "value": 250.0,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -355,7 +355,7 @@
           "result": {
             "name": "Neck axial tension",
             "value": 1.0,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -364,7 +364,7 @@
           "result": {
             "name": "Neck axial compression",
             "value": 1.0,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -382,7 +382,7 @@
           "result": {
             "name": "Average peak rib deflection",
             "value": 30.0,
-            "rating": -2,
+            "rating": -2.0,
             "color": "yellow",
             "status": "OK"
           }
@@ -391,7 +391,7 @@
           "result": {
             "name": "Rib deflection rate",
             "value": 0.4712381228819291,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -400,7 +400,7 @@
           "result": {
             "name": "Viscous criterion",
             "value": 0.06653876238981934,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -410,7 +410,7 @@
         "result": {
           "name": "Pelvis",
           "value": 2.0,
-          "rating": 0,
+          "rating": 0.0,
           "color": "green",
           "status": "OK"
         }
@@ -465,7 +465,7 @@
           "result": {
             "name": "HIC15",
             "value": 500.0,
-            "rating": -35,
+            "rating": -35.0,
             "color": "red",
             "status": "OK"
           }
@@ -474,7 +474,7 @@
           "result": {
             "name": "Neck axial tension",
             "value": 2.0,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -483,7 +483,7 @@
           "result": {
             "name": "Neck axial compression",
             "value": 2.0,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -510,7 +510,7 @@
           "result": {
             "name": "Rib deflection rate",
             "value": 0.9424762457638582,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -519,7 +519,7 @@
           "result": {
             "name": "Viscous criterion",
             "value": 0.2661550495592774,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -529,7 +529,7 @@
         "result": {
           "name": "Pelvis",
           "value": 4.0,
-          "rating": -2,
+          "rating": -2.0,
           "color": "green",
           "status": "OK"
         }
@@ -564,7 +564,7 @@
           "result": {
             "name": "HIC15",
             "value": 500.0,
-            "rating": -35,
+            "rating": -35.0,
             "color": "red",
             "status": "OK"
           }
@@ -573,7 +573,7 @@
           "result": {
             "name": "Neck axial tension",
             "value": 2.0,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -582,7 +582,7 @@
           "result": {
             "name": "Neck axial compression",
             "value": 2.0,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -609,7 +609,7 @@
           "result": {
             "name": "Rib deflection rate",
             "value": 0.9424762457638582,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -618,7 +618,7 @@
           "result": {
             "name": "Viscous criterion",
             "value": 0.2661550495592774,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -628,7 +628,7 @@
         "result": {
           "name": "Pelvis",
           "value": 4.0,
-          "rating": -2,
+          "rating": -2.0,
           "color": "green",
           "status": "OK"
         }

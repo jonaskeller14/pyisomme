@@ -2,8 +2,8 @@
   "Overall": {
     "result": {
       "name": "Overall",
-      "value": 18.145754755014433,
-      "rating": 18.145754755014433,
+      "value": 16.852756588431102,
+      "rating": 16.852756588431102,
       "color": null,
       "status": "OK"
     }
@@ -3912,7 +3912,7 @@
         "criterion_head_a3ms": {
           "result": {
             "name": "Head a3ms",
-            "value": 2.5492905324448207,
+            "value": 44.14106263000051,
             "rating": 4.0,
             "color": "green",
             "status": "OK"
@@ -4095,8 +4095,8 @@
       "Overall": {
         "result": {
           "name": "Overall",
-          "value": 3.878994499749988,
-          "rating": 3.878994499749988,
+          "value": 0.0,
+          "rating": 0.0,
           "color": null,
           "status": "OK"
         }
@@ -4113,8 +4113,8 @@
       "criterion_head": {
         "result": {
           "name": "Head",
-          "value": 4.0,
-          "rating": 4.0,
+          "value": "-inf",
+          "rating": "-inf",
           "color": null,
           "status": "OK"
         },
@@ -4130,9 +4130,9 @@
         "criterion_head_a3ms": {
           "result": {
             "name": "Head a3ms",
-            "value": 5.0985810648896415,
-            "rating": 4.0,
-            "color": "green",
+            "value": 88.28212526000102,
+            "rating": "-inf",
+            "color": "gray",
             "status": "OK"
           }
         },
@@ -4348,9 +4348,9 @@
         "criterion_head_a3ms": {
           "result": {
             "name": "Head a3ms",
-            "value": 10.197162129779283,
-            "rating": 4.0,
-            "color": "green",
+            "value": 176.56425052000205,
+            "rating": "-inf",
+            "color": "gray",
             "status": "OK"
           }
         },

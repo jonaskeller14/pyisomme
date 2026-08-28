@@ -679,7 +679,7 @@ class EuroNCAP_Side_Pole(Report[Overall]):
                     [f"?{self.report.criterion_overall[isomme].p}TRRILE02??DSYC"],
                     [f"?{self.report.criterion_overall[isomme].p}TRRIRI02??DSYC"],
                     [f"?{self.report.criterion_overall[isomme].p}TRRILE03??DSYC"],
-                    [f"?{self.report.criterion_overall[isomme].p}TRRIRI04??DSYC"],
+                    [f"?{self.report.criterion_overall[isomme].p}TRRIRI03??DSYC"],
                 ]
                 for isomme in self.report.isomme_list
             }
@@ -700,7 +700,7 @@ class EuroNCAP_Side_Pole(Report[Overall]):
                     [f"?{self.report.criterion_overall[isomme].p}VCCRLE02??DSYC"],
                     [f"?{self.report.criterion_overall[isomme].p}VCCRRI02??DSYC"],
                     [f"?{self.report.criterion_overall[isomme].p}VCCRLE03??DSYC"],
-                    [f"?{self.report.criterion_overall[isomme].p}VCCRRI04??DSYC"],
+                    [f"?{self.report.criterion_overall[isomme].p}VCCRRI03??DSYC"],
                 ]
                 for isomme in self.report.isomme_list
             }
@@ -736,7 +736,7 @@ class EuroNCAP_Side_Pole(Report[Overall]):
                     [f"?{self.report.criterion_overall[isomme].p}ABRILE01??DSYC"],
                     [f"?{self.report.criterion_overall[isomme].p}ABRIRI01??DSYC"],
                     [f"?{self.report.criterion_overall[isomme].p}ABRILE02??DSYC"],
-                    [f"?{self.report.criterion_overall[isomme].p}ABRIRI03??DSYC"],
+                    [f"?{self.report.criterion_overall[isomme].p}ABRIRI02??DSYC"],
                 ]
                 for isomme in self.report.isomme_list
             }
@@ -755,7 +755,7 @@ class EuroNCAP_Side_Pole(Report[Overall]):
                     [f"?{self.report.criterion_overall[isomme].p}VCARLE01??VEYC"],
                     [f"?{self.report.criterion_overall[isomme].p}VCARRI01??VEYC"],
                     [f"?{self.report.criterion_overall[isomme].p}VCARLE02??VEYC"],
-                    [f"?{self.report.criterion_overall[isomme].p}VCARRI03??VEYC"],
+                    [f"?{self.report.criterion_overall[isomme].p}VCARRI02??VEYC"],
                 ]
                 for isomme in self.report.isomme_list
             }

@@ -21,7 +21,7 @@
         "result": {
           "name": "HIC 15",
           "value": 125.0,
-          "rating": 4,
+          "rating": 4.0,
           "color": "green",
           "status": "OK"
         }
@@ -30,7 +30,7 @@
         "result": {
           "name": "Head Peak Acceleration",
           "value": 5.0985810648896415,
-          "rating": 4,
+          "rating": 4.0,
           "color": "green",
           "status": "OK"
         }
@@ -66,7 +66,7 @@
         "result": {
           "name": "Modifier Chest Lateral Viscous Criterion",
           "value": 0.25,
-          "rating": 4,
+          "rating": 4.0,
           "color": "green",
           "status": "OK"
         }
@@ -75,7 +75,7 @@
         "result": {
           "name": "Modifier Shoulder Lateral Force",
           "value": 0.5,
-          "rating": 4,
+          "rating": 4.0,
           "color": "green",
           "status": "OK"
         }
@@ -102,7 +102,7 @@
         "result": {
           "name": "Modifier Abdomen Lateral Viscous Criterion",
           "value": 0.25,
-          "rating": 4,
+          "rating": 4.0,
           "color": "green",
           "status": "OK"
         }
@@ -176,7 +176,7 @@
         "result": {
           "name": "HIC 15",
           "value": 250.0,
-          "rating": 4,
+          "rating": 4.0,
           "color": "green",
           "status": "OK"
         }
@@ -185,7 +185,7 @@
         "result": {
           "name": "Head Peak Acceleration",
           "value": 10.197162129779283,
-          "rating": 4,
+          "rating": 4.0,
           "color": "green",
           "status": "OK"
         }
@@ -221,7 +221,7 @@
         "result": {
           "name": "Modifier Chest Lateral Viscous Criterion",
           "value": 0.5,
-          "rating": 4,
+          "rating": 4.0,
           "color": "green",
           "status": "OK"
         }
@@ -230,7 +230,7 @@
         "result": {
           "name": "Modifier Shoulder Lateral Force",
           "value": 1.0,
-          "rating": 4,
+          "rating": 4.0,
           "color": "green",
           "status": "OK"
         }
@@ -257,7 +257,7 @@
         "result": {
           "name": "Modifier Abdomen Lateral Viscous Criterion",
           "value": 0.5,
-          "rating": 4,
+          "rating": 4.0,
           "color": "green",
           "status": "OK"
         }
@@ -340,7 +340,7 @@
         "result": {
           "name": "Head Peak Acceleration",
           "value": 20.394324259558566,
-          "rating": 4,
+          "rating": 4.0,
           "color": "green",
           "status": "OK"
         }
@@ -376,7 +376,7 @@
         "result": {
           "name": "Modifier Chest Lateral Viscous Criterion",
           "value": 1.0,
-          "rating": 4,
+          "rating": 4.0,
           "color": "green",
           "status": "OK"
         }
@@ -385,7 +385,7 @@
         "result": {
           "name": "Modifier Shoulder Lateral Force",
           "value": 2.0,
-          "rating": 4,
+          "rating": 4.0,
           "color": "green",
           "status": "OK"
         }
@@ -412,7 +412,7 @@
         "result": {
           "name": "Modifier Abdomen Lateral Viscous Criterion",
           "value": 1.0,
-          "rating": 4,
+          "rating": 4.0,
           "color": "green",
           "status": "OK"
         }

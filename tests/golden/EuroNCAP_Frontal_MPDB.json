@@ -199,8 +199,8 @@
         "criterion_abdomen": {
           "result": {
             "name": "Abdomen",
-            "value": 4,
-            "rating": 4,
+            "value": 4.0,
+            "rating": 4.0,
             "color": null,
             "status": "OK"
           },
@@ -208,7 +208,7 @@
             "result": {
               "name": "Abdomen Compression",
               "value": -15.0,
-              "rating": 4,
+              "rating": 4.0,
               "color": "green",
               "status": "OK"
             }
@@ -813,8 +813,8 @@
         "criterion_abdomen": {
           "result": {
             "name": "Abdomen",
-            "value": 4,
-            "rating": 4,
+            "value": 4.0,
+            "rating": 4.0,
             "color": null,
             "status": "OK"
           },
@@ -822,7 +822,7 @@
             "result": {
               "name": "Abdomen Compression",
               "value": -30.0,
-              "rating": 4,
+              "rating": 4.0,
               "color": "green",
               "status": "OK"
             }
@@ -1427,8 +1427,8 @@
         "criterion_abdomen": {
           "result": {
             "name": "Abdomen",
-            "value": 4,
-            "rating": 4,
+            "value": 4.0,
+            "rating": 4.0,
             "color": null,
             "status": "OK"
           },
@@ -1436,7 +1436,7 @@
             "result": {
               "name": "Abdomen Compression",
               "value": -60.0,
-              "rating": 4,
+              "rating": 4.0,
               "color": "green",
               "status": "OK"
             }
@@ -1472,8 +1472,8 @@
         "criterion_femur": {
           "result": {
             "name": "Femur",
-            "value": 3.78754988028731,
-            "rating": 3.78754988028731,
+            "value": 3.7875498802873104,
+            "rating": 3.7875498802873104,
             "color": null,
             "status": "OK"
           },
@@ -1481,7 +1481,7 @@
             "result": {
               "name": "Femur Compression",
               "value": -4.0,
-              "rating": 3.78754988028731,
+              "rating": 3.7875498802873104,
               "color": "yellow",
               "status": "OK"
             }
@@ -1752,7 +1752,7 @@
           "result": {
             "name": "Femur Compression",
             "value": -4.0,
-            "rating": 3.78754988028731,
+            "rating": 3.7875498802873104,
             "color": "yellow",
             "status": "OK"
           }

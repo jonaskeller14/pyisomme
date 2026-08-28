@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import pytest
+from matplotlib import pyplot as plt
 
 from pyisomme.report.euro_ncap.protocols import PROTOCOL_FARSIDE_2_5
+from pyisomme.report.page import Page_Plot_nxn
 from tests.report.report_factory import build_euroncap_side_farside
 
 
@@ -78,4 +80,4 @@ def test_farside_damage_is_calculated_and_does_not_affect_head_score() -> None:
     assert head.criterion_damage.result is not None
     assert head.criterion_damage.result.rating == 0.0
     assert head.result is not None
-    assert head.result.rating == pytest.approx(head.criterion_head_a3ms.result.rating) # pyright: ignore[reportOptionalMemberAccess]
+    assert head.result.rating == pytest.approx(head.criterion_head_a3ms.result.rating)  # pyright: ignore[reportOptionalMemberAccess]

@@ -29,7 +29,7 @@
           "result": {
             "name": "HIC 15",
             "value": 125.0,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -38,7 +38,7 @@
           "result": {
             "name": "Nij",
             "value": 0.25,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -47,7 +47,7 @@
           "result": {
             "name": "Neck axial tension",
             "value": 0.5,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -56,7 +56,7 @@
           "result": {
             "name": "Neck compression",
             "value": -0.5,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -65,7 +65,7 @@
           "result": {
             "name": "Neck tension duration corridor",
             "value": 0.5,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -74,7 +74,7 @@
           "result": {
             "name": "Neck compression duration corridor",
             "value": -0.5,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -83,7 +83,7 @@
           "result": {
             "name": "Neck shear duration corridor",
             "value": 0.5,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -101,7 +101,7 @@
           "result": {
             "name": "Thoracic spine acceleration (3 ms)",
             "value": 2.5492905324448207,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -110,7 +110,7 @@
           "result": {
             "name": "Sternum deflection",
             "value": -15.0,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -119,7 +119,7 @@
           "result": {
             "name": "Sternum deflection rate",
             "value": -0.25,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -128,7 +128,7 @@
           "result": {
             "name": "Viscous criterion",
             "value": 0.25,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -173,7 +173,7 @@
           "result": {
             "name": "Tibia-femur displacement",
             "value": 5.0,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -182,7 +182,7 @@
           "result": {
             "name": "Tibia index",
             "value": 0.25,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -191,7 +191,7 @@
           "result": {
             "name": "Tibia axial force",
             "value": 1.0,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -200,7 +200,7 @@
           "result": {
             "name": "Foot acceleration",
             "value": 5.0985810648896415,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -256,7 +256,7 @@
           "result": {
             "name": "HIC 15",
             "value": 250.0,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -265,7 +265,7 @@
           "result": {
             "name": "Nij",
             "value": 0.5,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -274,7 +274,7 @@
           "result": {
             "name": "Neck axial tension",
             "value": 1.0,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -283,7 +283,7 @@
           "result": {
             "name": "Neck compression",
             "value": -1.0,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -292,7 +292,7 @@
           "result": {
             "name": "Neck tension duration corridor",
             "value": 1.0,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -301,7 +301,7 @@
           "result": {
             "name": "Neck compression duration corridor",
             "value": -1.0,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -310,7 +310,7 @@
           "result": {
             "name": "Neck shear duration corridor",
             "value": 1.0,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -328,7 +328,7 @@
           "result": {
             "name": "Thoracic spine acceleration (3 ms)",
             "value": 5.0985810648896415,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -337,7 +337,7 @@
           "result": {
             "name": "Sternum deflection",
             "value": -30.0,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -346,7 +346,7 @@
           "result": {
             "name": "Sternum deflection rate",
             "value": -0.5,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -355,7 +355,7 @@
           "result": {
             "name": "Viscous criterion",
             "value": 0.5,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -400,7 +400,7 @@
           "result": {
             "name": "Tibia-femur displacement",
             "value": 10.0,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -409,7 +409,7 @@
           "result": {
             "name": "Tibia index",
             "value": 0.5,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -418,7 +418,7 @@
           "result": {
             "name": "Tibia axial force",
             "value": 2.0,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -427,7 +427,7 @@
           "result": {
             "name": "Foot acceleration",
             "value": 10.197162129779283,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -483,7 +483,7 @@
           "result": {
             "name": "HIC 15",
             "value": 500.0,
-            "rating": -20,
+            "rating": -20.0,
             "color": "red",
             "status": "OK"
           }
@@ -492,7 +492,7 @@
           "result": {
             "name": "Nij",
             "value": 1.0,
-            "rating": -10,
+            "rating": -10.0,
             "color": "yellow",
             "status": "OK"
           }
@@ -501,7 +501,7 @@
           "result": {
             "name": "Neck axial tension",
             "value": 2.0,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -510,7 +510,7 @@
           "result": {
             "name": "Neck compression",
             "value": -2.0,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -519,7 +519,7 @@
           "result": {
             "name": "Neck tension duration corridor",
             "value": 2.0,
-            "rating": -2,
+            "rating": -2.0,
             "color": "yellow",
             "status": "OK"
           }
@@ -528,7 +528,7 @@
           "result": {
             "name": "Neck compression duration corridor",
             "value": -2.0,
-            "rating": -2,
+            "rating": -2.0,
             "color": "yellow",
             "status": "OK"
           }
@@ -537,7 +537,7 @@
           "result": {
             "name": "Neck shear duration corridor",
             "value": 2.0,
-            "rating": -2,
+            "rating": -2.0,
             "color": "yellow",
             "status": "OK"
           }
@@ -555,7 +555,7 @@
           "result": {
             "name": "Thoracic spine acceleration (3 ms)",
             "value": 10.197162129779283,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -564,7 +564,7 @@
           "result": {
             "name": "Sternum deflection",
             "value": -60.0,
-            "rating": -2,
+            "rating": -2.0,
             "color": "orange",
             "status": "OK"
           }
@@ -573,7 +573,7 @@
           "result": {
             "name": "Sternum deflection rate",
             "value": -1.0,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -582,7 +582,7 @@
           "result": {
             "name": "Viscous criterion",
             "value": 1.0,
-            "rating": -10,
+            "rating": -10.0,
             "color": "yellow",
             "status": "OK"
           }
@@ -627,7 +627,7 @@
           "result": {
             "name": "Tibia-femur displacement",
             "value": 20.0,
-            "rating": -4,
+            "rating": -4.0,
             "color": "red",
             "status": "OK"
           }
@@ -636,7 +636,7 @@
           "result": {
             "name": "Tibia index",
             "value": 1.0,
-            "rating": -2,
+            "rating": -2.0,
             "color": "yellow",
             "status": "OK"
           }
@@ -645,7 +645,7 @@
           "result": {
             "name": "Tibia axial force",
             "value": 4.0,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -654,7 +654,7 @@
           "result": {
             "name": "Foot acceleration",
             "value": 20.394324259558566,
-            "rating": 0,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
