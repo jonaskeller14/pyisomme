@@ -18,6 +18,18 @@ class TestIsomme:
         i2 = Isomme(test_number="999", test_info=[], channels=[], channel_info=[])
         assert i2.test_number == "999"
 
+    def test_equality_and_hash_use_identity(self):
+        first = Isomme(test_number="same")
+        second = Isomme(test_number="same")
+        by_isomme = {first: "first", second: "second"}
+
+        first.test_number = "renamed"
+
+        assert first == first
+        assert first != second
+        assert by_isomme[first] == "first"
+        assert by_isomme[second] == "second"
+
     @pytest.mark.parametrize(
         "path",
         [
