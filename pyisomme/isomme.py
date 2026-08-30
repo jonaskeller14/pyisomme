@@ -781,14 +781,6 @@ class Isomme:
                     logger.debug(f"Removed duplicate filter Channel: {channel.code}")
         return self
 
-    def __eq__(self, other) -> bool:
-        if isinstance(other, Isomme):
-            return self.test_number == other.test_number
-        return False
-
-    def __ne__(self, other) -> bool:
-        return not self.__eq__(other)
-
     def __repr__(self) -> str:
         return f"Isomme({self.test_number or 'Unnamed'})"
 
@@ -822,9 +814,6 @@ class Isomme:
 
     def __iter__(self):
         yield from self.channels
-
-    def __hash__(self) -> int:
-        return hash(self.test_number or "Unnamed ISOMME")
 
     @debug_logging(logger)
     def get_channel(
