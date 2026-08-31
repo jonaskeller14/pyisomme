@@ -12,11 +12,19 @@
 pip install pyisomme
 ```
 
+PDF report export is optional. Install the PDF extra and its Chromium browser
+binary once after installing or updating pyisomme:
+
+```bash
+pip install "pyisomme[pdf]"
+python -m playwright install chromium
+```
+
 ## Features
 - Read/write ISO-MME (compressed/uncompressed)
 - Modify Channel and calculate Injury Risk Values (HIC, a3ms, DAMAGE, OLC, BrIC, NIJ, ...)
 - Plot Curves and compare multiple ISO-MMEs
-- Create PowerPoint Reports (Euro-NCAP, UN-R137, UN-R94)
+- Create PowerPoint, HTML, and PDF Reports (Euro-NCAP, UN-R137, UN-R94)
 - Display Limit bars in plots
 - Compare performance of left-hand-drive vehicle with right-hand-drive vehicle
 - Command-line tools for listing, merging, editing, converting, plotting, and reporting ISO-MME data

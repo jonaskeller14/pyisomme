@@ -21,6 +21,8 @@ keywords = ["pyisomme", "isomme", "iso-mme", "iso"]
 dependencies = [
     "matplotlib~=3.7.4",
     "plotly~=7.0.0",
+    "kaleido~=1.0",
+    "jinja2>=3.1",
     "astropy~=6.0.0",
     "pandas~=2.2.0",
     "tqdm~=4.66.1",
@@ -34,11 +36,17 @@ dependencies = [
 ]
 requires-python = ">=3.9"
 
+[project.optional-dependencies]
+pdf = [
+    "playwright>=1.42,<2",
+]
+
 [dependency-groups]
 dev = [
     "coverage>=7.10.7",
     "mypy>=1.19.1",
     "nox>=2026.4.10",
+    "playwright>=1.42,<2",
     "pytest>=8.4.2",
     "ruff>=0.16.1",
 ]
@@ -78,7 +86,11 @@ fallback_version = "0.0.0"
 include = ["pyisomme*"]
 
 [tool.setuptools.package-data]
-"pyisomme" = ["channel_codes.xml"]
+"pyisomme" = [
+    "channel_codes.xml",
+    "report/page2/*.css",
+    "report/page2/templates/*.html",
+]
 
 # --------------------------------------------------------------------------
 # Static checking

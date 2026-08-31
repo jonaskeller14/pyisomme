@@ -1,0 +1,7 @@
+<section class="page content-page">
+    <h1 class="page-title">{{ title }}</h1>
+    <div class="chart-container">{{ chart | safe }}</div>
+    {% if footer %}
+    <footer class="page-footer">{{ footer }}</footer>
+    {% endif %}
+</section>

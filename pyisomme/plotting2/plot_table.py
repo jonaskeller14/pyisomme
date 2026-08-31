@@ -54,8 +54,8 @@ def _validate_table_inputs(
                 f"{name} contains {len(values)} entries; expected {table_count}."
             )
 
-    for index, values in enumerate(cell_texts):
-        cells = np.asarray(values, dtype=object)
+    for index, cell_values in enumerate(cell_texts):
+        cells = np.asarray(cell_values, dtype=object)
         if cells.ndim != 2:
             raise ValueError(f"cell_texts[{index}] must be two-dimensional.")
         if len(row_labels[index]) != cells.shape[0]:

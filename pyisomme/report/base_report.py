@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import logging
+import tempfile
 import time
 from abc import ABC, abstractmethod
 from fnmatch import fnmatch
+from html import escape
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -130,8 +132,6 @@ class BaseReport(ABC):
                 tqdm(self.selected_pages, desc="Construct Pages")
             ):
                 logger.info(f"{page_number}:{page.name}")
-                # TODO(step-11): resolve page data in construct() and remove this re-initialisation.
-                page.__init__(page.report)
                 page.construct_pptx(presentation)
 
         attempts = 10
@@ -150,6 +150,99 @@ class BaseReport(ABC):
                 )
                 time.sleep(5)
         logger.info(f"pptx successfully exported: {path}")
+
+    def _render_html_document(self) -> str:
+        """Render all selected pages into one complete HTML document."""
+        stylesheet_path = Path(__file__).with_name("page2") / "style.css"
+        stylesheet = stylesheet_path.read_text(encoding="utf-8")
+
+        page_fragments: list[str] = []
+        with logging_redirect_tqdm():
+            for page_number, page in enumerate(
+                tqdm(self.selected_pages, desc="Render Pages")
+            ):
+                logger.info("%d:%s", page_number, page.name)
+                page_fragments.append(page.render_html())
+
+        return "\n".join(
+            (
+                "<!DOCTYPE html>",
+                '<html lang="en">',
+                "<head>",
+                '  <meta charset="utf-8">',
+                '  <meta name="viewport" content="width=device-width, initial-scale=1">',
+                f"  <title>{escape(self.title)}</title>",
+                '  <script src="https://cdn.plot.ly/plotly-3.1.0.min.js" charset="utf-8"></script>',
+                "  <style>",
+                stylesheet,
+                "  </style>",
+                "</head>",
+                "<body>",
+                *page_fragments,
+                "</body>",
+                "</html>",
+            )
+        )
+
+    def export_html(self, path: str | Path) -> None:
+        """Export the selected pages as one UTF-8 HTML document."""
+        output_path = Path(path)
+        output_path.write_text(self._render_html_document(), encoding="utf-8")
+        logger.info("html successfully exported: %s", output_path)
+
+    def export_pdf(self, path: str | Path) -> None:
+        """Render the selected pages to PDF with Playwright's Chromium."""
+        try:
+            from playwright.sync_api import Error as PlaywrightError, sync_playwright
+        except ImportError as exc:
+            raise RuntimeError(
+                "PDF export requires the optional Playwright dependency. Install it "
+                "with `pip install 'pyisomme[pdf]'`, then run "
+                "`python -m playwright install chromium`."
+            ) from exc
+
+        output_path = Path(path).resolve()
+        with tempfile.TemporaryDirectory(prefix="pyisomme-report-") as directory:
+            html_path = Path(directory) / "report.html"
+            html_path.write_text(self._render_html_document(), encoding="utf-8")
+
+            try:
+                with sync_playwright() as playwright:
+                    browser = playwright.chromium.launch()
+                    try:
+                        page = browser.new_page()
+                        page.goto(html_path.as_uri(), wait_until="networkidle")
+                        page.evaluate(
+                            "document.fonts ? document.fonts.ready : undefined"
+                        )
+                        if page.locator(".plotly-graph-div").count():
+                            page.wait_for_function(
+                                """() => Array.from(
+                                    document.querySelectorAll('.plotly-graph-div')
+                                ).every(element => element.data && element.layout)"""
+                            )
+                        page.evaluate(
+                            """() => {
+                                const pages = document.querySelectorAll('body > .page');
+                                if (pages.length) pages[pages.length - 1].classList.add('last-page');
+                            }"""
+                        )
+                        page.pdf(
+                            path=str(output_path),
+                            prefer_css_page_size=True,
+                            print_background=True,
+                        )
+                    finally:
+                        browser.close()
+            except PlaywrightError as exc:
+                if "playwright install" in str(exc).lower():
+                    raise RuntimeError(
+                        "Playwright Chromium is not installed. Run "
+                        "`python -m playwright install chromium` and retry."
+                    ) from exc
+                raise
+
+        logger.info("pdf successfully exported: %s", output_path)
 
     def __repr__(self) -> str:
         return f"{type(self).__name__}(title={self.title!r}, name={self.name!r})"

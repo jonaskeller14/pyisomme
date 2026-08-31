@@ -71,6 +71,20 @@ def test_plot_line_deduplicates_repeated_labels_but_keeps_distinct_lines() -> No
     )
 
 
+def test_plot_line_keeps_all_requested_subplots_when_channels_are_missing() -> None:
+    isomme = Isomme(test_number="EMPTY")
+
+    fig = plot_line(
+        {isomme: [["11HEAD0000H3ACXA"]] * 4},
+        nrows=2,
+        ncols=2,
+    )
+
+    assert [trace.xaxis for trace in fig.data] == ["x", "x2", "x3", "x4"]
+    assert all(trace.showlegend is False for trace in fig.data)
+    assert all(trace.marker.opacity == 0 for trace in fig.data)
+
+
 def test_plot_line_adds_limit_lines_fills_and_labels() -> None:
     isomme = _sample_isomme()
     limits = LimitSet(

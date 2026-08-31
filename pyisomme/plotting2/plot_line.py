@@ -296,6 +296,19 @@ def _add_line_panels(
 
     for index, (panel, position) in enumerate(zip(panels, positions)):
         row, col = position
+        if not panel.traces:
+            fig.add_trace(
+                go.Scatter(
+                    x=[None],
+                    y=[None],
+                    mode="markers",
+                    marker={"opacity": 0},
+                    hoverinfo="skip",
+                    showlegend=False,
+                ),
+                row=row,
+                col=col,
+            )
         for trace in panel.traces:
             legend_key = (trace.legendgroup, trace.name)
             show_legend_entry = legend and legend_key not in legend_entries
@@ -319,13 +332,13 @@ def _add_line_panels(
             x_ranges[index][0], x_ranges[index][1], num=1000, dtype=float
         )
         for limit in ordered_limits[index]:
-            limit_y = np.asarray(
+            current_limit_y = np.asarray(
                 limit.get_data(limit_x, x_unit="ms", y_unit=panel.unit), dtype=float
             )
             fig.add_trace(
                 go.Scatter(
                     x=limit_x,
-                    y=limit_y,
+                    y=current_limit_y,
                     mode="lines",
                     line={"color": limit.color, "dash": _limit_dash(limit.linestyle)},
                     name=limit.name,
@@ -399,7 +412,7 @@ def plot_line(
         rows=nrows,
         cols=ncols,
         shared_xaxes=sharex,
-        shared_yaxes=sharey,
+        shared_yaxes="all" if sharey else False,  # pyright: ignore[reportArgumentType]
         subplot_titles=[panel.title for panel in panels],
         horizontal_spacing=DEFAULT_CONFIG.horizontal_spacing,
         vertical_spacing=DEFAULT_CONFIG.vertical_spacing,
