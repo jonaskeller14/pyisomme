@@ -1,4 +1,4 @@
-from pyisomme.report.page.base import Page
+from pyisomme.report.page.page import Page
 from pyisomme.report.page.content import Page_Content
 from pyisomme.report.page.cover import Page_Cover
 from pyisomme.report.page.criterion_rating_table import Page_Criterion_Rating_Table

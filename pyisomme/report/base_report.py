@@ -132,7 +132,7 @@ class BaseReport(ABC):
                 logger.info(f"{page_number}:{page.name}")
                 # TODO(step-11): resolve page data in construct() and remove this re-initialisation.
                 page.__init__(page.report)
-                page.construct(presentation)
+                page.construct_pptx(presentation)
 
         attempts = 10
         for attempt in range(1, attempts + 1):

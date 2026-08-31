@@ -32,7 +32,7 @@ class NamedPage(Page[BaseReport]):
         super().__init__(report)
         self.name = name
 
-    def construct(self, presentation: Presentation) -> None:
+    def construct_pptx(self, presentation: Presentation) -> None:
         pass
 
 
