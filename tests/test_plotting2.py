@@ -85,6 +85,26 @@ def test_plot_line_keeps_all_requested_subplots_when_channels_are_missing() -> N
     assert all(trace.marker.opacity == 0 for trace in fig.data)
 
 
+def test_plot_line_shares_y_axis_across_entire_grid() -> None:
+    isomme = _sample_isomme()
+
+    fig = plot_line(
+        {isomme: [[isomme.channels[0]]] * 4},
+        nrows=2,
+        ncols=2,
+        sharey=True,
+    )
+
+    matches = [
+        fig.layout.yaxis.matches, # pyright: ignore[reportAttributeAccessIssue]
+        fig.layout.yaxis2.matches,
+        fig.layout.yaxis3.matches,
+        fig.layout.yaxis4.matches,
+    ]
+    assert matches.count(None) == 1
+    assert len({match for match in matches if match is not None}) == 1
+
+
 def test_plot_line_adds_limit_lines_fills_and_labels() -> None:
     isomme = _sample_isomme()
     limits = LimitSet(

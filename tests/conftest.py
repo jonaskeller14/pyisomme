@@ -23,7 +23,7 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         help="run slow PPTX export tests",
     )
     parser.addoption(
-        "--pptx-report",
+        "--report",
         action="store",
         default=None,
         help="Specify Report to only create one report (default is all)",

@@ -2082,7 +2082,7 @@ class EuroNCAP_Frontal_MPDB(Report[Overall]):
                     self, name="Passenger Belt", title="Passenger Belt", nrows=3, ncols=2,
                 ).with_channels(lambda report: {
                     isomme: [
-                        [f"?{report.overall(isomme).p_passenger}SEBE000[30]B{i}FO[X0]C"]
+                        [f"?{report.overall(isomme).p_passenger}SEBE000[30]B{i}FO[X0]D"]
                         for i in range(1, 7)
                     ]
                     for isomme in report.isomme_list

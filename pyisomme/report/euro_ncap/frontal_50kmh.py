@@ -1731,12 +1731,12 @@ class EuroNCAP_Frontal_50kmh(Report[Overall]):
                     ncols=2,
                 ).with_channels(lambda report: {
                     isomme: [
-                        [f"?{report.overall(isomme).p_front_passenger}SEBE000[30]B1FO[X0]C"],
-                        [f"?{report.overall(isomme).p_front_passenger}SEBE000[30]B2FO[X0]C"],
-                        [f"?{report.overall(isomme).p_front_passenger}SEBE000[30]B3FO[X0]C"],
-                        [f"?{report.overall(isomme).p_front_passenger}SEBE000[30]B4FO[X0]C"],
-                        [f"?{report.overall(isomme).p_front_passenger}SEBE000[30]B5FO[X0]C"],
-                        [f"?{report.overall(isomme).p_front_passenger}SEBE000[30]B6FO[X0]C"],
+                        [f"?{report.overall(isomme).p_front_passenger}SEBE000[30]B1FO[X0]D"],
+                        [f"?{report.overall(isomme).p_front_passenger}SEBE000[30]B2FO[X0]D"],
+                        [f"?{report.overall(isomme).p_front_passenger}SEBE000[30]B3FO[X0]D"],
+                        [f"?{report.overall(isomme).p_front_passenger}SEBE000[30]B4FO[X0]D"],
+                        [f"?{report.overall(isomme).p_front_passenger}SEBE000[30]B5FO[X0]D"],
+                        [f"?{report.overall(isomme).p_front_passenger}SEBE000[30]B6FO[X0]D"],
                     ]
                     for isomme in report.isomme_list
                 }),
@@ -1917,12 +1917,12 @@ class EuroNCAP_Frontal_50kmh(Report[Overall]):
                     ncols=2,
                 ).with_channels(lambda report: {
                     isomme: [
-                        [f"?{report.overall(isomme).p_rear_passenger}SEBE000[30]B1FO[X0]C"],
-                        [f"?{report.overall(isomme).p_rear_passenger}SEBE000[30]B2FO[X0]C"],
-                        [f"?{report.overall(isomme).p_rear_passenger}SEBE000[30]B3FO[X0]C"],
-                        [f"?{report.overall(isomme).p_rear_passenger}SEBE000[30]B4FO[X0]C"],
-                        [f"?{report.overall(isomme).p_rear_passenger}SEBE000[30]B5FO[X0]C"],
-                        [f"?{report.overall(isomme).p_rear_passenger}SEBE000[30]B6FO[X0]C"],
+                        [f"?{report.overall(isomme).p_rear_passenger}SEBE000[30]B1FO[X0]D"],
+                        [f"?{report.overall(isomme).p_rear_passenger}SEBE000[30]B2FO[X0]D"],
+                        [f"?{report.overall(isomme).p_rear_passenger}SEBE000[30]B3FO[X0]D"],
+                        [f"?{report.overall(isomme).p_rear_passenger}SEBE000[30]B4FO[X0]D"],
+                        [f"?{report.overall(isomme).p_rear_passenger}SEBE000[30]B5FO[X0]D"],
+                        [f"?{report.overall(isomme).p_rear_passenger}SEBE000[30]B6FO[X0]D"],
                     ]
                     for isomme in report.isomme_list
                 }),

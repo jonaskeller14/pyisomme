@@ -12,7 +12,7 @@ from tests.report.report_factory import REPORT_FACTORIES
 @pytest.mark.pptx
 class TestReportPptx:
     def test_requested_reports(self, pytestconfig: pytest.Config) -> None:
-        pptx_report = pytestconfig.getoption("--pptx-report")
+        pptx_report = pytestconfig.getoption("--report")
         if pptx_report is None:
             report_clss = ALL_REPORTS
         else:

@@ -35,10 +35,7 @@ _SIDE_HEAD_ACCELERATION = ChannelPlotSpec[SideReport](
     name="Head Acceleration",
     title="Head Acceleration",
     channels=lambda report: {
-        isomme: [
-            [f"?{report.overall(isomme).p}HEAD??????AC{axis}A"]
-            for axis in "XYZR"
-        ]
+        isomme: [[f"?{report.overall(isomme).p}HEAD??????AC{axis}A"] for axis in "XYZR"]
         for isomme in report.isomme_list
     },
     nrows=2,
@@ -196,12 +193,12 @@ _DRIVER_BELT = ChannelPlotSpec[DriverReport](
     title="Driver Belt",
     channels=lambda report: {
         isomme: [
-            [f"?{report.overall(isomme).p_driver}SEBE000[30]B1FO[X0]C"],
-            [f"?{report.overall(isomme).p_driver}SEBE000[30]B2FO[X0]C"],
-            [f"?{report.overall(isomme).p_driver}SEBE000[30]B3FO[X0]C"],
-            [f"?{report.overall(isomme).p_driver}SEBE000[30]B4FO[X0]C"],
-            [f"?{report.overall(isomme).p_driver}SEBE000[30]B5FO[X0]C"],
-            [f"?{report.overall(isomme).p_driver}SEBE000[30]B6FO[X0]C"],
+            [f"?{report.overall(isomme).p_driver}SEBE000[30]B1FO[X0]D"],
+            [f"?{report.overall(isomme).p_driver}SEBE000[30]B2FO[X0]D"],
+            [f"?{report.overall(isomme).p_driver}SEBE000[30]B3FO[X0]D"],
+            [f"?{report.overall(isomme).p_driver}SEBE000[30]B4FO[X0]D"],
+            [f"?{report.overall(isomme).p_driver}SEBE000[30]B5FO[X0]D"],
+            [f"?{report.overall(isomme).p_driver}SEBE000[30]B6FO[X0]D"],
         ]
         for isomme in report.isomme_list
     },
@@ -329,26 +326,25 @@ class OLCTrolleyPage(LineTablePage[Report[Any]]):
 
     @classmethod
     def _table(cls, report: Report[Any]) -> TableData:
-        cell_texts = []
-        cell_colors = []
+        cell_texts: list[list[str]] = []
+        cell_colors: list[list[tuple[float, float, float, float]]] = []
         for isomme in report.isomme_list:
             channel = cls._trolley_channel(isomme)
             if channel is None:
-                cell_texts.append(f"{np.nan:.2f}")
-                cell_colors.append((0.0, 0.0, 0.0, 0.0))
+                cell_texts.append([f"{np.nan:.2f}"])
+                cell_colors.append([(0.0, 0.0, 0.0, 0.0)])
                 continue
             olc, _ = calculate_olc(channel)
-            result = (
-                report.overall(isomme)
-                .criterion_compatibility_modifier.criterion_olc_modifier.result
-            )
-            cell_texts.append(f"{olc.get_data(unit=Unit(g0))[0]:.2f}")
+            result = report.overall(
+                isomme
+            ).criterion_compatibility_modifier.criterion_olc_modifier.result
+            cell_texts.append([f"{olc.get_data(unit=Unit(g0))[0]:.2f}"])
             if result is None or result.color is None:
-                cell_colors.append((0.0, 0.0, 0.0, 0.0))
+                cell_colors.append([(0.0, 0.0, 0.0, 0.0)])
             else:
                 color = result.color
                 rgb = to_rgb(color) if isinstance(color, str) else color[:3]
-                cell_colors.append((*rgb, 0.5))
+                cell_colors.append([(*rgb, 0.5)])
         return TableData(
             cell_texts=[cell_texts],
             cell_colors=[cell_colors],
