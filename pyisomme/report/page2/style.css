@@ -54,7 +54,48 @@ body {
 }
 
 .chart-container {
+    background-color: transparent;
     height: 100%;
     min-height: 0;
     width: 100%;
+}
+
+@media screen {
+    body {
+        align-items: center;
+        display: grid;
+        gap: 24px;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 297mm), 297mm));
+        justify-content: center;
+        padding: 24px 0;
+    }
+
+    .page {
+        aspect-ratio: 297 / 210;
+        box-shadow: 0 0 0 1px rgb(15 23 42 / 12%), 0 4px 14px rgb(15 23 42 / 10%);
+        height: auto;
+        max-width: 297mm;
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 1154px) {
+    body {
+        display: block;
+        overflow-x: hidden;
+        padding: 0;
+    }
+
+    .page {
+        aspect-ratio: auto;
+        height: 210mm;
+        left: 50%;
+        margin: 0 0 var(--screen-page-margin, 24px) -148.5mm;
+        max-width: none;
+        padding: 40px;
+        position: relative;
+        transform: scale(var(--screen-page-scale, 1));
+        transform-origin: top center;
+        width: 297mm;
+    }
 }

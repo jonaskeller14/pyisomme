@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import asyncio
 import logging
+import sys
 import tempfile
 import time
 from abc import ABC, abstractmethod
+from concurrent.futures import ThreadPoolExecutor
 from fnmatch import fnmatch
 from html import escape
 from pathlib import Path
@@ -176,6 +179,27 @@ class BaseReport(ABC):
                 "  <style>",
                 stylesheet,
                 "  </style>",
+                "  <script>",
+                "    (() => {",
+                "      const media = window.matchMedia('screen and (max-width: 1154px)');",
+                "      const updatePageScale = () => {",
+                "        for (const page of document.querySelectorAll('.page')) {",
+                "          page.style.removeProperty('--screen-page-scale');",
+                "          page.style.removeProperty('--screen-page-margin');",
+                "          if (!media.matches) continue;",
+                "          const scale = Math.min(1, (window.innerWidth - 32) / page.offsetWidth);",
+                "          page.style.setProperty('--screen-page-scale', String(scale));",
+                "          page.style.setProperty(",
+                "            '--screen-page-margin',",
+                "            `${page.offsetHeight * (scale - 1) + 24}px`,",
+                "          );",
+                "        }",
+                "      };",
+                "      window.addEventListener('resize', updatePageScale);",
+                "      window.addEventListener('load', updatePageScale);",
+                "      updatePageScale();",
+                "    })();",
+                "  </script>",
                 "</head>",
                 "<body>",
                 *page_fragments,
@@ -190,10 +214,54 @@ class BaseReport(ABC):
         output_path.write_text(self._render_html_document(), encoding="utf-8")
         logger.info("html successfully exported: %s", output_path)
 
-    def export_pdf(self, path: str | Path) -> None:
-        """Render the selected pages to PDF with Playwright's Chromium."""
+    @staticmethod
+    async def _export_pdf_async(html_path: Path, output_path: Path) -> None:
+        from playwright.async_api import async_playwright
+
+        async with async_playwright() as playwright:
+            browser = await playwright.chromium.launch()
+            try:
+                page = await browser.new_page()
+                await page.goto(html_path.as_uri(), wait_until="networkidle")
+                await page.evaluate("document.fonts ? document.fonts.ready : undefined")
+                if await page.locator(".plotly-graph-div").count():
+                    await page.wait_for_function(
+                        """() => Array.from(
+                            document.querySelectorAll('.plotly-graph-div')
+                        ).every(element => element.data && element.layout)"""
+                    )
+                await page.evaluate(
+                    """() => {
+                        const pages = document.querySelectorAll('body > .page');
+                        if (pages.length) pages[pages.length - 1].classList.add('last-page');
+                    }"""
+                )
+                await page.pdf(
+                    path=str(output_path),
+                    prefer_css_page_size=True,
+                    print_background=True,
+                )
+            finally:
+                await browser.close()
+
+    @classmethod
+    def _run_pdf_export(cls, html_path: Path, output_path: Path) -> None:
+        if sys.platform == "win32":
+            from asyncio.windows_events import ProactorEventLoop
+
+            loop = ProactorEventLoop()
+        else:
+            loop = asyncio.new_event_loop()
+
         try:
-            from playwright.sync_api import Error as PlaywrightError, sync_playwright
+            loop.run_until_complete(cls._export_pdf_async(html_path, output_path))
+        finally:
+            loop.close()
+
+    def export_pdf(self, path: str | Path) -> None:
+        """Render the selected pages to PDF, including from an async notebook."""
+        try:
+            from playwright.async_api import Error as PlaywrightError
         except ImportError as exc:
             raise RuntimeError(
                 "PDF export requires the optional Playwright dependency. Install it "
@@ -207,33 +275,15 @@ class BaseReport(ABC):
             html_path.write_text(self._render_html_document(), encoding="utf-8")
 
             try:
-                with sync_playwright() as playwright:
-                    browser = playwright.chromium.launch()
-                    try:
-                        page = browser.new_page()
-                        page.goto(html_path.as_uri(), wait_until="networkidle")
-                        page.evaluate(
-                            "document.fonts ? document.fonts.ready : undefined"
-                        )
-                        if page.locator(".plotly-graph-div").count():
-                            page.wait_for_function(
-                                """() => Array.from(
-                                    document.querySelectorAll('.plotly-graph-div')
-                                ).every(element => element.data && element.layout)"""
-                            )
-                        page.evaluate(
-                            """() => {
-                                const pages = document.querySelectorAll('body > .page');
-                                if (pages.length) pages[pages.length - 1].classList.add('last-page');
-                            }"""
-                        )
-                        page.pdf(
-                            path=str(output_path),
-                            prefer_css_page_size=True,
-                            print_background=True,
-                        )
-                    finally:
-                        browser.close()
+                try:
+                    asyncio.get_running_loop()
+                except RuntimeError:
+                    self._run_pdf_export(html_path, output_path)
+                else:
+                    with ThreadPoolExecutor(max_workers=1) as executor:
+                        executor.submit(
+                            self._run_pdf_export, html_path, output_path
+                        ).result()
             except PlaywrightError as exc:
                 if "playwright install" in str(exc).lower():
                     raise RuntimeError(

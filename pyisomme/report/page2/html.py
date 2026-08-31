@@ -23,7 +23,13 @@ def render_figure_page(
     for every chart.
     """
     html_figure = go.Figure(figure)
-    html_figure.update_layout(autosize=True, width=None, height=None)
+    html_figure.update_layout(
+        autosize=True,
+        width=None,
+        height=None,
+        paper_bgcolor="rgba(0, 0, 0, 0)",
+        plot_bgcolor="rgba(0, 0, 0, 0)",
+    )
     chart = html_figure.to_html(
         full_html=False,
         include_plotlyjs=False,
