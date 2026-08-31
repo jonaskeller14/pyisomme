@@ -12,7 +12,7 @@ from pyisomme.report.base_report import BaseReport
 from pyisomme.report.criterion import Criterion
 from pyisomme.report.describe import describe_report
 from pyisomme.report.manual import suggest
-from pyisomme.report.page import Page_Cover
+from pyisomme.report.page2.cover import CoverPage
 from pyisomme.report.report_protocol import ReportProtocol
 from pyisomme.report.validate import Issue, validate_report
 from pyisomme.utils import json_encode
@@ -72,7 +72,7 @@ class Report(BaseReport, Generic[C]):
             self.criterion_overall[isomme] = cast(C, overall_type(self, isomme))
             self.criterion_overall[isomme].build_limits()
 
-        self._available_pages = (Page_Cover(self),)
+        self._available_pages = (CoverPage(self),)
         self._selected_pages = list(self._available_pages)
 
     @property

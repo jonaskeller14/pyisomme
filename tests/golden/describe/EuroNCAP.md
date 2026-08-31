@@ -10,8 +10,8 @@
 | protocol | 9.3 |
 | protocols | 9.3 |
 | overall criterion | `Overall` |
-| available_pages | Page_Cover, Page_Rating_Table, Page_Driver_Result_Values_Chart, Page_Driver_Rating_Table, Page_Driver_Values_Table, Page_Driver_Belt, Page_Driver_Head_Acceleration, Page_Driver_HIC15, Page_Driver_Neck_Load, Page_Driver_Neck_NIJ, Page_Driver_Chest_Deflection, Page_Driver_Femur_Axial_Force, Page_Front_Passenger_Result_Values_Chart, Page_Front_Passenger_Rating_Table, Page_Front_Passenger_Values_Table, Page_Front_Passenger_Belt, Page_Front_Passenger_Head_Acceleration, Page_Front_Passenger_HIC15, Page_Front_Passenger_Neck_Load, Page_Front_Passenger_Neck_NIJ, Page_Front_Passenger_Chest_Deflection, Page_Front_Passenger_Femur_Axial_Force, Page_Rear_Passenger_Result_Values_Chart, Page_Rear_Passenger_Rating_Table, Page_Rear_Passenger_Values_Table, Page_Rear_Passenger_Belt, Page_Rear_Passenger_Head_Acceleration, Page_Rear_Passenger_HIC15, Page_Rear_Passenger_Neck_Load, Page_Rear_Passenger_Chest_Deflection, Page_Rear_Passenger_Femur_Axial_Force, Page_OLC |
-| selected_pages | Page_Cover, Page_Rating_Table, Page_Driver_Result_Values_Chart, Page_Driver_Rating_Table, Page_Driver_Values_Table, Page_Driver_Belt, Page_Driver_Head_Acceleration, Page_Driver_HIC15, Page_Driver_Neck_Load, Page_Driver_Neck_NIJ, Page_Driver_Chest_Deflection, Page_Driver_Femur_Axial_Force, Page_Front_Passenger_Result_Values_Chart, Page_Front_Passenger_Rating_Table, Page_Front_Passenger_Values_Table, Page_Front_Passenger_Belt, Page_Front_Passenger_Head_Acceleration, Page_Front_Passenger_HIC15, Page_Front_Passenger_Neck_Load, Page_Front_Passenger_Neck_NIJ, Page_Front_Passenger_Chest_Deflection, Page_Front_Passenger_Femur_Axial_Force, Page_Rear_Passenger_Result_Values_Chart, Page_Rear_Passenger_Rating_Table, Page_Rear_Passenger_Values_Table, Page_Rear_Passenger_Belt, Page_Rear_Passenger_Head_Acceleration, Page_Rear_Passenger_HIC15, Page_Rear_Passenger_Neck_Load, Page_Rear_Passenger_Chest_Deflection, Page_Rear_Passenger_Femur_Axial_Force, Page_OLC |
+| available_pages | Cover, Rating, Driver Result Values Chart, Driver Rating Table, Driver Values Table, Driver Belt, Driver Head Acceleration, Driver HIC15, Driver Neck Load, Driver Neck NIJ, Driver Chest Deflection, Driver Femur Axial Force, Front Passenger Result Values Chart, Front Passenger Rating Table, Front Passenger Values Table, Front Passenger Belt, Front Passenger Head Acceleration, Front Passenger HIC15, Front Passenger Neck Load, Front Passenger Neck NIJ, Front Passenger Chest Deflection, Front Passenger Femur Axial Force, Rear Passenger Result Values Chart, Rear Passenger Result Table, Rear Passenger Values Table, Rear Passenger Belt, Rear Passenger Head Acceleration, Rear Passenger HIC15, Rear Passenger Neck Load, Rear Passenger Chest Deflection, Rear Passenger Femur Axial Force, OLC |
+| selected_pages | Cover, Rating, Driver Result Values Chart, Driver Rating Table, Driver Values Table, Driver Belt, Driver Head Acceleration, Driver HIC15, Driver Neck Load, Driver Neck NIJ, Driver Chest Deflection, Driver Femur Axial Force, Front Passenger Result Values Chart, Front Passenger Rating Table, Front Passenger Values Table, Front Passenger Belt, Front Passenger Head Acceleration, Front Passenger HIC15, Front Passenger Neck Load, Front Passenger Neck NIJ, Front Passenger Chest Deflection, Front Passenger Femur Axial Force, Rear Passenger Result Values Chart, Rear Passenger Result Table, Rear Passenger Values Table, Rear Passenger Belt, Rear Passenger Head Acceleration, Rear Passenger HIC15, Rear Passenger Neck Load, Rear Passenger Chest Deflection, Rear Passenger Femur Axial Force, OLC |
 
 ## `Overall` — Overall
 
@@ -844,8 +844,8 @@ Manual inputs:
 | protocol | 9.3 |
 | protocols | 9.3 |
 | overall criterion | `Overall` |
-| available_pages | Page_Cover, Page_Rating_Table, Page_Driver_Result_Values_Chart, Page_Driver_Rating_Table, Page_Driver_Values_Table, Page_Driver_Belt, Page_Driver_Head_Acceleration, Page_Driver_Head_Damage, Page_Driver_Neck_Load, Page_Driver_Chest_Compression, Page_Driver_Abdomen_Compression, Page_Driver_Femur_Axial_Force, Page_Driver_Knee_Slider_Compression, Page_Driver_Tibia_Compression, Page_Driver_Tibia_Index, Page_Passenger_Result_Values_Chart, Page_Passenger_Rating_Table, Page_Passenger_Values_Table, Page_Passenger_Belt, Page_Passenger_Head_Acceleration, Page_Passenger_Neck_Load, Page_Passenger_Chest_Deflection, Page_Passenger_Femur_Axial_Force, Page_Passenger_Knee_Slider_Compression, Page_Passenger_Tibia_Compression, Page_Passenger_Tibia_Index, Page_OLC, Page_OLC_Trolley |
-| selected_pages | Page_Cover, Page_Rating_Table, Page_Driver_Result_Values_Chart, Page_Driver_Rating_Table, Page_Driver_Values_Table, Page_Driver_Belt, Page_Driver_Head_Acceleration, Page_Driver_Head_Damage, Page_Driver_Neck_Load, Page_Driver_Chest_Compression, Page_Driver_Abdomen_Compression, Page_Driver_Femur_Axial_Force, Page_Driver_Knee_Slider_Compression, Page_Driver_Tibia_Compression, Page_Driver_Tibia_Index, Page_Passenger_Result_Values_Chart, Page_Passenger_Rating_Table, Page_Passenger_Values_Table, Page_Passenger_Belt, Page_Passenger_Head_Acceleration, Page_Passenger_Neck_Load, Page_Passenger_Chest_Deflection, Page_Passenger_Femur_Axial_Force, Page_Passenger_Knee_Slider_Compression, Page_Passenger_Tibia_Compression, Page_Passenger_Tibia_Index, Page_OLC, Page_OLC_Trolley |
+| available_pages | Cover, Rating, Driver Result Values Chart, Driver Rating Table, Driver Values Table, Driver Belt, Driver Head Acceleration, Driver Head DAMAGE, Driver Neck Load, Driver Chest Compression, Driver Abdomen Compression, Driver Femur Axial Force, Driver Knee Slider Compression, Driver Tibia Compression, Driver Tibia Index, Passenger Result Values Chart, Passenger Rating Table, Passenger Values Table, Passenger Belt, Passenger Head Acceleration, Passenger Neck Load, Passenger Chest Deflection, Passenger Femur Axial Force, Passenger Knee Slider Compression, Passenger Tibia Compression, Passenger Tibia Index, OLC, OLC Trolley |
+| selected_pages | Cover, Rating, Driver Result Values Chart, Driver Rating Table, Driver Values Table, Driver Belt, Driver Head Acceleration, Driver Head DAMAGE, Driver Neck Load, Driver Chest Compression, Driver Abdomen Compression, Driver Femur Axial Force, Driver Knee Slider Compression, Driver Tibia Compression, Driver Tibia Index, Passenger Result Values Chart, Passenger Rating Table, Passenger Values Table, Passenger Belt, Passenger Head Acceleration, Passenger Neck Load, Passenger Chest Deflection, Passenger Femur Axial Force, Passenger Knee Slider Compression, Passenger Tibia Compression, Passenger Tibia Index, OLC, OLC Trolley |
 
 ## `Overall` — Overall
 
@@ -1642,8 +1642,8 @@ Limits for `M?MBAR0OLC??VEX?`:
 | protocol | 9.3 |
 | protocols | 9.3 |
 | overall criterion | `Overall` |
-| available_pages | Page_Cover, Page_Values_Chart, Page_Rating_Table, Page_Values_Table, Page_Head_Acceleration, Page_Shoulder_Lateral_Force, Page_Chest_Lateral_Compression, Page_Chest_Lateral_VC, Page_Abdomen_Lateral_Compression, Page_Abdomen_Lateral_VC, Page_Pubic_Symphysis_Force |
-| selected_pages | Page_Cover, Page_Values_Chart, Page_Rating_Table, Page_Values_Table, Page_Head_Acceleration, Page_Shoulder_Lateral_Force, Page_Chest_Lateral_Compression, Page_Chest_Lateral_VC, Page_Abdomen_Lateral_Compression, Page_Abdomen_Lateral_VC, Page_Pubic_Symphysis_Force |
+| available_pages | Cover, Values Chart, Rating Table, Values Table, Head Acceleration, Shoulder Lateral Force, Chest Lateral Compression, Chest Lateral VC, Abdomen Lateral Compression, Abdomen Lateral VC, Pubic Symphysis Force |
+| selected_pages | Cover, Values Chart, Rating Table, Values Table, Head Acceleration, Shoulder Lateral Force, Chest Lateral Compression, Chest Lateral VC, Abdomen Lateral Compression, Abdomen Lateral VC, Pubic Symphysis Force |
 
 ## `Overall` — Overall
 
@@ -1868,8 +1868,8 @@ Manual inputs:
 | protocol | 9.3 |
 | protocols | 9.3 |
 | overall criterion | `Overall` |
-| available_pages | Page_Cover, Page_Values_Chart, Page_Rating_Table, Page_Values_Table, Page_Head_Acceleration, Page_Shoulder_Lateral_Force, Page_Chest_Lateral_Compression, Page_Chest_Lateral_VC, Page_Abdomen_Lateral_Compression, Page_Abdomen_Lateral_VC, Page_Pubic_Symphysis_Force |
-| selected_pages | Page_Cover, Page_Values_Chart, Page_Rating_Table, Page_Values_Table, Page_Head_Acceleration, Page_Shoulder_Lateral_Force, Page_Chest_Lateral_Compression, Page_Chest_Lateral_VC, Page_Abdomen_Lateral_Compression, Page_Abdomen_Lateral_VC, Page_Pubic_Symphysis_Force |
+| available_pages | Cover, Values Chart, Rating Table, Values Table, Head Acceleration, Shoulder Lateral Force, Chest Lateral Compression, Chest Lateral VC, Abdomen Lateral Compression, Abdomen Lateral VC, Pubic Symphysis Force |
+| selected_pages | Cover, Values Chart, Rating Table, Values Table, Head Acceleration, Shoulder Lateral Force, Chest Lateral Compression, Chest Lateral VC, Abdomen Lateral Compression, Abdomen Lateral VC, Pubic Symphysis Force |
 
 ## `Overall` — Overall
 
@@ -2077,8 +2077,8 @@ Manual inputs:
 | protocol | 2.5 |
 | protocols | 2.4, 2.5 |
 | overall criterion | `Overall` |
-| available_pages | Page_Cover, Page_Values_Chart, Page_Rating_Table, Page_Values_Table, Page_Head_Acceleration, Page_Head_DAMAGE, Page_Upper_Neck, Page_Lower_Neck, Page_Chest_Lateral_Compression, Page_Abdomen_Lateral_Compression, Page_Lumbar_Force, Page_Pubic_Symphysis_Force |
-| selected_pages | Page_Cover, Page_Values_Chart, Page_Rating_Table, Page_Values_Table, Page_Head_Acceleration, Page_Head_DAMAGE, Page_Upper_Neck, Page_Lower_Neck, Page_Chest_Lateral_Compression, Page_Abdomen_Lateral_Compression, Page_Lumbar_Force, Page_Pubic_Symphysis_Force |
+| available_pages | Cover, Values Chart, Rating Table, Values Table, Head Acceleration, Head DAMAGE, Upper Neck, Lower Neck, Chest Lateral Compression, Abdomen Lateral Compression, Lumbar Load, Pubic Symphysis Force |
+| selected_pages | Cover, Values Chart, Rating Table, Values Table, Head Acceleration, Head DAMAGE, Upper Neck, Lower Neck, Chest Lateral Compression, Abdomen Lateral Compression, Lumbar Load, Pubic Symphysis Force |
 
 ## `Overall` — Overall
 

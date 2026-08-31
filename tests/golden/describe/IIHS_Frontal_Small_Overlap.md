@@ -6,8 +6,8 @@
 | protocol | VII |
 | protocols | VII |
 | overall criterion | `Overall` |
-| available_pages | Page_Cover, Page_Overall_Rating, Page_Driver_Rating, Page_Driver_Values_Chart, Page_Driver_Values_Table, Page_Driver_Head_Acceleration, Page_Driver_Neck_Nij, Page_Driver_Neck_Load, Page_Driver_Neck_Load_Corridors, Page_Driver_Chest, Page_Driver_Femur_Force, Page_Driver_Knee_Displacement, Page_Driver_Tibia_Index, Page_Driver_Tibia_Force, Page_Driver_Foot_Acceleration |
-| selected_pages | Page_Cover, Page_Overall_Rating, Page_Driver_Rating, Page_Driver_Values_Chart, Page_Driver_Values_Table, Page_Driver_Head_Acceleration, Page_Driver_Neck_Nij, Page_Driver_Neck_Load, Page_Driver_Neck_Load_Corridors, Page_Driver_Chest, Page_Driver_Femur_Force, Page_Driver_Knee_Displacement, Page_Driver_Tibia_Index, Page_Driver_Tibia_Force, Page_Driver_Foot_Acceleration |
+| available_pages | Cover, Overall Rating, Driver Injury Ratings, Driver Values Chart, Driver Values Table, Driver Head Acceleration, Driver Neck NIJ, Driver Neck Axial Load, Driver Neck Load Corridors, Driver Chest Injury Measures, Driver Femur Axial Force, Driver Tibia-Femur Displacement, Driver Tibia Index (Total Moment), Driver Tibia Axial Force, Driver Foot Acceleration |
+| selected_pages | Cover, Overall Rating, Driver Injury Ratings, Driver Values Chart, Driver Values Table, Driver Head Acceleration, Driver Neck NIJ, Driver Neck Axial Load, Driver Neck Load Corridors, Driver Chest Injury Measures, Driver Femur Axial Force, Driver Tibia-Femur Displacement, Driver Tibia Index (Total Moment), Driver Tibia Axial Force, Driver Foot Acceleration |
 
 ## `Overall` — Overall
 

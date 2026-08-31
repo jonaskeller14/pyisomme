@@ -6,6 +6,15 @@ import pytest
 matplotlib.use("Agg")
 
 
+def pytest_configure(config: pytest.Config) -> None:
+    for marker, description in (
+        ("pptx", "PPTX report export tests"),
+        ("html", "HTML report export tests"),
+        ("pdf", "PDF report export tests"),
+    ):
+        config.addinivalue_line("markers", f"{marker}: {description}")
+
+
 def pytest_addoption(parser: pytest.Parser) -> None:
     parser.addoption(
         "--pptx",
@@ -20,6 +29,18 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         help="Specify Report to only create one report (default is all)",
     )
     parser.addoption(
+        "--html",
+        action="store_true",
+        default=False,
+        help="run slow HTML export tests",
+    )
+    parser.addoption(
+        "--pdf",
+        action="store_true",
+        default=False,
+        help="run slow PDF export tests",
+    )
+    parser.addoption(
         "--regen-golden",
         action="store_true",
         default=False,
@@ -28,13 +49,19 @@ def pytest_addoption(parser: pytest.Parser) -> None:
 
 
 def pytest_collection_modifyitems(config, items):
-    if config.getoption("--pptx"):
-        return
-
-    skip_pptx = pytest.mark.skip(reason="PPTX export is opt-in; pass --pptx to run")
+    export_options = {
+        "pptx": ("--pptx", "PPTX"),
+        "html": ("--html", "HTML"),
+        "pdf": ("--pdf", "PDF"),
+    }
     for item in items:
-        if "pptx" in item.keywords:
-            item.add_marker(skip_pptx)
+        for marker, (option, label) in export_options.items():
+            if marker in item.keywords and not config.getoption(option):
+                item.add_marker(
+                    pytest.mark.skip(
+                        reason=f"{label} export is opt-in; pass {option} to run"
+                    )
+                )
 
 
 @pytest.fixture

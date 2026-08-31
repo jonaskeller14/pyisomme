@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import TypeVar
+
 import numpy as np
 
 from pyisomme.isomme import Isomme
@@ -11,6 +13,8 @@ from pyisomme.report.page2.criterion_rating_table import (
     _criteria_required,
     _rating_cell_color,
 )
+
+R = TypeVar("R", bound=BaseReport)
 
 
 def _value_row_label(criterion: Criterion) -> str:
@@ -26,9 +30,8 @@ def _value_cell_text(criterion: Criterion) -> str:
     return "n/a" if criterion.result is None else f"{criterion.result.value:.4g}"
 
 
-def values_table_spec_for(report: object) -> CriterionTableSpec:
+def values_table_spec_for(_report: R) -> CriterionTableSpec[R]:
     """Create a measured-value table spec for a report's criterion selector."""
-    del report
     return CriterionTableSpec(
         criteria=_criteria_required,
         row_label=_value_row_label,

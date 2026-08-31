@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable
+from dataclasses import dataclass, replace
 from typing import Any, Generic, TypeVar, cast
 
 import plotly.graph_objects as go
@@ -12,15 +13,21 @@ from pyisomme.report.base_report import BaseReport
 from pyisomme.report.page2.figure import FigurePage
 
 R = TypeVar("R", bound=BaseReport)
-ChannelSelector = Callable[[R], ChannelPanels]
+S_contra = TypeVar("S_contra", contravariant=True)
+ChannelSelector = Callable[[S_contra], ChannelPanels]
 
 
-class ChannelPlotPage(FigurePage[R], Generic[R]):
-    """A composable grid of interactive ISO-MME channel plots."""
+def _channels_required(_: S_contra) -> ChannelPanels: # pyright: ignore[reportInvalidTypeVarUse]
+    raise RuntimeError("ChannelPlotSpec requires channels via with_channels().")
 
-    channels: ChannelPanels
+
+@dataclass(frozen=True)
+class ChannelPlotSpec(Generic[S_contra]):
+    """Reusable rules for selecting and laying out a channel plot."""
+
     name: str
     title: str
+    channels: ChannelSelector[S_contra]
     nrows: int | None = None
     ncols: int | None = None
     sharex: bool = False
@@ -30,55 +37,84 @@ class ChannelPlotPage(FigurePage[R], Generic[R]):
     limits: LimitSet | dict | None = None
     footer: str | None = None
 
+    def with_channels(
+        self, channels: ChannelSelector[S_contra]
+    ) -> ChannelPlotSpec[S_contra]:
+        """Return a copy with a report-specific channel selector."""
+        return replace(self, channels=channels)
+
+
+def channel_plot_spec_for(
+    _report: R,
+    *,
+    name: str,
+    title: str,
+    nrows: int | None = None,
+    ncols: int | None = None,
+    sharex: bool = False,
+    sharey: bool = False,
+    xlim: tuple[float | int, float | int] | None = None,
+    ylim: tuple[float | int, float | int] | None = None,
+    limits: LimitSet | dict | None = None,
+    footer: str | None = None,
+) -> ChannelPlotSpec[R]:
+    """Create a plot spec bound to the concrete report type."""
+    return ChannelPlotSpec(
+        name=name,
+        title=title,
+        channels=_channels_required,
+        nrows=nrows,
+        ncols=ncols,
+        sharex=sharex,
+        sharey=sharey,
+        xlim=xlim,
+        ylim=ylim,
+        limits=limits,
+        footer=footer,
+    )
+
+
+class ChannelPlotPage(FigurePage[R], Generic[R]):
+    """A composable grid of interactive ISO-MME channel plots."""
+
+    spec: ChannelPlotSpec[R]
+
     def __init__(
         self,
         report: R,
         *,
-        name: str | None = None,
-        title: str | None = None,
-        channels: ChannelSelector[R] | None = None,
-        nrows: int | None = None,
-        ncols: int | None = None,
-        sharex: bool = False,
-        sharey: bool = False,
-        xlim: tuple[float | int, float | int] | None = None,
-        ylim: tuple[float | int, float | int] | None = None,
-        limits: LimitSet | dict | None = None,
-        footer: str | None = None,
+        spec: ChannelPlotSpec[R],
     ) -> None:
-        selector = channels or (lambda _report: self.channels)
-        resolved_limits = (
-            cast(Any, report).limits
-            if limits is None and self.limits is None
-            else self.limits if limits is None else limits
-        )
-        resolved_nrows = self.nrows if nrows is None else nrows
-        resolved_ncols = self.ncols if ncols is None else ncols
-        resolved_xlim = self.xlim if xlim is None else xlim
-        resolved_ylim = self.ylim if ylim is None else ylim
+        self.spec = spec
+        limits = spec.limits if spec.limits is not None else cast(Any, report).limits
 
         def build(
             current_report: R, figsize: tuple[float | int, float | int]
         ) -> go.Figure:
             return plot_line(
-                selector(current_report),
-                nrows=resolved_nrows,
-                ncols=resolved_ncols,
-                sharex=self.sharex if not sharex else sharex,
-                sharey=self.sharey if not sharey else sharey,
-                xlim=resolved_xlim,
-                ylim=resolved_ylim,
-                limits=cast(Any, resolved_limits),
+                spec.channels(current_report),
+                nrows=spec.nrows,
+                ncols=spec.ncols,
+                sharex=spec.sharex,
+                sharey=spec.sharey,
+                xlim=spec.xlim,
+                ylim=spec.ylim,
+                limits=cast(Any, limits),
                 figsize=figsize,
             )
 
         super().__init__(
             report,
-            name=name or self.name,
-            title=title or self.title,
+            name=spec.name,
+            title=spec.title,
             figure_builder=build,
-            footer=self.footer if footer is None else footer,
+            footer=spec.footer,
         )
 
 
-__all__ = ["ChannelPlotPage", "ChannelSelector"]
+__all__ = [
+    "ChannelPlotPage",
+    "ChannelPlotSpec",
+    "ChannelSelector",
+    "channel_plot_spec_for",
+]

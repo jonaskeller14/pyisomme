@@ -10,19 +10,29 @@ from pyisomme.limit import Limit
 from pyisomme.report.criterion import Criterion, Role, sub
 from pyisomme.report.criterion_result import CriterionResult
 from pyisomme.report.ctx import from_input
-from pyisomme.report.euro_ncap.side_pole import EuroNCAP_Side_Pole
+from pyisomme.report.euro_ncap.pages import (
+    side_head_acceleration_spec_for,
+    side_pubic_symphysis_force_spec_for,
+)
 from pyisomme.report.manual import Manual, manual
-from pyisomme.report.page import (
-    Page_Cover,
-    Page_Criterion_Values_Chart,
-    Page_Criterion_Values_Table,
-    Page_Plot_nxn,
+from pyisomme.report.page2 import (
+    ChannelPlotPage,
+    CoverPage,
+    CriterionTablePage,
+    CriterionValuesChartPage,
+    criterion_values_chart_spec_for,
+    values_table_spec_for,
 )
 from pyisomme.report.report import Report
 from pyisomme.report.un.frontal_50kmh_r137 import (
     Criterion_HPC36 as Criterion_HPC36_R137,
 )
 from pyisomme.report.un.limits import Limit_Fail, Limit_Pass
+from pyisomme.report.un.pages import (
+    side_barrier_abdomen_force_spec_for,
+    side_barrier_chest_deflection_spec_for,
+    side_barrier_chest_vc_spec_for,
+)
 from pyisomme.report.un.protocols import PROTOCOL_R95_2023
 from pyisomme.report.un.side_pole_r135 import Overall as Overall_Side_Pole_R135
 
@@ -182,145 +192,37 @@ class UN_Side_Barrier_R95(Report[Overall]):
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
-
         self._available_pages = (
-            Page_Cover(self),
-            self.Page_Values_Chart(self),
-            self.Page_Values_Table(self),
-            self.Page_Head_Acceleration(self),
-            self.Page_Chest_Lateral_Deflection(self),
-            self.Page_Chest_Lateral_VC(self),
-            self.Page_Pubic_Symphysis_Force(self),
-            self.Page_Abdomen_Force(self),
+            CoverPage(self),
+            CriterionValuesChartPage(self, spec=criterion_values_chart_spec_for(
+                self, name="Values Chart", title="Values"
+            ).with_criteria(lambda report: {
+                isomme: [
+                        report.overall(isomme).criterion_dummy.criterion_hpc36,
+                        report.overall(isomme).criterion_dummy.criterion_chest_lateral_deflection,
+                        report.overall(isomme).criterion_dummy.criterion_chest_lateral_vc,
+                        report.overall(isomme).criterion_dummy.criterion_pubic_symphysis_force,
+                        report.overall(isomme).criterion_dummy.criterion_abdomen_force,
+                ]
+                for isomme in report.isomme_list
+            })),
+            CriterionTablePage(
+                self, name="Values Table", title="Values",
+                spec=values_table_spec_for(self).with_criteria(lambda report: {
+                    isomme: [
+                        report.overall(isomme).criterion_dummy.criterion_hpc36,
+                        report.overall(isomme).criterion_dummy.criterion_chest_lateral_deflection,
+                        report.overall(isomme).criterion_dummy.criterion_chest_lateral_vc,
+                        report.overall(isomme).criterion_dummy.criterion_pubic_symphysis_force,
+                        report.overall(isomme).criterion_dummy.criterion_abdomen_force,
+                    ]
+                    for isomme in report.isomme_list
+                }),
+            ),
+            ChannelPlotPage(self, spec=side_head_acceleration_spec_for(self)),
+            ChannelPlotPage(self, spec=side_barrier_chest_deflection_spec_for(self)),
+            ChannelPlotPage(self, spec=side_barrier_chest_vc_spec_for(self)),
+            ChannelPlotPage(self, spec=side_pubic_symphysis_force_spec_for(self)),
+            ChannelPlotPage(self, spec=side_barrier_abdomen_force_spec_for(self)),
         )
         self._selected_pages = list(self._available_pages)
-
-    class Page_Values_Chart(Page_Criterion_Values_Chart):
-        report: UN_Side_Barrier_R95
-        name = "Values Chart"
-        title = "Values"
-
-        def __init__(self, report: UN_Side_Barrier_R95) -> None:
-            super().__init__(report)
-
-            self.criteria = {
-                isomme: [
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_dummy.criterion_hpc36,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_dummy.criterion_chest_lateral_deflection,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_dummy.criterion_chest_lateral_vc,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_dummy.criterion_pubic_symphysis_force,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_dummy.criterion_abdomen_force,
-                ]
-                for isomme in self.report.isomme_list
-            }
-
-    class Page_Values_Table(Page_Criterion_Values_Table):
-        report: UN_Side_Barrier_R95
-        name = "Values Table"
-        title = "Values"
-
-        def __init__(self, report: UN_Side_Barrier_R95) -> None:
-            super().__init__(report)
-
-            self.criteria = {
-                isomme: [
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_dummy.criterion_hpc36,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_dummy.criterion_chest_lateral_deflection,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_dummy.criterion_chest_lateral_vc,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_dummy.criterion_pubic_symphysis_force,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_dummy.criterion_abdomen_force,
-                ]
-                for isomme in self.report.isomme_list
-            }
-
-    class Page_Head_Acceleration(EuroNCAP_Side_Pole.Page_Head_Acceleration):
-        pass
-
-    class Page_Chest_Lateral_Deflection(Page_Plot_nxn):
-        report: UN_Side_Barrier_R95
-        name: str = "Chest Lateral Deflection"
-        title: str = "Chest Lateral Deflection"
-        nrows: int = 3
-        ncols: int = 2
-        sharey: bool = True
-
-        def __init__(self, report: UN_Side_Barrier_R95) -> None:
-            super().__init__(report)
-            self.channels = {
-                isomme: [
-                    [f"?{self.report.criterion_overall[isomme].p}RIBSLEUP??DSYC"],
-                    [f"?{self.report.criterion_overall[isomme].p}RIBSRIUP??DSYC"],
-                    [f"?{self.report.criterion_overall[isomme].p}RIBSLEMI??DSYC"],
-                    [f"?{self.report.criterion_overall[isomme].p}RIBSRIMI??DSYC"],
-                    [f"?{self.report.criterion_overall[isomme].p}RIBSLELO??DSYC"],
-                    [f"?{self.report.criterion_overall[isomme].p}RIBSRILO??DSYC"],
-                ]
-                for isomme in self.report.isomme_list
-            }
-
-    class Page_Chest_Lateral_VC(Page_Plot_nxn):
-        report: UN_Side_Barrier_R95
-        name: str = "Chest Lateral VC"
-        title: str = "Chest Lateral VC"
-        nrows: int = 3
-        ncols: int = 2
-        sharey: bool = True
-
-        def __init__(self, report: UN_Side_Barrier_R95) -> None:
-            super().__init__(report)
-            self.channels = {
-                isomme: [
-                    [f"?{self.report.criterion_overall[isomme].p}VCCRLEUP??VEYC"],
-                    [f"?{self.report.criterion_overall[isomme].p}VCCRRIUP??VEYC"],
-                    [f"?{self.report.criterion_overall[isomme].p}VCCRLEMI??VEYC"],
-                    [f"?{self.report.criterion_overall[isomme].p}VCCRRIMI??VEYC"],
-                    [f"?{self.report.criterion_overall[isomme].p}VCCRLELO??VEYC"],
-                    [f"?{self.report.criterion_overall[isomme].p}VCCRRILO??VEYC"],
-                ]
-                for isomme in self.report.isomme_list
-            }
-
-    class Page_Pubic_Symphysis_Force(EuroNCAP_Side_Pole.Page_Pubic_Symphysis_Force):
-        pass
-
-    class Page_Abdomen_Force(Page_Plot_nxn):
-        report: UN_Side_Barrier_R95
-        name: str = "Abdomen Force"
-        title: str = "Abdomen Force"
-        nrows: int = 3
-        ncols: int = 2
-        sharey: bool = True
-
-        def __init__(self, report: UN_Side_Barrier_R95) -> None:
-            super().__init__(report)
-            self.channels = {
-                isomme: [
-                    [f"?{self.report.criterion_overall[isomme].p}ABDOLEFR??FOYB"],
-                    [f"?{self.report.criterion_overall[isomme].p}ABDORIFR??FOYB"],
-                    [f"?{self.report.criterion_overall[isomme].p}ABDOLEMI??FOYB"],
-                    [f"?{self.report.criterion_overall[isomme].p}ABDORIMI??FOYB"],
-                    [f"?{self.report.criterion_overall[isomme].p}ABDOLERE??FOYB"],
-                    [f"?{self.report.criterion_overall[isomme].p}ABDORIRE??FOYB"],
-                ]
-                for isomme in self.report.isomme_list
-            }

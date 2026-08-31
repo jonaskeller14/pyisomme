@@ -6,8 +6,8 @@
 | protocol | 2.5 |
 | protocols | 2.4, 2.5 |
 | overall criterion | `Overall` |
-| available_pages | Page_Cover, Page_Values_Chart, Page_Rating_Table, Page_Values_Table, Page_Head_Acceleration, Page_Head_DAMAGE, Page_Upper_Neck, Page_Lower_Neck, Page_Chest_Lateral_Compression, Page_Abdomen_Lateral_Compression, Page_Lumbar_Force, Page_Pubic_Symphysis_Force |
-| selected_pages | Page_Cover, Page_Values_Chart, Page_Rating_Table, Page_Values_Table, Page_Head_Acceleration, Page_Head_DAMAGE, Page_Upper_Neck, Page_Lower_Neck, Page_Chest_Lateral_Compression, Page_Abdomen_Lateral_Compression, Page_Lumbar_Force, Page_Pubic_Symphysis_Force |
+| available_pages | Cover, Values Chart, Rating Table, Values Table, Head Acceleration, Head DAMAGE, Upper Neck, Lower Neck, Chest Lateral Compression, Abdomen Lateral Compression, Lumbar Load, Pubic Symphysis Force |
+| selected_pages | Cover, Values Chart, Rating Table, Values Table, Head Acceleration, Head DAMAGE, Upper Neck, Lower Neck, Chest Lateral Compression, Abdomen Lateral Compression, Lumbar Load, Pubic Symphysis Force |
 
 ## `Overall` — Overall
 

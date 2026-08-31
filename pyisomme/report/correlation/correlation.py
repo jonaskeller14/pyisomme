@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import logging
+from dataclasses import replace
 from datetime import date
-from typing import Any, cast
+from typing import Any
 
 import numpy as np
 
@@ -11,15 +12,11 @@ from pyisomme.correlation import Correlation_ISO18571
 from pyisomme.isomme import Isomme
 from pyisomme.report.criterion import Criterion, Role
 from pyisomme.report.criterion_result import CriterionResult
-from pyisomme.report.page import Page_Cover, Page_Criterion_Table
+from pyisomme.report.page2 import CoverPage, CriterionTablePage, rating_table_spec_for
 from pyisomme.report.report import Report
 from pyisomme.report.report_protocol import ReportProtocol
 
 logger = logging.getLogger(__name__)
-
-
-def _curve_sort_key(criterion: Overall.Criterion_Curve_Correlation) -> str:
-    return str(criterion.channel_r.code) if criterion.channel_r is not None else ""
 
 
 class Overall(Criterion):
@@ -154,30 +151,31 @@ class Correlation(Report[Overall]):
         super().__init__(*args, **kwargs)
 
         self._available_pages = (
-            Page_Cover(self),
-            self.Page_Correlation_Overall_Rating_Table(self),
+            CoverPage(self),
+            CriterionTablePage(
+                self,
+                name="Correlation Overall Rating Table",
+                title="Correlation Overall Rating",
+                spec=replace(
+                    rating_table_spec_for(self),
+                    row_label=lambda criterion: f"{criterion.name}",
+                    cell_text=lambda criterion: f"{Criterion.value_of(criterion):.1%}",
+                ).with_criteria(
+                    lambda report: {
+                        isomme: sorted(
+                            report.overall(isomme).criteria,
+                            key=lambda criterion: (
+                                str(criterion.channel_r.code)
+                                if isinstance(
+                                    criterion, Overall.Criterion_Curve_Correlation
+                                )
+                                and criterion.channel_r is not None
+                                else ""
+                            ),
+                        )
+                        for isomme in report.isomme_list
+                    }
+                ),
+            ),
         )
         self._selected_pages = list(self._available_pages)
-
-    class Page_Correlation_Overall_Rating_Table(Page_Criterion_Table):
-        report: Correlation
-        name = "Correlation Overall Rating Table"
-        title = "Correlation Overall Rating"
-        row_label = staticmethod(lambda criterion: f"{criterion.name}")
-        cell_text = staticmethod(
-            lambda criterion: f"{Criterion.value_of(criterion):.1%}"
-        )
-
-        def __init__(self, report: Correlation) -> None:
-            super().__init__(report)
-
-            self.criteria = {
-                isomme: cast(
-                    "list[Criterion]",
-                    sorted(
-                        self.report.criterion_overall[isomme].criteria,
-                        key=_curve_sort_key,
-                    ),
-                )
-                for isomme in self.report.isomme_list
-            }

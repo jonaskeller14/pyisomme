@@ -18,14 +18,25 @@ from pyisomme.report.euro_ncap.limits import (
     Limit_P,
     Limit_W,
 )
+from pyisomme.report.euro_ncap.pages import (
+    side_abdomen_lateral_compression_spec_for,
+    side_abdomen_lateral_vc_spec_for,
+    side_chest_lateral_compression_spec_for,
+    side_chest_lateral_vc_spec_for,
+    side_head_acceleration_spec_for,
+    side_pubic_symphysis_force_spec_for,
+    side_shoulder_lateral_force_spec_for,
+)
 from pyisomme.report.euro_ncap.protocols import PROTOCOL_9_3
 from pyisomme.report.manual import Manual, manual
-from pyisomme.report.page import (
-    Page_Cover,
-    Page_Criterion_Rating_Table,
-    Page_Criterion_Values_Chart,
-    Page_Criterion_Values_Table,
-    Page_Plot_nxn,
+from pyisomme.report.page2 import (
+    ChannelPlotPage,
+    CoverPage as Page_Cover,
+    CriterionTablePage,
+    CriterionValuesChartPage,
+    criterion_values_chart_spec_for,
+    rating_table_spec_for,
+    values_table_spec_for,
 )
 from pyisomme.report.report import Report
 from pyisomme.unit import Unit, g0
@@ -538,235 +549,65 @@ class EuroNCAP_Side_Pole(Report[Overall]):
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
-
         self._available_pages = (
             Page_Cover(self),
-            self.Page_Values_Chart(self),
-            self.Page_Rating_Table(self),
-            self.Page_Values_Table(self),
-            self.Page_Head_Acceleration(self),
-            self.Page_Shoulder_Lateral_Force(self),
-            self.Page_Chest_Lateral_Compression(self),
-            self.Page_Chest_Lateral_VC(self),
-            self.Page_Abdomen_Lateral_Compression(self),
-            self.Page_Abdomen_Lateral_VC(self),
-            self.Page_Pubic_Symphysis_Force(self),
+            CriterionValuesChartPage(
+                self,
+                spec=criterion_values_chart_spec_for(
+                    self, name="Values Chart", title="Values"
+                ).with_criteria(lambda report: {
+                    isomme: [
+                        report.criterion_overall[isomme].criterion_head.criterion_hic_15,
+                        report.criterion_overall[isomme].criterion_head.criterion_head_acceleration,
+                        report.criterion_overall[isomme].criterion_chest.criterion_chest_lateral_compression,
+                        report.criterion_overall[isomme].criterion_chest.criterion_chest_lateral_vc,
+                        report.criterion_overall[isomme].criterion_chest.criterion_shoulder_lateral_force,
+                        report.criterion_overall[isomme].criterion_abdomen.criterion_abdomen_lateral_compression,
+                        report.criterion_overall[isomme].criterion_abdomen.criterion_abdomen_lateral_vc,
+                        report.criterion_overall[isomme].criterion_pelvis.criterion_pubic_symphysis_force,
+                    ]
+                    for isomme in report.isomme_list
+                }),
+            ),
+            CriterionTablePage(
+                self,
+                name="Rating Table",
+                title="Rating",
+                spec=rating_table_spec_for(self).with_criteria(lambda report: {
+                    isomme: [
+                        report.criterion_overall[isomme].criterion_head,
+                        report.criterion_overall[isomme].criterion_chest,
+                        report.criterion_overall[isomme].criterion_abdomen,
+                        report.criterion_overall[isomme].criterion_pelvis,
+                        report.criterion_overall[isomme],
+                    ]
+                    for isomme in report.isomme_list
+                }),
+            ),
+            CriterionTablePage(
+                self,
+                name="Values Table",
+                title="Values",
+                spec=values_table_spec_for(self).with_criteria(lambda report: {
+                    isomme: [
+                        report.criterion_overall[isomme].criterion_head.criterion_hic_15,
+                        report.criterion_overall[isomme].criterion_head.criterion_head_acceleration,
+                        report.criterion_overall[isomme].criterion_chest.criterion_chest_lateral_compression,
+                        report.criterion_overall[isomme].criterion_chest.criterion_chest_lateral_vc,
+                        report.criterion_overall[isomme].criterion_chest.criterion_shoulder_lateral_force,
+                        report.criterion_overall[isomme].criterion_abdomen.criterion_abdomen_lateral_compression,
+                        report.criterion_overall[isomme].criterion_abdomen.criterion_abdomen_lateral_vc,
+                        report.criterion_overall[isomme].criterion_pelvis.criterion_pubic_symphysis_force,
+                    ]
+                    for isomme in report.isomme_list
+                }),
+            ),
+            ChannelPlotPage(self, spec=side_head_acceleration_spec_for(self)),
+            ChannelPlotPage(self, spec=side_shoulder_lateral_force_spec_for(self)),
+            ChannelPlotPage(self, spec=side_chest_lateral_compression_spec_for(self)),
+            ChannelPlotPage(self, spec=side_chest_lateral_vc_spec_for(self)),
+            ChannelPlotPage(self, spec=side_abdomen_lateral_compression_spec_for(self)),
+            ChannelPlotPage(self, spec=side_abdomen_lateral_vc_spec_for(self)),
+            ChannelPlotPage(self, spec=side_pubic_symphysis_force_spec_for(self)),
         )
         self._selected_pages = list(self._available_pages)
-
-    class Page_Values_Chart(Page_Criterion_Values_Chart):
-        name = "Values Chart"
-        title = "Values"
-
-        def __init__(self, report: Report[Any]) -> None:
-            super().__init__(report)
-
-            self.criteria = {
-                isomme: [
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_head.criterion_hic_15,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_head.criterion_head_acceleration,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_chest.criterion_chest_lateral_compression,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_chest.criterion_chest_lateral_vc,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_chest.criterion_shoulder_lateral_force,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_abdomen.criterion_abdomen_lateral_compression,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_abdomen.criterion_abdomen_lateral_vc,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_pelvis.criterion_pubic_symphysis_force,
-                ]
-                for isomme in self.report.isomme_list
-            }
-
-    class Page_Values_Table(Page_Criterion_Values_Table):
-        name = "Values Table"
-        title = "Values"
-
-        def __init__(self, report: Report[Any]) -> None:
-            super().__init__(report)
-
-            self.criteria = {
-                isomme: [
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_head.criterion_hic_15,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_head.criterion_head_acceleration,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_chest.criterion_chest_lateral_compression,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_chest.criterion_chest_lateral_vc,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_chest.criterion_shoulder_lateral_force,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_abdomen.criterion_abdomen_lateral_compression,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_abdomen.criterion_abdomen_lateral_vc,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_pelvis.criterion_pubic_symphysis_force,
-                ]
-                for isomme in self.report.isomme_list
-            }
-
-    class Page_Rating_Table(Page_Criterion_Rating_Table):
-        name: str = "Rating Table"
-        title: str = "Rating"
-
-        def __init__(self, report: Report[Any]) -> None:
-            super().__init__(report)
-
-            self.criteria = {
-                isomme: [
-                    self.report.criterion_overall[isomme].criterion_head,
-                    self.report.criterion_overall[isomme].criterion_chest,
-                    self.report.criterion_overall[isomme].criterion_abdomen,
-                    self.report.criterion_overall[isomme].criterion_pelvis,
-                    self.report.criterion_overall[isomme],
-                ]
-                for isomme in self.report.isomme_list
-            }
-
-    class Page_Head_Acceleration(Page_Plot_nxn):
-        name: str = "Head Acceleration"
-        title: str = "Head Acceleration"
-        nrows: int = 2
-        ncols: int = 2
-        sharey: bool = True
-
-        def __init__(self, report: Report[Any]) -> None:
-            super().__init__(report)
-            self.channels = {
-                isomme: [
-                    [f"?{self.report.criterion_overall[isomme].p}HEAD??????AC{xyzr}A"]
-                    for xyzr in "XYZR"
-                ]
-                for isomme in self.report.isomme_list
-            }
-
-    class Page_Chest_Lateral_Compression(Page_Plot_nxn):
-        name: str = "Chest Lateral Compression"
-        title: str = "Chest Lateral Compression"
-        nrows: int = 3
-        ncols: int = 2
-        sharey: bool = True
-
-        def __init__(self, report: Report[Any]) -> None:
-            super().__init__(report)
-            self.channels = {
-                isomme: [
-                    [f"?{self.report.criterion_overall[isomme].p}TRRILE01??DSYC"],
-                    [f"?{self.report.criterion_overall[isomme].p}TRRIRI01??DSYC"],
-                    [f"?{self.report.criterion_overall[isomme].p}TRRILE02??DSYC"],
-                    [f"?{self.report.criterion_overall[isomme].p}TRRIRI02??DSYC"],
-                    [f"?{self.report.criterion_overall[isomme].p}TRRILE03??DSYC"],
-                    [f"?{self.report.criterion_overall[isomme].p}TRRIRI03??DSYC"],
-                ]
-                for isomme in self.report.isomme_list
-            }
-
-    class Page_Chest_Lateral_VC(Page_Plot_nxn):
-        name: str = "Chest Lateral VC"
-        title: str = "Chest Lateral VC"
-        nrows: int = 3
-        ncols: int = 2
-        sharey: bool = True
-
-        def __init__(self, report: Report[Any]) -> None:
-            super().__init__(report)
-            self.channels = {
-                isomme: [
-                    [f"?{self.report.criterion_overall[isomme].p}VCCRLE01??DSYC"],
-                    [f"?{self.report.criterion_overall[isomme].p}VCCRRI01??DSYC"],
-                    [f"?{self.report.criterion_overall[isomme].p}VCCRLE02??DSYC"],
-                    [f"?{self.report.criterion_overall[isomme].p}VCCRRI02??DSYC"],
-                    [f"?{self.report.criterion_overall[isomme].p}VCCRLE03??DSYC"],
-                    [f"?{self.report.criterion_overall[isomme].p}VCCRRI03??DSYC"],
-                ]
-                for isomme in self.report.isomme_list
-            }
-
-    class Page_Shoulder_Lateral_Force(Page_Plot_nxn):
-        name = "Shoulder Lateral Force"
-        title = "Shoulder Lateral Force"
-        nrows = 1
-        ncols = 2
-        sharey = True
-
-        def __init__(self, report: Report[Any]) -> None:
-            super().__init__(report)
-            self.channels = {
-                isomme: [
-                    [f"?{self.report.criterion_overall[isomme].p}SHLDLE00??FOYC"],
-                    [f"?{self.report.criterion_overall[isomme].p}SHLDRI00??FOYC"],
-                ]
-                for isomme in self.report.isomme_list
-            }
-
-    class Page_Abdomen_Lateral_Compression(Page_Plot_nxn):
-        name: str = "Abdomen Lateral Compression"
-        title: str = "Abdomen Lateral Compression"
-        nrows: int = 2
-        ncols: int = 2
-        sharey: bool = True
-
-        def __init__(self, report: Report[Any]) -> None:
-            super().__init__(report)
-            self.channels = {
-                isomme: [
-                    [f"?{self.report.criterion_overall[isomme].p}ABRILE01??DSYC"],
-                    [f"?{self.report.criterion_overall[isomme].p}ABRIRI01??DSYC"],
-                    [f"?{self.report.criterion_overall[isomme].p}ABRILE02??DSYC"],
-                    [f"?{self.report.criterion_overall[isomme].p}ABRIRI02??DSYC"],
-                ]
-                for isomme in self.report.isomme_list
-            }
-
-    class Page_Abdomen_Lateral_VC(Page_Plot_nxn):
-        name: str = "Abdomen Lateral VC"
-        title: str = "Abdomen Lateral VC"
-        nrows: int = 2
-        ncols: int = 2
-        sharey: bool = True
-
-        def __init__(self, report: Report[Any]) -> None:
-            super().__init__(report)
-            self.channels = {
-                isomme: [
-                    [f"?{self.report.criterion_overall[isomme].p}VCARLE01??VEYC"],
-                    [f"?{self.report.criterion_overall[isomme].p}VCARRI01??VEYC"],
-                    [f"?{self.report.criterion_overall[isomme].p}VCARLE02??VEYC"],
-                    [f"?{self.report.criterion_overall[isomme].p}VCARRI02??VEYC"],
-                ]
-                for isomme in self.report.isomme_list
-            }
-
-    class Page_Pubic_Symphysis_Force(Page_Plot_nxn):
-        name: str = "Pubic Symphysis Force"
-        title: str = "Pubic Symphysis Force"
-
-        def __init__(self, report: Report[Any]) -> None:
-            super().__init__(report)
-            self.channels = {
-                isomme: [[f"?{self.report.criterion_overall[isomme].p}PUBC0000??FOYB"]]
-                for isomme in self.report.isomme_list
-            }

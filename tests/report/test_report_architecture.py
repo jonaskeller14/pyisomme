@@ -35,6 +35,9 @@ class NamedPage(Page[BaseReport]):
     def construct_pptx(self, presentation: Presentation) -> None:
         pass
 
+    def render_html(self) -> str:
+        return ""
+
 
 class DummyReport(Report[Overall]):
     _protocol = PROTOCOL

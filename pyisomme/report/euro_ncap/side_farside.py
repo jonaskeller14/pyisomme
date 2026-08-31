@@ -4,8 +4,6 @@ import logging
 from typing import Any
 
 import numpy as np
-from matplotlib.figure import Figure
-from typing_extensions import override
 
 from pyisomme.calculate import calculate_damage
 from pyisomme.channel import Channel
@@ -19,22 +17,30 @@ from pyisomme.report.euro_ncap.frontal_50kmh import (
     Criterion_HIC_15 as Criterion_HIC_15_F50,
 )
 from pyisomme.report.euro_ncap.limits import Limit_A, Limit_G, Limit_M, Limit_P, Limit_W
+from pyisomme.report.euro_ncap.pages import (
+    side_abdomen_lateral_compression_spec_for,
+    side_chest_lateral_compression_spec_for,
+    side_head_acceleration_spec_for,
+    side_pubic_symphysis_force_spec_for,
+)
 from pyisomme.report.euro_ncap.protocols import (
     PROTOCOL_FARSIDE_2_4,
     PROTOCOL_FARSIDE_2_5,
 )
 from pyisomme.report.euro_ncap.side_barrier import Overall as Overall_Side_Barrier
 from pyisomme.report.euro_ncap.side_pole import (
-    EuroNCAP_Side_Pole,
     Overall as Overall_Side_Pole,
 )
 from pyisomme.report.manual import Manual, manual
-from pyisomme.report.page import (
-    Page_Cover,
-    Page_Criterion_Rating_Table,
-    Page_Criterion_Values_Chart,
-    Page_Criterion_Values_Table,
-    Page_Plot_nxn,
+from pyisomme.report.page2 import (
+    ChannelPlotPage,
+    CoverPage,
+    CriterionTablePage,
+    CriterionValuesChartPage,
+    channel_plot_spec_for,
+    criterion_values_chart_spec_for,
+    rating_table_spec_for,
+    values_table_spec_for,
 )
 from pyisomme.report.report import Report
 
@@ -848,258 +854,108 @@ class EuroNCAP_Side_FarSide(Report[Overall]):
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
-
         self._available_pages = (
-            Page_Cover(self),
-            self.Page_Values_Chart(self),
-            self.Page_Rating_Table(self),
-            self.Page_Values_Table(self),
-            self.Page_Head_Acceleration(self),
-            self.Page_Head_DAMAGE(self),
-            self.Page_Upper_Neck(self),
-            self.Page_Lower_Neck(self),
-            self.Page_Chest_Lateral_Compression(self),
-            self.Page_Abdomen_Lateral_Compression(self),
-            self.Page_Lumbar_Force(self),
-            self.Page_Pubic_Symphysis_Force(self),
+            CoverPage(self),
+            CriterionValuesChartPage(
+                self,
+                spec=criterion_values_chart_spec_for(
+                    self, name="Values Chart", title="Values"
+                ).with_criteria(lambda report: {
+                    isomme: [
+                        report.criterion_overall[isomme].criterion_head.criterion_hic_15,
+                        report.criterion_overall[isomme].criterion_head.criterion_head_a3ms,
+                        report.criterion_overall[isomme].criterion_neck.criterion_upper_neck.criterion_tension_fz,
+                        report.criterion_overall[isomme].criterion_neck.criterion_upper_neck.criterion_lateral_flexion_mxoc,
+                        report.criterion_overall[isomme].criterion_neck.criterion_upper_neck.criterion_extension_myoc,
+                        report.criterion_overall[isomme].criterion_neck.criterion_lower_neck.criterion_tension_fz,
+                        report.criterion_overall[isomme].criterion_neck.criterion_lower_neck.criterion_lateral_flexion_mx,
+                        report.criterion_overall[isomme].criterion_neck.criterion_lower_neck.criterion_extension_my_base,
+                        report.criterion_overall[isomme].criterion_chest_abdomen.criterion_chest_lateral_compression,
+                        report.criterion_overall[isomme].criterion_chest_abdomen.criterion_abdomen_lateral_compression,
+                        report.criterion_overall[isomme].criterion_pelvis_lumbar_modifier.criterion_pubic_symphysis,
+                        report.criterion_overall[isomme].criterion_pelvis_lumbar_modifier.criterion_lumbar_fy,
+                        report.criterion_overall[isomme].criterion_pelvis_lumbar_modifier.criterion_lumbar_fz,
+                        report.criterion_overall[isomme].criterion_pelvis_lumbar_modifier.criterion_lumbar_mx,
+                    ] for isomme in report.isomme_list
+                }),
+            ),
+            CriterionTablePage(
+                self,
+                name="Rating Table", title="Rating",
+                spec=rating_table_spec_for(self).with_criteria(lambda report: {
+                    isomme: [
+                        report.criterion_overall[isomme].criterion_head,
+                        report.criterion_overall[isomme].criterion_neck,
+                        report.criterion_overall[isomme].criterion_chest_abdomen,
+                        report.criterion_overall[isomme].criterion_pelvis_lumbar_modifier,
+                        report.criterion_overall[isomme],
+                    ] for isomme in report.isomme_list
+                }),
+            ),
+            CriterionTablePage(
+                self,
+                name="Values Table", title="Values",
+                spec=values_table_spec_for(self).with_criteria(lambda report: {
+                    isomme: [
+                        report.criterion_overall[isomme].criterion_head.criterion_hic_15,
+                        report.criterion_overall[isomme].criterion_head.criterion_head_a3ms,
+                        report.criterion_overall[isomme].criterion_neck.criterion_upper_neck.criterion_tension_fz,
+                        report.criterion_overall[isomme].criterion_neck.criterion_upper_neck.criterion_lateral_flexion_mxoc,
+                        report.criterion_overall[isomme].criterion_neck.criterion_upper_neck.criterion_extension_myoc,
+                        report.criterion_overall[isomme].criterion_neck.criterion_lower_neck.criterion_tension_fz,
+                        report.criterion_overall[isomme].criterion_neck.criterion_lower_neck.criterion_lateral_flexion_mx,
+                        report.criterion_overall[isomme].criterion_neck.criterion_lower_neck.criterion_extension_my_base,
+                        report.criterion_overall[isomme].criterion_chest_abdomen.criterion_chest_lateral_compression,
+                        report.criterion_overall[isomme].criterion_chest_abdomen.criterion_abdomen_lateral_compression,
+                        report.criterion_overall[isomme].criterion_pelvis_lumbar_modifier.criterion_pubic_symphysis,
+                        report.criterion_overall[isomme].criterion_pelvis_lumbar_modifier.criterion_lumbar_fy,
+                        report.criterion_overall[isomme].criterion_pelvis_lumbar_modifier.criterion_lumbar_fz,
+                        report.criterion_overall[isomme].criterion_pelvis_lumbar_modifier.criterion_lumbar_mx,
+                    ] for isomme in report.isomme_list
+                }),
+            ),
+            ChannelPlotPage(self, spec=side_head_acceleration_spec_for(self)),
+            ChannelPlotPage(
+                self,
+                spec=channel_plot_spec_for(
+                    self, name="Head DAMAGE", title="Head DAMAGE", nrows=2, ncols=2, sharey=True
+                ).with_channels(lambda report: {
+                    isomme: [[channel] for channel in report.criterion_overall[isomme].criterion_head.criterion_damage.damage_channels()[:4]]
+                    for isomme in report.isomme_list
+                }),
+            ),
+            ChannelPlotPage(
+                self,
+                spec=channel_plot_spec_for(self, name="Upper Neck", title="Upper Neck", nrows=2, ncols=2).with_channels(lambda report: {
+                    isomme: [
+                        [f"?{report.criterion_overall[isomme].p}NECKUP00??FOZA"],
+                        [f"?{report.criterion_overall[isomme].p}TMONUP00??MOXB"],
+                        [f"?{report.criterion_overall[isomme].p}TMONUP00??MOYB"],
+                    ] for isomme in report.isomme_list
+                }),
+            ),
+            ChannelPlotPage(
+                self,
+                spec=channel_plot_spec_for(self, name="Lower Neck", title="Lower Neck", nrows=2, ncols=2).with_channels(lambda report: {
+                    isomme: [
+                        [f"?{report.criterion_overall[isomme].p}NECKLO00??FOZA"],
+                        [f"?{report.criterion_overall[isomme].p}TMONLO00??MOXB"],
+                        [f"?{report.criterion_overall[isomme].p}TMONLO00??MOYB"],
+                    ] for isomme in report.isomme_list
+                }),
+            ),
+            ChannelPlotPage(self, spec=side_chest_lateral_compression_spec_for(self)),
+            ChannelPlotPage(self, spec=side_abdomen_lateral_compression_spec_for(self)),
+            ChannelPlotPage(
+                self,
+                spec=channel_plot_spec_for(self, name="Lumbar Load", title="Lumbar Load", nrows=2, ncols=2).with_channels(lambda report: {
+                    isomme: [
+                        [f"?{report.criterion_overall[isomme].p}LUSP0000??FOYB"],
+                        [f"?{report.criterion_overall[isomme].p}LUSP0000??FOZB"],
+                        [f"?{report.criterion_overall[isomme].p}LUSP0000??MOXB"],
+                    ] for isomme in report.isomme_list
+                }),
+            ),
+            ChannelPlotPage(self, spec=side_pubic_symphysis_force_spec_for(self)),
         )
         self._selected_pages = list(self._available_pages)
-
-    class Page_Values_Chart(Page_Criterion_Values_Chart):
-        report: EuroNCAP_Side_FarSide
-        name = "Values Chart"
-        title = "Values"
-
-        def __init__(self, report: EuroNCAP_Side_FarSide) -> None:
-            super().__init__(report)
-
-            self.criteria = {
-                isomme: [
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_head.criterion_hic_15,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_head.criterion_head_a3ms,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_neck.criterion_upper_neck.criterion_tension_fz,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_neck.criterion_upper_neck.criterion_lateral_flexion_mxoc,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_neck.criterion_upper_neck.criterion_extension_myoc,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_neck.criterion_lower_neck.criterion_tension_fz,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_neck.criterion_lower_neck.criterion_lateral_flexion_mx,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_neck.criterion_lower_neck.criterion_extension_my_base,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_chest_abdomen.criterion_chest_lateral_compression,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_chest_abdomen.criterion_abdomen_lateral_compression,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_pelvis_lumbar_modifier.criterion_pubic_symphysis,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_pelvis_lumbar_modifier.criterion_lumbar_fy,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_pelvis_lumbar_modifier.criterion_lumbar_fz,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_pelvis_lumbar_modifier.criterion_lumbar_mx,
-                ]
-                for isomme in self.report.isomme_list
-            }
-
-    class Page_Values_Table(Page_Criterion_Values_Table):
-        report: EuroNCAP_Side_FarSide
-        name = "Values Table"
-        title = "Values"
-
-        def __init__(self, report: EuroNCAP_Side_FarSide) -> None:
-            super().__init__(report)
-
-            self.criteria = {
-                isomme: [
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_head.criterion_hic_15,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_head.criterion_head_a3ms,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_head.criterion_damage,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_neck.criterion_upper_neck.criterion_tension_fz,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_neck.criterion_upper_neck.criterion_lateral_flexion_mxoc,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_neck.criterion_upper_neck.criterion_extension_myoc,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_neck.criterion_lower_neck.criterion_tension_fz,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_neck.criterion_lower_neck.criterion_lateral_flexion_mx,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_neck.criterion_lower_neck.criterion_extension_my_base,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_chest_abdomen.criterion_chest_lateral_compression,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_chest_abdomen.criterion_abdomen_lateral_compression,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_pelvis_lumbar_modifier.criterion_pubic_symphysis,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_pelvis_lumbar_modifier.criterion_lumbar_fy,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_pelvis_lumbar_modifier.criterion_lumbar_fz,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_pelvis_lumbar_modifier.criterion_lumbar_mx,
-                ]
-                for isomme in self.report.isomme_list
-            }
-
-    class Page_Rating_Table(Page_Criterion_Rating_Table):
-        report: EuroNCAP_Side_FarSide
-        name: str = "Rating Table"
-        title: str = "Rating"
-
-        def __init__(self, report: EuroNCAP_Side_FarSide) -> None:
-            super().__init__(report)
-
-            self.criteria = {
-                isomme: [
-                    self.report.criterion_overall[isomme].criterion_head,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_neck.criterion_upper_neck,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_neck.criterion_lower_neck,
-                    self.report.criterion_overall[isomme].criterion_chest_abdomen,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_pelvis_lumbar_modifier,
-                    self.report.criterion_overall[isomme],
-                ]
-                for isomme in self.report.isomme_list
-            }
-
-    class Page_Head_Acceleration(EuroNCAP_Side_Pole.Page_Head_Acceleration):
-        pass
-
-    class Page_Head_DAMAGE(Page_Plot_nxn):
-        report: EuroNCAP_Side_FarSide
-        name = "Head DAMAGE"
-        title = "Head DAMAGE"
-        nrows = 2
-        ncols = 2
-        sharey = True
-
-        def __init__(self, report: EuroNCAP_Side_FarSide) -> None:
-            super().__init__(report)
-            # DAMAGE is calculated from angular velocity traces during report
-            # calculation, so resolve the derived channels only when the page renders.
-            # All four time histories are required by §7.3.1.1 monitoring.
-            self.channels = {}
-
-        @override
-        def figure(self, figsize: tuple[float, float]) -> Figure:
-            self.channels = {
-                isomme: [
-                    [channel]
-                    for channel in self.report.criterion_overall[
-                        isomme
-                    ].criterion_head.criterion_damage.damage_channels()[:4]
-                ]
-                for isomme in self.report.isomme_list
-            }
-            return super().figure(figsize)
-
-    class Page_Upper_Neck(Page_Plot_nxn):
-        report: EuroNCAP_Side_FarSide
-        name = "Upper Neck"
-        title = "Upper Neck"
-        nrows = 2
-        ncols = 2
-
-        def __init__(self, report: EuroNCAP_Side_FarSide) -> None:
-            super().__init__(report)
-            self.channels = {
-                isomme: [
-                    [f"?{self.report.criterion_overall[isomme].p}NECKUP00??FOZA"],
-                    [f"?{self.report.criterion_overall[isomme].p}TMONUP00??MOXB"],
-                    [f"?{self.report.criterion_overall[isomme].p}TMONUP00??MOYB"],
-                ]
-                for isomme in self.report.isomme_list
-            }
-
-    class Page_Lower_Neck(Page_Plot_nxn):
-        report: EuroNCAP_Side_FarSide
-        name = "Lower Neck"
-        title = "Lower Neck"
-        nrows = 2
-        ncols = 2
-
-        def __init__(self, report: EuroNCAP_Side_FarSide) -> None:
-            super().__init__(report)
-            self.channels = {
-                isomme: [
-                    [f"?{self.report.criterion_overall[isomme].p}NECKLO00??FOZA"],
-                    [f"?{self.report.criterion_overall[isomme].p}TMONLO00??MOXB"],
-                    [f"?{self.report.criterion_overall[isomme].p}TMONLO00??MOYB"],
-                ]
-                for isomme in self.report.isomme_list
-            }
-
-    class Page_Chest_Lateral_Compression(
-        EuroNCAP_Side_Pole.Page_Chest_Lateral_Compression
-    ):
-        pass
-
-    class Page_Abdomen_Lateral_Compression(
-        EuroNCAP_Side_Pole.Page_Abdomen_Lateral_Compression
-    ):
-        pass
-
-    class Page_Lumbar_Force(Page_Plot_nxn):
-        report: EuroNCAP_Side_FarSide
-        name = "Lumbar Load"
-        title = "Lumbar Load"
-        nrows = 2
-        ncols = 2
-
-        def __init__(self, report: EuroNCAP_Side_FarSide) -> None:
-            super().__init__(report)
-            self.channels = {
-                isomme: [
-                    [f"?{self.report.criterion_overall[isomme].p}LUSP0000??FOYB"],
-                    [f"?{self.report.criterion_overall[isomme].p}LUSP0000??FOZB"],
-                    [f"?{self.report.criterion_overall[isomme].p}LUSP0000??MOXB"],
-                ]
-                for isomme in self.report.isomme_list
-            }
-
-    class Page_Pubic_Symphysis_Force(EuroNCAP_Side_Pole.Page_Pubic_Symphysis_Force):
-        pass

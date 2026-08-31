@@ -12,10 +12,19 @@ from pyisomme.limit import Limit
 from pyisomme.report.criterion import Criterion, Role, sub
 from pyisomme.report.criterion_result import CriterionResult
 from pyisomme.report.ctx import from_input
+from pyisomme.report.euro_ncap.pages import (
+    side_abdomen_lateral_compression_spec_for,
+    side_pubic_symphysis_force_spec_for,
+)
 from pyisomme.report.euro_ncap.protocols import PROTOCOL_VTC_1_0
-from pyisomme.report.euro_ncap.side_pole import EuroNCAP_Side_Pole
 from pyisomme.report.manual import Manual, manual
-from pyisomme.report.page import Page_Cover, Page_Criterion_Values_Table
+from pyisomme.report.page2 import (
+    ChannelPlotPage,
+    CoverPage,
+    CriterionTablePage,
+    CriterionTableSpec,
+    channel_plot_spec_for,
+)
 from pyisomme.report.report import Report
 from pyisomme.unit import g0
 
@@ -559,142 +568,102 @@ class EuroNCAP_Side_Farside_VTC(Report[Overall]):
     _protocols = (PROTOCOL_VTC_1_0,)
     Criterion_Overall = Overall
 
+    @staticmethod
+    def _validation_iso_score_criteria(
+        report: EuroNCAP_Side_Farside_VTC,
+    ) -> dict[Isomme, list[Criterion]]:
+        return {
+            isomme: [
+                report.criterion_overall[isomme].validation_iso_scores.head_avx,
+                report.criterion_overall[isomme].validation_iso_scores.head_avy,
+                report.criterion_overall[isomme].validation_iso_scores.head_avz,
+                report.criterion_overall[isomme].validation_iso_scores.head_avr,
+                report.criterion_overall[isomme].validation_iso_scores.thsp_04_acx,
+                report.criterion_overall[isomme].validation_iso_scores.thsp_04_acy,
+                report.criterion_overall[isomme].validation_iso_scores.thsp_04_acz,
+                report.criterion_overall[isomme].validation_iso_scores.thsp_04_acr,
+                report.criterion_overall[isomme].validation_iso_scores.thsp_12_acx,
+                report.criterion_overall[isomme].validation_iso_scores.thsp_12_acy,
+                report.criterion_overall[isomme].validation_iso_scores.thsp_12_acz,
+                report.criterion_overall[isomme].validation_iso_scores.thsp_12_acr,
+                report.criterion_overall[isomme].validation_iso_scores.pelv_acx,
+                report.criterion_overall[isomme].validation_iso_scores.pelv_acy,
+                report.criterion_overall[isomme].validation_iso_scores.pelv_acz,
+                report.criterion_overall[isomme].validation_iso_scores.pelv_acr,
+                report.criterion_overall[isomme].validation_iso_scores.b_pillar_acx,
+                report.criterion_overall[isomme].validation_iso_scores.b_pillar_acy,
+                report.criterion_overall[isomme].validation_iso_scores.b_pillar_acz,
+                report.criterion_overall[isomme].validation_iso_scores.b_pillar_acr,
+                report.criterion_overall[isomme].validation_iso_scores.belt_b3_fo0,
+            ]
+            for isomme in report.isomme_list[1:]
+        }
+
+    @staticmethod
+    def _validation_injury_criteria(
+        report: EuroNCAP_Side_Farside_VTC,
+    ) -> dict[Isomme, list[Criterion]]:
+        return {
+            isomme: [
+                report.criterion_overall[
+                    isomme
+                ].criterion_validation_injury_criteria.criterion_hic_15,
+                report.criterion_overall[
+                    isomme
+                ].criterion_validation_injury_criteria.criterion_head_a3ms,
+            ]
+            for isomme in report.isomme_list
+        }
+
+    @staticmethod
+    def _validation_row_label(criterion: Criterion) -> str:
+        return f"{criterion.name}"
+
+    @staticmethod
+    def _validation_iso_score_cell_text(criterion: Criterion) -> str:
+        return f"{Criterion.value_of(criterion):.1%}"
+
+    @staticmethod
+    def _validation_injury_cell_text(criterion: Criterion) -> str:
+        injury_criteria = Overall.Criterion_Validation_Injury_Criteria
+        if not isinstance(
+            criterion,
+            (injury_criteria.Criterion_HIC_15, injury_criteria.Criterion_Head_a3ms),
+        ):
+            raise TypeError("Expected a validation injury criterion.")
+        return f"{criterion.r_ac_sim:.1%}\n{Criterion.value_of(criterion):.1%}"
+
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
-
         self._available_pages = (
-            Page_Cover(self),
-            self.Page_Validation_ISO_Score_Table(self),
-            self.Page_Validation_Injury_Criteria_Percentage_Table(self),
-            self.Page_Head_Acceleration(self),
-            self.Page_Chest_Lateral_Compression(self),
-            self.Page_Abdomen_Lateral_Compression(self),
-            self.Page_Pubic_Symphysis_Force(self),
+            CoverPage(self),
+            CriterionTablePage(
+                self,
+                name="Validation ISO-Score Table", title="Validation ISO-Score",
+                spec=CriterionTableSpec(
+                    criteria=self._validation_iso_score_criteria,
+                    row_label=self._validation_row_label,
+                    cell_text=self._validation_iso_score_cell_text,
+                ),
+            ),
+            CriterionTablePage(
+                self,
+                name="Validation Injury-Criteria Percentage Table", title="Validation Injury-Criteria Percentage",
+                spec=CriterionTableSpec(
+                    criteria=self._validation_injury_criteria,
+                    row_label=self._validation_row_label,
+                    cell_text=self._validation_injury_cell_text,
+                ),
+            ),
+            ChannelPlotPage(self, spec=channel_plot_spec_for(self, name="Head Acceleration", title="Head Acceleration", nrows=2, ncols=2, sharey=True).with_channels(lambda report: {
+                isomme: [[f"?{report.criterion_overall[isomme].p}HEAD??????AC{axis}A"] for axis in "XYZR"]
+                for isomme in report.isomme_list
+            })),
+            ChannelPlotPage(self, spec=channel_plot_spec_for(self, name="Chest Lateral Compression", title="Chest Lateral Compression", nrows=3, ncols=2, sharey=True).with_channels(lambda report: {
+                isomme: [[f"?{report.criterion_overall[isomme].p}TRRILE01??DSYC"], [f"?{report.criterion_overall[isomme].p}TRRIRI01??DSYC"], [f"?{report.criterion_overall[isomme].p}TRRILE02??DSYC"], [f"?{report.criterion_overall[isomme].p}TRRIRI02??DSYC"], [f"?{report.criterion_overall[isomme].p}TRRILE03??DSYC"], [f"?{report.criterion_overall[isomme].p}TRRIRI03??DSYC"]]
+                for isomme in report.isomme_list
+            })),
+            ChannelPlotPage(self, spec=side_abdomen_lateral_compression_spec_for(self)),
+            ChannelPlotPage(self, spec=side_pubic_symphysis_force_spec_for(self)),
         )
         self._selected_pages = list(self._available_pages)
-
-    class Page_Validation_ISO_Score_Table(Page_Criterion_Values_Table):
-        report: EuroNCAP_Side_Farside_VTC
-        name = "Validation ISO-Score Table"
-        title = "Validation ISO-Score"
-        row_label = staticmethod(lambda criterion: f"{criterion.name}")
-        cell_text = staticmethod(
-            lambda criterion: f"{Criterion.value_of(criterion):.1%}"
-        )
-
-        def __init__(self, report: EuroNCAP_Side_Farside_VTC) -> None:
-            super().__init__(report)
-
-            self.criteria = {
-                isomme: [
-                    self.report.criterion_overall[
-                        isomme
-                    ].validation_iso_scores.head_avx,
-                    self.report.criterion_overall[
-                        isomme
-                    ].validation_iso_scores.head_avy,
-                    self.report.criterion_overall[
-                        isomme
-                    ].validation_iso_scores.head_avz,
-                    self.report.criterion_overall[
-                        isomme
-                    ].validation_iso_scores.head_avr,
-                    self.report.criterion_overall[
-                        isomme
-                    ].validation_iso_scores.thsp_04_acx,
-                    self.report.criterion_overall[
-                        isomme
-                    ].validation_iso_scores.thsp_04_acy,
-                    self.report.criterion_overall[
-                        isomme
-                    ].validation_iso_scores.thsp_04_acz,
-                    self.report.criterion_overall[
-                        isomme
-                    ].validation_iso_scores.thsp_04_acr,
-                    self.report.criterion_overall[
-                        isomme
-                    ].validation_iso_scores.thsp_12_acx,
-                    self.report.criterion_overall[
-                        isomme
-                    ].validation_iso_scores.thsp_12_acy,
-                    self.report.criterion_overall[
-                        isomme
-                    ].validation_iso_scores.thsp_12_acz,
-                    self.report.criterion_overall[
-                        isomme
-                    ].validation_iso_scores.thsp_12_acr,
-                    self.report.criterion_overall[
-                        isomme
-                    ].validation_iso_scores.pelv_acx,
-                    self.report.criterion_overall[
-                        isomme
-                    ].validation_iso_scores.pelv_acy,
-                    self.report.criterion_overall[
-                        isomme
-                    ].validation_iso_scores.pelv_acz,
-                    self.report.criterion_overall[
-                        isomme
-                    ].validation_iso_scores.pelv_acr,
-                    self.report.criterion_overall[
-                        isomme
-                    ].validation_iso_scores.b_pillar_acx,
-                    self.report.criterion_overall[
-                        isomme
-                    ].validation_iso_scores.b_pillar_acy,
-                    self.report.criterion_overall[
-                        isomme
-                    ].validation_iso_scores.b_pillar_acz,
-                    self.report.criterion_overall[
-                        isomme
-                    ].validation_iso_scores.b_pillar_acr,
-                    self.report.criterion_overall[
-                        isomme
-                    ].validation_iso_scores.belt_b3_fo0,
-                ]
-                for isomme in self.report.isomme_list[1:]
-            }
-
-    class Page_Validation_Injury_Criteria_Percentage_Table(Page_Criterion_Values_Table):
-        report: EuroNCAP_Side_Farside_VTC
-        name = "Validation Injury-Criteria Percentage Table"
-        title = "Validation Injury-Criteria Percentage"
-        row_label = staticmethod(lambda criterion: f"{criterion.name}")
-        cell_text = staticmethod(
-            lambda criterion: (
-                f"{criterion.r_ac_sim:.1%}\n{Criterion.value_of(criterion):.1%}"
-            )
-        )
-
-        def __init__(self, report: EuroNCAP_Side_Farside_VTC) -> None:
-            super().__init__(report)
-
-            self.criteria = {
-                isomme: [
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_validation_injury_criteria.criterion_hic_15,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_validation_injury_criteria.criterion_head_a3ms,
-                ]
-                for isomme in self.report.isomme_list
-            }
-
-    class Page_Validation_Injury_Criteria_Difference_Table(Page_Criterion_Values_Table):
-        pass
-
-    class Page_Head_Acceleration(EuroNCAP_Side_Pole.Page_Head_Acceleration):
-        pass
-
-    class Page_Chest_Lateral_Compression(
-        EuroNCAP_Side_Pole.Page_Chest_Lateral_Compression
-    ):
-        pass
-
-    class Page_Abdomen_Lateral_Compression(
-        EuroNCAP_Side_Pole.Page_Abdomen_Lateral_Compression
-    ):
-        pass
-
-    class Page_Pubic_Symphysis_Force(EuroNCAP_Side_Pole.Page_Pubic_Symphysis_Force):
-        pass

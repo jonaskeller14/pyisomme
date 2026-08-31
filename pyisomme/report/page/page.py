@@ -19,7 +19,7 @@ class Page(ABC, Generic[R]):
         return f"Page({self.name})"
 
     @abstractmethod
-    def render_html() -> str:
+    def render_html(self) -> str:
         "Return page html body as string"
 
     @abstractmethod

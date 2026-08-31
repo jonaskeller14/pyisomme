@@ -18,14 +18,24 @@ from pyisomme.report.euro_ncap.limits import (
     Limit_P,
     Limit_W,
 )
+from pyisomme.report.euro_ncap.pages import (
+    driver_belt_spec_for,
+    driver_femur_axial_force_spec_for,
+    driver_head_acceleration_spec_for,
+    driver_hic_15_spec_for,
+    driver_neck_load_spec_for,
+)
 from pyisomme.report.euro_ncap.protocols import PROTOCOL_9_3
 from pyisomme.report.manual import Manual, manual
 from pyisomme.report.page2 import (
     ChannelPlotPage,
     CoverPage,
     CriterionValuesChartPage,
-    HIC15Page,
+    HICPage,
     OLCPage,
+    channel_plot_spec_for,
+    criterion_values_chart_spec_for,
+    hic_spec_for,
 )
 from pyisomme.report.page2.criterion_rating_table import (
     CriterionTablePage,
@@ -1545,23 +1555,27 @@ class EuroNCAP_Frontal_50kmh(Report[Overall]):
             ),
             CriterionValuesChartPage(
                 self,
-                name="Driver Result Values Chart",
-                title="Driver Result",
-                criteria=lambda report: {
-                    isomme: [
-                        report.overall(isomme).criterion_driver.criterion_head.criterion_hic_15,
-                        report.overall(isomme).criterion_driver.criterion_head.criterion_head_a3ms,
-                        report.overall(isomme).criterion_driver.criterion_neck.criterion_my_extension,
-                        report.overall(isomme).criterion_driver.criterion_neck.criterion_fz_tension,
-                        report.overall(isomme).criterion_driver.criterion_neck.criterion_fx_shear,
-                        report.overall(isomme).criterion_driver.criterion_chest.criterion_shoulder_belt_load,
-                        report.overall(isomme).criterion_driver.criterion_chest.criterion_chest_deflection,
-                        report.overall(isomme).criterion_driver.criterion_chest.criterion_chest_vc,
-                        report.overall(isomme).criterion_driver.criterion_femur.criterion_femur_axial_force.criterion_femur_axial_force_left,
-                        report.overall(isomme).criterion_driver.criterion_femur.criterion_femur_axial_force.criterion_femur_axial_force_right,
-                    ]
-                    for isomme in report.isomme_list
-                },
+                spec=criterion_values_chart_spec_for(
+                    self,
+                    name="Driver Result Values Chart",
+                    title="Driver Result",
+                ).with_criteria(
+                    lambda report: {
+                        isomme: [
+                            report.overall(isomme).criterion_driver.criterion_head.criterion_hic_15,
+                            report.overall(isomme).criterion_driver.criterion_head.criterion_head_a3ms,
+                            report.overall(isomme).criterion_driver.criterion_neck.criterion_my_extension,
+                            report.overall(isomme).criterion_driver.criterion_neck.criterion_fz_tension,
+                            report.overall(isomme).criterion_driver.criterion_neck.criterion_fx_shear,
+                            report.overall(isomme).criterion_driver.criterion_chest.criterion_shoulder_belt_load,
+                            report.overall(isomme).criterion_driver.criterion_chest.criterion_chest_deflection,
+                            report.overall(isomme).criterion_driver.criterion_chest.criterion_chest_vc,
+                            report.overall(isomme).criterion_driver.criterion_femur.criterion_femur_axial_force.criterion_femur_axial_force_left,
+                            report.overall(isomme).criterion_driver.criterion_femur.criterion_femur_axial_force.criterion_femur_axial_force_right,
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
             ),
             CriterionTablePage(
                 self,
@@ -1602,113 +1616,57 @@ class EuroNCAP_Frontal_50kmh(Report[Overall]):
                     }
                 ),
             ),
+            ChannelPlotPage(self, spec=driver_belt_spec_for(self)),
+            ChannelPlotPage(self, spec=driver_head_acceleration_spec_for(self)),
+            HICPage(self, spec=driver_hic_15_spec_for(self)),
+            ChannelPlotPage(self, spec=driver_neck_load_spec_for(self)),
             ChannelPlotPage(
                 self,
-                name="Driver Belt",
-                title="Driver Belt",
-                channels=lambda report: {
-                    isomme: [
-                        [f"?{report.overall(isomme).p_driver}SEBE000[30]B1FO[X0]C"],
-                        [f"?{report.overall(isomme).p_driver}SEBE000[30]B2FO[X0]C"],
-                        [f"?{report.overall(isomme).p_driver}SEBE000[30]B3FO[X0]C"],
-                        [f"?{report.overall(isomme).p_driver}SEBE000[30]B4FO[X0]C"],
-                        [f"?{report.overall(isomme).p_driver}SEBE000[30]B5FO[X0]C"],
-                        [f"?{report.overall(isomme).p_driver}SEBE000[30]B6FO[X0]C"],
-                    ]
-                    for isomme in report.isomme_list
-                },
-                nrows=3,
-                ncols=2,
-            ),
-            ChannelPlotPage(
-                self,
-                name="Driver Head Acceleration",
-                title="Driver Head Acceleration",
-                channels=lambda report: {
-                    isomme: [
-                        [f"?{report.overall(isomme).p_driver}HEAD??????ACXA"],
-                        [f"?{report.overall(isomme).p_driver}HEAD??????ACYA"],
-                        [f"?{report.overall(isomme).p_driver}HEAD??????ACZA"],
-                        [f"?{report.overall(isomme).p_driver}HEAD??????ACRA"],
-                    ]
-                    for isomme in report.isomme_list
-                },
-                nrows=2,
-                ncols=2,
-                sharey=True,
-            ),
-            HIC15Page(
-                self,
-                name="Driver HIC15",
-                title="Driver HIC15",
-                position=lambda report, isomme: report.overall(isomme).p_driver,
+                spec=channel_plot_spec_for(
+                    self,
+                    name="Driver Neck NIJ",
+                    title="Driver Neck NIJ",
+                    nrows=2,
+                    ncols=2,
+                    sharey=True,
+                ).with_channels(
+                    lambda report: {
+                        isomme: [
+                            [f"?{report.overall(isomme).p_driver}NIJCIPCF??00YB"],
+                            [f"?{report.overall(isomme).p_driver}NIJCIPCE??00YB"],
+                            [f"?{report.overall(isomme).p_driver}NIJCIPTF??00YB"],
+                            [f"?{report.overall(isomme).p_driver}NIJCIPTE??00YB"],
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
             ),
             ChannelPlotPage(
                 self,
-                name="Driver Neck Load",
-                title="Driver Neck Load",
-                channels=lambda report: {
-                    isomme: [
-                        [f"?{report.overall(isomme).p_driver}NECKUP00??MOYB"],
-                        [f"?{report.overall(isomme).p_driver}NECKUP00??FOZA"],
-                        [f"?{report.overall(isomme).p_driver}NECKUP00??FOXA"],
-                    ]
-                    for isomme in report.isomme_list
-                },
-                nrows=2,
-                ncols=2,
+                spec=channel_plot_spec_for(
+                    self,
+                    name="Driver Chest Deflection",
+                    title="Driver Chest Deflection",
+                    nrows=1,
+                    ncols=2,
+                ).with_channels(
+                    lambda report: {
+                        isomme: [
+                            [f"?{report.overall(isomme).p_driver}CHST000???DSXC"],
+                            [f"?{report.overall(isomme).p_driver}VCCR000???VEXC"],
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
             ),
-            ChannelPlotPage(
-                self,
-                name="Driver Neck NIJ",
-                title="Driver Neck NIJ",
-                channels=lambda report: {
-                    isomme: [
-                        [f"?{report.overall(isomme).p_driver}NIJCIPCF??00YB"],
-                        [f"?{report.overall(isomme).p_driver}NIJCIPCE??00YB"],
-                        [f"?{report.overall(isomme).p_driver}NIJCIPTF??00YB"],
-                        [f"?{report.overall(isomme).p_driver}NIJCIPTE??00YB"],
-                    ]
-                    for isomme in report.isomme_list
-                },
-                nrows=2,
-                ncols=2,
-                sharey=True,
-            ),
-            ChannelPlotPage(
-                self,
-                name="Driver Chest Deflection",
-                title="Driver Chest Deflection",
-                channels=lambda report: {
-                    isomme: [
-                        [f"?{report.overall(isomme).p_driver}CHST000???DSXC"],
-                        [f"?{report.overall(isomme).p_driver}VCCR000???VEXC"],
-                    ]
-                    for isomme in report.isomme_list
-                },
-                nrows=1,
-                ncols=2,
-            ),
-            ChannelPlotPage(
-                self,
-                name="Driver Femur Axial Force",
-                title="Driver Femur Axial Force",
-                channels=lambda report: {
-                    isomme: [
-                        [f"?{report.overall(isomme).p_driver}FEMRLE00??FOZB"],
-                        [f"?{report.overall(isomme).p_driver}FEMRRI00??FOZB"],
-                    ]
-                    for isomme in report.isomme_list
-                },
-                nrows=1,
-                ncols=2,
-                sharey=True,
-            ),
+            ChannelPlotPage(self, spec=driver_femur_axial_force_spec_for(self)),
             CriterionValuesChartPage(
                 self,
-                name="Front Passenger Result Values Chart",
-                title="Front Passenger Result",
-                criteria=lambda report: {
+                spec=criterion_values_chart_spec_for(
+                    self,
+                    name="Front Passenger Result Values Chart",
+                    title="Front Passenger Result",
+                ).with_criteria(lambda report: {
                     isomme: [
                         report.overall(isomme).criterion_front_passenger.criterion_head.criterion_hic_15,
                         report.overall(isomme).criterion_front_passenger.criterion_head.criterion_head_a3ms,
@@ -1722,7 +1680,7 @@ class EuroNCAP_Frontal_50kmh(Report[Overall]):
                         report.overall(isomme).criterion_front_passenger.criterion_femur.criterion_femur_axial_force.criterion_femur_axial_force_right,
                     ]
                     for isomme in report.isomme_list
-                },
+                }),
             ),
             CriterionTablePage(
                 self,
@@ -1765,9 +1723,13 @@ class EuroNCAP_Frontal_50kmh(Report[Overall]):
             ),
             ChannelPlotPage(
                 self,
-                name="Front Passenger Belt",
-                title="Front Passenger Belt",
-                channels=lambda report: {
+                spec=channel_plot_spec_for(
+                    self,
+                    name="Front Passenger Belt",
+                    title="Front Passenger Belt",
+                    nrows=3,
+                    ncols=2,
+                ).with_channels(lambda report: {
                     isomme: [
                         [f"?{report.overall(isomme).p_front_passenger}SEBE000[30]B1FO[X0]C"],
                         [f"?{report.overall(isomme).p_front_passenger}SEBE000[30]B2FO[X0]C"],
@@ -1777,15 +1739,18 @@ class EuroNCAP_Frontal_50kmh(Report[Overall]):
                         [f"?{report.overall(isomme).p_front_passenger}SEBE000[30]B6FO[X0]C"],
                     ]
                     for isomme in report.isomme_list
-                },
-                nrows=3,
-                ncols=2,
+                }),
             ),
             ChannelPlotPage(
                 self,
-                name="Front Passenger Head Acceleration",
-                title="Front Passenger Head Acceleration",
-                channels=lambda report: {
+                spec=channel_plot_spec_for(
+                    self,
+                    name="Front Passenger Head Acceleration",
+                    title="Front Passenger Head Acceleration",
+                    nrows=2,
+                    ncols=2,
+                    sharey=True,
+                ).with_channels(lambda report: {
                     isomme: [
                         [f"?{report.overall(isomme).p_front_passenger}HEAD??????ACXA"],
                         [f"?{report.overall(isomme).p_front_passenger}HEAD??????ACYA"],
@@ -1793,37 +1758,48 @@ class EuroNCAP_Frontal_50kmh(Report[Overall]):
                         [f"?{report.overall(isomme).p_front_passenger}HEAD??????ACRA"],
                     ]
                     for isomme in report.isomme_list
-                },
-                nrows=2,
-                ncols=2,
-                sharey=True,
+                }),
             ),
-            HIC15Page(
+            HICPage(
                 self,
-                name="Front Passenger HIC15",
-                title="Front Passenger HIC15",
-                position=lambda report, isomme: report.overall(isomme).p_front_passenger,
+                spec=hic_spec_for(
+                    self,
+                    name="Front Passenger HIC15",
+                    title="Front Passenger HIC15",
+                    timespan=15,
+                ).with_position(
+                    lambda report, isomme: report.overall(
+                        isomme
+                    ).p_front_passenger
+                ),
             ),
             ChannelPlotPage(
                 self,
-                name="Front Passenger Neck Load",
-                title="Front Passenger Neck Load",
-                channels=lambda report: {
+                spec=channel_plot_spec_for(
+                    self,
+                    name="Front Passenger Neck Load",
+                    title="Front Passenger Neck Load",
+                    nrows=2,
+                    ncols=2,
+                ).with_channels(lambda report: {
                     isomme: [
                         [f"?{report.overall(isomme).p_front_passenger}NECKUP00??MOYB"],
                         [f"?{report.overall(isomme).p_front_passenger}NECKUP00??FOZA"],
                         [f"?{report.overall(isomme).p_front_passenger}NECKUP00??FOXA"],
                     ]
                     for isomme in report.isomme_list
-                },
-                nrows=2,
-                ncols=2,
+                }),
             ),
             ChannelPlotPage(
                 self,
-                name="Front Passenger Neck NIJ",
-                title="Front Passenger Neck NIJ",
-                channels=lambda report: {
+                spec=channel_plot_spec_for(
+                    self,
+                    name="Front Passenger Neck NIJ",
+                    title="Front Passenger Neck NIJ",
+                    nrows=2,
+                    ncols=2,
+                    sharey=True,
+                ).with_channels(lambda report: {
                     isomme: [
                         [f"?{report.overall(isomme).p_front_passenger}NIJCIPCF??00YB"],
                         [f"?{report.overall(isomme).p_front_passenger}NIJCIPCE??00YB"],
@@ -1831,44 +1807,52 @@ class EuroNCAP_Frontal_50kmh(Report[Overall]):
                         [f"?{report.overall(isomme).p_front_passenger}NIJCIPTE??00YB"],
                     ]
                     for isomme in report.isomme_list
-                },
-                nrows=2,
-                ncols=2,
-                sharey=True,
+                }),
             ),
             ChannelPlotPage(
                 self,
-                name="Front Passenger Chest Deflection",
-                title="Front Passenger Chest Deflection",
-                channels=lambda report: {
-                    isomme: [
-                        [f"?{report.overall(isomme).p_front_passenger}CHST000???DSXC"]
-                    ]
-                    for isomme in report.isomme_list
-                },
-                nrows=1,
-                ncols=1,
+                spec=channel_plot_spec_for(
+                    self,
+                    name="Front Passenger Chest Deflection",
+                    title="Front Passenger Chest Deflection",
+                    nrows=1,
+                    ncols=1,
+                ).with_channels(
+                    lambda report: {
+                        isomme: [
+                            [
+                                f"?{report.overall(isomme).p_front_passenger}"
+                                "CHST000???DSXC"
+                            ]
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
             ),
             ChannelPlotPage(
                 self,
-                name="Front Passenger Femur Axial Force",
-                title="Front Passenger Femur Axial Force",
-                channels=lambda report: {
+                spec=channel_plot_spec_for(
+                    self,
+                    name="Front Passenger Femur Axial Force",
+                    title="Front Passenger Femur Axial Force",
+                    nrows=1,
+                    ncols=2,
+                    sharey=True,
+                ).with_channels(lambda report: {
                     isomme: [
                         [f"?{report.overall(isomme).p_front_passenger}FEMRLE00??FOZB"],
                         [f"?{report.overall(isomme).p_front_passenger}FEMRRI00??FOZB"],
                     ]
                     for isomme in report.isomme_list
-                },
-                nrows=1,
-                ncols=2,
-                sharey=True,
+                }),
             ),
             CriterionValuesChartPage(
                 self,
-                name="Rear Passenger Result Values Chart",
-                title="Rear Passenger Result",
-                criteria=lambda report: {
+                spec=criterion_values_chart_spec_for(
+                    self,
+                    name="Rear Passenger Result Values Chart",
+                    title="Rear Passenger Result",
+                ).with_criteria(lambda report: {
                     isomme: [
                         report.overall(isomme).criterion_rear_passenger.criterion_head.criterion_hic_15,
                         report.overall(isomme).criterion_rear_passenger.criterion_head.criterion_head_a3ms,
@@ -1882,7 +1866,7 @@ class EuroNCAP_Frontal_50kmh(Report[Overall]):
                         report.overall(isomme).criterion_rear_passenger.criterion_femur.criterion_femur_axial_force.criterion_femur_axial_force_right,
                     ]
                     for isomme in report.isomme_list
-                },
+                }),
             ),
             CriterionTablePage(
                 self,
@@ -1925,9 +1909,13 @@ class EuroNCAP_Frontal_50kmh(Report[Overall]):
             ),
             ChannelPlotPage(
                 self,
-                name="Rear Passenger Belt",
-                title="Rear Passenger Belt",
-                channels=lambda report: {
+                spec=channel_plot_spec_for(
+                    self,
+                    name="Rear Passenger Belt",
+                    title="Rear Passenger Belt",
+                    nrows=3,
+                    ncols=2,
+                ).with_channels(lambda report: {
                     isomme: [
                         [f"?{report.overall(isomme).p_rear_passenger}SEBE000[30]B1FO[X0]C"],
                         [f"?{report.overall(isomme).p_rear_passenger}SEBE000[30]B2FO[X0]C"],
@@ -1937,15 +1925,18 @@ class EuroNCAP_Frontal_50kmh(Report[Overall]):
                         [f"?{report.overall(isomme).p_rear_passenger}SEBE000[30]B6FO[X0]C"],
                     ]
                     for isomme in report.isomme_list
-                },
-                nrows=3,
-                ncols=2,
+                }),
             ),
             ChannelPlotPage(
                 self,
-                name="Rear Passenger Head Acceleration",
-                title="Rear Passenger Head Acceleration",
-                channels=lambda report: {
+                spec=channel_plot_spec_for(
+                    self,
+                    name="Rear Passenger Head Acceleration",
+                    title="Rear Passenger Head Acceleration",
+                    nrows=2,
+                    ncols=2,
+                    sharey=True,
+                ).with_channels(lambda report: {
                     isomme: [
                         [f"?{report.overall(isomme).p_rear_passenger}HEAD??????ACXA"],
                         [f"?{report.overall(isomme).p_rear_passenger}HEAD??????ACYA"],
@@ -1953,59 +1944,67 @@ class EuroNCAP_Frontal_50kmh(Report[Overall]):
                         [f"?{report.overall(isomme).p_rear_passenger}HEAD??????ACRA"],
                     ]
                     for isomme in report.isomme_list
-                },
-                nrows=2,
-                ncols=2,
-                sharey=True,
+                }),
             ),
-            HIC15Page(
+            HICPage(
                 self,
-                name="Rear Passenger HIC15",
-                title="Rear Passenger HIC15",
-                position=lambda report, isomme: report.overall(isomme).p_rear_passenger,
+                spec=hic_spec_for(
+                    self,
+                    name="Rear Passenger HIC15",
+                    title="Rear Passenger HIC15",
+                    timespan=15,
+                ).with_position(
+                    lambda report, isomme: report.overall(isomme).p_rear_passenger
+                ),
             ),
             ChannelPlotPage(
                 self,
-                name="Rear Passenger Neck Load",
-                title="Rear Passenger Neck Load",
-                channels=lambda report: {
+                spec=channel_plot_spec_for(
+                    self,
+                    name="Rear Passenger Neck Load",
+                    title="Rear Passenger Neck Load",
+                    nrows=2,
+                    ncols=2,
+                ).with_channels(lambda report: {
                     isomme: [
                         [f"?{report.overall(isomme).p_rear_passenger}NECKUP00??MOYB"],
                         [f"?{report.overall(isomme).p_rear_passenger}NECKUP00??FOZA"],
                         [f"?{report.overall(isomme).p_rear_passenger}NECKUP00??FOXA"],
                     ]
                     for isomme in report.isomme_list
-                },
-                nrows=2,
-                ncols=2,
+                }),
             ),
             ChannelPlotPage(
                 self,
-                name="Rear Passenger Chest Deflection",
-                title="Rear Passenger Chest Deflection",
-                channels=lambda report: {
+                spec=channel_plot_spec_for(
+                    self,
+                    name="Rear Passenger Chest Deflection",
+                    title="Rear Passenger Chest Deflection",
+                    nrows=1,
+                    ncols=1,
+                ).with_channels(lambda report: {
                     isomme: [
                         [f"?{report.overall(isomme).p_rear_passenger}CHST000???DSXC"]
                     ]
                     for isomme in report.isomme_list
-                },
-                nrows=1,
-                ncols=1,
+                }),
             ),
             ChannelPlotPage(
                 self,
-                name="Rear Passenger Femur Axial Force",
-                title="Rear Passenger Femur Axial Force",
-                channels=lambda report: {
+                spec=channel_plot_spec_for(
+                    self,
+                    name="Rear Passenger Femur Axial Force",
+                    title="Rear Passenger Femur Axial Force",
+                    nrows=1,
+                    ncols=2,
+                    sharey=True,
+                ).with_channels(lambda report: {
                     isomme: [
                         [f"?{report.overall(isomme).p_rear_passenger}FEMRLE00??FOZB"],
                         [f"?{report.overall(isomme).p_rear_passenger}FEMRRI00??FOZB"],
                     ]
                     for isomme in report.isomme_list
-                },
-                nrows=1,
-                ncols=2,
-                sharey=True,
+                }),
             ),
             OLCPage(self),
         )

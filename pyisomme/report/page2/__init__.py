@@ -7,30 +7,42 @@ from pyisomme.report.page2.criterion_rating_table import (
 )
 from pyisomme.report.page2.criterion_values_chart import (
     CriterionValuesChartPage,
+    CriterionValuesChartSpec,
+    criterion_values_chart_spec_for,
 )
 from pyisomme.report.page2.criterion_values_table import (
     CriterionValuesTablePage,
     values_table_spec_for,
 )
 from pyisomme.report.page2.figure import FigurePage
-from pyisomme.report.page2.hic import HIC15Page
+from pyisomme.report.page2.hic import HICPage, HICSpec, hic_spec_for
 from pyisomme.report.page2.line_table import LineTablePage, TableData
 from pyisomme.report.page2.olc import OLCPage
-from pyisomme.report.page2.plot_nxn import ChannelPlotPage
+from pyisomme.report.page2.plot_nxn import (
+    ChannelPlotPage,
+    ChannelPlotSpec,
+    channel_plot_spec_for,
+)
 
 __all__ = [
     "ChannelPlotPage",
+    "ChannelPlotSpec",
     "CoverPage",
     "CriterionTablePage",
     "CriterionTableSpec",
     "CriterionRatingTablePage",
     "CriterionValuesChartPage",
+    "CriterionValuesChartSpec",
     "CriterionValuesTablePage",
     "FigurePage",
-    "HIC15Page",
+    "HICPage",
+    "HICSpec",
     "LineTablePage",
     "OLCPage",
     "TableData",
     "rating_table_spec_for",
+    "channel_plot_spec_for",
+    "criterion_values_chart_spec_for",
+    "hic_spec_for",
     "values_table_spec_for",
 ]

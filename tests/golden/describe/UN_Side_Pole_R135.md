@@ -6,8 +6,8 @@
 | protocol | 2016 |
 | protocols | 2016 |
 | overall criterion | `Overall` |
-| available_pages | Page_Cover, Page_Values_Chart, Page_Values_Table, Page_Head_Acceleration, Page_Shoulder_Lateral_Force, Page_Chest_Absolute_Compression, Page_Abdomen_Resultant_Compression, Page_Spine_T12_Acceleration, Page_Pubic_Symphysis_Force |
-| selected_pages | Page_Cover, Page_Values_Chart, Page_Values_Table, Page_Head_Acceleration, Page_Shoulder_Lateral_Force, Page_Chest_Absolute_Compression, Page_Abdomen_Resultant_Compression, Page_Spine_T12_Acceleration, Page_Pubic_Symphysis_Force |
+| available_pages | Cover, Values Chart, Values Table, Head Acceleration, Shoulder Lateral Force, Chest Absolute Compression, Abdomen Resultant Compression, Spine T12 Acceleration, Pubic Symphysis Force |
+| selected_pages | Cover, Values Chart, Values Table, Head Acceleration, Shoulder Lateral Force, Chest Absolute Compression, Abdomen Resultant Compression, Spine T12 Acceleration, Pubic Symphysis Force |
 
 ## `Overall` — Overall
 

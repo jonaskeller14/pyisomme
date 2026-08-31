@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Mapping, Sequence
+from dataclasses import dataclass, replace
 from typing import TYPE_CHECKING, Generic, TypeVar
 
 import numpy as np
@@ -17,7 +18,48 @@ if TYPE_CHECKING:
 
 
 R = TypeVar("R", bound=BaseReport)
-CriteriaSelector = Callable[[R], Mapping["Isomme", Sequence["Criterion"]]]
+S_contra = TypeVar("S_contra", contravariant=True)
+CriteriaSelector = Callable[[S_contra], Mapping["Isomme", Sequence["Criterion"]]]
+
+
+def _criteria_required(
+    _: S_contra, # pyright: ignore[reportInvalidTypeVarUse]
+) -> Mapping[Isomme, Sequence[Criterion]]:
+    raise RuntimeError(
+        "CriterionValuesChartSpec requires criteria via with_criteria()."
+    )
+
+
+@dataclass(frozen=True)
+class CriterionValuesChartSpec(Generic[S_contra]):
+    """Reusable rules for selecting criteria for a values chart."""
+
+    name: str
+    title: str
+    criteria: CriteriaSelector[S_contra]
+    footer: str | None = None
+
+    def with_criteria(
+        self, criteria: CriteriaSelector[S_contra]
+    ) -> CriterionValuesChartSpec[S_contra]:
+        """Return a copy with a report-specific criteria selector."""
+        return replace(self, criteria=criteria)
+
+
+def criterion_values_chart_spec_for(
+    _report: R,
+    *,
+    name: str,
+    title: str,
+    footer: str | None = None,
+) -> CriterionValuesChartSpec[R]:
+    """Create a values-chart spec bound to the concrete report type."""
+    return CriterionValuesChartSpec(
+        name=name,
+        title=title,
+        criteria=_criteria_required,
+        footer=footer,
+    )
 
 
 def limit_x(criterion: Criterion) -> float:
@@ -191,33 +233,29 @@ def _chart_figure(
 
 
 class CriterionValuesChartPage(FigurePage[R], Generic[R]):
-    criteria: Mapping[Isomme, Sequence[Criterion]]
-    name: str
-    title: str
-    footer: str | None = None
+    spec: CriterionValuesChartSpec[R]
 
     def __init__(
         self,
         report: R,
         *,
-        name: str | None = None,
-        title: str | None = None,
-        criteria: CriteriaSelector[R] | None = None,
-        footer: str | None = None,
+        spec: CriterionValuesChartSpec[R],
     ) -> None:
-        selector = criteria or (lambda _report: self.criteria)
+        self.spec = spec
         super().__init__(
             report,
-            name=name or self.name,
-            title=title or self.title,
+            name=spec.name,
+            title=spec.title,
             figure_builder=lambda current_report, figsize: _chart_figure(
-                selector(current_report), figsize
+                spec.criteria(current_report), figsize
             ),
-            footer=self.footer if footer is None else footer,
+            footer=spec.footer,
         )
 
 
 __all__ = [
     "CriterionValuesChartPage",
+    "CriterionValuesChartSpec",
+    "criterion_values_chart_spec_for",
     "limit_x",
 ]

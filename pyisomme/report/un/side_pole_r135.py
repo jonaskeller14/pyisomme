@@ -10,16 +10,27 @@ from pyisomme.limit import Limit
 from pyisomme.report.criterion import Criterion, Role, sub
 from pyisomme.report.criterion_result import CriterionResult
 from pyisomme.report.ctx import from_input
-from pyisomme.report.euro_ncap.side_pole import EuroNCAP_Side_Pole
+from pyisomme.report.euro_ncap.pages import (
+    side_head_acceleration_spec_for,
+    side_pubic_symphysis_force_spec_for,
+    side_shoulder_lateral_force_spec_for,
+)
 from pyisomme.report.manual import Manual, manual
-from pyisomme.report.page import (
-    Page_Cover,
-    Page_Criterion_Values_Chart,
-    Page_Criterion_Values_Table,
-    Page_Plot_nxn,
+from pyisomme.report.page2 import (
+    ChannelPlotPage,
+    CoverPage,
+    CriterionTablePage,
+    CriterionValuesChartPage,
+    criterion_values_chart_spec_for,
+    values_table_spec_for,
 )
 from pyisomme.report.report import Report
 from pyisomme.report.un.limits import Limit_Fail, Limit_Pass
+from pyisomme.report.un.pages import (
+    side_pole_abdomen_compression_spec_for,
+    side_pole_chest_compression_spec_for,
+    side_pole_spine_t12_acceleration_spec_for,
+)
 from pyisomme.report.un.protocols import PROTOCOL_R135_2016
 from pyisomme.unit import Unit, g0
 
@@ -252,149 +263,40 @@ class UN_Side_Pole_R135(Report[Overall]):
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
-
         self._available_pages = (
-            Page_Cover(self),
-            self.Page_Values_Chart(self),
-            self.Page_Values_Table(self),
-            self.Page_Head_Acceleration(self),
-            self.Page_Shoulder_Lateral_Force(self),
-            self.Page_Chest_Absolute_Compression(self),
-            self.Page_Abdomen_Resultant_Compression(self),
-            self.Page_Spine_T12_Acceleration(self),
-            self.Page_Pubic_Symphysis_Force(self),
+            CoverPage(self),
+            CriterionValuesChartPage(self, spec=criterion_values_chart_spec_for(
+                self, name="Values Chart", title="Values"
+            ).with_criteria(lambda report: {
+                isomme: [
+                        report.overall(isomme).criterion_dummy.criterion_hic_36,
+                        report.overall(isomme).criterion_dummy.criterion_shoulder_lateral_force,
+                        report.overall(isomme).criterion_dummy.criterion_chest_resultant_compression,
+                        report.overall(isomme).criterion_dummy.criterion_abdomen_resultant_compression,
+                        report.overall(isomme).criterion_dummy.criterion_spine_t12_a3ms,
+                        report.overall(isomme).criterion_dummy.criterion_pubic_symphysis_force,
+                ]
+                for isomme in report.isomme_list
+            })),
+            CriterionTablePage(
+                self, name="Values Table", title="Values",
+                spec=values_table_spec_for(self).with_criteria(lambda report: {
+                    isomme: [
+                        report.overall(isomme).criterion_dummy.criterion_hic_36,
+                        report.overall(isomme).criterion_dummy.criterion_shoulder_lateral_force,
+                        report.overall(isomme).criterion_dummy.criterion_chest_resultant_compression,
+                        report.overall(isomme).criterion_dummy.criterion_abdomen_resultant_compression,
+                        report.overall(isomme).criterion_dummy.criterion_spine_t12_a3ms,
+                        report.overall(isomme).criterion_dummy.criterion_pubic_symphysis_force,
+                    ]
+                    for isomme in report.isomme_list
+                }),
+            ),
+            ChannelPlotPage(self, spec=side_head_acceleration_spec_for(self)),
+            ChannelPlotPage(self, spec=side_shoulder_lateral_force_spec_for(self)),
+            ChannelPlotPage(self, spec=side_pole_chest_compression_spec_for(self)),
+            ChannelPlotPage(self, spec=side_pole_abdomen_compression_spec_for(self)),
+            ChannelPlotPage(self, spec=side_pole_spine_t12_acceleration_spec_for(self)),
+            ChannelPlotPage(self, spec=side_pubic_symphysis_force_spec_for(self)),
         )
         self._selected_pages = list(self._available_pages)
-
-    class Page_Values_Chart(Page_Criterion_Values_Chart):
-        report: UN_Side_Pole_R135
-        name = "Values Chart"
-        title = "Values"
-
-        def __init__(self, report: UN_Side_Pole_R135) -> None:
-            super().__init__(report)
-
-            self.criteria = {
-                isomme: [
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_dummy.criterion_hic_36,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_dummy.criterion_shoulder_lateral_force,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_dummy.criterion_chest_resultant_compression,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_dummy.criterion_abdomen_resultant_compression,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_dummy.criterion_spine_t12_a3ms,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_dummy.criterion_pubic_symphysis_force,
-                ]
-                for isomme in self.report.isomme_list
-            }
-
-    class Page_Values_Table(Page_Criterion_Values_Table):
-        report: UN_Side_Pole_R135
-        name = "Values Table"
-        title = "Values"
-
-        def __init__(self, report: UN_Side_Pole_R135) -> None:
-            super().__init__(report)
-
-            self.criteria = {
-                isomme: [
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_dummy.criterion_hic_36,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_dummy.criterion_shoulder_lateral_force,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_dummy.criterion_chest_resultant_compression,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_dummy.criterion_abdomen_resultant_compression,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_dummy.criterion_spine_t12_a3ms,
-                    self.report.criterion_overall[
-                        isomme
-                    ].criterion_dummy.criterion_pubic_symphysis_force,
-                ]
-                for isomme in self.report.isomme_list
-            }
-
-    class Page_Head_Acceleration(EuroNCAP_Side_Pole.Page_Head_Acceleration):
-        pass
-
-    class Page_Shoulder_Lateral_Force(EuroNCAP_Side_Pole.Page_Shoulder_Lateral_Force):
-        pass
-
-    class Page_Chest_Absolute_Compression(Page_Plot_nxn):
-        report: UN_Side_Pole_R135
-        name: str = "Chest Absolute Compression"
-        title: str = "Chest Absolute Compression"
-        nrows: int = 3
-        ncols: int = 2
-        sharey: bool = True
-
-        def __init__(self, report: UN_Side_Pole_R135) -> None:
-            super().__init__(report)
-            self.channels = {
-                isomme: [
-                    [f"?{self.report.criterion_overall[isomme].p}TRRILE01??DSRB"],
-                    [f"?{self.report.criterion_overall[isomme].p}TRRIRI01??DSRB"],
-                    [f"?{self.report.criterion_overall[isomme].p}TRRILE02??DSRB"],
-                    [f"?{self.report.criterion_overall[isomme].p}TRRIRI02??DSRB"],
-                    [f"?{self.report.criterion_overall[isomme].p}TRRILE03??DSRB"],
-                    [f"?{self.report.criterion_overall[isomme].p}TRRIRI04??DSRB"],
-                ]
-                for isomme in self.report.isomme_list
-            }
-
-    class Page_Abdomen_Resultant_Compression(Page_Plot_nxn):
-        report: UN_Side_Pole_R135
-        name: str = "Abdomen Resultant Compression"
-        title: str = "Abdomen Resultant Compression"
-        nrows: int = 2
-        ncols: int = 2
-        sharey: bool = True
-
-        def __init__(self, report: UN_Side_Pole_R135) -> None:
-            super().__init__(report)
-            self.channels = {
-                isomme: [
-                    [f"?{self.report.criterion_overall[isomme].p}ABRILE01??DSRB"],
-                    [f"?{self.report.criterion_overall[isomme].p}ABRIRI01??DSRB"],
-                    [f"?{self.report.criterion_overall[isomme].p}ABRILE02??DSRB"],
-                    [f"?{self.report.criterion_overall[isomme].p}ABRIRI03??DSRB"],
-                ]
-                for isomme in self.report.isomme_list
-            }
-
-    class Page_Spine_T12_Acceleration(Page_Plot_nxn):
-        report: UN_Side_Pole_R135
-        name: str = "Spine T12 Acceleration"
-        title: str = "Spine T12 Acceleration"
-        nrows: int = 2
-        ncols: int = 2
-        sharey: bool = True
-
-        def __init__(self, report: UN_Side_Pole_R135) -> None:
-            super().__init__(report)
-            self.channels = {
-                isomme: [
-                    [f"?{self.report.criterion_overall[isomme].p}THSP1200??AC{xyzr}C"]
-                    for xyzr in "XYZR"
-                ]
-                for isomme in self.report.isomme_list
-            }
-
-    class Page_Pubic_Symphysis_Force(EuroNCAP_Side_Pole.Page_Pubic_Symphysis_Force):
-        pass
