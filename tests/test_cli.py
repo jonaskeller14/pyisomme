@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
@@ -118,12 +119,60 @@ def test_every_subcommand_is_parsed_and_dispatched(
         ["merge", "output.mme", "input.mme"],
         ["set", "input.mme", "--unit", "g", "-c", "11*"],
         ["convert", "input.mme", "--unit", "g", "-c", "11*"],
-        ["report", report_name, "report.pptx", "input.mme"],
+        ["report", report_name, "input.mme", "-o", "report.pptx"],
         ["plot", "input.mme", "-c", "11*"],
     ):
         cli.main(invocation)
 
     assert calls == ["list", "code", "merge", "set", "convert", "report", "plot"]
+
+
+def test_report_command_accepts_independent_output_paths(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    captured: list[argparse.Namespace] = []
+
+    def record(*, parser: argparse.ArgumentParser, options: argparse.Namespace) -> None:
+        captured.append(options)
+
+    monkeypatch.setattr(cli, "execute_report_command", record)
+    report_name = REPORTS[0].__name__
+    cli.main(
+        [
+            "report",
+            report_name,
+            "first.mme",
+            "second.zip",
+            "-o",
+            "web/index.html",
+            "--output",
+            "documents/report.pdf",
+            "-o",
+            "slides/report.pptx",
+            "--template",
+            "template.pptx",
+        ]
+    )
+
+    assert len(captured) == 1
+    options = captured[0]
+    assert options.input_paths == ["first.mme", "second.zip"]
+    assert options.output_paths == [
+        Path("web/index.html"),
+        Path("documents/report.pdf"),
+        Path("slides/report.pptx"),
+    ]
+    assert options.template == Path("template.pptx")
+
+
+@pytest.mark.parametrize("output", ["report", "report.docx"])
+def test_report_command_rejects_unsupported_output_extensions(
+    output: str, capsys: pytest.CaptureFixture[str]
+) -> None:
+    report_name = REPORTS[0].__name__
+    with pytest.raises(SystemExit, match="2"):
+        cli.main(["report", report_name, "input.mme", "-o", output])
+    assert "unsupported report output extension" in capsys.readouterr().err
 
 
 def test_code_command_describes_channel_code(run_cli: Callable[..., str]) -> None:

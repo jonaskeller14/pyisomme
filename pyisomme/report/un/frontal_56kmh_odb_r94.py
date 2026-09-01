@@ -22,9 +22,13 @@ from pyisomme.report.page2 import (
     CriterionTablePage,
     CriterionValuesChartPage,
     HICPage,
+    ManualInputsPage,
+    ReportStatusPage,
     criterion_values_chart_spec_for,
     hic_spec_for,
+    manual_inputs_spec_for,
     rating_table_spec_for,
+    report_status_spec_for,
     values_table_spec_for,
 )
 from pyisomme.report.page2.plot_nxn import channel_plot_spec_for
@@ -600,6 +604,8 @@ class UN_Frontal_56kmh_ODB_R94(Report[Overall]):
         super().__init__(*args, **kwargs)
         self._available_pages = (
             CoverPage(self),
+            ReportStatusPage(self, spec=report_status_spec_for(self)),
+            ManualInputsPage(self, spec=manual_inputs_spec_for(self)),
             CriterionTablePage(
                 self, name="Rating", title="Rating",
                 spec=rating_table_spec_for(self).with_criteria(lambda report: {

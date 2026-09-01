@@ -42,10 +42,14 @@ from pyisomme.report.page2 import (
     CoverPage,
     CriterionValuesChartPage,
     HICPage,
+    ManualInputsPage,
     OLCPage,
+    ReportStatusPage,
     channel_plot_spec_for,
     criterion_values_chart_spec_for,
     hic_spec_for,
+    manual_inputs_spec_for,
+    report_status_spec_for,
 )
 from pyisomme.report.page2.criterion_rating_table import (
     CriterionTablePage,
@@ -1849,6 +1853,8 @@ class EuroNCAP_Frontal_MPDB(Report[Overall]):
 
         self._available_pages = (
             CoverPage(self),
+            ReportStatusPage(self, spec=report_status_spec_for(self)),
+            ManualInputsPage(self, spec=manual_inputs_spec_for(self)),
             CriterionTablePage(
                 self,
                 name="Rating",

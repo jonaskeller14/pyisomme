@@ -6,8 +6,8 @@
 | protocol | ISO-18571:2024 |
 | protocols | ISO-18571:2024 |
 | overall criterion | `Overall` |
-| available_pages | Cover, Correlation Overall Rating Table |
-| selected_pages | Cover, Correlation Overall Rating Table |
+| available_pages | Cover, Report Status, Manual Inputs, Correlation Overall Rating Table |
+| selected_pages | Cover, Report Status, Manual Inputs, Correlation Overall Rating Table |
 
 ## `Overall` — Overall
 

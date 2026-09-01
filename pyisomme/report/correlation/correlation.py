@@ -12,7 +12,15 @@ from pyisomme.correlation import Correlation_ISO18571
 from pyisomme.isomme import Isomme
 from pyisomme.report.criterion import Criterion, Role
 from pyisomme.report.criterion_result import CriterionResult
-from pyisomme.report.page2 import CoverPage, CriterionTablePage, rating_table_spec_for
+from pyisomme.report.page2 import (
+    CoverPage,
+    CriterionTablePage,
+    ManualInputsPage,
+    ReportStatusPage,
+    manual_inputs_spec_for,
+    rating_table_spec_for,
+    report_status_spec_for,
+)
 from pyisomme.report.report import Report
 from pyisomme.report.report_protocol import ReportProtocol
 
@@ -152,6 +160,8 @@ class Correlation(Report[Overall]):
 
         self._available_pages = (
             CoverPage(self),
+            ReportStatusPage(self, spec=report_status_spec_for(self)),
+            ManualInputsPage(self, spec=manual_inputs_spec_for(self)),
             CriterionTablePage(
                 self,
                 name="Correlation Overall Rating Table",

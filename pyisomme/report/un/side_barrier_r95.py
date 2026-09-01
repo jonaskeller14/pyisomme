@@ -21,8 +21,12 @@ from pyisomme.report.page2 import (
     CriterionTablePage,
     CriterionValuesChartPage,
     HICPage,
+    ManualInputsPage,
+    ReportStatusPage,
     criterion_values_chart_spec_for,
     hic_spec_for,
+    manual_inputs_spec_for,
+    report_status_spec_for,
     values_table_spec_for,
 )
 from pyisomme.report.report import Report
@@ -196,6 +200,8 @@ class UN_Side_Barrier_R95(Report[Overall]):
         super().__init__(*args, **kwargs)
         self._available_pages = (
             CoverPage(self),
+            ReportStatusPage(self, spec=report_status_spec_for(self)),
+            ManualInputsPage(self, spec=manual_inputs_spec_for(self)),
             CriterionValuesChartPage(self, spec=criterion_values_chart_spec_for(
                 self, name="Values Chart", title="Values"
             ).with_criteria(lambda report: {

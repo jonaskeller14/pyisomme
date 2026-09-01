@@ -1,0 +1,440 @@
+{
+  "1: barrier-es2re-sid-iis": {
+    "Overall": {
+      "result": {
+        "name": "Overall",
+        "value": 1.0,
+        "rating": 1.0,
+        "color": "green",
+        "status": "OK"
+      }
+    },
+    "criterion_front_occupant": {
+      "result": {
+        "name": "Front Occupant",
+        "value": 1.0,
+        "rating": 1.0,
+        "color": "green",
+        "status": "OK"
+      },
+      "criterion_hic36": {
+        "result": {
+          "name": "HIC 36",
+          "value": 88.24467965634085,
+          "rating": 1.0,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_es2re_rib_deflection": {
+        "result": {
+          "name": "Maximum Rib Deflection",
+          "value": 15.0,
+          "rating": 1.0,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_es2re_abdominal_force": {
+        "result": {
+          "name": "Sum of Abdominal Forces",
+          "value": 1050.0,
+          "rating": 1.0,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_es2re_pubic_symphysis_force": {
+        "result": {
+          "name": "Pubic Symphysis Force",
+          "value": 2500.0,
+          "rating": 1.0,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_sid_iis_lower_spine_acceleration": {
+        "result": {
+          "name": "Lower Spine Resultant Acceleration",
+          "value": "nan",
+          "rating": 1.0,
+          "color": null,
+          "status": "OK"
+        }
+      },
+      "criterion_sid_iis_pelvic_force": {
+        "result": {
+          "name": "Sum of Acetabular and Iliac Pelvic Forces",
+          "value": "nan",
+          "rating": 1.0,
+          "color": null,
+          "status": "OK"
+        }
+      }
+    },
+    "criterion_rear_occupant": {
+      "result": {
+        "name": "Rear Occupant",
+        "value": 1.0,
+        "rating": 1.0,
+        "color": "green",
+        "status": "OK"
+      },
+      "criterion_hic36": {
+        "result": {
+          "name": "HIC 36",
+          "value": 88.24467965634085,
+          "rating": 1.0,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_es2re_rib_deflection": {
+        "result": {
+          "name": "Maximum Rib Deflection",
+          "value": "nan",
+          "rating": 1.0,
+          "color": null,
+          "status": "OK"
+        }
+      },
+      "criterion_es2re_abdominal_force": {
+        "result": {
+          "name": "Sum of Abdominal Forces",
+          "value": "nan",
+          "rating": 1.0,
+          "color": null,
+          "status": "OK"
+        }
+      },
+      "criterion_es2re_pubic_symphysis_force": {
+        "result": {
+          "name": "Pubic Symphysis Force",
+          "value": "nan",
+          "rating": 1.0,
+          "color": null,
+          "status": "OK"
+        }
+      },
+      "criterion_sid_iis_lower_spine_acceleration": {
+        "result": {
+          "name": "Lower Spine Resultant Acceleration",
+          "value": 35.0,
+          "rating": 1.0,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_sid_iis_pelvic_force": {
+        "result": {
+          "name": "Sum of Acetabular and Iliac Pelvic Forces",
+          "value": 2400.0,
+          "rating": 1.0,
+          "color": "green",
+          "status": "OK"
+        }
+      }
+    },
+    "criterion_door_integrity": {
+      "result": {
+        "name": "Door Integrity",
+        "value": 1.0,
+        "rating": 1.0,
+        "color": "green",
+        "status": "OK"
+      }
+    }
+  },
+  "2: pole-es2re": {
+    "Overall": {
+      "result": {
+        "name": "Overall",
+        "value": 1.0,
+        "rating": 1.0,
+        "color": "green",
+        "status": "OK"
+      }
+    },
+    "criterion_front_occupant": {
+      "result": {
+        "name": "Front Occupant",
+        "value": 1.0,
+        "rating": 1.0,
+        "color": "green",
+        "status": "OK"
+      },
+      "criterion_hic36": {
+        "result": {
+          "name": "HIC 36",
+          "value": 88.24467965634085,
+          "rating": 1.0,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_es2re_rib_deflection": {
+        "result": {
+          "name": "Maximum Rib Deflection",
+          "value": 15.0,
+          "rating": 1.0,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_es2re_abdominal_force": {
+        "result": {
+          "name": "Sum of Abdominal Forces",
+          "value": 1050.0,
+          "rating": 1.0,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_es2re_pubic_symphysis_force": {
+        "result": {
+          "name": "Pubic Symphysis Force",
+          "value": 2500.0,
+          "rating": 1.0,
+          "color": "green",
+          "status": "OK"
+        }
+      },
+      "criterion_sid_iis_lower_spine_acceleration": {
+        "result": {
+          "name": "Lower Spine Resultant Acceleration",
+          "value": "nan",
+          "rating": 1.0,
+          "color": null,
+          "status": "OK"
+        }
+      },
+      "criterion_sid_iis_pelvic_force": {
+        "result": {
+          "name": "Sum of Acetabular and Iliac Pelvic Forces",
+          "value": "nan",
+          "rating": 1.0,
+          "color": null,
+          "status": "OK"
+        }
+      }
+    },
+    "criterion_rear_occupant": {
+      "result": {
+        "name": "Rear Occupant",
+        "value": "nan",
+        "rating": 1.0,
+        "color": null,
+        "status": "OK"
+      },
+      "criterion_hic36": {
+        "result": {
+          "name": "HIC 36",
+          "value": "nan",
+          "rating": 1.0,
+          "color": null,
+          "status": "OK"
+        }
+      },
+      "criterion_es2re_rib_deflection": {
+        "result": {
+          "name": "Maximum Rib Deflection",
+          "value": "nan",
+          "rating": 1.0,
+          "color": null,
+          "status": "OK"
+        }
+      },
+      "criterion_es2re_abdominal_force": {
+        "result": {
+          "name": "Sum of Abdominal Forces",
+          "value": "nan",
+          "rating": 1.0,
+          "color": null,
+          "status": "OK"
+        }
+      },
+      "criterion_es2re_pubic_symphysis_force": {
+        "result": {
+          "name": "Pubic Symphysis Force",
+          "value": "nan",
+          "rating": 1.0,
+          "color": null,
+          "status": "OK"
+        }
+      },
+      "criterion_sid_iis_lower_spine_acceleration": {
+        "result": {
+          "name": "Lower Spine Resultant Acceleration",
+          "value": "nan",
+          "rating": 1.0,
+          "color": null,
+          "status": "OK"
+        }
+      },
+      "criterion_sid_iis_pelvic_force": {
+        "result": {
+          "name": "Sum of Acetabular and Iliac Pelvic Forces",
+          "value": "nan",
+          "rating": 1.0,
+          "color": null,
+          "status": "OK"
+        }
+      }
+    },
+    "criterion_door_integrity": {
+      "result": {
+        "name": "Door Integrity",
+        "value": 1.0,
+        "rating": 1.0,
+        "color": "green",
+        "status": "OK"
+      }
+    }
+  },
+  "3: pole-sid-iis": {
+    "Overall": {
+      "result": {
+        "name": "Overall",
+        "value": 0.0,
+        "rating": 0.0,
+        "color": "red",
+        "status": "OK"
+      }
+    },
+    "criterion_front_occupant": {
+      "result": {
+        "name": "Front Occupant",
+        "value": 0.0,
+        "rating": 0.0,
+        "color": "red",
+        "status": "OK"
+      },
+      "criterion_hic36": {
+        "result": {
+          "name": "HIC 36",
+          "value": 1375.5984179617974,
+          "rating": 0.0,
+          "color": "red",
+          "status": "OK"
+        }
+      },
+      "criterion_es2re_rib_deflection": {
+        "result": {
+          "name": "Maximum Rib Deflection",
+          "value": "nan",
+          "rating": 1.0,
+          "color": null,
+          "status": "OK"
+        }
+      },
+      "criterion_es2re_abdominal_force": {
+        "result": {
+          "name": "Sum of Abdominal Forces",
+          "value": "nan",
+          "rating": 1.0,
+          "color": null,
+          "status": "OK"
+        }
+      },
+      "criterion_es2re_pubic_symphysis_force": {
+        "result": {
+          "name": "Pubic Symphysis Force",
+          "value": "nan",
+          "rating": 1.0,
+          "color": null,
+          "status": "OK"
+        }
+      },
+      "criterion_sid_iis_lower_spine_acceleration": {
+        "result": {
+          "name": "Lower Spine Resultant Acceleration",
+          "value": 105.0,
+          "rating": 0.0,
+          "color": "red",
+          "status": "OK"
+        }
+      },
+      "criterion_sid_iis_pelvic_force": {
+        "result": {
+          "name": "Sum of Acetabular and Iliac Pelvic Forces",
+          "value": 7200.0,
+          "rating": 0.0,
+          "color": "red",
+          "status": "OK"
+        }
+      }
+    },
+    "criterion_rear_occupant": {
+      "result": {
+        "name": "Rear Occupant",
+        "value": "nan",
+        "rating": 1.0,
+        "color": null,
+        "status": "OK"
+      },
+      "criterion_hic36": {
+        "result": {
+          "name": "HIC 36",
+          "value": "nan",
+          "rating": 1.0,
+          "color": null,
+          "status": "OK"
+        }
+      },
+      "criterion_es2re_rib_deflection": {
+        "result": {
+          "name": "Maximum Rib Deflection",
+          "value": "nan",
+          "rating": 1.0,
+          "color": null,
+          "status": "OK"
+        }
+      },
+      "criterion_es2re_abdominal_force": {
+        "result": {
+          "name": "Sum of Abdominal Forces",
+          "value": "nan",
+          "rating": 1.0,
+          "color": null,
+          "status": "OK"
+        }
+      },
+      "criterion_es2re_pubic_symphysis_force": {
+        "result": {
+          "name": "Pubic Symphysis Force",
+          "value": "nan",
+          "rating": 1.0,
+          "color": null,
+          "status": "OK"
+        }
+      },
+      "criterion_sid_iis_lower_spine_acceleration": {
+        "result": {
+          "name": "Lower Spine Resultant Acceleration",
+          "value": "nan",
+          "rating": 1.0,
+          "color": null,
+          "status": "OK"
+        }
+      },
+      "criterion_sid_iis_pelvic_force": {
+        "result": {
+          "name": "Sum of Acetabular and Iliac Pelvic Forces",
+          "value": "nan",
+          "rating": 1.0,
+          "color": null,
+          "status": "OK"
+        }
+      }
+    },
+    "criterion_door_integrity": {
+      "result": {
+        "name": "Door Integrity",
+        "value": 1.0,
+        "rating": 1.0,
+        "color": "green",
+        "status": "OK"
+      }
+    }
+  }
+}

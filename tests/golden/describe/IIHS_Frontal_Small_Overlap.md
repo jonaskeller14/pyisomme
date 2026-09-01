@@ -6,8 +6,8 @@
 | protocol | VII |
 | protocols | VII |
 | overall criterion | `Overall` |
-| available_pages | Cover, Overall Rating, Driver Injury Ratings, Driver Values Chart, Driver Values Table, Driver Head Acceleration, Driver HIC15, Driver Neck NIJ, Driver Neck Axial Load, Driver Neck Load Corridors, Driver Chest Injury Measures, Driver Femur Axial Force, Driver Tibia-Femur Displacement, Driver Tibia Index (Total Moment), Driver Tibia Axial Force, Driver Foot Acceleration |
-| selected_pages | Cover, Overall Rating, Driver Injury Ratings, Driver Values Chart, Driver Values Table, Driver Head Acceleration, Driver HIC15, Driver Neck NIJ, Driver Neck Axial Load, Driver Neck Load Corridors, Driver Chest Injury Measures, Driver Femur Axial Force, Driver Tibia-Femur Displacement, Driver Tibia Index (Total Moment), Driver Tibia Axial Force, Driver Foot Acceleration |
+| available_pages | Cover, Report Status, Manual Inputs, Overall Rating, Driver Injury Ratings, Driver Values Chart, Driver Values Table, Driver Head Acceleration, Driver HIC15, Driver Neck NIJ, Driver Neck Axial Load, Driver Neck Load Corridors, Driver Chest Injury Measures, Driver Femur Axial Force, Driver Tibia-Femur Displacement, Driver Tibia Index (Total Moment), Driver Tibia Axial Force, Driver Foot Acceleration |
+| selected_pages | Cover, Report Status, Manual Inputs, Overall Rating, Driver Injury Ratings, Driver Values Chart, Driver Values Table, Driver Head Acceleration, Driver HIC15, Driver Neck NIJ, Driver Neck Axial Load, Driver Neck Load Corridors, Driver Chest Injury Measures, Driver Femur Axial Force, Driver Tibia-Femur Displacement, Driver Tibia Index (Total Moment), Driver Tibia Axial Force, Driver Foot Acceleration |
 
 ## `Overall` — Overall
 

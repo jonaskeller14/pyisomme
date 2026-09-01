@@ -6,8 +6,8 @@
 | protocol | 2022-10-14 |
 | protocols | 2022-10-14 |
 | overall criterion | `Overall` |
-| available_pages | Cover, Overall Compliance, Driver Compliance, Driver Result Values Chart, Driver Values Table, Driver Head Acceleration, Driver HIC15, Driver Neck Load, Driver Neck NIJ, Driver Chest, Driver Femur Axial Force, Front Passenger Compliance, Front Passenger Result Values Chart, Front Passenger Values Table, Front Passenger Head Acceleration, Front Passenger HIC15, Front Passenger Neck Load, Front Passenger Neck NIJ, Front Passenger Chest, Front Passenger Femur Axial Force |
-| selected_pages | Cover, Overall Compliance, Driver Compliance, Driver Result Values Chart, Driver Values Table, Driver Head Acceleration, Driver HIC15, Driver Neck Load, Driver Neck NIJ, Driver Chest, Driver Femur Axial Force, Front Passenger Compliance, Front Passenger Result Values Chart, Front Passenger Values Table, Front Passenger Head Acceleration, Front Passenger HIC15, Front Passenger Neck Load, Front Passenger Neck NIJ, Front Passenger Chest, Front Passenger Femur Axial Force |
+| available_pages | Cover, Report Status, Manual Inputs, Overall Compliance, Driver Compliance, Driver Result Values Chart, Driver Values Table, Driver Head Acceleration, Driver HIC15, Driver Neck Load, Driver Neck NIJ, Driver Chest, Driver Femur Axial Force, Front Passenger Compliance, Front Passenger Result Values Chart, Front Passenger Values Table, Front Passenger Head Acceleration, Front Passenger HIC15, Front Passenger Neck Load, Front Passenger Neck NIJ, Front Passenger Chest, Front Passenger Femur Axial Force |
+| selected_pages | Cover, Report Status, Manual Inputs, Overall Compliance, Driver Compliance, Driver Result Values Chart, Driver Values Table, Driver Head Acceleration, Driver HIC15, Driver Neck Load, Driver Neck NIJ, Driver Chest, Driver Femur Axial Force, Front Passenger Compliance, Front Passenger Result Values Chart, Front Passenger Values Table, Front Passenger Head Acceleration, Front Passenger HIC15, Front Passenger Neck Load, Front Passenger Neck NIJ, Front Passenger Chest, Front Passenger Femur Axial Force |
 
 ## `Overall` — Overall
 

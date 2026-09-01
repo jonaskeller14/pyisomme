@@ -6,8 +6,8 @@
 | protocol | 2023 |
 | protocols | 2016, 2023 |
 | overall criterion | `Overall` |
-| available_pages | Cover, Rating, Driver Result Values Chart, Driver Values Table, Driver Head Acceleration, Driver HPC36, Driver Neck Load, Driver Chest Deflection, Driver Femur Axial Force, Passenger Result Values Chart, Passenger Values Table, Passenger Head Acceleration, Passenger HPC36, Passenger Neck Load, Passenger Chest Deflection, Passenger Femur Axial Force |
-| selected_pages | Cover, Rating, Driver Result Values Chart, Driver Values Table, Driver Head Acceleration, Driver HPC36, Driver Neck Load, Driver Chest Deflection, Driver Femur Axial Force, Passenger Result Values Chart, Passenger Values Table, Passenger Head Acceleration, Passenger HPC36, Passenger Neck Load, Passenger Chest Deflection, Passenger Femur Axial Force |
+| available_pages | Cover, Report Status, Manual Inputs, Rating, Driver Result Values Chart, Driver Values Table, Driver Head Acceleration, Driver HPC36, Driver Neck Load, Driver Chest Deflection, Driver Femur Axial Force, Passenger Result Values Chart, Passenger Values Table, Passenger Head Acceleration, Passenger HPC36, Passenger Neck Load, Passenger Chest Deflection, Passenger Femur Axial Force |
+| selected_pages | Cover, Report Status, Manual Inputs, Rating, Driver Result Values Chart, Driver Values Table, Driver Head Acceleration, Driver HPC36, Driver Neck Load, Driver Chest Deflection, Driver Femur Axial Force, Passenger Result Values Chart, Passenger Values Table, Passenger Head Acceleration, Passenger HPC36, Passenger Neck Load, Passenger Chest Deflection, Passenger Femur Axial Force |
 
 ## `Overall` — Overall
 

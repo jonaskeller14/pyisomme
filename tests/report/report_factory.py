@@ -5,6 +5,7 @@ from typing import Callable
 from pyisomme import Channel, Isomme, create_sample
 from pyisomme.report import (
     FMVSS_208,
+    FMVSS_214,
     Correlation,
     EuroNCAP,
     EuroNCAP_Frontal_50kmh,
@@ -22,6 +23,7 @@ from pyisomme.report import (
 )
 from pyisomme.report.base_report import BaseReport
 from pyisomme.report.meta_report import MetaReport
+from pyisomme.unit import Unit, g0
 
 
 def build_head_acceleration_channels(
@@ -585,6 +587,113 @@ def build_fmvss_208() -> FMVSS_208:
     )
 
 
+def build_fmvss_214_occupant_channels(
+    dummy_type: str, position: str, scale_y: float
+) -> list[Channel]:
+    common = [
+        create_sample(
+            code=f"1{position}HEAD0000{dummy_type}ACXA",
+            mode="pulse",
+            y_range=(0, -500),
+            noise_per=0.01,
+        ),
+        create_sample(
+            code=f"1{position}HEAD0000{dummy_type}ACYA",
+            mode="pulse",
+            y_range=(0, -150),
+            noise_per=0.01,
+        ),
+        create_sample(
+            code=f"1{position}HEAD0000{dummy_type}ACZA",
+            mode="sin",
+            y_range=(100, -100),
+            noise_per=0.01,
+        ),
+    ]
+    if dummy_type == "ER":
+        channels = common + [
+            *[
+                create_sample(
+                    code=f"1{position}RIBSLE{level}ERDSYC",
+                    y_range=(0, 30),
+                    unit="mm",
+                )
+                for level in ("UP", "MI", "LO")
+            ],
+            *[
+                create_sample(
+                    code=f"1{position}ABDOLE{location}ERFOYB",
+                    y_range=(0, 700),
+                    unit="N",
+                )
+                for location in ("FR", "MI", "RE")
+            ],
+            create_sample(
+                code=f"1{position}PUBC0000ERFOYB",
+                y_range=(0, 5000),
+                unit="N",
+            ),
+        ]
+    else:
+        channels = common + [
+            create_sample(
+                code=f"1{position}SPINLO00S2ACRB",
+                y_range=(0, 70),
+                unit=Unit(g0),
+            ),
+            create_sample(
+                code=f"1{position}ACTBLE00S2FOYB",
+                y_range=(0, 2400),
+                unit="N",
+            ),
+            create_sample(
+                code=f"1{position}ILUMLE00S2FOYB",
+                y_range=(0, 2400),
+                unit="N",
+            ),
+        ]
+    return [channel.scale_y(scale_y) for channel in channels]
+
+
+def build_fmvss_214() -> FMVSS_214:
+    report = FMVSS_214(
+        isomme_list=[
+            Isomme(
+                test_number="barrier-es2re-sid-iis",
+                channels=(
+                    build_fmvss_214_occupant_channels("ER", "1", 0.5)
+                    + build_fmvss_214_occupant_channels("S2", "6", 0.5)
+                ),
+            ),
+            Isomme(
+                test_number="pole-es2re",
+                channels=(
+                    build_fmvss_214_occupant_channels("ER", "3", 0.5)
+                    + build_fmvss_214_occupant_channels("S2", "4", 10)
+                ),
+            ),
+            Isomme(
+                test_number="pole-sid-iis",
+                channels=(
+                    build_fmvss_214_occupant_channels("S2", "1", 1.5)
+                    + build_fmvss_214_occupant_channels("S2", "6", 10)
+                ),
+            ),
+        ]
+    )
+    for isomme in report.isomme_list:
+        overall = report.overall(isomme)
+        if str(isomme.test_number).startswith("pole-"):
+            # Rear SID-IIs data is deliberately present and far above every limit.
+            # The manual pole load-case selection must keep it out of compliance.
+            overall.impact_type = "pole"
+        door = report.overall(isomme).criterion_door_integrity
+        door.struck_door_remained_attached = True
+        door.unstruck_doors_remained_latched = True
+        door.latches_hinges_and_anchorages_remained_attached = True
+    return report
+
+
 REPORT_FACTORIES: dict[type[BaseReport], Callable[[], BaseReport]] = {
     # Reports
     Correlation: build_correlation,
@@ -594,6 +703,7 @@ REPORT_FACTORIES: dict[type[BaseReport], Callable[[], BaseReport]] = {
     EuroNCAP_Side_FarSide: build_euroncap_side_farside,
     EuroNCAP_Side_Pole: build_euroncap_side_pole,
     FMVSS_208: build_fmvss_208,
+    FMVSS_214: build_fmvss_214,
     IIHS_Frontal_Small_Overlap: build_iihs_frontal_small_overlap,
     IIHS_Frontal_Moderate_Overlap: build_iihs_frontal_moderate_overlap,
     IIHS_Side_Impact: build_iihs_side_impact,

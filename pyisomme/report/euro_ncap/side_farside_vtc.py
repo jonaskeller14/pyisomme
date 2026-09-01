@@ -24,8 +24,12 @@ from pyisomme.report.page2 import (
     CriterionTablePage,
     CriterionTableSpec,
     HICPage,
+    ManualInputsPage,
+    ReportStatusPage,
     channel_plot_spec_for,
     hic_spec_for,
+    manual_inputs_spec_for,
+    report_status_spec_for,
 )
 from pyisomme.report.report import Report
 from pyisomme.unit import g0
@@ -639,6 +643,8 @@ class EuroNCAP_Side_Farside_VTC(Report[Overall]):
         super().__init__(*args, **kwargs)
         self._available_pages = (
             CoverPage(self),
+            ReportStatusPage(self, spec=report_status_spec_for(self)),
+            ManualInputsPage(self, spec=manual_inputs_spec_for(self)),
             CriterionTablePage(
                 self,
                 name="Validation ISO-Score Table", title="Validation ISO-Score",

@@ -20,6 +20,7 @@ from pyisomme.calculate.bric import calculate_bric
 from pyisomme.calculate.chest_pc_score import calculate_chest_pc_score
 from pyisomme.calculate.damage import calculate_damage
 from pyisomme.calculate.femur_impulse import calculate_femur_impulse
+from pyisomme.calculate.head_trajectory import calculate_head_trajectory
 from pyisomme.calculate.hic import calculate_hic
 from pyisomme.calculate.iliac_force_drop import calculate_iliac_force_drop
 from pyisomme.calculate.neck_m_base import (
@@ -46,6 +47,7 @@ __all__ = [
     "calculate_chest_pc_score",
     "calculate_damage",
     "calculate_femur_impulse",
+    "calculate_head_trajectory",
     "calculate_hic",
     "calculate_iliac_force_drop",
     "calculate_neck_MOCx",

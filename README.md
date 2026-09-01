@@ -100,10 +100,15 @@ Plot a calculated resultant head acceleration with filter class A / 1000 Hz:
 pyisomme plot ./iso_1/v1.mme --codes '24HEAD??????ACRA' --xlim 0 100 --calculate
 ```
 
-Create a report using only data from 0 to 200 ms:
+Create HTML, PDF, and PowerPoint reports in one run using only data from 0 to
+200 ms. Repeat `-o`/`--output` for every desired format; the format is inferred
+from the output file extension.
 
 ```bash
-pyisomme report EuroNCAP_Frontal_MPDB report.pptx data/nhtsa/09203 --crop 0 0.2
+pyisomme report EuroNCAP_Frontal_MPDB data/nhtsa/09203 --crop 0 0.2 \
+  -o out/report.html \
+  -o out/report.pdf \
+  -o out/report.pptx
 ```
 
 ## Python Examples
