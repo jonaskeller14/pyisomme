@@ -21,7 +21,9 @@ from pyisomme.report.page2 import (
     CoverPage,
     CriterionTablePage,
     CriterionValuesChartPage,
+    HICPage,
     criterion_values_chart_spec_for,
+    hic_spec_for,
     values_table_spec_for,
 )
 from pyisomme.report.report import Report
@@ -293,6 +295,21 @@ class UN_Side_Pole_R135(Report[Overall]):
                 }),
             ),
             ChannelPlotPage(self, spec=side_head_acceleration_spec_for(self)),
+            HICPage(
+                self,
+                spec=hic_spec_for(
+                    self,
+                    name="HIC36",
+                    title="HIC36",
+                    timespan=36,
+                ).with_position(
+                    lambda report, isomme: report.overall(isomme).p
+                ).with_criterion(
+                    lambda report, isomme: report.overall(
+                        isomme
+                    ).criterion_dummy.criterion_hic_36
+                ),
+            ),
             ChannelPlotPage(self, spec=side_shoulder_lateral_force_spec_for(self)),
             ChannelPlotPage(self, spec=side_pole_chest_compression_spec_for(self)),
             ChannelPlotPage(self, spec=side_pole_abdomen_compression_spec_for(self)),

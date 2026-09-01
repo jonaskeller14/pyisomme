@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Any, Protocol
+from typing import Any, Protocol, TypeVar
 
 import numpy as np
 from matplotlib.colors import to_rgb
@@ -188,6 +188,13 @@ class DriverReport(Protocol):
     def overall(self, isomme: Isomme) -> DriverOverall: ...
 
 
+D = TypeVar("D", bound=DriverReport)
+
+
+def _driver_hic_criterion_required(_: Any, __: Isomme) -> Any:
+    raise RuntimeError("Driver HIC spec requires a criterion via with_criterion().")
+
+
 _DRIVER_BELT = ChannelPlotSpec[DriverReport](
     name="Driver Belt",
     title="Driver Belt",
@@ -221,13 +228,6 @@ _DRIVER_HEAD_ACCELERATION = ChannelPlotSpec[DriverReport](
     nrows=2,
     ncols=2,
     sharey=True,
-)
-
-_DRIVER_HIC_15 = HICSpec[DriverReport](
-    name="Driver HIC15",
-    title="Driver HIC15",
-    position=lambda report, isomme: report.overall(isomme).p_driver,
-    timespan=15,
 )
 
 _DRIVER_NECK_LOAD = ChannelPlotSpec[DriverReport](
@@ -271,8 +271,14 @@ def driver_head_acceleration_spec_for(
     return _DRIVER_HEAD_ACCELERATION
 
 
-def driver_hic_15_spec_for(_report: DriverReport) -> HICSpec[DriverReport]:
-    return _DRIVER_HIC_15
+def driver_hic_15_spec_for(_report: D) -> HICSpec[D]:
+    return HICSpec(
+        name="Driver HIC15",
+        title="Driver HIC15",
+        position=lambda report, isomme: report.overall(isomme).p_driver,
+        criterion=_driver_hic_criterion_required,
+        timespan=15,
+    )
 
 
 def driver_neck_load_spec_for(

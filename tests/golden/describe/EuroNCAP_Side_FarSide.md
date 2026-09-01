@@ -6,8 +6,8 @@
 | protocol | 2.5 |
 | protocols | 2.4, 2.5 |
 | overall criterion | `Overall` |
-| available_pages | Cover, Values Chart, Rating Table, Values Table, Head Acceleration, Head DAMAGE, Upper Neck, Lower Neck, Chest Lateral Compression, Abdomen Lateral Compression, Lumbar Load, Pubic Symphysis Force |
-| selected_pages | Cover, Values Chart, Rating Table, Values Table, Head Acceleration, Head DAMAGE, Upper Neck, Lower Neck, Chest Lateral Compression, Abdomen Lateral Compression, Lumbar Load, Pubic Symphysis Force |
+| available_pages | Cover, Values Chart, Rating Table, Values Table, Head Acceleration, HIC15, Head DAMAGE, Upper Neck, Lower Neck, Chest Lateral Compression, Abdomen Lateral Compression, Lumbar Load, Pubic Symphysis Force |
+| selected_pages | Cover, Values Chart, Rating Table, Values Table, Head Acceleration, HIC15, Head DAMAGE, Upper Neck, Lower Neck, Chest Lateral Compression, Abdomen Lateral Compression, Lumbar Load, Pubic Symphysis Force |
 
 ## `Overall` — Overall
 

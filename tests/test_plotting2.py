@@ -8,7 +8,7 @@ from pyisomme.channel import create_sample
 from pyisomme.isomme import Isomme
 from pyisomme.limit import Limit
 from pyisomme.limit_set import LimitSet
-from pyisomme.plotting2 import plot_line, plot_line_table, plot_table
+from pyisomme.plotting2 import DEFAULT_CONFIG, plot_line, plot_line_table, plot_table
 
 
 def _sample_isomme(test_number: str = "TEST") -> Isomme:
@@ -103,6 +103,53 @@ def test_plot_line_shares_y_axis_across_entire_grid() -> None:
     ]
     assert matches.count(None) == 1
     assert len({match for match in matches if match is not None}) == 1
+    assert all(
+        axis.showticklabels is True
+        for axis in (
+            fig.layout.yaxis,
+            fig.layout.yaxis2,
+            fig.layout.yaxis3,
+            fig.layout.yaxis4,
+        )
+    )
+
+
+def test_plot_line_reserves_label_gutters_and_frames_each_subplot() -> None:
+    isomme = _sample_isomme()
+
+    fig = plot_line(
+        {isomme: [[isomme.channels[0]]] * 4},
+        nrows=2,
+        ncols=2,
+        figsize=(1000, 800),
+    )
+
+    horizontal_gap = fig.layout.xaxis2.domain[0] - fig.layout.xaxis.domain[1]
+    vertical_gap = fig.layout.yaxis.domain[0] - fig.layout.yaxis3.domain[1]
+    assert horizontal_gap > 0.08
+    assert vertical_gap > 0.14
+
+    for axis_name in ("xaxis", "xaxis2", "xaxis3", "xaxis4"):
+        axis = fig.layout[axis_name]
+        assert axis.title.text == "Time [ms]"
+        assert axis.title.standoff == 5
+        assert axis.showline is True
+        assert axis.mirror is True
+        assert axis.linecolor == "#444444"
+        assert axis.linewidth == 1
+        assert axis.automargin is True
+        assert axis.tickmode == "auto"
+        assert axis.nticks == DEFAULT_CONFIG.xaxis_nticks
+    for axis_name in ("yaxis", "yaxis2", "yaxis3", "yaxis4"):
+        axis = fig.layout[axis_name]
+        assert axis.showline is True
+        assert axis.mirror is True
+        assert axis.linecolor == "#444444"
+        assert axis.linewidth == 1
+        assert axis.automargin is True
+        assert axis.tickmode == "auto"
+        assert axis.nticks == DEFAULT_CONFIG.yaxis_nticks
+        assert axis.showticklabels is True
 
 
 def test_plot_line_adds_limit_lines_fills_and_labels() -> None:
@@ -155,6 +202,7 @@ def test_plot_table_infers_grid_and_validates_shapes() -> None:
         row_labels=[["row 1"], ["row 2"]],
         col_labels=[["value"], ["value"]],
         cell_colors=[[[(1.0, 0.0, 0.0, 0.5)]], None],
+        row_labels_colors=[["darkgreen"], None],
         col_labels_colors=[["darkblue"], None],
     )
 
@@ -163,6 +211,7 @@ def test_plot_table_infers_grid_and_validates_shapes() -> None:
     assert fig.data[0].cells.fill.color[1][0] == "rgba(255,0,0,0.5)"
     assert list(fig.data[0].header.values) == ["", "value"]
     assert list(fig.data[0].header.font.color) == ["black", "darkblue"]
+    assert list(fig.data[0].cells.font.color[0]) == ["darkgreen"]
     assert fig.data[0].header.font.weight == 700
     with pytest.raises(ValueError, match="row_labels"):
         plot_table([[[1], [2]]], [["only one"]], [["value"]])

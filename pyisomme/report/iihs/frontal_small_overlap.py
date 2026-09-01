@@ -16,8 +16,10 @@ from pyisomme.report.page2 import (
     CoverPage,
     CriterionTablePage,
     CriterionValuesChartPage,
+    HICPage,
     channel_plot_spec_for,
     criterion_values_chart_spec_for,
+    hic_spec_for,
     rating_table_spec_for,
     values_table_spec_for,
 )
@@ -205,6 +207,21 @@ class IIHS_Frontal_Small_Overlap(Report[Overall]):
                             spec=values_table_spec_for(self).with_criteria(lambda report: {isomme: [report.overall(isomme).criterion_driver.criterion_head_neck.criterion_hic_15, report.overall(isomme).criterion_driver.criterion_head_neck.criterion_nij, report.overall(isomme).criterion_driver.criterion_head_neck.criterion_neck_tension, report.overall(isomme).criterion_driver.criterion_head_neck.criterion_neck_compression, report.overall(isomme).criterion_driver.criterion_head_neck.criterion_tension_corridor, report.overall(isomme).criterion_driver.criterion_head_neck.criterion_compression_corridor, report.overall(isomme).criterion_driver.criterion_head_neck.criterion_shear_corridor, report.overall(isomme).criterion_driver.criterion_chest.criterion_acceleration, report.overall(isomme).criterion_driver.criterion_chest.criterion_deflection, report.overall(isomme).criterion_driver.criterion_chest.criterion_deflection_rate, report.overall(isomme).criterion_driver.criterion_chest.criterion_vc, report.overall(isomme).criterion_driver.criterion_thigh_hip.criterion_left, report.overall(isomme).criterion_driver.criterion_thigh_hip.criterion_right, report.overall(isomme).criterion_driver.criterion_leg_foot.criterion_tibia_femur_displacement, report.overall(isomme).criterion_driver.criterion_leg_foot.criterion_tibia_index, report.overall(isomme).criterion_driver.criterion_leg_foot.criterion_tibia_axial_force, report.overall(isomme).criterion_driver.criterion_leg_foot.criterion_foot_acceleration] for isomme in report.isomme_list}),
                         ),
             ChannelPlotPage(self, spec=driver_head_acceleration_spec_for(self)),
+            HICPage(
+                self,
+                spec=hic_spec_for(
+                    self,
+                    name="Driver HIC15",
+                    title="Driver HIC15",
+                    timespan=15,
+                ).with_position(
+                    lambda report, isomme: report.overall(isomme).p_driver
+                ).with_criterion(
+                    lambda report, isomme: report.overall(
+                        isomme
+                    ).criterion_driver.criterion_head_neck.criterion_hic_15
+                ),
+            ),
             ChannelPlotPage(
                             self,
                             spec=channel_plot_spec_for(
@@ -215,13 +232,26 @@ class IIHS_Frontal_Small_Overlap(Report[Overall]):
                             self,
                             spec=channel_plot_spec_for(
                                 self, name='Driver Neck Axial Load', title='Driver Neck Axial Load'
-                            ).with_channels(lambda report: {isomme: [[f'?{report.overall(isomme).p_driver}NECKUP00??FOZB']] for isomme in report.isomme_list}),
+                            ).with_limits(lambda report: {
+                                isomme: (
+                                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_neck_tension.limits
+                                    + report.overall(isomme).criterion_driver.criterion_head_neck.criterion_neck_compression.limits
+                                )
+                                for isomme in report.isomme_list
+                            }).with_channels(lambda report: {isomme: [[f'?{report.overall(isomme).p_driver}NECKUP00??FOZB']] for isomme in report.isomme_list}),
                         ),
             ChannelPlotPage(
                             self,
                             spec=channel_plot_spec_for(
                                 self, name='Driver Neck Load Corridors', title='Driver Neck Load Corridors', nrows=1, ncols=2
-                            ).with_channels(lambda report: {isomme: [[f'?{report.overall(isomme).p_driver}NECKUP00??FOZB'], [f'?{report.overall(isomme).p_driver}NECKUP00??FOXB']] for isomme in report.isomme_list}),
+                            ).with_limits(lambda report: {
+                                isomme: (
+                                    report.overall(isomme).criterion_driver.criterion_head_neck.criterion_tension_corridor.limits
+                                    + report.overall(isomme).criterion_driver.criterion_head_neck.criterion_compression_corridor.limits
+                                    + report.overall(isomme).criterion_driver.criterion_head_neck.criterion_shear_corridor.limits
+                                )
+                                for isomme in report.isomme_list
+                            }).with_channels(lambda report: {isomme: [[f'?{report.overall(isomme).p_driver}NECKUP00??FOZB'], [f'?{report.overall(isomme).p_driver}NECKUP00??FOXB']] for isomme in report.isomme_list}),
                         ),
             ChannelPlotPage(
                             self,

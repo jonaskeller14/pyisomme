@@ -24,6 +24,44 @@ from pyisomme.report.base_report import BaseReport
 from pyisomme.report.meta_report import MetaReport
 
 
+def build_head_acceleration_channels(
+    test_object: str = "1",
+    position: str = "1",
+    seed: int = 0,
+    scale_y: float = 1.0,
+) -> list[Channel]:
+    """Build only measured XYZ head acceleration; derived channels stay lazy."""
+    channels = [
+        create_sample(
+            code="11HEAD0000H3ACXA",
+            mode="pulse",
+            y_range=(0, -500),
+            noise_per=0.01,
+            seed=seed,
+        ),
+        create_sample(
+            code="11HEAD0000H3ACYA",
+            mode="pulse",
+            y_range=(0, -150),
+            noise_per=0.01,
+            seed=seed,
+        ),
+        create_sample(
+            code="11HEAD0000H3ACZA",
+            mode="sin",
+            y_range=(100, -100),
+            noise_per=0.01,
+            seed=seed,
+        ),
+    ]
+    return [
+        channel.scale_y(scale_y).set_code(
+            test_object=test_object, position=position
+        )
+        for channel in channels
+    ]
+
+
 def build_hf_channels(
     test_object: str = "1", position: str = "1", seed: int = 0, scale_y: float = 1.0
 ) -> list[Channel]:
@@ -160,9 +198,7 @@ def build_euroncap_frontal_mpdb() -> EuroNCAP_Frontal_MPDB:
             Isomme(
                 test_number=f"v{idx}",
                 channels=[
-                    create_sample(code="11HEAD0000H3ACRA", y_range=(0, 100)).scale_y(scale_y),
-                    create_sample(code="11HICR0015H300RX", y_range=(0, 500)).scale_y(scale_y),
-                    create_sample(code="11HEAD003CH3ACRX", y_range=(0, 100)).scale_y(scale_y),
+                    *build_head_acceleration_channels(position="1", scale_y=scale_y),
                     create_sample(code="11HEADDAMAH3AARA", y_range=(0, 1)).scale_y(scale_y),
                     create_sample(code="11NECKUP00H3MOYB", y_range=(-20, 20)).scale_y(scale_y),
                     create_sample(code="11NECKUP00H3FOZA", y_range=(-1000, 1000)).scale_y(scale_y),
@@ -175,8 +211,7 @@ def build_euroncap_frontal_mpdb() -> EuroNCAP_Frontal_MPDB:
                     create_sample(code="11KNSL0000H3DSXC", y_range=(-0.01, 0)).scale_y(scale_y),
                     create_sample(code="11TIIN0000H3000B", y_range=(0, 0.5)).scale_y(scale_y),
                     create_sample(code="11TIBI0000H3FOZB", y_range=(-2000, 5)).scale_y(scale_y),
-                    create_sample(code="13HICR0015H300RX", y_range=(0, 500)).scale_y(scale_y),
-                    create_sample(code="13HEAD003CH3ACRX", y_range=(0, 100)).scale_y(scale_y),
+                    *build_head_acceleration_channels(position="3", scale_y=scale_y),
                     create_sample(code="13NECKUP00H3FOXA", y_range=(-1000, 1000)).scale_y(scale_y),
                     create_sample(code="13NECKUP00H3FOZA", y_range=(-1000, 1000)).scale_y(scale_y),
                     create_sample(code="13NECKUP00H3MOYB", y_range=(-20, 20)).scale_y(scale_y),
@@ -204,8 +239,7 @@ def build_euroncap_side_barrier() -> EuroNCAP_Side_Barrier:
             Isomme(
                 test_number=f"v{idx}",
                 channels=[
-                    create_sample(code="11HICR0015H300RX", y_range=(0, 500)).scale_y(scale_y),
-                    create_sample(code="11HEAD003CH3ACRX", y_range=(0, 100)).scale_y(scale_y),
+                    *build_head_acceleration_channels(position="1", scale_y=scale_y),
                     create_sample(code="11TRRI0000H3DSYC", y_range=(-0.03, 0)).scale_y(scale_y),
                     create_sample(code="11VCCR0000H3VEYC", y_range=(-0.5, 0.5)).scale_y(scale_y),
                     create_sample(code="11SHLD0000H3FOYB", y_range=(0, 1000)).scale_y(scale_y),
@@ -228,10 +262,7 @@ def build_euroncap_side_farside() -> EuroNCAP_Side_FarSide:
             Isomme(
                 test_number=f"v{idx}",
                 channels=[
-                    create_sample(code="11HICR0015H300RX", y_range=(0, 500)).scale_y(scale_y),
-                    create_sample(code="11HEAD0000H3ACXA", mode="sin", y_range=(-500, 500)).scale_y(scale_y),
-                    create_sample(code="11HEAD0000H3ACYA", mode="sin", y_range=(-500, 500)).scale_y(scale_y),
-                    create_sample(code="11HEAD0000H3ACZA", mode="sin", y_range=(-500, 500)).scale_y(scale_y),
+                    *build_head_acceleration_channels(position="1", scale_y=scale_y),
                     create_sample(code="11HEAD0000H3AVXA", mode="sin", y_range=(-10, 10)).scale_y(scale_y),
                     create_sample(code="11HEAD0000H3AVYA", mode="sin", y_range=(-10, 10)).scale_y(scale_y),
                     create_sample(code="11HEAD0000H3AVZA", mode="sin", y_range=(-10, 10)).scale_y(scale_y),
@@ -273,8 +304,7 @@ def build_euroncap_side_pole() -> EuroNCAP_Side_Pole:
             Isomme(
                 test_number=f"v{idx}",
                 channels=[
-                    create_sample(code="11HICR0015H300RX", y_range=(0, 500)).scale_y(scale_y),
-                    create_sample(code="11HEAD0000H3ACRA", y_range=(0, 100)).scale_y(scale_y),
+                    *build_head_acceleration_channels(position="1", scale_y=scale_y),
                     create_sample(code="11TRRI0000H3DSYC", y_range=(-0.03, 0)).scale_y(scale_y),
                     create_sample(code="11VCCR0000H3VEYC", y_range=(-0.5, 0.5)).scale_y(scale_y),
                     create_sample(code="11SHLD0000H3FOYB", y_range=(0, 1000)).scale_y(scale_y),
@@ -297,7 +327,7 @@ def build_iihs_frontal_small_overlap() -> IIHS_Frontal_Small_Overlap:
             Isomme(
                 test_number=f"v{idx}",
                 channels=[
-                    create_sample(code="11HICR0015H300RX", y_range=(0, 500)).scale_y(scale_y),
+                    *build_head_acceleration_channels(position="1", scale_y=scale_y),
                     create_sample(code="11NIJCIP00H300YB", y_range=(0, 0.5)).scale_y(scale_y),
                     create_sample(code="11NECKUP00H3FOZB", y_range=(-1000, 1000)).scale_y(scale_y),
                     create_sample(code="11NECKUP00H3FOXB", y_range=(-1000, 1000)).scale_y(scale_y),
@@ -327,7 +357,7 @@ def build_iihs_frontal_moderate_overlap() -> IIHS_Frontal_Moderate_Overlap:
             Isomme(
                 test_number=f"v{idx}",
                 channels=[
-                    create_sample(code="11HICR0015H300RX", y_range=(0, 500)).scale_y(scale_y),
+                    *build_head_acceleration_channels(position="1", scale_y=scale_y),
                     create_sample(code="11NIJCIP00H300YB", y_range=(0, 0.5)).scale_y(scale_y),
                     create_sample(code="11NECKUP00H3FOZB", y_range=(-1000, 1000)).scale_y(scale_y),
                     create_sample(code="11NECKUP00H3FOXB", y_range=(-1000, 1000)).scale_y(scale_y),
@@ -341,6 +371,7 @@ def build_iihs_frontal_moderate_overlap() -> IIHS_Frontal_Moderate_Overlap:
                     create_sample(code="11TIIN00TOH3000B", y_range=(0, 0.5)).scale_y(scale_y),
                     create_sample(code="11TIBI00LOH3FOZB", y_range=(-2000, 5)).scale_y(scale_y),
                     create_sample(code="11FOOT0000H3ACRB", y_range=(0, 100)).scale_y(scale_y),
+                    *build_head_acceleration_channels(position="6", scale_y=scale_y),
                     create_sample(code="16NECKUP00H3FOZB", y_range=(-1000, 1000)).scale_y(scale_y),
                     create_sample(code="16CHST0000H3DSXC", y_range=(-0.03, 0)).scale_y(scale_y),
                     create_sample(code="16SEBE0000B3FOXC", y_range=(0, 3000)).scale_y(scale_y),
@@ -361,7 +392,7 @@ def build_iihs_side_impact() -> IIHS_Side_Impact:
             Isomme(
                 test_number=f"v{idx}",
                 channels=[
-                    create_sample(code="11HICR0015H300RX", y_range=(0, 500)).scale_y(scale_y),
+                    *build_head_acceleration_channels(position="1", scale_y=scale_y),
                     create_sample(code="11NECKUP00H3FOZB", y_range=(-1000, 1000)).scale_y(scale_y),
                     create_sample(code="11TRRILE01H3DSYC", y_range=(-0.03, 0)).scale_y(scale_y),
                     create_sample(code="11TRRILE02H3DSYC", y_range=(-0.03, 0)).scale_y(scale_y),
@@ -370,7 +401,7 @@ def build_iihs_side_impact() -> IIHS_Side_Impact:
                     create_sample(code="11ABRILE02H3DSYC", y_range=(-0.03, 0)).scale_y(scale_y),
                     create_sample(code="11ACTBLE00H3FOYB", y_range=(0, 1000)).scale_y(scale_y),
                     create_sample(code="11ILUMLE00H3FOYB", y_range=(0, 1000)).scale_y(scale_y),
-                    create_sample(code="16HICR0015H300RX", y_range=(0, 500)).scale_y(scale_y),
+                    *build_head_acceleration_channels(position="6", scale_y=scale_y),
                     create_sample(code="16NECKUP00H3FOZB", y_range=(-1000, 1000)).scale_y(scale_y),
                     create_sample(code="16TRRILE01H3DSYC", y_range=(-0.03, 0)).scale_y(scale_y),
                     create_sample(code="16TRRILE02H3DSYC", y_range=(-0.03, 0)).scale_y(scale_y),
@@ -400,16 +431,14 @@ def build_un_frontal_50kmh_r137() -> UN_Frontal_50kmh_R137:
             Isomme(
                 test_number=f"v{idx}",
                 channels=[
-                    create_sample(code="11HICR0036H300RX", y_range=(0, 500)).scale_y(scale_y),
-                    create_sample(code="11HEAD003CH3ACRX", y_range=(0, 100)).scale_y(scale_y),
+                    *build_head_acceleration_channels(position="1", scale_y=scale_y),
                     create_sample(code="11NECKUP00H3FOZA", y_range=(-1000, 1000)).scale_y(scale_y),
                     create_sample(code="11NECKUP00H3FOXA", y_range=(-1000, 1000)).scale_y(scale_y),
                     create_sample(code="11NECKUP00H3MOYB", y_range=(-20, 20)).scale_y(scale_y),
                     create_sample(code="11CHST0000H3DSXC", y_range=(-0.03, 0)).scale_y(scale_y),
                     create_sample(code="11VCCR0003H3VEXC", y_range=(-0.5, 0.5)).scale_y(scale_y),
                     create_sample(code="11FEMR0000H3FOZB", y_range=(-2000, 0)).scale_y(scale_y),
-                    create_sample(code="13HICR0036H300RX", y_range=(0, 500)).scale_y(scale_y),
-                    create_sample(code="13HEAD003CH3ACRX", y_range=(0, 100)).scale_y(scale_y),
+                    *build_head_acceleration_channels(position="3", scale_y=scale_y),
                     create_sample(code="13NECKUP00H3FOZA", y_range=(-1000, 1000)).scale_y(scale_y),
                     create_sample(code="13NECKUP00H3FOXA", y_range=(-1000, 1000)).scale_y(scale_y),
                     create_sample(code="13NECKUP00H3MOYB", y_range=(-20, 20)).scale_y(scale_y),
@@ -432,8 +461,7 @@ def build_un_frontal_56kmh_odb_r94() -> UN_Frontal_56kmh_ODB_R94:
             Isomme(
                 test_number=f"v{idx}",
                 channels=[
-                    create_sample(code="11HICR0036H300RX", y_range=(0, 500)).scale_y(scale_y),
-                    create_sample(code="11HEAD003CH3ACRX", y_range=(0, 100)).scale_y(scale_y),
+                    *build_head_acceleration_channels(position="1", scale_y=scale_y),
                     create_sample(code="11NECKUP00H3FOZA", y_range=(-1000, 1000)).scale_y(scale_y),
                     create_sample(code="11NECKUP00H3FOXA", y_range=(-1000, 1000)).scale_y(scale_y),
                     create_sample(code="11NECKUP00H3MOYB", y_range=(-20, 20)).scale_y(scale_y),
@@ -443,8 +471,7 @@ def build_un_frontal_56kmh_odb_r94() -> UN_Frontal_56kmh_ODB_R94:
                     create_sample(code="11TIBI0000H3FOZB", y_range=(-2000, 5)).scale_y(scale_y),
                     create_sample(code="11TIIN0000H3000B", y_range=(0, 0.5)).scale_y(scale_y),
                     create_sample(code="11KNSL0000H3DSXC", y_range=(-0.01, 0)).scale_y(scale_y),
-                    create_sample(code="13HICR0036H300RX", y_range=(0, 500)).scale_y(scale_y),
-                    create_sample(code="13HEAD003CH3ACRX", y_range=(0, 100)).scale_y(scale_y),
+                    *build_head_acceleration_channels(position="3", scale_y=scale_y),
                     create_sample(code="13NECKUP00H3FOZA", y_range=(-1000, 1000)).scale_y(scale_y),
                     create_sample(code="13NECKUP00H3FOXA", y_range=(-1000, 1000)).scale_y(scale_y),
                     create_sample(code="13NECKUP00H3MOYB", y_range=(-20, 20)).scale_y(scale_y),
@@ -470,7 +497,7 @@ def build_un_side_pole_r135() -> UN_Side_Pole_R135:
             Isomme(
                 test_number=f"v{idx}",
                 channels=[
-                    create_sample(code="11HICR0036H300RX", y_range=(0, 500)).scale_y(scale_y),
+                    *build_head_acceleration_channels(position="1", scale_y=scale_y),
                     create_sample(code="11SHLD0000H3FOYB", y_range=(0, 1000)).scale_y(scale_y),
                     create_sample(code="11TRRI0000H3DSRB", y_range=(-0.03, 0)).scale_y(scale_y),
                     create_sample(code="11ABRI0000H3DSRB", y_range=(-0.03, 0)).scale_y(scale_y),
@@ -492,7 +519,7 @@ def build_un_side_barrier_r95() -> UN_Side_Barrier_R95:
             Isomme(
                 test_number=f"v{idx}",
                 channels=[
-                    create_sample(code="11HICR0036H300RX", y_range=(0, 500)).scale_y(scale_y),
+                    *build_head_acceleration_channels(position="1", scale_y=scale_y),
                     create_sample(code="11RIBSLE00H3DSYC", y_range=(-0.03, 0)).scale_y(scale_y),
                     create_sample(code="11VCCRLE00H3VEYC", y_range=(-0.5, 0.5)).scale_y(scale_y),
                     create_sample(code="11PUBC0000H3FOYB", y_range=(0, 1000)).scale_y(scale_y),

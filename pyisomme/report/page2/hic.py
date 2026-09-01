@@ -2,23 +2,44 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass, replace
-from typing import Any, Generic, TypeVar, cast
+from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 
 import numpy as np
 import plotly.graph_objects as go
+from matplotlib.colors import to_rgb
 
 from pyisomme.isomme import Isomme
 from pyisomme.plotting2 import DEFAULT_CONFIG, plot_line_table
 from pyisomme.report.base_report import BaseReport
 from pyisomme.report.page2.figure import FigurePage
 
+if TYPE_CHECKING:
+    from pyisomme.report.criterion import Criterion
+
 R = TypeVar("R", bound=BaseReport)
 S_contra = TypeVar("S_contra", contravariant=True)
 PositionSelector = Callable[[S_contra, Isomme], str]
+CriterionSelector = Callable[[S_contra, Isomme], "Criterion"]
+
+TRANSPARENT = (0.0, 0.0, 0.0, 0.0)
+
+
+def _criterion_cell_color(criterion: Criterion) -> Any:
+    if criterion.result is None or criterion.result.color is None:
+        return TRANSPARENT
+    color = criterion.result.color
+    rgb = to_rgb(color) if isinstance(color, str) else color[:3]
+    return (*rgb, 0.2)
 
 
 def _position_required(_: S_contra, __: Isomme) -> str: # pyright: ignore[reportInvalidTypeVarUse]
     raise RuntimeError("HICSpec requires a position via with_position().")
+
+
+def _criterion_required(
+    _: S_contra, __: Isomme
+) -> Criterion: # pyright: ignore[reportInvalidTypeVarUse]
+    raise RuntimeError("HICSpec requires a criterion via with_criterion().")
 
 
 @dataclass(frozen=True)
@@ -28,6 +49,7 @@ class HICSpec(Generic[S_contra]):
     name: str
     title: str
     position: PositionSelector[S_contra]
+    criterion: CriterionSelector[S_contra]
     timespan: int
     footer: str | None = None
 
@@ -38,6 +60,12 @@ class HICSpec(Generic[S_contra]):
     def with_position(self, position: PositionSelector[S_contra]) -> HICSpec[S_contra]:
         """Return a copy with a report-specific occupant-position selector."""
         return replace(self, position=position)
+
+    def with_criterion(
+        self, criterion: CriterionSelector[S_contra]
+    ) -> HICSpec[S_contra]:
+        """Return a copy with the criterion that supplies the result color."""
+        return replace(self, criterion=criterion)
 
 
 def hic_spec_for(
@@ -53,6 +81,7 @@ def hic_spec_for(
         name=name,
         title=title,
         position=_position_required,
+        criterion=_criterion_required,
         timespan=timespan,
         footer=footer,
     )
@@ -78,6 +107,7 @@ class HICPage(FigurePage[R], Generic[R]):
             isommes: list[Isomme] = cast(Any, current_report).isomme_list
             channels: dict[Isomme, list[list[str]]] = {}
             rows: list[list[str]] = []
+            cell_colors: list[list[Any]] = []
             hic_data: list[tuple[Isomme, float, float | None, float | None]] = []
 
             for isomme in isommes:
@@ -107,12 +137,20 @@ class HICPage(FigurePage[R], Generic[R]):
                         f"{end_ms:.2f}" if end_ms is not None else "n/a",
                     ]
                 )
+                criterion = spec.criterion(current_report, isomme)
+                color = _criterion_cell_color(criterion)
+                cell_colors.append([color, TRANSPARENT, TRANSPARENT])
 
             figure = plot_line_table(
                 channels=channels,
                 cell_texts=[rows],
                 row_labels=[[isomme.test_number for isomme in isommes]],
+                row_labels_colors=[[
+                    DEFAULT_CONFIG.colors[index % len(DEFAULT_CONFIG.colors)]
+                    for index in range(len(isommes))
+                ]],
                 col_labels=[[hic_name, "Start [ms]", "End [ms]"]],
+                cell_colors=[cell_colors],
                 nrows=1,
                 ncols=2,
                 sharex=False,
@@ -169,4 +207,10 @@ class HICPage(FigurePage[R], Generic[R]):
         )
 
 
-__all__ = ["HICPage", "HICSpec", "PositionSelector", "hic_spec_for"]
+__all__ = [
+    "CriterionSelector",
+    "HICPage",
+    "HICSpec",
+    "PositionSelector",
+    "hic_spec_for",
+]

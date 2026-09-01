@@ -6,8 +6,8 @@
 | protocol | 2016 |
 | protocols | 2016 |
 | overall criterion | `Overall` |
-| available_pages | Cover, Values Chart, Values Table, Head Acceleration, Shoulder Lateral Force, Chest Absolute Compression, Abdomen Resultant Compression, Spine T12 Acceleration, Pubic Symphysis Force |
-| selected_pages | Cover, Values Chart, Values Table, Head Acceleration, Shoulder Lateral Force, Chest Absolute Compression, Abdomen Resultant Compression, Spine T12 Acceleration, Pubic Symphysis Force |
+| available_pages | Cover, Values Chart, Values Table, Head Acceleration, HIC36, Shoulder Lateral Force, Chest Absolute Compression, Abdomen Resultant Compression, Spine T12 Acceleration, Pubic Symphysis Force |
+| selected_pages | Cover, Values Chart, Values Table, Head Acceleration, HIC36, Shoulder Lateral Force, Chest Absolute Compression, Abdomen Resultant Compression, Spine T12 Acceleration, Pubic Symphysis Force |
 
 ## `Overall` — Overall
 

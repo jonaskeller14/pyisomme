@@ -23,7 +23,9 @@ from pyisomme.report.page2 import (
     CoverPage,
     CriterionTablePage,
     CriterionTableSpec,
+    HICPage,
     channel_plot_spec_for,
+    hic_spec_for,
 )
 from pyisomme.report.report import Report
 from pyisomme.unit import g0
@@ -659,6 +661,21 @@ class EuroNCAP_Side_Farside_VTC(Report[Overall]):
                 isomme: [[f"?{report.criterion_overall[isomme].p}HEAD??????AC{axis}A"] for axis in "XYZR"]
                 for isomme in report.isomme_list
             })),
+            HICPage(
+                self,
+                spec=hic_spec_for(
+                    self,
+                    name="HIC15",
+                    title="HIC15",
+                    timespan=15,
+                ).with_position(
+                    lambda report, isomme: report.criterion_overall[isomme].p
+                ).with_criterion(
+                    lambda report, isomme: report.criterion_overall[
+                        isomme
+                    ].criterion_validation_injury_criteria.criterion_hic_15
+                ),
+            ),
             ChannelPlotPage(self, spec=channel_plot_spec_for(self, name="Chest Lateral Compression", title="Chest Lateral Compression", nrows=3, ncols=2, sharey=True).with_channels(lambda report: {
                 isomme: [[f"?{report.criterion_overall[isomme].p}TRRILE01??DSYC"], [f"?{report.criterion_overall[isomme].p}TRRIRI01??DSYC"], [f"?{report.criterion_overall[isomme].p}TRRILE02??DSYC"], [f"?{report.criterion_overall[isomme].p}TRRIRI02??DSYC"], [f"?{report.criterion_overall[isomme].p}TRRILE03??DSYC"], [f"?{report.criterion_overall[isomme].p}TRRIRI03??DSYC"]]
                 for isomme in report.isomme_list

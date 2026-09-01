@@ -6,8 +6,8 @@
 | protocol | 9.3 |
 | protocols | 9.3 |
 | overall criterion | `Overall` |
-| available_pages | Cover, Values Chart, Rating Table, Values Table, Head Acceleration, Shoulder Lateral Force, Chest Lateral Compression, Chest Lateral VC, Abdomen Lateral Compression, Abdomen Lateral VC, Pubic Symphysis Force |
-| selected_pages | Cover, Values Chart, Rating Table, Values Table, Head Acceleration, Shoulder Lateral Force, Chest Lateral Compression, Chest Lateral VC, Abdomen Lateral Compression, Abdomen Lateral VC, Pubic Symphysis Force |
+| available_pages | Cover, Values Chart, Rating Table, Values Table, Head Acceleration, HIC15, Shoulder Lateral Force, Chest Lateral Compression, Chest Lateral VC, Abdomen Lateral Compression, Abdomen Lateral VC, Pubic Symphysis Force |
+| selected_pages | Cover, Values Chart, Rating Table, Values Table, Head Acceleration, HIC15, Shoulder Lateral Force, Chest Lateral Compression, Chest Lateral VC, Abdomen Lateral Compression, Abdomen Lateral VC, Pubic Symphysis Force |
 
 ## `Overall` — Overall
 

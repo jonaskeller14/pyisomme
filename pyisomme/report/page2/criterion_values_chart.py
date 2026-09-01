@@ -180,18 +180,19 @@ def _chart_figure(
                 showlegend = bool(name and name not in legend_limits)
                 if showlegend:
                     legend_limits.add(name)
-                figure.add_shape(
-                    type="rect",
-                    x0=x_center - bar_width / 2,
-                    x1=x_center + bar_width / 2,
-                    y0=bottom / factors[criterion_index],
-                    y1=top / factors[criterion_index],
-                    fillcolor=limit.color,
-                    opacity=0.5,
-                    layer="below",
-                    line={"width": 0},
-                    name=name or None,
-                    showlegend=showlegend,
+                figure.add_trace(
+                    go.Bar(
+                        x=[x_center],
+                        y=[(top - bottom) / factors[criterion_index]],
+                        base=[bottom / factors[criterion_index]],
+                        width=[bar_width],
+                        marker={"color": limit.color, "opacity": 0.5},
+                        name=name or None,
+                        legendgroup=name or None,
+                        legendrank=1000,
+                        showlegend=showlegend,
+                        hoverinfo="skip",
+                    )
                 )
 
     for isomme_index, isomme in enumerate(isommes):
@@ -210,6 +211,7 @@ def _chart_figure(
                     "width": 3,
                 },
                 marker={"size": 9},
+                legendrank=isomme_index,
                 customdata=values[isomme_index],
                 hovertemplate="%{x}<br>%{customdata:.4g}<extra>%{fullData.name}</extra>",
             )
@@ -227,7 +229,15 @@ def _chart_figure(
         height=figsize[1],
         font={"family": DEFAULT_CONFIG.font_family},
         margin={"l": 30, "r": 30, "t": 30, "b": 150},
-        legend={"x": 1.01, "y": 1, "xanchor": "left", "yanchor": "top"},
+        barmode="overlay",
+        bargap=0,
+        legend={
+            "x": 1.01,
+            "y": 1,
+            "xanchor": "left",
+            "yanchor": "top",
+            "groupclick": "togglegroup",
+        },
     )
     return figure
 

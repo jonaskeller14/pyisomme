@@ -20,7 +20,7 @@
       "criterion_hic_15": {
         "result": {
           "name": "HIC 15",
-          "value": 125.0,
+          "value": 51.019076669460425,
           "rating": 4.0,
           "color": "green",
           "status": "OK"
@@ -29,7 +29,7 @@
       "criterion_head_acceleration": {
         "result": {
           "name": "Head Peak Acceleration",
-          "value": 5.0985810648896415,
+          "value": 27.195516035743314,
           "rating": 4.0,
           "color": "green",
           "status": "OK"
@@ -175,7 +175,7 @@
       "criterion_hic_15": {
         "result": {
           "name": "HIC 15",
-          "value": 250.0,
+          "value": 288.6074806628148,
           "rating": 4.0,
           "color": "green",
           "status": "OK"
@@ -184,7 +184,7 @@
       "criterion_head_acceleration": {
         "result": {
           "name": "Head Peak Acceleration",
-          "value": 10.197162129779283,
+          "value": 54.39103207148663,
           "rating": 4.0,
           "color": "green",
           "status": "OK"
@@ -330,7 +330,7 @@
       "criterion_hic_15": {
         "result": {
           "name": "HIC 15",
-          "value": 500.0,
+          "value": 1632.6104534227336,
           "rating": "-inf",
           "color": "gray",
           "status": "OK"
@@ -339,9 +339,9 @@
       "criterion_head_acceleration": {
         "result": {
           "name": "Head Peak Acceleration",
-          "value": 20.394324259558566,
-          "rating": 4.0,
-          "color": "green",
+          "value": 108.78206414297325,
+          "rating": "-inf",
+          "color": "gray",
           "status": "OK"
         }
       },

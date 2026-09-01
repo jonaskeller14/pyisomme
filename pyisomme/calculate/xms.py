@@ -12,6 +12,15 @@ from pyisomme.utils import debug_logging
 logger = logging.getLogger("pyisomme.calculate")
 
 
+def _time_info_value(value: object) -> float | None:
+    """Validate a dataframe index value before storing it as time metadata."""
+    if value is None:
+        return None
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise TypeError(f"Expected a numeric time value, got {value!r}.")
+    return float(value)
+
+
 @debug_logging(logger)
 def calculate_xms(
     channel: Channel, min_delta_t: float = 3, method: Literal["S", "C"] = "S"
@@ -84,15 +93,15 @@ def calculate_xms(
         }
     ).add(
         {
-            ".Analysis start time": np.min(time_array),
-            ".Analysis end time": np.max(time_array),
+            ".Analysis start time": _time_info_value(np.min(time_array)),
+            ".Analysis end time": _time_info_value(np.max(time_array)),
         }
     )
     if method == "S":
         new_info.add(
             {
-                ".Start time": res_t1,
-                ".End time": res_t2,
+                ".Start time": _time_info_value(res_t1),
+                ".End time": _time_info_value(res_t2),
             }
         )
     return Channel(new_code, data=pd.DataFrame([res]), unit=channel.unit, info=new_info)

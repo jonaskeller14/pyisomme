@@ -29,6 +29,14 @@ ChannelPanels: TypeAlias = Mapping[
 FigureSize: TypeAlias = tuple[Union[int, float], Union[int, float]]
 Range: TypeAlias = tuple[float, float]
 
+_LAYOUT_MARGIN_LEFT = 60
+_LAYOUT_MARGIN_RIGHT = 20
+_LAYOUT_MARGIN_TOP = 50
+_LAYOUT_MARGIN_BOTTOM = 50
+_HORIZONTAL_GUTTER_PX = 80
+_VERTICAL_GUTTER_PX = 105
+_AXIS_TITLE_STANDOFF_PX = 5
+
 
 @dataclass(frozen=True)
 class _ChannelTrace:
@@ -70,6 +78,34 @@ def _resolve_grid(
             f"The {nrows}x{ncols} grid has fewer cells than the {item_count} plots."
         )
     return nrows, ncols
+
+
+def _subplot_spacing(
+    nrows: int, ncols: int, figsize: FigureSize
+) -> tuple[float, float]:
+    """Reserve fixed-size gutters for axis labels and subplot titles."""
+
+    def fit(desired: float, count: int) -> float:
+        if count <= 1:
+            return 0.0
+        # Keep some domain available even for unusually dense grids.
+        return min(desired, 0.8 / (count - 1))
+
+    plot_width = max(
+        float(figsize[0]) - _LAYOUT_MARGIN_LEFT - _LAYOUT_MARGIN_RIGHT, 1.0
+    )
+    plot_height = max(
+        float(figsize[1]) - _LAYOUT_MARGIN_TOP - _LAYOUT_MARGIN_BOTTOM, 1.0
+    )
+    horizontal_spacing = fit(
+        max(DEFAULT_CONFIG.horizontal_spacing, _HORIZONTAL_GUTTER_PX / plot_width),
+        ncols,
+    )
+    vertical_spacing = fit(
+        max(DEFAULT_CONFIG.vertical_spacing, _VERTICAL_GUTTER_PX / plot_height),
+        nrows,
+    )
+    return horizontal_spacing, vertical_spacing
 
 
 def _resolve_limits(
@@ -379,12 +415,32 @@ def _add_line_panels(
                 col=col,
             )
         fig.update_xaxes(
-            title_text="Time [ms]", range=x_ranges[index], showgrid=True, row=row, col=col
+            title_text="Time [ms]",
+            title_standoff=_AXIS_TITLE_STANDOFF_PX,
+            range=x_ranges[index],
+            tickmode="auto",
+            nticks=DEFAULT_CONFIG.xaxis_nticks,
+            showgrid=True,
+            showline=True,
+            mirror=True,
+            linecolor="#444444",
+            linewidth=1,
+            automargin=True,
+            row=row,
+            col=col,
         )
         fig.update_yaxes(
             title_text=panel.y_title or None,
             range=y_ranges[index],
+            tickmode="auto",
+            nticks=DEFAULT_CONFIG.yaxis_nticks,
+            showticklabels=True,
             showgrid=True,
+            showline=True,
+            mirror=True,
+            linecolor="#444444",
+            linewidth=1,
+            automargin=True,
             row=row,
             col=col,
         )
@@ -408,14 +464,15 @@ def plot_line(
     """Plot ISO-MME channels as one or more interactive Plotly line charts."""
     panels = _prepare_line_panels(channels, xlim, colors, line_dashes, limits)
     nrows, ncols = _resolve_grid(len(panels), nrows, ncols)
+    horizontal_spacing, vertical_spacing = _subplot_spacing(nrows, ncols, figsize)
     fig = make_subplots(
         rows=nrows,
         cols=ncols,
-        shared_xaxes=sharex,
+        shared_xaxes="all" if sharex else False,  # pyright: ignore[reportArgumentType]
         shared_yaxes="all" if sharey else False,  # pyright: ignore[reportArgumentType]
         subplot_titles=[panel.title for panel in panels],
-        horizontal_spacing=DEFAULT_CONFIG.horizontal_spacing,
-        vertical_spacing=DEFAULT_CONFIG.vertical_spacing,
+        horizontal_spacing=horizontal_spacing,
+        vertical_spacing=vertical_spacing,
     )
     positions = [(index // ncols + 1, index % ncols + 1) for index in range(len(panels))]
     _add_line_panels(fig, panels, positions, xlim, ylim, sharex, sharey, legend)
@@ -425,7 +482,12 @@ def plot_line(
         template=template,
         font={"family": DEFAULT_CONFIG.font_family},
         showlegend=legend,
-        margin={"l": 60, "r": 20, "t": 50, "b": 50},
+        margin={
+            "l": _LAYOUT_MARGIN_LEFT,
+            "r": _LAYOUT_MARGIN_RIGHT,
+            "t": _LAYOUT_MARGIN_TOP,
+            "b": _LAYOUT_MARGIN_BOTTOM,
+        },
     )
     return fig
 

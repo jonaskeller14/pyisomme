@@ -30,8 +30,10 @@ from pyisomme.report.page2 import (
     CoverPage,
     CriterionTablePage,
     CriterionValuesChartPage,
+    HICPage,
     channel_plot_spec_for,
     criterion_values_chart_spec_for,
+    hic_spec_for,
     rating_table_spec_for,
     values_table_spec_for,
 )
@@ -567,6 +569,21 @@ class FMVSS_208(Report[Overall]):
                     ] for axis in "XYZR"] for isomme in report.isomme_list
                 }),
             ),
+            HICPage(
+                self,
+                spec=hic_spec_for(
+                    self,
+                    name="Driver HIC15",
+                    title="Driver HIC15",
+                    timespan=15,
+                ).with_position(
+                    lambda report, isomme: report.overall(isomme).p_driver
+                ).with_criterion(
+                    lambda report, isomme: report.overall(
+                        isomme
+                    ).criterion_driver.criterion_hic15
+                ),
+            ),
             ChannelPlotPage(
                 self,
                 spec=channel_plot_spec_for(
@@ -689,6 +706,21 @@ class FMVSS_208(Report[Overall]):
                         f"{report.overall(isomme).criterion_passenger.dummy_identifier}AC{axis}A"
                     ] for axis in "XYZR"] for isomme in report.isomme_list
                 }),
+            ),
+            HICPage(
+                self,
+                spec=hic_spec_for(
+                    self,
+                    name="Front Passenger HIC15",
+                    title="Front Passenger HIC15",
+                    timespan=15,
+                ).with_position(
+                    lambda report, isomme: report.overall(isomme).p_passenger
+                ).with_criterion(
+                    lambda report, isomme: report.overall(
+                        isomme
+                    ).criterion_passenger.criterion_hic15
+                ),
             ),
             ChannelPlotPage(
                 self,

@@ -1,10 +1,8 @@
 from __future__ import annotations
 
 import pytest
-from matplotlib import pyplot as plt
 
 from pyisomme.report.euro_ncap.protocols import PROTOCOL_FARSIDE_2_5
-from pyisomme.report.page import Page_Plot_nxn
 from tests.report.report_factory import build_euroncap_side_farside
 
 

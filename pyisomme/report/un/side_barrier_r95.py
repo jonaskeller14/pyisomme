@@ -20,7 +20,9 @@ from pyisomme.report.page2 import (
     CoverPage,
     CriterionTablePage,
     CriterionValuesChartPage,
+    HICPage,
     criterion_values_chart_spec_for,
+    hic_spec_for,
     values_table_spec_for,
 )
 from pyisomme.report.report import Report
@@ -220,6 +222,21 @@ class UN_Side_Barrier_R95(Report[Overall]):
                 }),
             ),
             ChannelPlotPage(self, spec=side_head_acceleration_spec_for(self)),
+            HICPage(
+                self,
+                spec=hic_spec_for(
+                    self,
+                    name="HPC36",
+                    title="HPC36",
+                    timespan=36,
+                ).with_position(
+                    lambda report, isomme: report.overall(isomme).p
+                ).with_criterion(
+                    lambda report, isomme: report.overall(
+                        isomme
+                    ).criterion_dummy.criterion_hpc36
+                ),
+            ),
             ChannelPlotPage(self, spec=side_barrier_chest_deflection_spec_for(self)),
             ChannelPlotPage(self, spec=side_barrier_chest_vc_spec_for(self)),
             ChannelPlotPage(self, spec=side_pubic_symphysis_force_spec_for(self)),

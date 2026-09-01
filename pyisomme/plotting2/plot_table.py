@@ -37,6 +37,7 @@ def _validate_table_inputs(
     row_labels: Sequence[VectorLike],
     col_labels: Sequence[VectorLike],
     cell_colors: Sequence[MatrixLike | None] | None,
+    row_labels_colors: Sequence[VectorLike | None] | None,
     col_labels_colors: Sequence[VectorLike | None] | None,
 ) -> None:
     table_count = len(cell_texts)
@@ -46,6 +47,7 @@ def _validate_table_inputs(
         "row_labels": row_labels,
         "col_labels": col_labels,
         "cell_colors": cell_colors,
+        "row_labels_colors": row_labels_colors,
         "col_labels_colors": col_labels_colors,
     }
     for name, values in inputs.items():
@@ -75,6 +77,13 @@ def _validate_table_inputs(
                 len(row) != cells.shape[1] for row in colors
             ):
                 raise ValueError(f"cell_colors[{index}] must match its cell_texts shape.")
+        if row_labels_colors is not None and row_labels_colors[index] is not None:
+            label_colors = row_labels_colors[index]
+            assert label_colors is not None
+            if len(label_colors) != cells.shape[0]:
+                raise ValueError(
+                    f"row_labels_colors[{index}] must match its row count."
+                )
         if col_labels_colors is not None and col_labels_colors[index] is not None:
             header_colors = col_labels_colors[index]
             assert header_colors is not None
@@ -89,6 +98,7 @@ def _make_table_trace(
     row_labels: VectorLike,
     col_labels: VectorLike,
     cell_colors: MatrixLike | None,
+    row_labels_colors: VectorLike | None,
     col_labels_colors: VectorLike | None,
     col_labels_fontweight: Literal["normal", "bold"],
 ) -> go.Table:
@@ -118,6 +128,15 @@ def _make_table_trace(
             _plotly_color(color) for color in col_labels_colors
         ]
 
+    cell_font_colors: str | list[list[Any]]
+    if row_labels_colors is None:
+        cell_font_colors = "black"
+    else:
+        cell_font_colors = [
+            [_plotly_color(color) for color in row_labels_colors],
+            *[["black"] * cells.shape[0] for _ in range(cells.shape[1])],
+        ]
+
     return go.Table(
         header={
             "values": formatted_headers,
@@ -132,7 +151,7 @@ def _make_table_trace(
         cells={
             "values": columns_data,
             "align": "center",
-            "font": {"size": 12},
+            "font": {"size": 12, "color": cell_font_colors},
             "fill_color": color_columns,
             "height": 30,
         },
@@ -144,6 +163,7 @@ def plot_table(
     row_labels: Sequence[VectorLike],
     col_labels: Sequence[VectorLike],
     cell_colors: Sequence[MatrixLike | None] | None = None,
+    row_labels_colors: Sequence[VectorLike | None] | None = None,
     col_labels_colors: Sequence[VectorLike | None] | None = None,
     col_labels_fontweight: Literal["normal", "bold"] = "bold",
     nrows: int | None = None,
@@ -153,7 +173,12 @@ def plot_table(
 ) -> go.Figure:
     """Plot one or more tables in a flexibly sized Plotly subplot grid."""
     _validate_table_inputs(
-        cell_texts, row_labels, col_labels, cell_colors, col_labels_colors
+        cell_texts,
+        row_labels,
+        col_labels,
+        cell_colors,
+        row_labels_colors,
+        col_labels_colors,
     )
     nrows, ncols = _resolve_grid(len(cell_texts), nrows, ncols)
     fig = make_subplots(
@@ -170,6 +195,7 @@ def plot_table(
             row_labels[index],
             col_labels[index],
             None if cell_colors is None else cell_colors[index],
+            None if row_labels_colors is None else row_labels_colors[index],
             None if col_labels_colors is None else col_labels_colors[index],
             col_labels_fontweight,
         )

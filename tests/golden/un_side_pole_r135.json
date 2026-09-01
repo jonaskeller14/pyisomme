@@ -20,7 +20,7 @@
       "criterion_hic_36": {
         "result": {
           "name": "HIC 36",
-          "value": 125.0,
+          "value": 88.24467965634085,
           "rating": 1.0,
           "color": "green",
           "status": "OK"
@@ -94,7 +94,7 @@
       "criterion_hic_36": {
         "result": {
           "name": "HIC 36",
-          "value": 250.0,
+          "value": 499.18729110906554,
           "rating": 1.0,
           "color": "green",
           "status": "OK"
@@ -168,9 +168,9 @@
       "criterion_hic_36": {
         "result": {
           "name": "HIC 36",
-          "value": 500.0,
+          "value": 2823.829749002907,
           "rating": 0.0,
-          "color": "green",
+          "color": "red",
           "status": "OK"
         }
       },

@@ -6,8 +6,8 @@
 | protocol | 2023 |
 | protocols | 2023 |
 | overall criterion | `Overall` |
-| available_pages | Cover, Values Chart, Values Table, Head Acceleration, Chest Lateral Deflection, Chest Lateral VC, Pubic Symphysis Force, Abdomen Force |
-| selected_pages | Cover, Values Chart, Values Table, Head Acceleration, Chest Lateral Deflection, Chest Lateral VC, Pubic Symphysis Force, Abdomen Force |
+| available_pages | Cover, Values Chart, Values Table, Head Acceleration, HPC36, Chest Lateral Deflection, Chest Lateral VC, Pubic Symphysis Force, Abdomen Force |
+| selected_pages | Cover, Values Chart, Values Table, Head Acceleration, HPC36, Chest Lateral Deflection, Chest Lateral VC, Pubic Symphysis Force, Abdomen Force |
 
 ## `Overall` — Overall
 

@@ -15,6 +15,7 @@ from pyisomme.plotting2.plot_line import (
     _add_line_panels,
     _prepare_line_panels,
     _resolve_grid,
+    _subplot_spacing,
 )
 from pyisomme.plotting2.plot_table import (
     MatrixLike,
@@ -38,6 +39,7 @@ def plot_line_table(
     sharey: bool = False,
     limits: LimitSet | Mapping[Isomme, LimitSet] | None = None,
     cell_colors: Sequence[MatrixLike | None] | None = None,
+    row_labels_colors: Sequence[VectorLike | None] | None = None,
     col_labels_colors: Sequence[VectorLike | None] | None = None,
     col_labels_fontweight: Literal["normal", "bold"] = "bold",
     nrows: int | None = None,
@@ -51,10 +53,16 @@ def plot_line_table(
     """Plot line charts followed by tables in one Plotly subplot grid."""
     panels = _prepare_line_panels(channels, xlim, colors, line_dashes, limits)
     _validate_table_inputs(
-        cell_texts, row_labels, col_labels, cell_colors, col_labels_colors
+        cell_texts,
+        row_labels,
+        col_labels,
+        cell_colors,
+        row_labels_colors,
+        col_labels_colors,
     )
     item_count = len(panels) + len(cell_texts)
     nrows, ncols = _resolve_grid(item_count, nrows, ncols)
+    horizontal_spacing, vertical_spacing = _subplot_spacing(nrows, ncols, figsize)
 
     plot_types: list[str | None] = []
     plot_types.extend(["xy"] * len(panels))
@@ -76,8 +84,8 @@ def plot_line_table(
         shared_xaxes=sharex,
         shared_yaxes=sharey,
         subplot_titles=[panel.title for panel in panels] + [""] * len(cell_texts),
-        horizontal_spacing=DEFAULT_CONFIG.horizontal_spacing,
-        vertical_spacing=DEFAULT_CONFIG.vertical_spacing,
+        horizontal_spacing=horizontal_spacing,
+        vertical_spacing=vertical_spacing,
     )
 
     line_positions = [
@@ -92,6 +100,9 @@ def plot_line_table(
                 row_labels[table_index],
                 col_labels[table_index],
                 None if cell_colors is None else cell_colors[table_index],
+                None
+                if row_labels_colors is None
+                else row_labels_colors[table_index],
                 None
                 if col_labels_colors is None
                 else col_labels_colors[table_index],

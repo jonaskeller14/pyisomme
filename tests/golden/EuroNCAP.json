@@ -2,8 +2,8 @@
   "Overall": {
     "result": {
       "name": "Overall",
-      "value": 16.852756588431102,
-      "rating": 16.852756588431102,
+      "value": 18.145754755014433,
+      "rating": 18.145754755014433,
       "color": null,
       "status": "OK"
     }
@@ -1186,7 +1186,7 @@
             "criterion_hic_15": {
               "result": {
                 "name": "HIC 15",
-                "value": 125.0,
+                "value": 51.019076669460425,
                 "rating": 4.0,
                 "color": "green",
                 "status": "OK"
@@ -1195,7 +1195,7 @@
             "criterion_head_a3ms": {
               "result": {
                 "name": "Head a3ms",
-                "value": 2.5492905324448207,
+                "value": 26.44957412844106,
                 "rating": 4.0,
                 "color": "green",
                 "status": "OK"
@@ -1546,7 +1546,7 @@
             "criterion_hic_15": {
               "result": {
                 "name": "HIC 15",
-                "value": 125.0,
+                "value": 51.019076669460425,
                 "rating": 4.0,
                 "color": "green",
                 "status": "OK"
@@ -1555,7 +1555,7 @@
             "criterion_head_a3ms": {
               "result": {
                 "name": "Head a3ms",
-                "value": 2.5492905324448207,
+                "value": 26.44957412844106,
                 "rating": 4.0,
                 "color": "green",
                 "status": "OK"
@@ -1800,7 +1800,7 @@
             "criterion_hic_15": {
               "result": {
                 "name": "HIC 15",
-                "value": 250.0,
+                "value": 288.6074806628148,
                 "rating": 4.0,
                 "color": "green",
                 "status": "OK"
@@ -1809,7 +1809,7 @@
             "criterion_head_a3ms": {
               "result": {
                 "name": "Head a3ms",
-                "value": 5.0985810648896415,
+                "value": 52.89914825688212,
                 "rating": 4.0,
                 "color": "green",
                 "status": "OK"
@@ -2160,7 +2160,7 @@
             "criterion_hic_15": {
               "result": {
                 "name": "HIC 15",
-                "value": 250.0,
+                "value": 288.6074806628148,
                 "rating": 4.0,
                 "color": "green",
                 "status": "OK"
@@ -2169,7 +2169,7 @@
             "criterion_head_a3ms": {
               "result": {
                 "name": "Head a3ms",
-                "value": 5.0985810648896415,
+                "value": 52.89914825688212,
                 "rating": 4.0,
                 "color": "green",
                 "status": "OK"
@@ -2414,7 +2414,7 @@
             "criterion_hic_15": {
               "result": {
                 "name": "HIC 15",
-                "value": 500.0,
+                "value": 1632.6104534227336,
                 "rating": "-inf",
                 "color": "gray",
                 "status": "OK"
@@ -2423,9 +2423,9 @@
             "criterion_head_a3ms": {
               "result": {
                 "name": "Head a3ms",
-                "value": 10.197162129779283,
-                "rating": 4.0,
-                "color": "green",
+                "value": 105.79829651376424,
+                "rating": "-inf",
+                "color": "gray",
                 "status": "OK"
               }
             },
@@ -2774,7 +2774,7 @@
             "criterion_hic_15": {
               "result": {
                 "name": "HIC 15",
-                "value": 500.0,
+                "value": 1632.6104534227336,
                 "rating": "-inf",
                 "color": "gray",
                 "status": "OK"
@@ -2783,9 +2783,9 @@
             "criterion_head_a3ms": {
               "result": {
                 "name": "Head a3ms",
-                "value": 10.197162129779283,
-                "rating": 4.0,
-                "color": "green",
+                "value": 105.79829651376424,
+                "rating": "-inf",
+                "color": "gray",
                 "status": "OK"
               }
             },
@@ -3014,7 +3014,7 @@
         "criterion_hic_15": {
           "result": {
             "name": "HIC 15",
-            "value": 125.0,
+            "value": 51.019076669460425,
             "rating": 4.0,
             "color": "green",
             "status": "OK"
@@ -3023,7 +3023,7 @@
         "criterion_head_acceleration": {
           "result": {
             "name": "Head Peak Acceleration",
-            "value": 5.0985810648896415,
+            "value": 27.195516035743314,
             "rating": 4.0,
             "color": "green",
             "status": "OK"
@@ -3169,7 +3169,7 @@
         "criterion_hic_15": {
           "result": {
             "name": "HIC 15",
-            "value": 250.0,
+            "value": 288.6074806628148,
             "rating": 4.0,
             "color": "green",
             "status": "OK"
@@ -3178,7 +3178,7 @@
         "criterion_head_acceleration": {
           "result": {
             "name": "Head Peak Acceleration",
-            "value": 10.197162129779283,
+            "value": 54.39103207148663,
             "rating": 4.0,
             "color": "green",
             "status": "OK"
@@ -3324,7 +3324,7 @@
         "criterion_hic_15": {
           "result": {
             "name": "HIC 15",
-            "value": 500.0,
+            "value": 1632.6104534227336,
             "rating": "-inf",
             "color": "gray",
             "status": "OK"
@@ -3333,9 +3333,9 @@
         "criterion_head_acceleration": {
           "result": {
             "name": "Head Peak Acceleration",
-            "value": 20.394324259558566,
-            "rating": 4.0,
-            "color": "green",
+            "value": 108.78206414297325,
+            "rating": "-inf",
+            "color": "gray",
             "status": "OK"
           }
         },
@@ -3481,7 +3481,7 @@
         "criterion_hic_15": {
           "result": {
             "name": "HIC 15",
-            "value": 125.0,
+            "value": 51.019076669460425,
             "rating": 4.0,
             "color": "green",
             "status": "OK"
@@ -3490,7 +3490,7 @@
         "criterion_head_acceleration": {
           "result": {
             "name": "Head a3ms",
-            "value": 2.5492905324448207,
+            "value": 26.44957412844106,
             "rating": 4.0,
             "color": "green",
             "status": "OK"
@@ -3618,7 +3618,7 @@
         "criterion_hic_15": {
           "result": {
             "name": "HIC 15",
-            "value": 250.0,
+            "value": 288.6074806628148,
             "rating": 4.0,
             "color": "green",
             "status": "OK"
@@ -3627,7 +3627,7 @@
         "criterion_head_acceleration": {
           "result": {
             "name": "Head a3ms",
-            "value": 5.0985810648896415,
+            "value": 52.89914825688212,
             "rating": 4.0,
             "color": "green",
             "status": "OK"
@@ -3755,7 +3755,7 @@
         "criterion_hic_15": {
           "result": {
             "name": "HIC 15",
-            "value": 500.0,
+            "value": 1632.6104534227336,
             "rating": "-inf",
             "color": "gray",
             "status": "OK"
@@ -3764,9 +3764,9 @@
         "criterion_head_acceleration": {
           "result": {
             "name": "Head a3ms",
-            "value": 10.197162129779283,
-            "rating": 4.0,
-            "color": "green",
+            "value": 105.79829651376424,
+            "rating": "-inf",
+            "color": "gray",
             "status": "OK"
           }
         }
@@ -3903,7 +3903,7 @@
         "criterion_hic_15": {
           "result": {
             "name": "HIC 15",
-            "value": 125.0,
+            "value": 51.019076669460425,
             "rating": 4.0,
             "color": "green",
             "status": "OK"
@@ -3912,7 +3912,7 @@
         "criterion_head_a3ms": {
           "result": {
             "name": "Head a3ms",
-            "value": 44.14106263000051,
+            "value": 26.44957412844106,
             "rating": 4.0,
             "color": "green",
             "status": "OK"
@@ -4095,8 +4095,8 @@
       "Overall": {
         "result": {
           "name": "Overall",
-          "value": 0.0,
-          "rating": 0.0,
+          "value": 3.878994499749988,
+          "rating": 3.878994499749988,
           "color": null,
           "status": "OK"
         }
@@ -4113,15 +4113,15 @@
       "criterion_head": {
         "result": {
           "name": "Head",
-          "value": "-inf",
-          "rating": "-inf",
+          "value": 4.0,
+          "rating": 4.0,
           "color": null,
           "status": "OK"
         },
         "criterion_hic_15": {
           "result": {
             "name": "HIC 15",
-            "value": 250.0,
+            "value": 288.6074806628148,
             "rating": 4.0,
             "color": "green",
             "status": "OK"
@@ -4130,9 +4130,9 @@
         "criterion_head_a3ms": {
           "result": {
             "name": "Head a3ms",
-            "value": 88.28212526000102,
-            "rating": "-inf",
-            "color": "gray",
+            "value": 52.89914825688212,
+            "rating": 4.0,
+            "color": "green",
             "status": "OK"
           }
         },
@@ -4339,7 +4339,7 @@
         "criterion_hic_15": {
           "result": {
             "name": "HIC 15",
-            "value": 500.0,
+            "value": 1632.6104534227336,
             "rating": "-inf",
             "color": "gray",
             "status": "OK"
@@ -4348,7 +4348,7 @@
         "criterion_head_a3ms": {
           "result": {
             "name": "Head a3ms",
-            "value": 176.56425052000205,
+            "value": 105.79829651376424,
             "rating": "-inf",
             "color": "gray",
             "status": "OK"

@@ -11,6 +11,7 @@ from pyisomme.report.iihs.frontal_moderate_overlap import IIHS_Frontal_Moderate_
 from pyisomme.report.iihs.frontal_small_overlap import IIHS_Frontal_Small_Overlap
 from pyisomme.report.iihs.limits import Limit_A, Limit_G, Limit_M, Limit_P
 from pyisomme.report.iihs.side_impact import IIHS_Side_Impact
+from pyisomme.report.page2 import ChannelPlotPage
 
 
 class TestIIHSBoundaries:
@@ -39,6 +40,39 @@ class TestIIHSBoundaries:
         assert vc_result.color == Limit_M.color
         assert shear_result.rating == -2.0
         assert shear_result.color == Limit_A.color
+
+    def test_small_overlap_neck_pages_select_distinct_limit_groups(self) -> None:
+        isomme = Isomme(test_number="small")
+        report = IIHS_Frontal_Small_Overlap([isomme])
+        head_neck = report.overall(isomme).criterion_driver.criterion_head_neck
+
+        axial_page = next(
+            page
+            for page in report.available_pages
+            if isinstance(page, ChannelPlotPage)
+            and page.name == "Driver Neck Axial Load"
+        )
+        corridor_page = next(
+            page
+            for page in report.available_pages
+            if isinstance(page, ChannelPlotPage)
+            and page.name == "Driver Neck Load Corridors"
+        )
+        assert callable(axial_page.spec.limits)
+        assert callable(corridor_page.spec.limits)
+
+        axial_limits = axial_page.spec.limits(report)[isomme]
+        corridor_limits = corridor_page.spec.limits(report)[isomme]
+
+        assert axial_limits.limits == (
+            head_neck.criterion_neck_tension.limits.limits
+            + head_neck.criterion_neck_compression.limits.limits
+        )
+        assert corridor_limits.limits == (
+            head_neck.criterion_tension_corridor.limits.limits
+            + head_neck.criterion_compression_corridor.limits.limits
+            + head_neck.criterion_shear_corridor.limits.limits
+        )
 
 
 class TestIIHSModerateOverlap:

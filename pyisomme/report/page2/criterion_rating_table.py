@@ -133,7 +133,7 @@ class CriterionRatingTablePage(CriterionTablePage[R], Generic[R]):
     criteria: Mapping[Isomme, Sequence[Criterion]]
     name: str
     title: str
-    footer: str | None = None
+    footer: str
 
     def __init__(self, report: R) -> None:
         super().__init__(

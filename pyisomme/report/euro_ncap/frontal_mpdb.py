@@ -41,9 +41,11 @@ from pyisomme.report.page2 import (
     ChannelPlotPage,
     CoverPage,
     CriterionValuesChartPage,
+    HICPage,
     OLCPage,
     channel_plot_spec_for,
     criterion_values_chart_spec_for,
+    hic_spec_for,
 )
 from pyisomme.report.page2.criterion_rating_table import (
     CriterionTablePage,
@@ -1927,6 +1929,21 @@ class EuroNCAP_Frontal_MPDB(Report[Overall]):
             ),
             ChannelPlotPage(self, spec=driver_belt_spec_for(self)),
             ChannelPlotPage(self, spec=driver_head_acceleration_spec_for(self)),
+            HICPage(
+                self,
+                spec=hic_spec_for(
+                    self,
+                    name="Driver HIC15",
+                    title="Driver HIC15",
+                    timespan=15,
+                ).with_position(
+                    lambda report, isomme: report.overall(isomme).p_driver
+                ).with_criterion(
+                    lambda report, isomme: report.overall(
+                        isomme
+                    ).criterion_driver.criterion_head_neck.criterion_head.criterion_hic_15
+                ),
+            ),
             ChannelPlotPage(
                 self,
                 spec=channel_plot_spec_for(
@@ -2100,6 +2117,21 @@ class EuroNCAP_Frontal_MPDB(Report[Overall]):
                     ]
                     for isomme in report.isomme_list
                 }),
+            ),
+            HICPage(
+                self,
+                spec=hic_spec_for(
+                    self,
+                    name="Passenger HIC15",
+                    title="Passenger HIC15",
+                    timespan=15,
+                ).with_position(
+                    lambda report, isomme: report.overall(isomme).p_passenger
+                ).with_criterion(
+                    lambda report, isomme: report.overall(
+                        isomme
+                    ).criterion_passenger.criterion_head_neck.criterion_head.criterion_hic_15
+                ),
             ),
             ChannelPlotPage(
                 self,

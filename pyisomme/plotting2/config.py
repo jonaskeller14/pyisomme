@@ -29,6 +29,8 @@ class PlotConfig:
         "longdashdot",
     )
     font_family: str = "Arial, sans-serif"
+    xaxis_nticks: int = 10
+    yaxis_nticks: int = 10
     horizontal_spacing: float = 0.05
     vertical_spacing: float = 0.08
 

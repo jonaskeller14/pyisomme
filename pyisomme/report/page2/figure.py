@@ -12,7 +12,7 @@ from pyisomme.plotting2.plot_line import FigureSize
 from pyisomme.report.base_report import BaseReport
 from pyisomme.report.page.page import Page
 from pyisomme.report.page2.html import render_figure_page
-from pyisomme.report.page2.pptx import add_content_slide, add_figure
+from pyisomme.report.page2.pptx import add_content_slide, add_figure, default_footer
 
 R = TypeVar("R", bound=BaseReport)
 FigureBuilder = Callable[[R, FigureSize], go.Figure]
@@ -34,7 +34,7 @@ class FigurePage(Page[R], Generic[R]):
         self.name = name
         self.title = title
         self.figure_builder = figure_builder
-        self.footer = footer
+        self.footer = default_footer() if footer is None else footer
 
     def figure(self, figsize: FigureSize) -> go.Figure:
         return self.figure_builder(self.report, figsize)

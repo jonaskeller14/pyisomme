@@ -46,7 +46,7 @@ class CriterionValuesTablePage(CriterionTablePage):
     criteria: dict[Isomme, list[Criterion]]
     name: str
     title: str
-    footer: str | None = None
+    footer: str
 
     def __init__(self, report: BaseReport) -> None:
         super().__init__(

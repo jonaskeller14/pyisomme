@@ -1618,7 +1618,14 @@ class EuroNCAP_Frontal_50kmh(Report[Overall]):
             ),
             ChannelPlotPage(self, spec=driver_belt_spec_for(self)),
             ChannelPlotPage(self, spec=driver_head_acceleration_spec_for(self)),
-            HICPage(self, spec=driver_hic_15_spec_for(self)),
+            HICPage(
+                self,
+                spec=driver_hic_15_spec_for(self).with_criterion(
+                    lambda report, isomme: report.overall(
+                        isomme
+                    ).criterion_driver.criterion_head.criterion_hic_15
+                ),
+            ),
             ChannelPlotPage(self, spec=driver_neck_load_spec_for(self)),
             ChannelPlotPage(
                 self,
@@ -1771,6 +1778,10 @@ class EuroNCAP_Frontal_50kmh(Report[Overall]):
                     lambda report, isomme: report.overall(
                         isomme
                     ).p_front_passenger
+                ).with_criterion(
+                    lambda report, isomme: report.overall(
+                        isomme
+                    ).criterion_front_passenger.criterion_head.criterion_hic_15
                 ),
             ),
             ChannelPlotPage(
@@ -1955,6 +1966,10 @@ class EuroNCAP_Frontal_50kmh(Report[Overall]):
                     timespan=15,
                 ).with_position(
                     lambda report, isomme: report.overall(isomme).p_rear_passenger
+                ).with_criterion(
+                    lambda report, isomme: report.overall(
+                        isomme
+                    ).criterion_rear_passenger.criterion_head.criterion_hic_15
                 ),
             ),
             ChannelPlotPage(

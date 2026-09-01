@@ -37,8 +37,10 @@ from pyisomme.report.page2 import (
     CoverPage,
     CriterionTablePage,
     CriterionValuesChartPage,
+    HICPage,
     channel_plot_spec_for,
     criterion_values_chart_spec_for,
+    hic_spec_for,
     rating_table_spec_for,
     values_table_spec_for,
 )
@@ -915,6 +917,21 @@ class EuroNCAP_Side_FarSide(Report[Overall]):
                 }),
             ),
             ChannelPlotPage(self, spec=side_head_acceleration_spec_for(self)),
+            HICPage(
+                self,
+                spec=hic_spec_for(
+                    self,
+                    name="HIC15",
+                    title="HIC15",
+                    timespan=15,
+                ).with_position(
+                    lambda report, isomme: report.criterion_overall[isomme].p
+                ).with_criterion(
+                    lambda report, isomme: report.criterion_overall[
+                        isomme
+                    ].criterion_head.criterion_hic_15
+                ),
+            ),
             ChannelPlotPage(
                 self,
                 spec=channel_plot_spec_for(

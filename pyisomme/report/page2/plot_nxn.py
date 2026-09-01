@@ -1,11 +1,12 @@
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass, replace
 from typing import Any, Generic, TypeVar, cast
 
 import plotly.graph_objects as go
 
+from pyisomme.isomme import Isomme
 from pyisomme.limit_set import LimitSet
 from pyisomme.plotting2 import plot_line
 from pyisomme.plotting2.plot_line import ChannelPanels
@@ -15,9 +16,11 @@ from pyisomme.report.page2.figure import FigurePage
 R = TypeVar("R", bound=BaseReport)
 S_contra = TypeVar("S_contra", contravariant=True)
 ChannelSelector = Callable[[S_contra], ChannelPanels]
+LimitInput = LimitSet | Mapping[Isomme, LimitSet]
+LimitSelector = Callable[[S_contra], LimitInput]
 
 
-def _channels_required(_: S_contra) -> ChannelPanels: # pyright: ignore[reportInvalidTypeVarUse]
+def _channels_required(_: S_contra) -> ChannelPanels:  # pyright: ignore[reportInvalidTypeVarUse]
     raise RuntimeError("ChannelPlotSpec requires channels via with_channels().")
 
 
@@ -34,7 +37,7 @@ class ChannelPlotSpec(Generic[S_contra]):
     sharey: bool = False
     xlim: tuple[float | int, float | int] | None = None
     ylim: tuple[float | int, float | int] | None = None
-    limits: LimitSet | dict | None = None
+    limits: LimitInput | LimitSelector[S_contra] | None = None
     footer: str | None = None
 
     def with_channels(
@@ -42,6 +45,10 @@ class ChannelPlotSpec(Generic[S_contra]):
     ) -> ChannelPlotSpec[S_contra]:
         """Return a copy with a report-specific channel selector."""
         return replace(self, channels=channels)
+
+    def with_limits(self, limits: LimitSelector[S_contra]) -> ChannelPlotSpec[S_contra]:
+        """Return a copy with a report-specific limit selector."""
+        return replace(self, limits=limits)
 
 
 def channel_plot_spec_for(
@@ -55,7 +62,7 @@ def channel_plot_spec_for(
     sharey: bool = False,
     xlim: tuple[float | int, float | int] | None = None,
     ylim: tuple[float | int, float | int] | None = None,
-    limits: LimitSet | dict | None = None,
+    limits: LimitInput | None = None,
     footer: str | None = None,
 ) -> ChannelPlotSpec[R]:
     """Create a plot spec bound to the concrete report type."""
@@ -86,11 +93,16 @@ class ChannelPlotPage(FigurePage[R], Generic[R]):
         spec: ChannelPlotSpec[R],
     ) -> None:
         self.spec = spec
-        limits = spec.limits if spec.limits is not None else cast(Any, report).limits
 
         def build(
             current_report: R, figsize: tuple[float | int, float | int]
         ) -> go.Figure:
+            if spec.limits is None:
+                limits = cast(Any, current_report).limits
+            elif callable(spec.limits):
+                limits = spec.limits(current_report)
+            else:
+                limits = spec.limits
             return plot_line(
                 spec.channels(current_report),
                 nrows=spec.nrows,
@@ -116,5 +128,7 @@ __all__ = [
     "ChannelPlotPage",
     "ChannelPlotSpec",
     "ChannelSelector",
+    "LimitInput",
+    "LimitSelector",
     "channel_plot_spec_for",
 ]

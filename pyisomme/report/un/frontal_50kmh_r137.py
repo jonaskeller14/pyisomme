@@ -21,8 +21,10 @@ from pyisomme.report.page2 import (
     CoverPage,
     CriterionTablePage,
     CriterionValuesChartPage,
+    HICPage,
     channel_plot_spec_for,
     criterion_values_chart_spec_for,
+    hic_spec_for,
     rating_table_spec_for,
     values_table_spec_for,
 )
@@ -545,6 +547,21 @@ class UN_Frontal_50kmh_R137(Report[Overall]):
                 }),
             ),
             ChannelPlotPage(self, spec=driver_head_acceleration_spec_for(self)),
+            HICPage(
+                self,
+                spec=hic_spec_for(
+                    self,
+                    name="Driver HPC36",
+                    title="Driver HPC36",
+                    timespan=36,
+                ).with_position(
+                    lambda report, isomme: report.overall(isomme).p_driver
+                ).with_criterion(
+                    lambda report, isomme: report.overall(
+                        isomme
+                    ).criterion_driver.criterion_hpc36
+                ),
+            ),
             ChannelPlotPage(self, spec=driver_neck_load_spec_for(self)),
             ChannelPlotPage(
                 self,
@@ -606,6 +623,21 @@ class UN_Frontal_50kmh_R137(Report[Overall]):
                     ]
                     for isomme in report.isomme_list
                 }),
+            ),
+            HICPage(
+                self,
+                spec=hic_spec_for(
+                    self,
+                    name="Passenger HPC36",
+                    title="Passenger HPC36",
+                    timespan=36,
+                ).with_position(
+                    lambda report, isomme: report.overall(isomme).p_passenger
+                ).with_criterion(
+                    lambda report, isomme: report.overall(
+                        isomme
+                    ).criterion_passenger.criterion_hpc36
+                ),
             ),
             ChannelPlotPage(
                 self,

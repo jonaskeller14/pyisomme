@@ -20,7 +20,7 @@
       "criterion_hpc36": {
         "result": {
           "name": "Head Performance Criterion (HPC 36)",
-          "value": 125.0,
+          "value": 88.24467965634085,
           "rating": 1.0,
           "color": "green",
           "status": "OK"
@@ -29,7 +29,7 @@
       "criterion_head_a3ms": {
         "result": {
           "name": "Head a3ms",
-          "value": 2.5492905324448207,
+          "value": 26.44957412844106,
           "rating": 1.0,
           "color": "green",
           "status": "OK"
@@ -128,7 +128,7 @@
       "criterion_hpc36": {
         "result": {
           "name": "Head Performance Criterion (HPC 36)",
-          "value": 125.0,
+          "value": 88.24467965634085,
           "rating": 1.0,
           "color": "green",
           "status": "OK"
@@ -137,7 +137,7 @@
       "criterion_head_a3ms": {
         "result": {
           "name": "Head a3ms",
-          "value": 2.5492905324448207,
+          "value": 26.44957412844106,
           "rating": 1.0,
           "color": "green",
           "status": "OK"
@@ -247,7 +247,7 @@
       "criterion_hpc36": {
         "result": {
           "name": "Head Performance Criterion (HPC 36)",
-          "value": 250.0,
+          "value": 499.18729110906554,
           "rating": 1.0,
           "color": "green",
           "status": "OK"
@@ -256,7 +256,7 @@
       "criterion_head_a3ms": {
         "result": {
           "name": "Head a3ms",
-          "value": 5.0985810648896415,
+          "value": 52.89914825688212,
           "rating": 1.0,
           "color": "green",
           "status": "OK"
@@ -355,7 +355,7 @@
       "criterion_hpc36": {
         "result": {
           "name": "Head Performance Criterion (HPC 36)",
-          "value": 250.0,
+          "value": 499.18729110906554,
           "rating": 1.0,
           "color": "green",
           "status": "OK"
@@ -364,7 +364,7 @@
       "criterion_head_a3ms": {
         "result": {
           "name": "Head a3ms",
-          "value": 5.0985810648896415,
+          "value": 52.89914825688212,
           "rating": 1.0,
           "color": "green",
           "status": "OK"
@@ -474,18 +474,18 @@
       "criterion_hpc36": {
         "result": {
           "name": "Head Performance Criterion (HPC 36)",
-          "value": 500.0,
+          "value": 2823.829749002907,
           "rating": 0.0,
-          "color": "green",
+          "color": "red",
           "status": "OK"
         }
       },
       "criterion_head_a3ms": {
         "result": {
           "name": "Head a3ms",
-          "value": 10.197162129779283,
-          "rating": 1.0,
-          "color": "green",
+          "value": 105.79829651376424,
+          "rating": 0.0,
+          "color": "red",
           "status": "OK"
         }
       },
@@ -582,18 +582,18 @@
       "criterion_hpc36": {
         "result": {
           "name": "Head Performance Criterion (HPC 36)",
-          "value": 500.0,
+          "value": 2823.829749002907,
           "rating": 0.0,
-          "color": "green",
+          "color": "red",
           "status": "OK"
         }
       },
       "criterion_head_a3ms": {
         "result": {
           "name": "Head a3ms",
-          "value": 10.197162129779283,
-          "rating": 1.0,
-          "color": "green",
+          "value": 105.79829651376424,
+          "rating": 0.0,
+          "color": "red",
           "status": "OK"
         }
       },
