@@ -36,6 +36,9 @@ def render_figure_page(
         config={"responsive": True, "displaylogo": False},
         default_width="100%",
         default_height="100%",
+        post_script=(
+            "document.getElementById('{plot_id}').dataset.pyisommeRendered = 'true';"
+        ),
     )
     return (
         environment()

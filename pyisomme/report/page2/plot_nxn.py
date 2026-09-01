@@ -4,9 +4,8 @@ from collections.abc import Callable, Mapping
 from dataclasses import dataclass, replace
 from typing import Any, Generic, TypeVar, Union, cast
 
-from typing_extensions import TypeAlias
-
 import plotly.graph_objects as go
+from typing_extensions import TypeAlias
 
 from pyisomme.isomme import Isomme
 from pyisomme.limit_set import LimitSet

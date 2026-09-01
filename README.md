@@ -135,6 +135,8 @@ pyisomme report EuroNCAP_Frontal_MPDB data/nhtsa/09203 --crop 0 0.2 \
 
 Animated preview of a Euro NCAP PowerPoint report generated with pyisomme (using synthetic data):
 
+[View the generated HTML and PDF reports](https://jonaskeller14.github.io/pyisomme/index.html)
+
 <p align="center">
   <img src="docs/EuroNCAP_Frontal_50kmh.gif" alt="Animated preview of a Euro NCAP PowerPoint report" width="600" height="450">
 </p>

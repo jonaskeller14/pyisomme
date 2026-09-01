@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 import pytest
@@ -28,5 +29,7 @@ class TestReportPdf:
         report.calculate()
         report.export_pdf(path=path)
 
-        assert path.read_bytes().startswith(b"%PDF-")
+        pdf = path.read_bytes()
+        assert pdf.startswith(b"%PDF-")
+        assert len(re.findall(rb"/Type\s*/Page\b", pdf)) == len(report.selected_pages)
         assert path.stat().st_mtime_ns > old_modified_ns

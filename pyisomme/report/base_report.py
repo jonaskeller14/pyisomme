@@ -278,18 +278,36 @@ class BaseReport(ABC):
             browser = await playwright.chromium.launch()
             try:
                 page = await browser.new_page()
+                await page.emulate_media(media="print")
                 await page.goto(html_path.as_uri(), wait_until="networkidle")
                 await page.evaluate("document.fonts ? document.fonts.ready : undefined")
                 if await page.locator(".plotly-graph-div").count():
                     await page.wait_for_function(
                         """() => Array.from(
                             document.querySelectorAll('.plotly-graph-div')
-                        ).every(element => element.data && element.layout)"""
+                        ).every(
+                            element => element.dataset.pyisommeRendered === 'true'
+                        )"""
                     )
                 await page.evaluate(
                     """() => {
                         const pages = document.querySelectorAll('body > .page');
                         if (pages.length) pages[pages.length - 1].classList.add('last-page');
+                    }"""
+                )
+                await page.evaluate(
+                    """async () => {
+                        const nextFrame = () => new Promise(
+                            resolve => requestAnimationFrame(resolve)
+                        );
+                        for (const reportPage of document.querySelectorAll('body > .page')) {
+                            reportPage.scrollIntoView();
+                            await nextFrame();
+                            await nextFrame();
+                        }
+                        window.scrollTo(0, 0);
+                        await nextFrame();
+                        await nextFrame();
                     }"""
                 )
                 await page.pdf(

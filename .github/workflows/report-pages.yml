@@ -49,9 +49,21 @@ jobs:
         run: |
           {
             echo '<!doctype html>'
-            echo '<html lang="en"><head><meta charset="utf-8"><title>pyisomme reports</title></head><body>'
-            echo '<h1>pyisomme reports</h1><ul>'
+            echo '<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Example Reports</title>'
+            echo '<style>body{font-family:system-ui,sans-serif;line-height:1.5;max-width:50rem;margin:3rem auto;padding:0 1rem;color:#24292f}h1{margin-bottom:.1rem}h2{margin-top:2rem}p.subtitle{margin-top:0;color:#57606a;font-size:1.2rem}a{color:#0969da}</style></head><body>'
+            echo '<h1>Example Reports</h1>'
+            echo '<p class="subtitle">pyisomme</p>'
+            echo '<p>These reports are built from synthetic data for demonstration purposes.</p>'
+            echo '<h2>HTML interactive report:</h2><ul>'
             for file in out/*.html out/*.pdf; do
+              [ -f "$file" ] || continue
+              name="${file#out/}"
+              [ "$name" = "index.html" ] && continue
+              [[ "$name" == *.html ]] || continue
+              printf '<li><a href="%s">%s</a></li>\n' "$name" "$name"
+            done
+            echo '</ul><h2>PDF static reports:</h2><ul>'
+            for file in out/*.pdf; do
               [ -f "$file" ] || continue
               name="${file#out/}"
               printf '<li><a href="%s">%s</a></li>\n' "$name" "$name"
