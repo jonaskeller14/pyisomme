@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from math import pi
 from typing import Callable
 
 from pyisomme import Channel, Isomme, create_sample
@@ -329,20 +330,44 @@ def build_iihs_frontal_small_overlap() -> IIHS_Frontal_Small_Overlap:
             Isomme(
                 test_number=f"v{idx}",
                 channels=[
-                    *build_head_acceleration_channels(position="1", scale_y=scale_y),
-                    create_sample(code="11NIJCIP00H300YB", y_range=(0, 0.5)).scale_y(scale_y),
-                    create_sample(code="11NECKUP00H3FOZB", y_range=(-1000, 1000)).scale_y(scale_y),
-                    create_sample(code="11NECKUP00H3FOXB", y_range=(-1000, 1000)).scale_y(scale_y),
-                    create_sample(code="11CHST003C00ACRX", y_range=(0, 100)).scale_y(scale_y),
-                    create_sample(code="11CHST0000H3DSXC", y_range=(-0.03, 0)).scale_y(scale_y),
-                    create_sample(code="11CHST0000H3VEXC", y_range=(-0.5, 0.5)).scale_y(scale_y),
-                    create_sample(code="11VCCR0000H3VEXC", y_range=(-0.5, 0.5)).scale_y(scale_y),
-                    create_sample(code="11FEMRLE00H3FOZB", y_range=(-2000, 0)).scale_y(scale_y),
-                    create_sample(code="11FEMRRI00H3FOZB", y_range=(-2000, 0)).scale_y(scale_y),
-                    create_sample(code="11KNSL0000H3DSXC", y_range=(-0.01, 0)).scale_y(scale_y),
-                    create_sample(code="11TIIN00TOH3000B", y_range=(0, 0.5)).scale_y(scale_y),
-                    create_sample(code="11TIBI00LOH3FOZB", y_range=(-2000, 5)).scale_y(scale_y),
-                    create_sample(code="11FOOT0000H3ACRB", y_range=(0, 100)).scale_y(scale_y),
+                    # H3 is the IIHS small-overlap H350M dummy.  Supply raw
+                    # measurements only; report pages request their CFC-filtered
+                    # and calculated variants (including resultant/HIC and NIJ).
+                    *[
+                        create_sample(code=f"11HEAD0000H3AC{axis}X", mode=mode, y_range=y_range, noise_per=0.01, seed=idx).scale_y(scale_y)
+                        for axis, mode, y_range in (
+                            ("X", "pulse", (6, -483)),
+                            ("Y", "pulse", (-4, -137)),
+                            ("Z", "sin", (94, -108)),
+                        )
+                    ],
+                    create_sample(code="11NECKUP00H3FOZX", y_range=(-900, 1000), unit="N", frequency=13, noise=15, seed=idx).scale_y(scale_y),
+                    create_sample(code="11NECKUP00H3FOXX", y_range=(-872, 914), unit="N").scale_y(scale_y),
+                    create_sample(code="11NECKUP00H3MOYX", y_range=(-35, 45), unit="Nm", frequency=13, noise=2, seed=idx + 10, phase_offset=pi / 2).scale_y(scale_y),
+                    create_sample(code="11CHST0000H3ACRX", y_range=(5, 91)).scale_y(scale_y),
+                    create_sample(code="11CHST0000H3DSXX", y_range=(-0.028, 0.002), unit="m").scale_y(scale_y),
+                    create_sample(code="11CHST0000H3VEXX", y_range=(-0.46, 0.04), unit="m/s").scale_y(scale_y),
+                    create_sample(code="11VCCR0000H3VEXX", y_range=(-0.41, 0.48), unit="m/s").scale_y(scale_y),
+                    create_sample(code="11FEMRLE00H3FOZX", y_range=(-1840, 62), unit="N").scale_y(scale_y),
+                    create_sample(code="11FEMRRI00H3FOZX", y_range=(-2115, 84), unit="N").scale_y(scale_y),
+                    create_sample(code="11KNSL0000H3DSXX", y_range=(-0.011, 0.001), unit="m").scale_y(scale_y),
+                    create_sample(code="11KNSLLE00H3DSXX", y_range=(-0.009, 0.002), unit="m").scale_y(scale_y),
+                    create_sample(code="11KNSLRI00H3DSXX", y_range=(-0.013, 0.001), unit="m").scale_y(scale_y),
+                    create_sample(code="11TIIN00TOH3000X", y_range=(0.03, 0.47)).scale_y(scale_y),
+                    *[
+                        create_sample(code=f"11TIIN{side}H3000X", y_range=y_range).scale_y(scale_y)
+                        for side, y_range in (
+                            ("LUTO", (0.02, 0.43)),
+                            ("RUTO", (0.04, 0.51)),
+                            ("LLTO", (0.01, 0.39)),
+                            ("RLTO", (0.05, 0.48)),
+                        )
+                    ],
+                    create_sample(code="11TIBI00LOH3FOZX", y_range=(-1930, 7), unit="N").scale_y(scale_y),
+                    create_sample(code="11TIBILELOH3FOZX", y_range=(-1775, 11), unit="N").scale_y(scale_y),
+                    create_sample(code="11TIBIRILOH3FOZX", y_range=(-2180, 4), unit="N").scale_y(scale_y),
+                    create_sample(code="11FOOTLE00H3ACRX", y_range=(0, 92)).scale_y(scale_y),
+                    create_sample(code="11FOOTRI00H3ACRX", y_range=(0, 105)).scale_y(scale_y),
                 ],
             )
             for idx, scale_y in enumerate(SCALES_Y, 1)

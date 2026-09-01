@@ -29,7 +29,7 @@
       "criterion_head_a3ms": {
         "result": {
           "name": "Head a3ms",
-          "value": 26.44957412844106,
+          "value": 26.5565156112135,
           "rating": 1.0,
           "color": "green",
           "status": "OK"
@@ -110,7 +110,7 @@
       "criterion_head_a3ms": {
         "result": {
           "name": "Head a3ms",
-          "value": 26.44957412844106,
+          "value": 26.5565156112135,
           "rating": 1.0,
           "color": "green",
           "status": "OK"
@@ -202,7 +202,7 @@
       "criterion_head_a3ms": {
         "result": {
           "name": "Head a3ms",
-          "value": 52.89914825688212,
+          "value": 53.113031222427,
           "rating": 1.0,
           "color": "green",
           "status": "OK"
@@ -283,7 +283,7 @@
       "criterion_head_a3ms": {
         "result": {
           "name": "Head a3ms",
-          "value": 52.89914825688212,
+          "value": 53.113031222427,
           "rating": 1.0,
           "color": "green",
           "status": "OK"
@@ -375,7 +375,7 @@
       "criterion_head_a3ms": {
         "result": {
           "name": "Head a3ms",
-          "value": 105.79829651376424,
+          "value": 106.226062444854,
           "rating": 0.0,
           "color": "red",
           "status": "OK"
@@ -456,7 +456,7 @@
       "criterion_head_a3ms": {
         "result": {
           "name": "Head a3ms",
-          "value": 105.79829651376424,
+          "value": 106.226062444854,
           "rating": 0.0,
           "color": "red",
           "status": "OK"

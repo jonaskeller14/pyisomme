@@ -37,7 +37,7 @@
         "criterion_head_a3ms": {
           "result": {
             "name": "Head a3ms",
-            "value": 52.783863015501225,
+            "value": 53.046141586635514,
             "rating": 4.0,
             "color": "green",
             "status": "OK"
@@ -235,7 +235,7 @@
         "criterion_head_a3ms": {
           "result": {
             "name": "Head a3ms",
-            "value": 52.783863015501225,
+            "value": 53.046141586635514,
             "rating": 4.0,
             "color": "green",
             "status": "OK"
@@ -397,7 +397,7 @@
         "criterion_head_a3ms": {
           "result": {
             "name": "Head a3ms",
-            "value": 52.783863015501225,
+            "value": 53.046141586635514,
             "rating": 4.0,
             "color": "green",
             "status": "OK"
@@ -606,8 +606,8 @@
         "criterion_head_a3ms": {
           "result": {
             "name": "Head a3ms",
-            "value": 79.07226564622867,
-            "rating": 0.46230182083318105,
+            "value": 79.68172800300164,
+            "rating": 0.15859898163135466,
             "color": "brown",
             "status": "OK"
           }
@@ -804,8 +804,8 @@
         "criterion_head_a3ms": {
           "result": {
             "name": "Head a3ms",
-            "value": 79.07226564622867,
-            "rating": 0.46230182083318105,
+            "value": 79.68172800300164,
+            "rating": 0.15859898163135466,
             "color": "brown",
             "status": "OK"
           }
@@ -966,8 +966,8 @@
         "criterion_head_a3ms": {
           "result": {
             "name": "Head a3ms",
-            "value": 79.07226564622867,
-            "rating": 0.46230182083318105,
+            "value": 79.68172800300164,
+            "rating": 0.15859898163135466,
             "color": "brown",
             "status": "OK"
           }

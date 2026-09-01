@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass, replace
-from typing import Any, Generic, TypeVar, cast
+from typing import Any, Generic, TypeVar, Union, cast
+
+from typing_extensions import TypeAlias
 
 import plotly.graph_objects as go
 
@@ -16,7 +18,7 @@ from pyisomme.report.page2.figure import FigurePage
 R = TypeVar("R", bound=BaseReport)
 S_contra = TypeVar("S_contra", contravariant=True)
 ChannelSelector = Callable[[S_contra], ChannelPanels]
-LimitInput = LimitSet | Mapping[Isomme, LimitSet]
+LimitInput: TypeAlias = Union[LimitSet, Mapping[Isomme, LimitSet]]
 LimitSelector = Callable[[S_contra], LimitInput]
 
 

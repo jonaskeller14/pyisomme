@@ -23,8 +23,14 @@ python -m playwright install chromium
 ## Features
 - Read/write ISO-MME (compressed/uncompressed)
 - Modify Channel and calculate Injury Risk Values (HIC, a3ms, DAMAGE, OLC, BrIC, NIJ, ...)
+- Calculate dummy head trajectories from head centre-of-gravity acceleration and rotational-velocity measurements
 - Plot Curves and compare multiple ISO-MMEs
-- Create PowerPoint, HTML, and PDF Reports (Euro-NCAP, UN-R137, UN-R94)
+- Create PowerPoint, HTML, and PDF reports:
+  - Curve Correlation
+  - Euro NCAP: Frontal 50 km/h, Frontal MPDB, Side Barrier, Side Pole, and Side FarSide
+  - FMVSS: 208 and 214
+  - IIHS: Frontal Small Overlap, Frontal Moderate Overlap, and Side Impact
+  - UN: Frontal 50 km/h R137, Frontal 56 km/h ODB R94, Side Pole R135, and Side Barrier R95
 - Display Limit bars in plots
 - Compare performance of left-hand-drive vehicle with right-hand-drive vehicle
 - Command-line tools for listing, merging, editing, converting, plotting, and reporting ISO-MME data

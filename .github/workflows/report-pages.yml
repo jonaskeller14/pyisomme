@@ -1,0 +1,77 @@
+name: Generate and publish report pages
+
+on:
+  # Temporary trigger for testing; remove after the first successful run.
+  push:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Generate HTML and PDF reports
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Install project dependencies
+        run: uv sync --group dev
+
+      - name: Install Playwright Chromium
+        run: uv run playwright install --with-deps chromium
+
+      - name: Generate HTML and PDF reports
+        run: uv run pytest tests/report/test_report_html.py tests/report/test_report_pdf.py --html --pdf
+
+      - name: Create report index
+        shell: bash
+        run: |
+          {
+            echo '<!doctype html>'
+            echo '<html lang="en"><head><meta charset="utf-8"><title>pyisomme reports</title></head><body>'
+            echo '<h1>pyisomme reports</h1><ul>'
+            for file in out/*.html out/*.pdf; do
+              [ -f "$file" ] || continue
+              name="${file#out/}"
+              printf '<li><a href="%s">%s</a></li>\n' "$name" "$name"
+            done
+            echo '</ul></body></html>'
+          } > out/index.html
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: out
+
+  deploy:
+    name: Deploy reports to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

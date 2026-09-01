@@ -813,6 +813,7 @@ def create_sample(
     noise: float = 0.0,
     noise_per: float = 0.0,
     seed: int | None = 0,
+    phase_offset: float = 0.0,
 ) -> Channel:
     """Create a deterministic sample channel for examples and tests.
 
@@ -831,6 +832,7 @@ def create_sample(
     :param unit: Channel unit.
     :param frequency: Frequency in Hz. A sine defaults to one cycle over the
         time range; a pulse has no modulation unless a frequency is supplied.
+    :param phase_offset: Phase offset in radians for sine samples.
     :param noise: Standard deviation of additive Gaussian noise.
     :param noise_per: Standard deviation of additive Gaussian noise given as percentage from y-range
     :param seed: Random seed used for noise. The default is reproducible.
@@ -862,7 +864,7 @@ def create_sample(
         value_array = np.linspace(baseline, peak, sample_count)
     elif mode == "sin":
         sine_frequency = 1 / duration if frequency is None else frequency
-        phase = 2 * np.pi * sine_frequency * (time_array - t_start)
+        phase = 2 * np.pi * sine_frequency * (time_array - t_start) + phase_offset
         value_array = (peak - baseline) / 2 * np.sin(phase) + sum(y_range) / 2
     elif mode == "pulse":
         # A raised-cosine pulse occupies the middle 40 % of the sample. It is

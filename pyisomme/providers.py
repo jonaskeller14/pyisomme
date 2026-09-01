@@ -203,10 +203,22 @@ def _build_hic(isomme: Isomme, code: Code) -> Channel | None:
 
 
 def _build_xms(isomme: Isomme, code: Code) -> Channel | None:
+    source_filter_classes = {
+        "HEAD": "A",  # CFC 1000
+        "CHST": "C",  # CFC 180
+        "THSP": "C",  # CFC 180
+    }
+    source_filter_class = source_filter_classes.get(code.main_location)
+    if source_filter_class is None:
+        logger.debug(
+            "No source filter class is defined for xms channel location %s",
+            code.main_location,
+        )
+        return None
     channel = isomme.get_channel(
         code.set(
             fine_location_2="00",
-            filter_class="A" if not code.main_location == "THSP" else "C",
+            filter_class=source_filter_class,
         )
     )
     if channel is not None:

@@ -84,6 +84,15 @@ class TestChannel:
         np.testing.assert_array_equal(first.get_data(), repeated.get_data())
         assert not np.array_equal(first.get_data(), different.get_data())
 
+    def test_create_sample_sine_phase_offset(self):
+        channel = create_sample(
+            t_range=(0.0, 1.0, 101),
+            y_range=(2.0, 10.0),
+            phase_offset=np.pi / 2,
+        )
+
+        assert channel.get_data()[0] == pytest.approx(10.0)
+
     def test_create_sample_rejects_invalid_signal_parameters(self):
         with pytest.raises(ValueError, match="at least two samples"):
             create_sample(t_range=(0.0, 1.0, 1))
