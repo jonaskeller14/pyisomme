@@ -62,7 +62,9 @@ class TestCalculateXMS:
     def test_resampling_preserves_piecewise_linear_result(self):
         coarse = self.channel([0.0, 0.001, 0.002], [0.0, 10.0, 0.0])
         fine_time = np.linspace(0.0, 0.002, 21)
-        fine = self.channel(fine_time, np.interp(fine_time, coarse.data.index, coarse.get_data()))
+        fine = self.channel(
+            fine_time, np.interp(fine_time, coarse.data.index, coarse.get_data())
+        )
 
         coarse_result = pyisomme.calculate_xms(coarse, min_delta_t=1, method="C")
         fine_result = pyisomme.calculate_xms(fine, min_delta_t=1, method="C")

@@ -458,6 +458,4 @@ class TestIsomme:
         )
         isomme = Isomme(channels=[channel])
 
-        assert isomme.get_channels(
-            "11HEAD0000H3ACXA", "11HEAD????H3ACXA"
-        ) == [channel]
+        assert isomme.get_channels("11HEAD0000H3ACXA", "11HEAD????H3ACXA") == [channel]

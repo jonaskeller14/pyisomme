@@ -19,7 +19,7 @@ class TestLimits:
         limit_set = LimitSet()
 
         with pytest.raises(AttributeError):
-            limit_set.limits = () # pyright: ignore[reportAttributeAccessIssue]
+            limit_set.limits = ()  # pyright: ignore[reportAttributeAccessIssue]
 
     def test_find_limits(self):
         limits = LimitSet(

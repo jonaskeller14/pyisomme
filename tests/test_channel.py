@@ -37,10 +37,26 @@ class TestChannel:
         [
             (pd.DataFrame(), ValueError, "at least one sample"),
             (pd.DataFrame({"a": [1.0], "b": [2.0]}), ValueError, "one value column"),
-            (pd.DataFrame({"sample": ["invalid"]}), TypeError, "values must be numeric"),
-            (pd.DataFrame({"sample": [1.0]}, index=["invalid"]), TypeError, "time index must be numeric"),
-            (pd.DataFrame({"sample": [1.0, 2.0]}, index=[0.1, 0.0]), ValueError, "strictly increasing"),
-            (pd.DataFrame({"sample": [1.0, 2.0]}, index=[0.0, 0.0]), ValueError, "strictly increasing"),
+            (
+                pd.DataFrame({"sample": ["invalid"]}),
+                TypeError,
+                "values must be numeric",
+            ),
+            (
+                pd.DataFrame({"sample": [1.0]}, index=["invalid"]),
+                TypeError,
+                "time index must be numeric",
+            ),
+            (
+                pd.DataFrame({"sample": [1.0, 2.0]}, index=[0.1, 0.0]),
+                ValueError,
+                "strictly increasing",
+            ),
+            (
+                pd.DataFrame({"sample": [1.0, 2.0]}, index=[0.0, 0.0]),
+                ValueError,
+                "strictly increasing",
+            ),
         ],
     )
     def test_init_rejects_invalid_signal_data(self, data, error, message):
@@ -146,7 +162,7 @@ class TestChannel:
         duration = Channel(code="????????????????", data=pd.DataFrame([1]), unit="s")
 
         with pytest.raises(u.UnitConversionError, match="Cannot add"):
-            distance + duration # pyright: ignore[reportUnusedExpression]
+            distance + duration  # pyright: ignore[reportUnusedExpression]
 
     def test_sub(self):
         c_1 = Channel(code="????????????????", data=pd.DataFrame([1]), unit="m")
@@ -160,7 +176,7 @@ class TestChannel:
         duration = Channel(code="????????????????", data=pd.DataFrame([1]), unit="s")
 
         with pytest.raises(u.UnitConversionError, match="Cannot subtract"):
-            distance - duration # pyright: ignore[reportUnusedExpression]
+            distance - duration  # pyright: ignore[reportUnusedExpression]
 
     def test_power_updates_unit(self):
         distance = Channel(code="????????????????", data=pd.DataFrame([3]), unit="m")

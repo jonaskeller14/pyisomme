@@ -33,9 +33,17 @@ class TestCalculateHeadTrajectory:
         np.testing.assert_allclose(position_x.get_data(), [10.0, 12.5, 16.0])
         np.testing.assert_allclose(position_y.get_data(), [20.0, 20.0, 20.0])
         np.testing.assert_allclose(position_z.get_data(), [30.0, 30.0, 30.0])
-        assert [channel.code.physical_dimension for channel in (position_x, position_y, position_z)] == ["DS"] * 3
-        assert [channel.code.direction for channel in (position_x, position_y, position_z)] == list("XYZ")
-        assert all(channel.unit.is_equivalent("m") for channel in (position_x, position_y, position_z))
+        assert [
+            channel.code.physical_dimension
+            for channel in (position_x, position_y, position_z)
+        ] == ["DS"] * 3
+        assert [
+            channel.code.direction for channel in (position_x, position_y, position_z)
+        ] == list("XYZ")
+        assert all(
+            channel.unit.is_equivalent("m")
+            for channel in (position_x, position_y, position_z)
+        )
         assert position_x.get_info(".Coordinate system") == "global"
 
     def test_requires_two_common_samples(self, channels):

@@ -96,7 +96,7 @@ def test_plot_line_shares_y_axis_across_entire_grid() -> None:
     )
 
     matches = [
-        fig.layout.yaxis.matches, # pyright: ignore[reportAttributeAccessIssue]
+        fig.layout.yaxis.matches,  # pyright: ignore[reportAttributeAccessIssue]
         fig.layout.yaxis2.matches,
         fig.layout.yaxis3.matches,
         fig.layout.yaxis4.matches,
@@ -177,9 +177,7 @@ def test_plot_line_adds_limit_lines_fills_and_labels() -> None:
         )
     )
 
-    fig = plot_line(
-        {isomme: [[isomme.channels[0]]]}, limits=limits, xlim=(0.0, 100.0)
-    )
+    fig = plot_line({isomme: [[isomme.channels[0]]]}, limits=limits, xlim=(0.0, 100.0))
 
     assert sum(trace.fill == "toself" for trace in fig.data) == 2
     assert {annotation.text for annotation in fig.layout.annotations} >= {

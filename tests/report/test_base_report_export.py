@@ -48,9 +48,7 @@ class ExportReport(BaseReport):
         self.pdf_html_paths.append(html_path)
         output_path.write_bytes(b"%PDF-test")
 
-    def export_pptx(
-        self, path: str | Path, template: str | Path | None = None
-    ) -> None:
+    def export_pptx(self, path: str | Path, template: str | Path | None = None) -> None:
         output_path = Path(path)
         self.pptx_exports.append((output_path, template))
         output_path.write_bytes(b"pptx")

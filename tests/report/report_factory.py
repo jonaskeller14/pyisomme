@@ -58,9 +58,7 @@ def build_head_acceleration_channels(
         ),
     ]
     return [
-        channel.scale_y(scale_y).set_code(
-            test_object=test_object, position=position
-        )
+        channel.scale_y(scale_y).set_code(test_object=test_object, position=position)
         for channel in channels
     ]
 

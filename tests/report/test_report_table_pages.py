@@ -77,7 +77,10 @@ def test_status_page_shows_the_complete_tree_and_missing_reason() -> None:
     table = _table(page.figure((800, 600)))
 
     assert list(table.cells.values[0]) == ["Overall", "\u00a0\u00a0Leaf"]
-    assert list(table.cells.values[1]) == ["OK", "N/A: missing required input data: 'leaf channel'"]
+    assert list(table.cells.values[1]) == [
+        "OK",
+        "N/A: missing required input data: 'leaf channel'",
+    ]
     assert table.cells.height == 30
     assert table.cells.font.size == 12
 

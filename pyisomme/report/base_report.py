@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import re
 import sys
 import tempfile
 import time
@@ -174,6 +175,7 @@ class BaseReport(ABC):
                 "<head>",
                 '  <meta charset="utf-8">',
                 '  <meta name="viewport" content="width=device-width, initial-scale=1">',
+                f'  <meta name="pyisomme-page-count" content="{len(self.selected_pages)}">',
                 f"  <title>{escape(self.title)}</title>",
                 '  <script src="https://cdn.plot.ly/plotly-3.1.0.min.js" charset="utf-8"></script>',
                 "  <style>",
@@ -291,30 +293,56 @@ class BaseReport(ABC):
                     )
                 await page.evaluate(
                     """() => {
-                        const pages = document.querySelectorAll('body > .page');
+                        const pages = document.querySelectorAll('.page');
                         if (pages.length) pages[pages.length - 1].classList.add('last-page');
                     }"""
                 )
-                await page.evaluate(
-                    """async () => {
-                        const nextFrame = () => new Promise(
-                            resolve => requestAnimationFrame(resolve)
-                        );
-                        for (const reportPage of document.querySelectorAll('body > .page')) {
-                            reportPage.scrollIntoView();
+                page_count_metadata = await page.locator(
+                    'meta[name="pyisomme-page-count"]'
+                ).get_attribute("content")
+                expected_page_count = (
+                    int(page_count_metadata)
+                    if page_count_metadata is not None
+                    else max(1, await page.locator(".page").count())
+                )
+                attempts = 5
+                for attempt in range(1, attempts + 1):
+                    await page.evaluate(
+                        """async () => {
+                            const nextFrame = () => new Promise(
+                                resolve => requestAnimationFrame(resolve)
+                            );
+                            for (const reportPage of document.querySelectorAll('.page')) {
+                                reportPage.scrollIntoView();
+                                await nextFrame();
+                                await nextFrame();
+                            }
+                            window.scrollTo(0, 0);
                             await nextFrame();
                             await nextFrame();
-                        }
-                        window.scrollTo(0, 0);
-                        await nextFrame();
-                        await nextFrame();
-                    }"""
-                )
-                await page.pdf(
-                    path=str(output_path),
-                    prefer_css_page_size=True,
-                    print_background=True,
-                )
+                        }"""
+                    )
+                    pdf = await page.pdf(
+                        prefer_css_page_size=True,
+                        print_background=True,
+                    )
+                    page_count = len(re.findall(rb"/Type\s*/Page\b", pdf))
+                    if page_count == expected_page_count:
+                        output_path.parent.mkdir(parents=True, exist_ok=True)
+                        output_path.write_bytes(pdf)
+                        break
+                    logger.warning(
+                        "PDF render attempt %d/%d produced %d/%d pages; retrying",
+                        attempt,
+                        attempts,
+                        page_count,
+                        expected_page_count,
+                    )
+                else:
+                    raise RuntimeError(
+                        f"PDF export produced {page_count}/{expected_page_count} pages "
+                        f"after {attempts} attempts"
+                    )
             finally:
                 await browser.close()
 

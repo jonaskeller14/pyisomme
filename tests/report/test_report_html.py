@@ -32,7 +32,8 @@ class TestReportHtml:
         html = path.read_text(encoding="utf-8")
         assert html.startswith("<!DOCTYPE html>")
         page_count = sum(
-            "page" in classes.split() for classes in re.findall(r'class="([^"]*)"', html)
+            "page" in classes.split()
+            for classes in re.findall(r'class="([^"]*)"', html)
         )
         assert page_count == len(report.selected_pages)
         assert path.stat().st_mtime_ns > old_modified_ns
