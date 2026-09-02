@@ -620,29 +620,118 @@ class IIHS_Side_Impact(Report[Overall]):
             ReportStatusPage(self, spec=report_status_spec_for(self)),
             ManualInputsPage(self, spec=manual_inputs_spec_for(self)),
             CriterionTablePage(
-                            self,
-                            name='Overall Rating',
-                            title='Overall Rating',
-                            spec=rating_table_spec_for(self).with_criteria(lambda report: {isomme: [report.overall(isomme), report.overall(isomme).criterion_driver.criterion_head_neck, report.overall(isomme).criterion_driver.criterion_torso, report.overall(isomme).criterion_driver.criterion_pelvis, report.overall(isomme).criterion_driver.criterion_head_protection, report.overall(isomme).criterion_rear_passenger.criterion_head_neck, report.overall(isomme).criterion_rear_passenger.criterion_torso, report.overall(isomme).criterion_rear_passenger.criterion_pelvis, report.overall(isomme).criterion_rear_passenger.criterion_head_protection, report.overall(isomme).criterion_structure] for isomme in report.isomme_list}),
-                        ),
+                self,
+                name="Overall Rating",
+                title="Overall Rating",
+                spec=rating_table_spec_for(self).with_criteria(
+                    lambda report: {
+                        isomme: [
+                            report.overall(isomme),
+                            report.overall(isomme).criterion_driver.criterion_head_neck,
+                            report.overall(isomme).criterion_driver.criterion_torso,
+                            report.overall(isomme).criterion_driver.criterion_pelvis,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_head_protection,
+                            report.overall(
+                                isomme
+                            ).criterion_rear_passenger.criterion_head_neck,
+                            report.overall(
+                                isomme
+                            ).criterion_rear_passenger.criterion_torso,
+                            report.overall(
+                                isomme
+                            ).criterion_rear_passenger.criterion_pelvis,
+                            report.overall(
+                                isomme
+                            ).criterion_rear_passenger.criterion_head_protection,
+                            report.overall(isomme).criterion_structure,
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
+            ),
             CriterionTablePage(
-                            self,
-                            name='Driver Ratings',
-                            title='Driver Ratings',
-                            spec=rating_table_spec_for(self).with_criteria(lambda report: {isomme: [report.overall(isomme).criterion_driver.criterion_head_neck, report.overall(isomme).criterion_driver.criterion_torso, report.overall(isomme).criterion_driver.criterion_pelvis, report.overall(isomme).criterion_driver.criterion_head_protection, report.overall(isomme).criterion_driver] for isomme in report.isomme_list}),
-                        ),
+                self,
+                name="Driver Ratings",
+                title="Driver Ratings",
+                spec=rating_table_spec_for(self).with_criteria(
+                    lambda report: {
+                        isomme: [
+                            report.overall(isomme).criterion_driver.criterion_head_neck,
+                            report.overall(isomme).criterion_driver.criterion_torso,
+                            report.overall(isomme).criterion_driver.criterion_pelvis,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_head_protection,
+                            report.overall(isomme).criterion_driver,
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
+            ),
             CriterionValuesChartPage(
-                            self,
-                            spec=criterion_values_chart_spec_for(
-                                self, name='Driver Values Chart', title='Driver Injury Values'
-                            ).with_criteria(lambda report: {isomme: [report.overall(isomme).criterion_driver.criterion_head_neck.criterion_hic_15, report.overall(isomme).criterion_driver.criterion_head_neck.criterion_neck_tension, report.overall(isomme).criterion_driver.criterion_head_neck.criterion_neck_compression, report.overall(isomme).criterion_driver.criterion_torso.criterion_rib_deflection, report.overall(isomme).criterion_driver.criterion_torso.criterion_rib_deflection_rate, report.overall(isomme).criterion_driver.criterion_torso.criterion_viscous_criterion, report.overall(isomme).criterion_driver.criterion_pelvis] for isomme in report.isomme_list}),
-                        ),
+                self,
+                spec=criterion_values_chart_spec_for(
+                    self, name="Driver Values Chart", title="Driver Injury Values"
+                ).with_criteria(
+                    lambda report: {
+                        isomme: [
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_head_neck.criterion_hic_15,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_head_neck.criterion_neck_tension,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_head_neck.criterion_neck_compression,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_torso.criterion_rib_deflection,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_torso.criterion_rib_deflection_rate,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_torso.criterion_viscous_criterion,
+                            report.overall(isomme).criterion_driver.criterion_pelvis,
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
+            ),
             CriterionTablePage(
-                            self,
-                            name='Driver Values Table',
-                            title='Driver Injury Values',
-                            spec=values_table_spec_for(self).with_criteria(lambda report: {isomme: [report.overall(isomme).criterion_driver.criterion_head_neck.criterion_hic_15, report.overall(isomme).criterion_driver.criterion_head_neck.criterion_neck_tension, report.overall(isomme).criterion_driver.criterion_head_neck.criterion_neck_compression, report.overall(isomme).criterion_driver.criterion_torso.criterion_rib_deflection, report.overall(isomme).criterion_driver.criterion_torso.criterion_rib_deflection_rate, report.overall(isomme).criterion_driver.criterion_torso.criterion_viscous_criterion, report.overall(isomme).criterion_driver.criterion_pelvis] for isomme in report.isomme_list}),
-                        ),
+                self,
+                name="Driver Values Table",
+                title="Driver Injury Values",
+                spec=values_table_spec_for(self).with_criteria(
+                    lambda report: {
+                        isomme: [
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_head_neck.criterion_hic_15,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_head_neck.criterion_neck_tension,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_head_neck.criterion_neck_compression,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_torso.criterion_rib_deflection,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_torso.criterion_rib_deflection_rate,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_torso.criterion_viscous_criterion,
+                            report.overall(isomme).criterion_driver.criterion_pelvis,
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
+            ),
             ChannelPlotPage(self, spec=driver_head_acceleration_spec_for(self)),
             HICPage(
                 self,
@@ -651,68 +740,219 @@ class IIHS_Side_Impact(Report[Overall]):
                     name="Driver HIC15",
                     title="Driver HIC15",
                     timespan=15,
-                ).with_position(
-                    lambda report, isomme: report.overall(isomme).p_driver
-                ).with_criterion(
-                    lambda report, isomme: report.overall(
-                        isomme
-                    ).criterion_driver.criterion_head_neck.criterion_hic_15
+                )
+                .with_position(lambda report, isomme: report.overall(isomme).p_driver)
+                .with_criterion(
+                    lambda report, isomme: (
+                        report.overall(
+                            isomme
+                        ).criterion_driver.criterion_head_neck.criterion_hic_15
+                    )
                 ),
             ),
             ChannelPlotPage(
-                            self,
-                            spec=channel_plot_spec_for(
-                                self, name='Driver Neck Axial Load', title='Driver Neck Axial Load'
-                            ).with_channels(lambda report: {isomme: [[f'?{report.overall(isomme).p_driver}NECKUP00??FOZB']] for isomme in report.isomme_list}),
-                        ),
+                self,
+                spec=channel_plot_spec_for(
+                    self, name="Driver Neck Axial Load", title="Driver Neck Axial Load"
+                ).with_channels(
+                    lambda report: {
+                        isomme: [[f"?{report.overall(isomme).p_driver}NECKUP00??FOZB"]]
+                        for isomme in report.isomme_list
+                    }
+                ),
+            ),
             ChannelPlotPage(
-                            self,
-                            spec=channel_plot_spec_for(
-                                self, name='Driver Rib Deflection', title='Driver Rib Deflection'
-                            ).with_channels(lambda report: {isomme: [[f'?{report.overall(isomme).p_driver}TRRILE01??DSYC', f'?{report.overall(isomme).p_driver}TRRILE02??DSYC', f'?{report.overall(isomme).p_driver}TRRILE03??DSYC'], [f'?{report.overall(isomme).p_driver}ABRILE01??DSYC', f'?{report.overall(isomme).p_driver}ABRILE02??DSYC']] for isomme in report.isomme_list}),
-                        ),
+                self,
+                spec=channel_plot_spec_for(
+                    self, name="Driver Rib Deflection", title="Driver Rib Deflection"
+                ).with_channels(
+                    lambda report: {
+                        isomme: [
+                            [
+                                f"?{report.overall(isomme).p_driver}TRRILE01??DSYC",
+                                f"?{report.overall(isomme).p_driver}TRRILE02??DSYC",
+                                f"?{report.overall(isomme).p_driver}TRRILE03??DSYC",
+                            ],
+                            [
+                                f"?{report.overall(isomme).p_driver}ABRILE01??DSYC",
+                                f"?{report.overall(isomme).p_driver}ABRILE02??DSYC",
+                            ],
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
+            ),
             ChannelPlotPage(
-                            self,
-                            spec=channel_plot_spec_for(
-                                self, name='Driver Rib Deflection Rate', title='Driver Rib Deflection Rate'
-                            ).with_channels(lambda report: {isomme: [[f'?{report.overall(isomme).p_driver}TRRILE01??VEY?', f'?{report.overall(isomme).p_driver}TRRILE02??VEY?', f'?{report.overall(isomme).p_driver}TRRILE03??VEY?'], [f'?{report.overall(isomme).p_driver}ABRILE01??VEY?', f'?{report.overall(isomme).p_driver}ABRILE02??VEY?']] for isomme in report.isomme_list}),
-                        ),
+                self,
+                spec=channel_plot_spec_for(
+                    self,
+                    name="Driver Rib Deflection Rate",
+                    title="Driver Rib Deflection Rate",
+                ).with_channels(
+                    lambda report: {
+                        isomme: [
+                            [
+                                f"?{report.overall(isomme).p_driver}TRRILE01??VEY?",
+                                f"?{report.overall(isomme).p_driver}TRRILE02??VEY?",
+                                f"?{report.overall(isomme).p_driver}TRRILE03??VEY?",
+                            ],
+                            [
+                                f"?{report.overall(isomme).p_driver}ABRILE01??VEY?",
+                                f"?{report.overall(isomme).p_driver}ABRILE02??VEY?",
+                            ],
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
+            ),
             ChannelPlotPage(
-                            self,
-                            spec=channel_plot_spec_for(
-                                self, name='Driver Viscous Criterion', title='Driver Viscous Criterion'
-                            ).with_channels(lambda report: {isomme: [[f'?{report.overall(isomme).p_driver}VCCRLE01??VEY?', f'?{report.overall(isomme).p_driver}VCCRLE02??VEY?', f'?{report.overall(isomme).p_driver}VCCRLE03??VEY?'], [f'?{report.overall(isomme).p_driver}VCARLE01??VEY?', f'?{report.overall(isomme).p_driver}VCARLE02??VEY?']] for isomme in report.isomme_list}),
-                        ),
+                self,
+                spec=channel_plot_spec_for(
+                    self,
+                    name="Driver Viscous Criterion",
+                    title="Driver Viscous Criterion",
+                ).with_channels(
+                    lambda report: {
+                        isomme: [
+                            [
+                                f"?{report.overall(isomme).p_driver}VCCRLE01??VEY?",
+                                f"?{report.overall(isomme).p_driver}VCCRLE02??VEY?",
+                                f"?{report.overall(isomme).p_driver}VCCRLE03??VEY?",
+                            ],
+                            [
+                                f"?{report.overall(isomme).p_driver}VCARLE01??VEY?",
+                                f"?{report.overall(isomme).p_driver}VCARLE02??VEY?",
+                            ],
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
+            ),
             ChannelPlotPage(
-                            self,
-                            spec=channel_plot_spec_for(
-                                self, name='Driver Pelvis Force', title='Driver Pelvis Force'
-                            ).with_channels(lambda report: {isomme: [[f'?{report.overall(isomme).p_driver}ACTBLE00??FOYB'], [f'?{report.overall(isomme).p_driver}ILUMLE00??FOYB']] for isomme in report.isomme_list}),
-                        ),
+                self,
+                spec=channel_plot_spec_for(
+                    self, name="Driver Pelvis Force", title="Driver Pelvis Force"
+                ).with_channels(
+                    lambda report: {
+                        isomme: [
+                            [f"?{report.overall(isomme).p_driver}ACTBLE00??FOYB"],
+                            [f"?{report.overall(isomme).p_driver}ILUMLE00??FOYB"],
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
+            ),
             CriterionTablePage(
-                            self,
-                            name='Rear Passenger Ratings',
-                            title='Rear Passenger Ratings',
-                            spec=rating_table_spec_for(self).with_criteria(lambda report: {isomme: [report.overall(isomme).criterion_rear_passenger.criterion_head_neck, report.overall(isomme).criterion_rear_passenger.criterion_torso, report.overall(isomme).criterion_rear_passenger.criterion_pelvis, report.overall(isomme).criterion_rear_passenger.criterion_head_protection, report.overall(isomme).criterion_rear_passenger] for isomme in report.isomme_list}),
-                        ),
+                self,
+                name="Rear Passenger Ratings",
+                title="Rear Passenger Ratings",
+                spec=rating_table_spec_for(self).with_criteria(
+                    lambda report: {
+                        isomme: [
+                            report.overall(
+                                isomme
+                            ).criterion_rear_passenger.criterion_head_neck,
+                            report.overall(
+                                isomme
+                            ).criterion_rear_passenger.criterion_torso,
+                            report.overall(
+                                isomme
+                            ).criterion_rear_passenger.criterion_pelvis,
+                            report.overall(
+                                isomme
+                            ).criterion_rear_passenger.criterion_head_protection,
+                            report.overall(isomme).criterion_rear_passenger,
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
+            ),
             CriterionValuesChartPage(
-                            self,
-                            spec=criterion_values_chart_spec_for(
-                                self, name='Rear Passenger Values Chart', title='Rear Passenger Injury Values'
-                            ).with_criteria(lambda report: {isomme: [report.overall(isomme).criterion_rear_passenger.criterion_head_neck.criterion_hic_15, report.overall(isomme).criterion_rear_passenger.criterion_head_neck.criterion_neck_tension, report.overall(isomme).criterion_rear_passenger.criterion_head_neck.criterion_neck_compression, report.overall(isomme).criterion_rear_passenger.criterion_torso.criterion_rib_deflection, report.overall(isomme).criterion_rear_passenger.criterion_torso.criterion_rib_deflection_rate, report.overall(isomme).criterion_rear_passenger.criterion_torso.criterion_viscous_criterion, report.overall(isomme).criterion_rear_passenger.criterion_pelvis] for isomme in report.isomme_list}),
-                        ),
+                self,
+                spec=criterion_values_chart_spec_for(
+                    self,
+                    name="Rear Passenger Values Chart",
+                    title="Rear Passenger Injury Values",
+                ).with_criteria(
+                    lambda report: {
+                        isomme: [
+                            report.overall(
+                                isomme
+                            ).criterion_rear_passenger.criterion_head_neck.criterion_hic_15,
+                            report.overall(
+                                isomme
+                            ).criterion_rear_passenger.criterion_head_neck.criterion_neck_tension,
+                            report.overall(
+                                isomme
+                            ).criterion_rear_passenger.criterion_head_neck.criterion_neck_compression,
+                            report.overall(
+                                isomme
+                            ).criterion_rear_passenger.criterion_torso.criterion_rib_deflection,
+                            report.overall(
+                                isomme
+                            ).criterion_rear_passenger.criterion_torso.criterion_rib_deflection_rate,
+                            report.overall(
+                                isomme
+                            ).criterion_rear_passenger.criterion_torso.criterion_viscous_criterion,
+                            report.overall(
+                                isomme
+                            ).criterion_rear_passenger.criterion_pelvis,
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
+            ),
             CriterionTablePage(
-                            self,
-                            name='Rear Passenger Values Table',
-                            title='Rear Passenger Injury Values',
-                            spec=values_table_spec_for(self).with_criteria(lambda report: {isomme: [report.overall(isomme).criterion_rear_passenger.criterion_head_neck.criterion_hic_15, report.overall(isomme).criterion_rear_passenger.criterion_head_neck.criterion_neck_tension, report.overall(isomme).criterion_rear_passenger.criterion_head_neck.criterion_neck_compression, report.overall(isomme).criterion_rear_passenger.criterion_torso.criterion_rib_deflection, report.overall(isomme).criterion_rear_passenger.criterion_torso.criterion_rib_deflection_rate, report.overall(isomme).criterion_rear_passenger.criterion_torso.criterion_viscous_criterion, report.overall(isomme).criterion_rear_passenger.criterion_pelvis] for isomme in report.isomme_list}),
-                        ),
+                self,
+                name="Rear Passenger Values Table",
+                title="Rear Passenger Injury Values",
+                spec=values_table_spec_for(self).with_criteria(
+                    lambda report: {
+                        isomme: [
+                            report.overall(
+                                isomme
+                            ).criterion_rear_passenger.criterion_head_neck.criterion_hic_15,
+                            report.overall(
+                                isomme
+                            ).criterion_rear_passenger.criterion_head_neck.criterion_neck_tension,
+                            report.overall(
+                                isomme
+                            ).criterion_rear_passenger.criterion_head_neck.criterion_neck_compression,
+                            report.overall(
+                                isomme
+                            ).criterion_rear_passenger.criterion_torso.criterion_rib_deflection,
+                            report.overall(
+                                isomme
+                            ).criterion_rear_passenger.criterion_torso.criterion_rib_deflection_rate,
+                            report.overall(
+                                isomme
+                            ).criterion_rear_passenger.criterion_torso.criterion_viscous_criterion,
+                            report.overall(
+                                isomme
+                            ).criterion_rear_passenger.criterion_pelvis,
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
+            ),
             ChannelPlotPage(
-                            self,
-                            spec=channel_plot_spec_for(
-                                self, name='Rear Passenger Head Acceleration', title='Rear Passenger Head Acceleration'
-                            ).with_channels(lambda report: {isomme: [[f'?{report.overall(isomme).p_rear_passenger}HEAD??????AC{axis}A'] for axis in 'XYZR'] for isomme in report.isomme_list}),
-                        ),
+                self,
+                spec=channel_plot_spec_for(
+                    self,
+                    name="Rear Passenger Head Acceleration",
+                    title="Rear Passenger Head Acceleration",
+                ).with_channels(
+                    lambda report: {
+                        isomme: [
+                            [
+                                f"?{report.overall(isomme).p_rear_passenger}HEAD??????AC{axis}A"
+                            ]
+                            for axis in "XYZR"
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
+            ),
             HICPage(
                 self,
                 spec=hic_spec_for(
@@ -720,45 +960,123 @@ class IIHS_Side_Impact(Report[Overall]):
                     name="Rear Passenger HIC15",
                     title="Rear Passenger HIC15",
                     timespan=15,
-                ).with_position(
-                    lambda report, isomme: report.overall(
-                        isomme
-                    ).p_rear_passenger
-                ).with_criterion(
-                    lambda report, isomme: report.overall(
-                        isomme
-                    ).criterion_rear_passenger.criterion_head_neck.criterion_hic_15
+                )
+                .with_position(
+                    lambda report, isomme: report.overall(isomme).p_rear_passenger
+                )
+                .with_criterion(
+                    lambda report, isomme: (
+                        report.overall(
+                            isomme
+                        ).criterion_rear_passenger.criterion_head_neck.criterion_hic_15
+                    )
                 ),
             ),
             ChannelPlotPage(
-                            self,
-                            spec=channel_plot_spec_for(
-                                self, name='Rear Passenger Neck Axial Load', title='Rear Passenger Neck Axial Load'
-                            ).with_channels(lambda report: {isomme: [[f'?{report.overall(isomme).p_rear_passenger}NECKUP00??FOZB']] for isomme in report.isomme_list}),
-                        ),
+                self,
+                spec=channel_plot_spec_for(
+                    self,
+                    name="Rear Passenger Neck Axial Load",
+                    title="Rear Passenger Neck Axial Load",
+                ).with_channels(
+                    lambda report: {
+                        isomme: [
+                            [
+                                f"?{report.overall(isomme).p_rear_passenger}NECKUP00??FOZB"
+                            ]
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
+            ),
             ChannelPlotPage(
-                            self,
-                            spec=channel_plot_spec_for(
-                                self, name='Rear Passenger Rib Deflection', title='Rear Passenger Rib Deflection'
-                            ).with_channels(lambda report: {isomme: [[f'?{report.overall(isomme).p_rear_passenger}TRRILE01??DSYC', f'?{report.overall(isomme).p_rear_passenger}TRRILE02??DSYC', f'?{report.overall(isomme).p_rear_passenger}TRRILE03??DSYC'], [f'?{report.overall(isomme).p_rear_passenger}ABRILE01??DSYC', f'?{report.overall(isomme).p_rear_passenger}ABRILE02??DSYC']] for isomme in report.isomme_list}),
-                        ),
+                self,
+                spec=channel_plot_spec_for(
+                    self,
+                    name="Rear Passenger Rib Deflection",
+                    title="Rear Passenger Rib Deflection",
+                ).with_channels(
+                    lambda report: {
+                        isomme: [
+                            [
+                                f"?{report.overall(isomme).p_rear_passenger}TRRILE01??DSYC",
+                                f"?{report.overall(isomme).p_rear_passenger}TRRILE02??DSYC",
+                                f"?{report.overall(isomme).p_rear_passenger}TRRILE03??DSYC",
+                            ],
+                            [
+                                f"?{report.overall(isomme).p_rear_passenger}ABRILE01??DSYC",
+                                f"?{report.overall(isomme).p_rear_passenger}ABRILE02??DSYC",
+                            ],
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
+            ),
             ChannelPlotPage(
-                            self,
-                            spec=channel_plot_spec_for(
-                                self, name='Rear Passenger Rib Deflection Rate', title='Rear Passenger Rib Deflection Rate'
-                            ).with_channels(lambda report: {isomme: [[f'?{report.overall(isomme).p_rear_passenger}TRRILE01??VEY?', f'?{report.overall(isomme).p_rear_passenger}TRRILE02??VEY?', f'?{report.overall(isomme).p_rear_passenger}TRRILE03??VEY?'], [f'?{report.overall(isomme).p_rear_passenger}ABRILE01??VEY?', f'?{report.overall(isomme).p_rear_passenger}ABRILE02??VEY?']] for isomme in report.isomme_list}),
-                        ),
+                self,
+                spec=channel_plot_spec_for(
+                    self,
+                    name="Rear Passenger Rib Deflection Rate",
+                    title="Rear Passenger Rib Deflection Rate",
+                ).with_channels(
+                    lambda report: {
+                        isomme: [
+                            [
+                                f"?{report.overall(isomme).p_rear_passenger}TRRILE01??VEY?",
+                                f"?{report.overall(isomme).p_rear_passenger}TRRILE02??VEY?",
+                                f"?{report.overall(isomme).p_rear_passenger}TRRILE03??VEY?",
+                            ],
+                            [
+                                f"?{report.overall(isomme).p_rear_passenger}ABRILE01??VEY?",
+                                f"?{report.overall(isomme).p_rear_passenger}ABRILE02??VEY?",
+                            ],
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
+            ),
             ChannelPlotPage(
-                            self,
-                            spec=channel_plot_spec_for(
-                                self, name='Rear Passenger Viscous Criterion', title='Rear Passenger Viscous Criterion'
-                            ).with_channels(lambda report: {isomme: [[f'?{report.overall(isomme).p_rear_passenger}VCCRLE01??VEY?', f'?{report.overall(isomme).p_rear_passenger}VCCRLE02??VEY?', f'?{report.overall(isomme).p_rear_passenger}VCCRLE03??VEY?'], [f'?{report.overall(isomme).p_rear_passenger}VCARLE01??VEY?', f'?{report.overall(isomme).p_rear_passenger}VCARLE02??VEY?']] for isomme in report.isomme_list}),
-                        ),
+                self,
+                spec=channel_plot_spec_for(
+                    self,
+                    name="Rear Passenger Viscous Criterion",
+                    title="Rear Passenger Viscous Criterion",
+                ).with_channels(
+                    lambda report: {
+                        isomme: [
+                            [
+                                f"?{report.overall(isomme).p_rear_passenger}VCCRLE01??VEY?",
+                                f"?{report.overall(isomme).p_rear_passenger}VCCRLE02??VEY?",
+                                f"?{report.overall(isomme).p_rear_passenger}VCCRLE03??VEY?",
+                            ],
+                            [
+                                f"?{report.overall(isomme).p_rear_passenger}VCARLE01??VEY?",
+                                f"?{report.overall(isomme).p_rear_passenger}VCARLE02??VEY?",
+                            ],
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
+            ),
             ChannelPlotPage(
-                            self,
-                            spec=channel_plot_spec_for(
-                                self, name='Rear Passenger Pelvis Force', title='Rear Passenger Pelvis Force'
-                            ).with_channels(lambda report: {isomme: [[f'?{report.overall(isomme).p_rear_passenger}ACTBLE00??FOYB'], [f'?{report.overall(isomme).p_rear_passenger}ILUMLE00??FOYB']] for isomme in report.isomme_list}),
-                        ),
+                self,
+                spec=channel_plot_spec_for(
+                    self,
+                    name="Rear Passenger Pelvis Force",
+                    title="Rear Passenger Pelvis Force",
+                ).with_channels(
+                    lambda report: {
+                        isomme: [
+                            [
+                                f"?{report.overall(isomme).p_rear_passenger}ACTBLE00??FOYB"
+                            ],
+                            [
+                                f"?{report.overall(isomme).p_rear_passenger}ILUMLE00??FOYB"
+                            ],
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
+            ),
         )
         self._selected_pages = list(self._available_pages)

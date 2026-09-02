@@ -46,10 +46,7 @@ class OLCPage(LineTablePage[Report[Any]]):
             },
             table=lambda current_report: TableData(
                 cell_texts=[
-                    [
-                        [self.cell_text(isomme)]
-                        for isomme in current_report.isomme_list
-                    ]
+                    [[self.cell_text(isomme)] for isomme in current_report.isomme_list]
                 ],
                 col_labels=[["OLC [g]"]],
                 row_labels=[

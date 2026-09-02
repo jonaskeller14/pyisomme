@@ -215,7 +215,8 @@ class Criterion_ES2re_Abdominal_Force(_FMVSS214Criterion):
         combined = np.sum(
             # S7.2.5(c)(1)/S9.2.1(c)(1) do not prescribe a sign convention.
             # Sum force magnitudes so either tension or compression is conservative.
-            [np.abs(channel.get_data(t=time)) for channel in channels], axis=0
+            [np.abs(channel.get_data(t=time)) for channel in channels],
+            axis=0,
         )
         value = float(np.max(combined))
         channel = Channel(channels[0].code, pd.DataFrame(combined, index=time), "N")
@@ -334,7 +335,8 @@ class Criterion_SID_IIs_Pelvic_Force(_FMVSS214Criterion):
         combined = np.sum(
             # S7.2.6(c)/S9.2.2(c) do not prescribe a sign convention. Sum force
             # magnitudes so either tension or compression is conservative.
-            [np.abs(channel.get_data(t=time)) for channel in channels], axis=0
+            [np.abs(channel.get_data(t=time)) for channel in channels],
+            axis=0,
         )
         value = float(np.max(combined))
         channel = Channel(channels[0].code, pd.DataFrame(combined, index=time), "N")

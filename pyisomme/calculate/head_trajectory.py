@@ -123,12 +123,14 @@ def calculate_head_trajectory(
         )
 
     acceleration_global = np.einsum("nij,nj->ni", rotation_matrices, acceleration_local)
-    velocity_global = cumulative_trapezoid(
-        acceleration_global, time, axis=0, initial=0
-    ) + initial_velocity_array
-    position_global = cumulative_trapezoid(
-        velocity_global, time, axis=0, initial=0
-    ) + initial_position_array
+    velocity_global = (
+        cumulative_trapezoid(acceleration_global, time, axis=0, initial=0)
+        + initial_velocity_array
+    )
+    position_global = (
+        cumulative_trapezoid(velocity_global, time, axis=0, initial=0)
+        + initial_position_array
+    )
 
     calculation_info: dict[str, InfoValue] = {
         "Data source": "calculation",

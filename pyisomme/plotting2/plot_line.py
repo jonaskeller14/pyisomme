@@ -23,9 +23,7 @@ from pyisomme.unit import Unit
 logger = logging.getLogger(__name__)
 
 ChannelInput: TypeAlias = Union[Channel, str, None]
-ChannelPanels: TypeAlias = Mapping[
-    Isomme, Sequence[Sequence[ChannelInput]]
-]
+ChannelPanels: TypeAlias = Mapping[Isomme, Sequence[Sequence[ChannelInput]]]
 FigureSize: TypeAlias = tuple[Union[int, float], Union[int, float]]
 Range: TypeAlias = tuple[float, float]
 
@@ -141,7 +139,9 @@ def _prepare_line_panels(
     if panel_count == 0:
         raise ValueError("channels must contain at least one subplot.")
     limit_sets = _resolve_limits(limits, isommes)
-    panels = [_LinePanel(codes={isomme: [] for isomme in isommes}) for _ in range(panel_count)]
+    panels = [
+        _LinePanel(codes={isomme: [] for isomme in isommes}) for _ in range(panel_count)
+    ]
 
     for panel_index, panel in enumerate(panels):
         title_codes: list[Code] = []
@@ -170,9 +170,7 @@ def _prepare_line_panels(
                     x = x[selected]
                     y = y[selected]
                 test_name = isomme.test_number or "Unnamed ISOMME"
-                name = (
-                    test_name if len(group) <= 1 else f"{test_name} {channel.code}"
-                )
+                name = test_name if len(group) <= 1 else f"{test_name} {channel.code}"
                 panel.traces.append(
                     _ChannelTrace(
                         x=x,
@@ -250,9 +248,7 @@ def _add_limit_fills(
             elif not limits[index - 1].lower:
                 boundaries.append(
                     np.asarray(
-                        limits[index - 1].get_data(
-                            x, x_unit="ms", y_unit=unit
-                        ),
+                        limits[index - 1].get_data(x, x_unit="ms", y_unit=unit),
                         dtype=float,
                     )
                 )
@@ -262,9 +258,7 @@ def _add_limit_fills(
             else:
                 boundaries.append(
                     np.asarray(
-                        limits[index + 1].get_data(
-                            x, x_unit="ms", y_unit=unit
-                        ),
+                        limits[index + 1].get_data(x, x_unit="ms", y_unit=unit),
                         dtype=float,
                     )
                 )
@@ -305,14 +299,14 @@ def _add_line_panels(
         trace_x = [trace.x for trace in panel.traces]
         panel_x_range = xlim or _padded_range(trace_x)
         x_ranges.append(panel_x_range)
-        limit_x = np.linspace(
-            panel_x_range[0], panel_x_range[1], num=1000, dtype=float
-        )
+        limit_x = np.linspace(panel_x_range[0], panel_x_range[1], num=1000, dtype=float)
         panel_limits = _ordered_limits(panel.limits, limit_x, panel.unit)
         ordered_limits.append(panel_limits)
         trace_y = [trace.y for trace in panel.traces]
         limit_y = [
-            np.asarray(limit.get_data(limit_x, x_unit="ms", y_unit=panel.unit), dtype=float)
+            np.asarray(
+                limit.get_data(limit_x, x_unit="ms", y_unit=panel.unit), dtype=float
+            )
             for limit in panel_limits
         ]
         y_ranges.append(ylim or _padded_range(trace_y + limit_y))
@@ -474,7 +468,9 @@ def plot_line(
         horizontal_spacing=horizontal_spacing,
         vertical_spacing=vertical_spacing,
     )
-    positions = [(index // ncols + 1, index % ncols + 1) for index in range(len(panels))]
+    positions = [
+        (index // ncols + 1, index % ncols + 1) for index in range(len(panels))
+    ]
     _add_line_panels(fig, panels, positions, xlim, ylim, sharex, sharey, legend)
     fig.update_layout(
         width=figsize[0],

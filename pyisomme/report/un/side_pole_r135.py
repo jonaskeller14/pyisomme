@@ -273,32 +273,61 @@ class UN_Side_Pole_R135(Report[Overall]):
             CoverPage(self),
             ReportStatusPage(self, spec=report_status_spec_for(self)),
             ManualInputsPage(self, spec=manual_inputs_spec_for(self)),
-            CriterionValuesChartPage(self, spec=criterion_values_chart_spec_for(
-                self, name="Values Chart", title="Values"
-            ).with_criteria(lambda report: {
-                isomme: [
-                        report.overall(isomme).criterion_dummy.criterion_hic_36,
-                        report.overall(isomme).criterion_dummy.criterion_shoulder_lateral_force,
-                        report.overall(isomme).criterion_dummy.criterion_chest_resultant_compression,
-                        report.overall(isomme).criterion_dummy.criterion_abdomen_resultant_compression,
-                        report.overall(isomme).criterion_dummy.criterion_spine_t12_a3ms,
-                        report.overall(isomme).criterion_dummy.criterion_pubic_symphysis_force,
-                ]
-                for isomme in report.isomme_list
-            })),
+            CriterionValuesChartPage(
+                self,
+                spec=criterion_values_chart_spec_for(
+                    self, name="Values Chart", title="Values"
+                ).with_criteria(
+                    lambda report: {
+                        isomme: [
+                            report.overall(isomme).criterion_dummy.criterion_hic_36,
+                            report.overall(
+                                isomme
+                            ).criterion_dummy.criterion_shoulder_lateral_force,
+                            report.overall(
+                                isomme
+                            ).criterion_dummy.criterion_chest_resultant_compression,
+                            report.overall(
+                                isomme
+                            ).criterion_dummy.criterion_abdomen_resultant_compression,
+                            report.overall(
+                                isomme
+                            ).criterion_dummy.criterion_spine_t12_a3ms,
+                            report.overall(
+                                isomme
+                            ).criterion_dummy.criterion_pubic_symphysis_force,
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
+            ),
             CriterionTablePage(
-                self, name="Values Table", title="Values",
-                spec=values_table_spec_for(self).with_criteria(lambda report: {
-                    isomme: [
-                        report.overall(isomme).criterion_dummy.criterion_hic_36,
-                        report.overall(isomme).criterion_dummy.criterion_shoulder_lateral_force,
-                        report.overall(isomme).criterion_dummy.criterion_chest_resultant_compression,
-                        report.overall(isomme).criterion_dummy.criterion_abdomen_resultant_compression,
-                        report.overall(isomme).criterion_dummy.criterion_spine_t12_a3ms,
-                        report.overall(isomme).criterion_dummy.criterion_pubic_symphysis_force,
-                    ]
-                    for isomme in report.isomme_list
-                }),
+                self,
+                name="Values Table",
+                title="Values",
+                spec=values_table_spec_for(self).with_criteria(
+                    lambda report: {
+                        isomme: [
+                            report.overall(isomme).criterion_dummy.criterion_hic_36,
+                            report.overall(
+                                isomme
+                            ).criterion_dummy.criterion_shoulder_lateral_force,
+                            report.overall(
+                                isomme
+                            ).criterion_dummy.criterion_chest_resultant_compression,
+                            report.overall(
+                                isomme
+                            ).criterion_dummy.criterion_abdomen_resultant_compression,
+                            report.overall(
+                                isomme
+                            ).criterion_dummy.criterion_spine_t12_a3ms,
+                            report.overall(
+                                isomme
+                            ).criterion_dummy.criterion_pubic_symphysis_force,
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
             ),
             ChannelPlotPage(self, spec=side_head_acceleration_spec_for(self)),
             HICPage(
@@ -308,12 +337,12 @@ class UN_Side_Pole_R135(Report[Overall]):
                     name="HIC36",
                     title="HIC36",
                     timespan=36,
-                ).with_position(
-                    lambda report, isomme: report.overall(isomme).p
-                ).with_criterion(
-                    lambda report, isomme: report.overall(
-                        isomme
-                    ).criterion_dummy.criterion_hic_36
+                )
+                .with_position(lambda report, isomme: report.overall(isomme).p)
+                .with_criterion(
+                    lambda report, isomme: (
+                        report.overall(isomme).criterion_dummy.criterion_hic_36
+                    )
                 ),
             ),
             ChannelPlotPage(self, spec=side_shoulder_lateral_force_spec_for(self)),

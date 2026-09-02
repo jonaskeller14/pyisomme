@@ -24,7 +24,7 @@ USER_SET_COLOR = (0.2, 0.45, 0.9, 0.18)
 DERIVED_COLOR = (1.0, 0.75, 0.0, 0.18)
 
 
-def _all_inputs(report: R) -> Mapping[Isomme, Sequence[InputRow]]: # pyright: ignore[reportInvalidTypeVarUse]
+def _all_inputs(report: R) -> Mapping[Isomme, Sequence[InputRow]]:  # pyright: ignore[reportInvalidTypeVarUse]
     return {
         isomme: list(report.overall(isomme).iter_inputs())
         for isomme in report.isomme_list

@@ -31,9 +31,7 @@ def _interpolate_rating(
     left_rating = ratings[left]
     right_rating = ratings[right]
     if np.isfinite(left_rating) and np.isfinite(right_rating):
-        fraction = (value - thresholds[left]) / (
-            thresholds[right] - thresholds[left]
-        )
+        fraction = (value - thresholds[left]) / (thresholds[right] - thresholds[left])
         return float(left_rating + fraction * (right_rating - left_rating))
     if np.isfinite(left_rating):
         return float(left_rating)

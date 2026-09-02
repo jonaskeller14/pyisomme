@@ -201,13 +201,11 @@ def describe_report(report: Report[Any]) -> str:
             ["overall criterion", f"`{report.Criterion_Overall.__name__}`"],
             [
                 "available_pages",
-                ", ".join(page.name for page in report.available_pages)
-                or NONE,
+                ", ".join(page.name for page in report.available_pages) or NONE,
             ],
             [
                 "selected_pages",
-                ", ".join(page.name for page in report.selected_pages)
-                or NONE,
+                ", ".join(page.name for page in report.selected_pages) or NONE,
             ],
         ],
     )

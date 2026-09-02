@@ -43,7 +43,9 @@ def _find_member(
     expected = path.as_posix().casefold()
     matches = [name for name in names if name.casefold() == expected]
     if len(matches) > 1:
-        logger.warning("Multiple %s found: %s. Only the first is used.", description, matches)
+        logger.warning(
+            "Multiple %s found: %s. Only the first is used.", description, matches
+        )
     return matches[0] if matches else None
 
 
@@ -170,7 +172,9 @@ class Isomme:
         logger.info(f"Reading '{path}' done. Number of channel: {len(self.channels)}")
         return self
 
-    def _read_mme(self, source: ArchiveSource, mme_name: str | None) -> tuple[str, Info, str]:
+    def _read_mme(
+        self, source: ArchiveSource, mme_name: str | None
+    ) -> tuple[str, Info, str]:
         if mme_name is None:
             mme_names = fnmatch.filter(source.names, "*.[mM][mM][eE]")
             if len(mme_names) == 0:
@@ -230,16 +234,24 @@ class Isomme:
         self.static_txt = self._read_txt(source, test_root / "Static/STATIC.TXT")
 
         # MII
-        self.movie_mii = self._read_mii(source, test_root / f"Movie/{self.test_number}.MII")
+        self.movie_mii = self._read_mii(
+            source, test_root / f"Movie/{self.test_number}.MII"
+        )
 
         # PHO
-        self.photo_pho = self._read_pho(source, test_root / f"Photo/{self.test_number}.PHO")
+        self.photo_pho = self._read_pho(
+            source, test_root / f"Photo/{self.test_number}.PHO"
+        )
 
         # SD1
-        self.static_sd1 = self._read_sd1(source, test_root / f"Static/{self.test_number}.SD1")
+        self.static_sd1 = self._read_sd1(
+            source, test_root / f"Static/{self.test_number}.SD1"
+        )
 
         # CHN
-        self.channel_info = self._read_chn(source, test_root / f"Channel/{self.test_number}.CHN")
+        self.channel_info = self._read_chn(
+            source, test_root / f"Channel/{self.test_number}.CHN"
+        )
 
         # 001
         if self.channel_info is None:
@@ -437,9 +449,7 @@ class Isomme:
         ]
 
         # 001
-        self._write_channels(
-            path.parent / "Channel", path.stem, channels, max_workers
-        )
+        self._write_channels(path.parent / "Channel", path.stem, channels, max_workers)
 
         relative_paths = [
             written_path.relative_to(path.parent)
@@ -543,7 +553,6 @@ class Isomme:
                 ):
                     future.result()
 
-
     def _write_folder(
         self,
         path: Path,
@@ -615,19 +624,17 @@ class Isomme:
             replacements = [(path, temporary_mme_path)]
             temporary_channel_directory = temporary_path / "Channel"
             if temporary_channel_directory.exists():
-                replacements.append((path.parent / "Channel", temporary_channel_directory))
+                replacements.append(
+                    (path.parent / "Channel", temporary_channel_directory)
+                )
             # Channel is exchanged as a whole above.  Replacing other files
             # individually avoids deleting media beside their MII/PHO metadata.
             for relative_path in written_paths:
                 if relative_path.parts[0].casefold() != "channel":
                     destination = path.parent / relative_path
                     destination.parent.mkdir(parents=True, exist_ok=True)
-                    replacements.append(
-                        (destination, temporary_path / relative_path)
-                    )
-            self._replace_outputs_transactionally(
-                replacements
-            )
+                    replacements.append((destination, temporary_path / relative_path))
+            self._replace_outputs_transactionally(replacements)
 
     def _write_folder_transactionally(
         self,
@@ -952,11 +959,11 @@ class Isomme:
                         continue
                     if fnmatch.fnmatch(channel.code, source_pattern):
                         filtered_channel = channel.cfc(code.filter_class)
-                        if (
-                            fnmatch.fnmatch(filtered_channel.code, code_pattern)
-                            and filtered_channel.code
-                            not in [result.code for result in channel_list]
-                        ):
+                        if fnmatch.fnmatch(
+                            filtered_channel.code, code_pattern
+                        ) and filtered_channel.code not in [
+                            result.code for result in channel_list
+                        ]:
                             channel_list.append(filtered_channel)
 
             # 3. Calculate Channel
@@ -986,11 +993,11 @@ class Isomme:
                         integrate=False,
                     ):
                         differentiated_channel = channel.differentiate()
-                        if (
-                            fnmatch.fnmatch(differentiated_channel.code, code_pattern)
-                            and differentiated_channel.code
-                            not in [result.code for result in channel_list]
-                        ):
+                        if fnmatch.fnmatch(
+                            differentiated_channel.code, code_pattern
+                        ) and differentiated_channel.code not in [
+                            result.code for result in channel_list
+                        ]:
                             channel_list.append(differentiated_channel)
                 except (AttributeError, NotImplementedError) as error:
                     logger.debug(error)
@@ -1005,11 +1012,11 @@ class Isomme:
                         differentiate=False,
                     ):
                         integrated_channel = channel.integrate()
-                        if (
-                            fnmatch.fnmatch(integrated_channel.code, code_pattern)
-                            and integrated_channel.code
-                            not in [result.code for result in channel_list]
-                        ):
+                        if fnmatch.fnmatch(
+                            integrated_channel.code, code_pattern
+                        ) and integrated_channel.code not in [
+                            result.code for result in channel_list
+                        ]:
                             channel_list.append(integrated_channel)
                 except (AttributeError, NotImplementedError) as error:
                     logger.debug(error)
@@ -1096,9 +1103,7 @@ def read(
     with logging_redirect_tqdm():
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             future_indices = {
-                executor.submit(
-                    Isomme().read, path, *channel_code_patterns
-                ): path_index
+                executor.submit(Isomme().read, path, *channel_code_patterns): path_index
                 for path_index, path in enumerate(unique_paths)
             }
             for future in tqdm(

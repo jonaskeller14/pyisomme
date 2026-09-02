@@ -202,30 +202,55 @@ class UN_Side_Barrier_R95(Report[Overall]):
             CoverPage(self),
             ReportStatusPage(self, spec=report_status_spec_for(self)),
             ManualInputsPage(self, spec=manual_inputs_spec_for(self)),
-            CriterionValuesChartPage(self, spec=criterion_values_chart_spec_for(
-                self, name="Values Chart", title="Values"
-            ).with_criteria(lambda report: {
-                isomme: [
-                        report.overall(isomme).criterion_dummy.criterion_hpc36,
-                        report.overall(isomme).criterion_dummy.criterion_chest_lateral_deflection,
-                        report.overall(isomme).criterion_dummy.criterion_chest_lateral_vc,
-                        report.overall(isomme).criterion_dummy.criterion_pubic_symphysis_force,
-                        report.overall(isomme).criterion_dummy.criterion_abdomen_force,
-                ]
-                for isomme in report.isomme_list
-            })),
+            CriterionValuesChartPage(
+                self,
+                spec=criterion_values_chart_spec_for(
+                    self, name="Values Chart", title="Values"
+                ).with_criteria(
+                    lambda report: {
+                        isomme: [
+                            report.overall(isomme).criterion_dummy.criterion_hpc36,
+                            report.overall(
+                                isomme
+                            ).criterion_dummy.criterion_chest_lateral_deflection,
+                            report.overall(
+                                isomme
+                            ).criterion_dummy.criterion_chest_lateral_vc,
+                            report.overall(
+                                isomme
+                            ).criterion_dummy.criterion_pubic_symphysis_force,
+                            report.overall(
+                                isomme
+                            ).criterion_dummy.criterion_abdomen_force,
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
+            ),
             CriterionTablePage(
-                self, name="Values Table", title="Values",
-                spec=values_table_spec_for(self).with_criteria(lambda report: {
-                    isomme: [
-                        report.overall(isomme).criterion_dummy.criterion_hpc36,
-                        report.overall(isomme).criterion_dummy.criterion_chest_lateral_deflection,
-                        report.overall(isomme).criterion_dummy.criterion_chest_lateral_vc,
-                        report.overall(isomme).criterion_dummy.criterion_pubic_symphysis_force,
-                        report.overall(isomme).criterion_dummy.criterion_abdomen_force,
-                    ]
-                    for isomme in report.isomme_list
-                }),
+                self,
+                name="Values Table",
+                title="Values",
+                spec=values_table_spec_for(self).with_criteria(
+                    lambda report: {
+                        isomme: [
+                            report.overall(isomme).criterion_dummy.criterion_hpc36,
+                            report.overall(
+                                isomme
+                            ).criterion_dummy.criterion_chest_lateral_deflection,
+                            report.overall(
+                                isomme
+                            ).criterion_dummy.criterion_chest_lateral_vc,
+                            report.overall(
+                                isomme
+                            ).criterion_dummy.criterion_pubic_symphysis_force,
+                            report.overall(
+                                isomme
+                            ).criterion_dummy.criterion_abdomen_force,
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
             ),
             ChannelPlotPage(self, spec=side_head_acceleration_spec_for(self)),
             HICPage(
@@ -235,12 +260,12 @@ class UN_Side_Barrier_R95(Report[Overall]):
                     name="HPC36",
                     title="HPC36",
                     timespan=36,
-                ).with_position(
-                    lambda report, isomme: report.overall(isomme).p
-                ).with_criterion(
-                    lambda report, isomme: report.overall(
-                        isomme
-                    ).criterion_dummy.criterion_hpc36
+                )
+                .with_position(lambda report, isomme: report.overall(isomme).p)
+                .with_criterion(
+                    lambda report, isomme: (
+                        report.overall(isomme).criterion_dummy.criterion_hpc36
+                    )
                 ),
             ),
             ChannelPlotPage(self, spec=side_barrier_chest_deflection_spec_for(self)),

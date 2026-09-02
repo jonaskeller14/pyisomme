@@ -42,8 +42,7 @@ def _row_label(path: str, criterion: Criterion) -> str:
 
 def _all_criteria(report: R) -> Mapping[Isomme, Sequence[StatusRow]]:
     return {
-        isomme: list(report.overall(isomme).walk())
-        for isomme in report.isomme_list
+        isomme: list(report.overall(isomme).walk()) for isomme in report.isomme_list
     }
 
 
@@ -91,7 +90,9 @@ def _status_figure(
     paths = [path for path, _criterion in rows]
     for isomme in isommes[1:]:
         if [path for path, _criterion in criteria[isomme]] != paths:
-            raise ValueError("Report status selector returned inconsistent criterion paths.")
+            raise ValueError(
+                "Report status selector returned inconsistent criterion paths."
+            )
 
     cell_text = [
         [_status_text(criteria[isomme][index][1]) for isomme in isommes]
@@ -106,10 +107,12 @@ def _status_figure(
         cell_colors=[cell_colors],
         row_labels=[[_row_label(path, criterion) for path, criterion in rows]],
         col_labels=[[str(isomme.test_number) for isomme in isommes]],
-        col_labels_colors=[[
-            DEFAULT_CONFIG.colors[index % len(DEFAULT_CONFIG.colors)]
-            for index in range(len(isommes))
-        ]],
+        col_labels_colors=[
+            [
+                DEFAULT_CONFIG.colors[index % len(DEFAULT_CONFIG.colors)]
+                for index in range(len(isommes))
+            ]
+        ],
         figsize=figsize,
     )
     table = figure.data[0]

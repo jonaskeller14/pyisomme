@@ -56,10 +56,7 @@ SIDE_POLE_SPINE_T12_ACCELERATION = ChannelPlotSpec[SideReport](
     name="Spine T12 Acceleration",
     title="Spine T12 Acceleration",
     channels=lambda report: {
-        isomme: [
-            [f"?{report.overall(isomme).p}THSP1200??AC{axis}C"]
-            for axis in "XYZR"
-        ]
+        isomme: [[f"?{report.overall(isomme).p}THSP1200??AC{axis}C"] for axis in "XYZR"]
         for isomme in report.isomme_list
     },
     nrows=2,

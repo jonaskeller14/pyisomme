@@ -23,7 +23,7 @@ CriteriaSelector = Callable[[S_contra], Mapping["Isomme", Sequence["Criterion"]]
 
 
 def _criteria_required(
-    _: S_contra, # pyright: ignore[reportInvalidTypeVarUse]
+    _: S_contra,  # pyright: ignore[reportInvalidTypeVarUse]
 ) -> Mapping[Isomme, Sequence[Criterion]]:
     raise RuntimeError(
         "CriterionValuesChartSpec requires criteria via with_criteria()."

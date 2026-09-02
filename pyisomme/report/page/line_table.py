@@ -34,7 +34,9 @@ class Page_Line_Table(Page_Figure, ABC):
     limits: LimitSet | dict[Isomme, LimitSet] | None = None
 
     def __init__(
-        self, report: Report[Any], limits: LimitSet | dict[Isomme, LimitSet] | None = None
+        self,
+        report: Report[Any],
+        limits: LimitSet | dict[Isomme, LimitSet] | None = None,
     ) -> None:
         super().__init__(report)
         self.limits = limits if limits is not None else report.limits

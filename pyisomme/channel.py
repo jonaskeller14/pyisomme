@@ -231,7 +231,9 @@ class Channel:
                     "ISO-6487 filtering requires at least 4 samples; "
                     f"received {number_of_samples}."
                 )
-            sample_rate = self.info.get("Sampling interval")  # Sampling interval in seconds
+            sample_rate = self.info.get(
+                "Sampling interval"
+            )  # Sampling interval in seconds
             if isinstance(sample_rate, bool) or not isinstance(
                 sample_rate, (int, float)
             ):

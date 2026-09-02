@@ -76,7 +76,9 @@ def _validate_table_inputs(
             if len(colors) != cells.shape[0] or any(
                 len(row) != cells.shape[1] for row in colors
             ):
-                raise ValueError(f"cell_colors[{index}] must match its cell_texts shape.")
+                raise ValueError(
+                    f"cell_colors[{index}] must match its cell_texts shape."
+                )
         if row_labels_colors is not None and row_labels_colors[index] is not None:
             label_colors = row_labels_colors[index]
             assert label_colors is not None
@@ -111,10 +113,7 @@ def _make_table_trace(
         color_columns: str | list[list[Any]] = "white"
     else:
         color_columns = [["white"] * cells.shape[0]] + [
-            [
-                _plotly_color(cell_colors[row][column])
-                for row in range(cells.shape[0])
-            ]
+            [_plotly_color(cell_colors[row][column]) for row in range(cells.shape[0])]
             for column in range(cells.shape[1])
         ]
 

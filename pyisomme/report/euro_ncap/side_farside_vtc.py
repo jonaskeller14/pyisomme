@@ -647,7 +647,8 @@ class EuroNCAP_Side_Farside_VTC(Report[Overall]):
             ManualInputsPage(self, spec=manual_inputs_spec_for(self)),
             CriterionTablePage(
                 self,
-                name="Validation ISO-Score Table", title="Validation ISO-Score",
+                name="Validation ISO-Score Table",
+                title="Validation ISO-Score",
                 spec=CriterionTableSpec(
                     criteria=self._validation_iso_score_criteria,
                     row_label=self._validation_row_label,
@@ -656,17 +657,35 @@ class EuroNCAP_Side_Farside_VTC(Report[Overall]):
             ),
             CriterionTablePage(
                 self,
-                name="Validation Injury-Criteria Percentage Table", title="Validation Injury-Criteria Percentage",
+                name="Validation Injury-Criteria Percentage Table",
+                title="Validation Injury-Criteria Percentage",
                 spec=CriterionTableSpec(
                     criteria=self._validation_injury_criteria,
                     row_label=self._validation_row_label,
                     cell_text=self._validation_injury_cell_text,
                 ),
             ),
-            ChannelPlotPage(self, spec=channel_plot_spec_for(self, name="Head Acceleration", title="Head Acceleration", nrows=2, ncols=2, sharey=True).with_channels(lambda report: {
-                isomme: [[f"?{report.criterion_overall[isomme].p}HEAD??????AC{axis}A"] for axis in "XYZR"]
-                for isomme in report.isomme_list
-            })),
+            ChannelPlotPage(
+                self,
+                spec=channel_plot_spec_for(
+                    self,
+                    name="Head Acceleration",
+                    title="Head Acceleration",
+                    nrows=2,
+                    ncols=2,
+                    sharey=True,
+                ).with_channels(
+                    lambda report: {
+                        isomme: [
+                            [
+                                f"?{report.criterion_overall[isomme].p}HEAD??????AC{axis}A"
+                            ]
+                            for axis in "XYZR"
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
+            ),
             HICPage(
                 self,
                 spec=hic_spec_for(
@@ -674,18 +693,41 @@ class EuroNCAP_Side_Farside_VTC(Report[Overall]):
                     name="HIC15",
                     title="HIC15",
                     timespan=15,
-                ).with_position(
+                )
+                .with_position(
                     lambda report, isomme: report.criterion_overall[isomme].p
-                ).with_criterion(
-                    lambda report, isomme: report.criterion_overall[
-                        isomme
-                    ].criterion_validation_injury_criteria.criterion_hic_15
+                )
+                .with_criterion(
+                    lambda report, isomme: (
+                        report.criterion_overall[
+                            isomme
+                        ].criterion_validation_injury_criteria.criterion_hic_15
+                    )
                 ),
             ),
-            ChannelPlotPage(self, spec=channel_plot_spec_for(self, name="Chest Lateral Compression", title="Chest Lateral Compression", nrows=3, ncols=2, sharey=True).with_channels(lambda report: {
-                isomme: [[f"?{report.criterion_overall[isomme].p}TRRILE01??DSYC"], [f"?{report.criterion_overall[isomme].p}TRRIRI01??DSYC"], [f"?{report.criterion_overall[isomme].p}TRRILE02??DSYC"], [f"?{report.criterion_overall[isomme].p}TRRIRI02??DSYC"], [f"?{report.criterion_overall[isomme].p}TRRILE03??DSYC"], [f"?{report.criterion_overall[isomme].p}TRRIRI03??DSYC"]]
-                for isomme in report.isomme_list
-            })),
+            ChannelPlotPage(
+                self,
+                spec=channel_plot_spec_for(
+                    self,
+                    name="Chest Lateral Compression",
+                    title="Chest Lateral Compression",
+                    nrows=3,
+                    ncols=2,
+                    sharey=True,
+                ).with_channels(
+                    lambda report: {
+                        isomme: [
+                            [f"?{report.criterion_overall[isomme].p}TRRILE01??DSYC"],
+                            [f"?{report.criterion_overall[isomme].p}TRRIRI01??DSYC"],
+                            [f"?{report.criterion_overall[isomme].p}TRRILE02??DSYC"],
+                            [f"?{report.criterion_overall[isomme].p}TRRIRI02??DSYC"],
+                            [f"?{report.criterion_overall[isomme].p}TRRILE03??DSYC"],
+                            [f"?{report.criterion_overall[isomme].p}TRRIRI03??DSYC"],
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
+            ),
             ChannelPlotPage(self, spec=side_abdomen_lateral_compression_spec_for(self)),
             ChannelPlotPage(self, spec=side_pubic_symphysis_force_spec_for(self)),
         )

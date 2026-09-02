@@ -868,59 +868,128 @@ class EuroNCAP_Side_FarSide(Report[Overall]):
                 self,
                 spec=criterion_values_chart_spec_for(
                     self, name="Values Chart", title="Values"
-                ).with_criteria(lambda report: {
-                    isomme: [
-                        report.criterion_overall[isomme].criterion_head.criterion_hic_15,
-                        report.criterion_overall[isomme].criterion_head.criterion_head_a3ms,
-                        report.criterion_overall[isomme].criterion_neck.criterion_upper_neck.criterion_tension_fz,
-                        report.criterion_overall[isomme].criterion_neck.criterion_upper_neck.criterion_lateral_flexion_mxoc,
-                        report.criterion_overall[isomme].criterion_neck.criterion_upper_neck.criterion_extension_myoc,
-                        report.criterion_overall[isomme].criterion_neck.criterion_lower_neck.criterion_tension_fz,
-                        report.criterion_overall[isomme].criterion_neck.criterion_lower_neck.criterion_lateral_flexion_mx,
-                        report.criterion_overall[isomme].criterion_neck.criterion_lower_neck.criterion_extension_my_base,
-                        report.criterion_overall[isomme].criterion_chest_abdomen.criterion_chest_lateral_compression,
-                        report.criterion_overall[isomme].criterion_chest_abdomen.criterion_abdomen_lateral_compression,
-                        report.criterion_overall[isomme].criterion_pelvis_lumbar_modifier.criterion_pubic_symphysis,
-                        report.criterion_overall[isomme].criterion_pelvis_lumbar_modifier.criterion_lumbar_fy,
-                        report.criterion_overall[isomme].criterion_pelvis_lumbar_modifier.criterion_lumbar_fz,
-                        report.criterion_overall[isomme].criterion_pelvis_lumbar_modifier.criterion_lumbar_mx,
-                    ] for isomme in report.isomme_list
-                }),
+                ).with_criteria(
+                    lambda report: {
+                        isomme: [
+                            report.criterion_overall[
+                                isomme
+                            ].criterion_head.criterion_hic_15,
+                            report.criterion_overall[
+                                isomme
+                            ].criterion_head.criterion_head_a3ms,
+                            report.criterion_overall[
+                                isomme
+                            ].criterion_neck.criterion_upper_neck.criterion_tension_fz,
+                            report.criterion_overall[
+                                isomme
+                            ].criterion_neck.criterion_upper_neck.criterion_lateral_flexion_mxoc,
+                            report.criterion_overall[
+                                isomme
+                            ].criterion_neck.criterion_upper_neck.criterion_extension_myoc,
+                            report.criterion_overall[
+                                isomme
+                            ].criterion_neck.criterion_lower_neck.criterion_tension_fz,
+                            report.criterion_overall[
+                                isomme
+                            ].criterion_neck.criterion_lower_neck.criterion_lateral_flexion_mx,
+                            report.criterion_overall[
+                                isomme
+                            ].criterion_neck.criterion_lower_neck.criterion_extension_my_base,
+                            report.criterion_overall[
+                                isomme
+                            ].criterion_chest_abdomen.criterion_chest_lateral_compression,
+                            report.criterion_overall[
+                                isomme
+                            ].criterion_chest_abdomen.criterion_abdomen_lateral_compression,
+                            report.criterion_overall[
+                                isomme
+                            ].criterion_pelvis_lumbar_modifier.criterion_pubic_symphysis,
+                            report.criterion_overall[
+                                isomme
+                            ].criterion_pelvis_lumbar_modifier.criterion_lumbar_fy,
+                            report.criterion_overall[
+                                isomme
+                            ].criterion_pelvis_lumbar_modifier.criterion_lumbar_fz,
+                            report.criterion_overall[
+                                isomme
+                            ].criterion_pelvis_lumbar_modifier.criterion_lumbar_mx,
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
             ),
             CriterionTablePage(
                 self,
-                name="Rating Table", title="Rating",
-                spec=rating_table_spec_for(self).with_criteria(lambda report: {
-                    isomme: [
-                        report.criterion_overall[isomme].criterion_head,
-                        report.criterion_overall[isomme].criterion_neck,
-                        report.criterion_overall[isomme].criterion_chest_abdomen,
-                        report.criterion_overall[isomme].criterion_pelvis_lumbar_modifier,
-                        report.criterion_overall[isomme],
-                    ] for isomme in report.isomme_list
-                }),
+                name="Rating Table",
+                title="Rating",
+                spec=rating_table_spec_for(self).with_criteria(
+                    lambda report: {
+                        isomme: [
+                            report.criterion_overall[isomme].criterion_head,
+                            report.criterion_overall[isomme].criterion_neck,
+                            report.criterion_overall[isomme].criterion_chest_abdomen,
+                            report.criterion_overall[
+                                isomme
+                            ].criterion_pelvis_lumbar_modifier,
+                            report.criterion_overall[isomme],
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
             ),
             CriterionTablePage(
                 self,
-                name="Values Table", title="Values",
-                spec=values_table_spec_for(self).with_criteria(lambda report: {
-                    isomme: [
-                        report.criterion_overall[isomme].criterion_head.criterion_hic_15,
-                        report.criterion_overall[isomme].criterion_head.criterion_head_a3ms,
-                        report.criterion_overall[isomme].criterion_neck.criterion_upper_neck.criterion_tension_fz,
-                        report.criterion_overall[isomme].criterion_neck.criterion_upper_neck.criterion_lateral_flexion_mxoc,
-                        report.criterion_overall[isomme].criterion_neck.criterion_upper_neck.criterion_extension_myoc,
-                        report.criterion_overall[isomme].criterion_neck.criterion_lower_neck.criterion_tension_fz,
-                        report.criterion_overall[isomme].criterion_neck.criterion_lower_neck.criterion_lateral_flexion_mx,
-                        report.criterion_overall[isomme].criterion_neck.criterion_lower_neck.criterion_extension_my_base,
-                        report.criterion_overall[isomme].criterion_chest_abdomen.criterion_chest_lateral_compression,
-                        report.criterion_overall[isomme].criterion_chest_abdomen.criterion_abdomen_lateral_compression,
-                        report.criterion_overall[isomme].criterion_pelvis_lumbar_modifier.criterion_pubic_symphysis,
-                        report.criterion_overall[isomme].criterion_pelvis_lumbar_modifier.criterion_lumbar_fy,
-                        report.criterion_overall[isomme].criterion_pelvis_lumbar_modifier.criterion_lumbar_fz,
-                        report.criterion_overall[isomme].criterion_pelvis_lumbar_modifier.criterion_lumbar_mx,
-                    ] for isomme in report.isomme_list
-                }),
+                name="Values Table",
+                title="Values",
+                spec=values_table_spec_for(self).with_criteria(
+                    lambda report: {
+                        isomme: [
+                            report.criterion_overall[
+                                isomme
+                            ].criterion_head.criterion_hic_15,
+                            report.criterion_overall[
+                                isomme
+                            ].criterion_head.criterion_head_a3ms,
+                            report.criterion_overall[
+                                isomme
+                            ].criterion_neck.criterion_upper_neck.criterion_tension_fz,
+                            report.criterion_overall[
+                                isomme
+                            ].criterion_neck.criterion_upper_neck.criterion_lateral_flexion_mxoc,
+                            report.criterion_overall[
+                                isomme
+                            ].criterion_neck.criterion_upper_neck.criterion_extension_myoc,
+                            report.criterion_overall[
+                                isomme
+                            ].criterion_neck.criterion_lower_neck.criterion_tension_fz,
+                            report.criterion_overall[
+                                isomme
+                            ].criterion_neck.criterion_lower_neck.criterion_lateral_flexion_mx,
+                            report.criterion_overall[
+                                isomme
+                            ].criterion_neck.criterion_lower_neck.criterion_extension_my_base,
+                            report.criterion_overall[
+                                isomme
+                            ].criterion_chest_abdomen.criterion_chest_lateral_compression,
+                            report.criterion_overall[
+                                isomme
+                            ].criterion_chest_abdomen.criterion_abdomen_lateral_compression,
+                            report.criterion_overall[
+                                isomme
+                            ].criterion_pelvis_lumbar_modifier.criterion_pubic_symphysis,
+                            report.criterion_overall[
+                                isomme
+                            ].criterion_pelvis_lumbar_modifier.criterion_lumbar_fy,
+                            report.criterion_overall[
+                                isomme
+                            ].criterion_pelvis_lumbar_modifier.criterion_lumbar_fz,
+                            report.criterion_overall[
+                                isomme
+                            ].criterion_pelvis_lumbar_modifier.criterion_lumbar_mx,
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
             ),
             ChannelPlotPage(self, spec=side_head_acceleration_spec_for(self)),
             HICPage(
@@ -930,54 +999,83 @@ class EuroNCAP_Side_FarSide(Report[Overall]):
                     name="HIC15",
                     title="HIC15",
                     timespan=15,
-                ).with_position(
+                )
+                .with_position(
                     lambda report, isomme: report.criterion_overall[isomme].p
-                ).with_criterion(
-                    lambda report, isomme: report.criterion_overall[
-                        isomme
-                    ].criterion_head.criterion_hic_15
+                )
+                .with_criterion(
+                    lambda report, isomme: (
+                        report.criterion_overall[isomme].criterion_head.criterion_hic_15
+                    )
                 ),
             ),
             ChannelPlotPage(
                 self,
                 spec=channel_plot_spec_for(
-                    self, name="Head DAMAGE", title="Head DAMAGE", nrows=2, ncols=2, sharey=True
-                ).with_channels(lambda report: {
-                    isomme: [[channel] for channel in report.criterion_overall[isomme].criterion_head.criterion_damage.damage_channels()[:4]]
-                    for isomme in report.isomme_list
-                }),
+                    self,
+                    name="Head DAMAGE",
+                    title="Head DAMAGE",
+                    nrows=2,
+                    ncols=2,
+                    sharey=True,
+                ).with_channels(
+                    lambda report: {
+                        isomme: [
+                            [channel]
+                            for channel in report.criterion_overall[
+                                isomme
+                            ].criterion_head.criterion_damage.damage_channels()[:4]
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
             ),
             ChannelPlotPage(
                 self,
-                spec=channel_plot_spec_for(self, name="Upper Neck", title="Upper Neck", nrows=2, ncols=2).with_channels(lambda report: {
-                    isomme: [
-                        [f"?{report.criterion_overall[isomme].p}NECKUP00??FOZA"],
-                        [f"?{report.criterion_overall[isomme].p}TMONUP00??MOXB"],
-                        [f"?{report.criterion_overall[isomme].p}TMONUP00??MOYB"],
-                    ] for isomme in report.isomme_list
-                }),
+                spec=channel_plot_spec_for(
+                    self, name="Upper Neck", title="Upper Neck", nrows=2, ncols=2
+                ).with_channels(
+                    lambda report: {
+                        isomme: [
+                            [f"?{report.criterion_overall[isomme].p}NECKUP00??FOZA"],
+                            [f"?{report.criterion_overall[isomme].p}TMONUP00??MOXB"],
+                            [f"?{report.criterion_overall[isomme].p}TMONUP00??MOYB"],
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
             ),
             ChannelPlotPage(
                 self,
-                spec=channel_plot_spec_for(self, name="Lower Neck", title="Lower Neck", nrows=2, ncols=2).with_channels(lambda report: {
-                    isomme: [
-                        [f"?{report.criterion_overall[isomme].p}NECKLO00??FOZA"],
-                        [f"?{report.criterion_overall[isomme].p}TMONLO00??MOXB"],
-                        [f"?{report.criterion_overall[isomme].p}TMONLO00??MOYB"],
-                    ] for isomme in report.isomme_list
-                }),
+                spec=channel_plot_spec_for(
+                    self, name="Lower Neck", title="Lower Neck", nrows=2, ncols=2
+                ).with_channels(
+                    lambda report: {
+                        isomme: [
+                            [f"?{report.criterion_overall[isomme].p}NECKLO00??FOZA"],
+                            [f"?{report.criterion_overall[isomme].p}TMONLO00??MOXB"],
+                            [f"?{report.criterion_overall[isomme].p}TMONLO00??MOYB"],
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
             ),
             ChannelPlotPage(self, spec=side_chest_lateral_compression_spec_for(self)),
             ChannelPlotPage(self, spec=side_abdomen_lateral_compression_spec_for(self)),
             ChannelPlotPage(
                 self,
-                spec=channel_plot_spec_for(self, name="Lumbar Load", title="Lumbar Load", nrows=2, ncols=2).with_channels(lambda report: {
-                    isomme: [
-                        [f"?{report.criterion_overall[isomme].p}LUSP0000??FOYB"],
-                        [f"?{report.criterion_overall[isomme].p}LUSP0000??FOZB"],
-                        [f"?{report.criterion_overall[isomme].p}LUSP0000??MOXB"],
-                    ] for isomme in report.isomme_list
-                }),
+                spec=channel_plot_spec_for(
+                    self, name="Lumbar Load", title="Lumbar Load", nrows=2, ncols=2
+                ).with_channels(
+                    lambda report: {
+                        isomme: [
+                            [f"?{report.criterion_overall[isomme].p}LUSP0000??FOYB"],
+                            [f"?{report.criterion_overall[isomme].p}LUSP0000??FOZB"],
+                            [f"?{report.criterion_overall[isomme].p}LUSP0000??MOXB"],
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
             ),
             ChannelPlotPage(self, spec=side_pubic_symphysis_force_spec_for(self)),
         )

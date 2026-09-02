@@ -1358,9 +1358,7 @@ class Overall(Criterion):
                     value = np.min(channel.get_data())
                     # Rescale the 4 pt. block onto the rear passenger's 2 pt. budget.
                     evaluation = self.limits.evaluate(channel)
-                    rating = (
-                        evaluation.get_limit_min_rating() * self.max_rating / 4
-                    )
+                    rating = evaluation.get_limit_min_rating() * self.max_rating / 4
                     color = evaluation.get_limit_min_color()
                     return CriterionResult(
                         channel=channel,
@@ -1393,9 +1391,7 @@ class Overall(Criterion):
                     value = np.max(channel.get_data())
                     # Rescale the 4 pt. block onto the rear passenger's 1 pt. budget.
                     evaluation = self.limits.evaluate(channel)
-                    rating = (
-                        evaluation.get_limit_min_rating() * self.max_rating / 4
-                    )
+                    rating = evaluation.get_limit_min_rating() * self.max_rating / 4
                     color = evaluation.get_limit_min_color()
                     return CriterionResult(
                         channel=channel,
@@ -1433,9 +1429,7 @@ class Overall(Criterion):
                     value = channel.get_data()[np.argmax(np.abs(channel.get_data()))]
                     # Rescale the 4 pt. block onto the rear passenger's 1 pt. budget.
                     evaluation = self.limits.evaluate(channel)
-                    rating = (
-                        evaluation.get_limit_min_rating() * self.max_rating / 4
-                    )
+                    rating = evaluation.get_limit_min_rating() * self.max_rating / 4
                     color = evaluation.get_limit_min_color()
                     return CriterionResult(
                         channel=channel,
@@ -1568,16 +1562,36 @@ class EuroNCAP_Frontal_50kmh(Report[Overall]):
                 ).with_criteria(
                     lambda report: {
                         isomme: [
-                            report.overall(isomme).criterion_driver.criterion_head.criterion_hic_15,
-                            report.overall(isomme).criterion_driver.criterion_head.criterion_head_a3ms,
-                            report.overall(isomme).criterion_driver.criterion_neck.criterion_my_extension,
-                            report.overall(isomme).criterion_driver.criterion_neck.criterion_fz_tension,
-                            report.overall(isomme).criterion_driver.criterion_neck.criterion_fx_shear,
-                            report.overall(isomme).criterion_driver.criterion_chest.criterion_shoulder_belt_load,
-                            report.overall(isomme).criterion_driver.criterion_chest.criterion_chest_deflection,
-                            report.overall(isomme).criterion_driver.criterion_chest.criterion_chest_vc,
-                            report.overall(isomme).criterion_driver.criterion_femur.criterion_femur_axial_force.criterion_femur_axial_force_left,
-                            report.overall(isomme).criterion_driver.criterion_femur.criterion_femur_axial_force.criterion_femur_axial_force_right,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_head.criterion_hic_15,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_head.criterion_head_a3ms,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_neck.criterion_my_extension,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_neck.criterion_fz_tension,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_neck.criterion_fx_shear,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_chest.criterion_shoulder_belt_load,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_chest.criterion_chest_deflection,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_chest.criterion_chest_vc,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_femur.criterion_femur_axial_force.criterion_femur_axial_force_left,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_femur.criterion_femur_axial_force.criterion_femur_axial_force_right,
                         ]
                         for isomme in report.isomme_list
                     }
@@ -1607,16 +1621,36 @@ class EuroNCAP_Frontal_50kmh(Report[Overall]):
                 spec=values_table_spec_for(self).with_criteria(
                     lambda report: {
                         isomme: [
-                            report.overall(isomme).criterion_driver.criterion_head.criterion_hic_15,
-                            report.overall(isomme).criterion_driver.criterion_head.criterion_head_a3ms,
-                            report.overall(isomme).criterion_driver.criterion_neck.criterion_my_extension,
-                            report.overall(isomme).criterion_driver.criterion_neck.criterion_fz_tension,
-                            report.overall(isomme).criterion_driver.criterion_neck.criterion_fx_shear,
-                            report.overall(isomme).criterion_driver.criterion_chest.criterion_shoulder_belt_load,
-                            report.overall(isomme).criterion_driver.criterion_chest.criterion_chest_deflection,
-                            report.overall(isomme).criterion_driver.criterion_chest.criterion_chest_vc,
-                            report.overall(isomme).criterion_driver.criterion_femur.criterion_femur_axial_force.criterion_femur_axial_force_left,
-                            report.overall(isomme).criterion_driver.criterion_femur.criterion_femur_axial_force.criterion_femur_axial_force_right,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_head.criterion_hic_15,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_head.criterion_head_a3ms,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_neck.criterion_my_extension,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_neck.criterion_fz_tension,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_neck.criterion_fx_shear,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_chest.criterion_shoulder_belt_load,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_chest.criterion_chest_deflection,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_chest.criterion_chest_vc,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_femur.criterion_femur_axial_force.criterion_femur_axial_force_left,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_femur.criterion_femur_axial_force.criterion_femur_axial_force_right,
                         ]
                         for isomme in report.isomme_list
                     }
@@ -1627,9 +1661,11 @@ class EuroNCAP_Frontal_50kmh(Report[Overall]):
             HICPage(
                 self,
                 spec=driver_hic_15_spec_for(self).with_criterion(
-                    lambda report, isomme: report.overall(
-                        isomme
-                    ).criterion_driver.criterion_head.criterion_hic_15
+                    lambda report, isomme: (
+                        report.overall(
+                            isomme
+                        ).criterion_driver.criterion_head.criterion_hic_15
+                    )
                 ),
             ),
             ChannelPlotPage(self, spec=driver_neck_load_spec_for(self)),
@@ -1679,21 +1715,43 @@ class EuroNCAP_Frontal_50kmh(Report[Overall]):
                     self,
                     name="Front Passenger Result Values Chart",
                     title="Front Passenger Result",
-                ).with_criteria(lambda report: {
-                    isomme: [
-                        report.overall(isomme).criterion_front_passenger.criterion_head.criterion_hic_15,
-                        report.overall(isomme).criterion_front_passenger.criterion_head.criterion_head_a3ms,
-                        report.overall(isomme).criterion_front_passenger.criterion_neck.criterion_my_extension,
-                        report.overall(isomme).criterion_front_passenger.criterion_neck.criterion_fz_tension,
-                        report.overall(isomme).criterion_front_passenger.criterion_neck.criterion_fx_shear,
-                        report.overall(isomme).criterion_front_passenger.criterion_chest.criterion_shoulder_belt_load,
-                        report.overall(isomme).criterion_front_passenger.criterion_chest.criterion_chest_deflection,
-                        report.overall(isomme).criterion_front_passenger.criterion_chest.criterion_chest_vc,
-                        report.overall(isomme).criterion_front_passenger.criterion_femur.criterion_femur_axial_force.criterion_femur_axial_force_left,
-                        report.overall(isomme).criterion_front_passenger.criterion_femur.criterion_femur_axial_force.criterion_femur_axial_force_right,
-                    ]
-                    for isomme in report.isomme_list
-                }),
+                ).with_criteria(
+                    lambda report: {
+                        isomme: [
+                            report.overall(
+                                isomme
+                            ).criterion_front_passenger.criterion_head.criterion_hic_15,
+                            report.overall(
+                                isomme
+                            ).criterion_front_passenger.criterion_head.criterion_head_a3ms,
+                            report.overall(
+                                isomme
+                            ).criterion_front_passenger.criterion_neck.criterion_my_extension,
+                            report.overall(
+                                isomme
+                            ).criterion_front_passenger.criterion_neck.criterion_fz_tension,
+                            report.overall(
+                                isomme
+                            ).criterion_front_passenger.criterion_neck.criterion_fx_shear,
+                            report.overall(
+                                isomme
+                            ).criterion_front_passenger.criterion_chest.criterion_shoulder_belt_load,
+                            report.overall(
+                                isomme
+                            ).criterion_front_passenger.criterion_chest.criterion_chest_deflection,
+                            report.overall(
+                                isomme
+                            ).criterion_front_passenger.criterion_chest.criterion_chest_vc,
+                            report.overall(
+                                isomme
+                            ).criterion_front_passenger.criterion_femur.criterion_femur_axial_force.criterion_femur_axial_force_left,
+                            report.overall(
+                                isomme
+                            ).criterion_front_passenger.criterion_femur.criterion_femur_axial_force.criterion_femur_axial_force_right,
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
             ),
             CriterionTablePage(
                 self,
@@ -1702,10 +1760,18 @@ class EuroNCAP_Frontal_50kmh(Report[Overall]):
                 spec=rating_table_spec_for(self).with_criteria(
                     lambda report: {
                         isomme: [
-                            report.overall(isomme).criterion_front_passenger.criterion_head,
-                            report.overall(isomme).criterion_front_passenger.criterion_neck,
-                            report.overall(isomme).criterion_front_passenger.criterion_chest,
-                            report.overall(isomme).criterion_front_passenger.criterion_femur,
+                            report.overall(
+                                isomme
+                            ).criterion_front_passenger.criterion_head,
+                            report.overall(
+                                isomme
+                            ).criterion_front_passenger.criterion_neck,
+                            report.overall(
+                                isomme
+                            ).criterion_front_passenger.criterion_chest,
+                            report.overall(
+                                isomme
+                            ).criterion_front_passenger.criterion_femur,
                             report.overall(isomme).criterion_front_passenger,
                         ]
                         for isomme in report.isomme_list
@@ -1719,16 +1785,36 @@ class EuroNCAP_Frontal_50kmh(Report[Overall]):
                 spec=values_table_spec_for(self).with_criteria(
                     lambda report: {
                         isomme: [
-                            report.overall(isomme).criterion_front_passenger.criterion_head.criterion_hic_15,
-                            report.overall(isomme).criterion_front_passenger.criterion_head.criterion_head_a3ms,
-                            report.overall(isomme).criterion_front_passenger.criterion_neck.criterion_my_extension,
-                            report.overall(isomme).criterion_front_passenger.criterion_neck.criterion_fz_tension,
-                            report.overall(isomme).criterion_front_passenger.criterion_neck.criterion_fx_shear,
-                            report.overall(isomme).criterion_front_passenger.criterion_chest.criterion_shoulder_belt_load,
-                            report.overall(isomme).criterion_front_passenger.criterion_chest.criterion_chest_deflection,
-                            report.overall(isomme).criterion_front_passenger.criterion_chest.criterion_chest_vc,
-                            report.overall(isomme).criterion_front_passenger.criterion_femur.criterion_femur_axial_force.criterion_femur_axial_force_left,
-                            report.overall(isomme).criterion_front_passenger.criterion_femur.criterion_femur_axial_force.criterion_femur_axial_force_right,
+                            report.overall(
+                                isomme
+                            ).criterion_front_passenger.criterion_head.criterion_hic_15,
+                            report.overall(
+                                isomme
+                            ).criterion_front_passenger.criterion_head.criterion_head_a3ms,
+                            report.overall(
+                                isomme
+                            ).criterion_front_passenger.criterion_neck.criterion_my_extension,
+                            report.overall(
+                                isomme
+                            ).criterion_front_passenger.criterion_neck.criterion_fz_tension,
+                            report.overall(
+                                isomme
+                            ).criterion_front_passenger.criterion_neck.criterion_fx_shear,
+                            report.overall(
+                                isomme
+                            ).criterion_front_passenger.criterion_chest.criterion_shoulder_belt_load,
+                            report.overall(
+                                isomme
+                            ).criterion_front_passenger.criterion_chest.criterion_chest_deflection,
+                            report.overall(
+                                isomme
+                            ).criterion_front_passenger.criterion_chest.criterion_chest_vc,
+                            report.overall(
+                                isomme
+                            ).criterion_front_passenger.criterion_femur.criterion_femur_axial_force.criterion_femur_axial_force_left,
+                            report.overall(
+                                isomme
+                            ).criterion_front_passenger.criterion_femur.criterion_femur_axial_force.criterion_femur_axial_force_right,
                         ]
                         for isomme in report.isomme_list
                     }
@@ -1742,17 +1828,31 @@ class EuroNCAP_Frontal_50kmh(Report[Overall]):
                     title="Front Passenger Belt",
                     nrows=3,
                     ncols=2,
-                ).with_channels(lambda report: {
-                    isomme: [
-                        [f"?{report.overall(isomme).p_front_passenger}SEBE000[30]B1FO[X0]D"],
-                        [f"?{report.overall(isomme).p_front_passenger}SEBE000[30]B2FO[X0]D"],
-                        [f"?{report.overall(isomme).p_front_passenger}SEBE000[30]B3FO[X0]D"],
-                        [f"?{report.overall(isomme).p_front_passenger}SEBE000[30]B4FO[X0]D"],
-                        [f"?{report.overall(isomme).p_front_passenger}SEBE000[30]B5FO[X0]D"],
-                        [f"?{report.overall(isomme).p_front_passenger}SEBE000[30]B6FO[X0]D"],
-                    ]
-                    for isomme in report.isomme_list
-                }),
+                ).with_channels(
+                    lambda report: {
+                        isomme: [
+                            [
+                                f"?{report.overall(isomme).p_front_passenger}SEBE000[30]B1FO[X0]D"
+                            ],
+                            [
+                                f"?{report.overall(isomme).p_front_passenger}SEBE000[30]B2FO[X0]D"
+                            ],
+                            [
+                                f"?{report.overall(isomme).p_front_passenger}SEBE000[30]B3FO[X0]D"
+                            ],
+                            [
+                                f"?{report.overall(isomme).p_front_passenger}SEBE000[30]B4FO[X0]D"
+                            ],
+                            [
+                                f"?{report.overall(isomme).p_front_passenger}SEBE000[30]B5FO[X0]D"
+                            ],
+                            [
+                                f"?{report.overall(isomme).p_front_passenger}SEBE000[30]B6FO[X0]D"
+                            ],
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
             ),
             ChannelPlotPage(
                 self,
@@ -1763,15 +1863,25 @@ class EuroNCAP_Frontal_50kmh(Report[Overall]):
                     nrows=2,
                     ncols=2,
                     sharey=True,
-                ).with_channels(lambda report: {
-                    isomme: [
-                        [f"?{report.overall(isomme).p_front_passenger}HEAD??????ACXA"],
-                        [f"?{report.overall(isomme).p_front_passenger}HEAD??????ACYA"],
-                        [f"?{report.overall(isomme).p_front_passenger}HEAD??????ACZA"],
-                        [f"?{report.overall(isomme).p_front_passenger}HEAD??????ACRA"],
-                    ]
-                    for isomme in report.isomme_list
-                }),
+                ).with_channels(
+                    lambda report: {
+                        isomme: [
+                            [
+                                f"?{report.overall(isomme).p_front_passenger}HEAD??????ACXA"
+                            ],
+                            [
+                                f"?{report.overall(isomme).p_front_passenger}HEAD??????ACYA"
+                            ],
+                            [
+                                f"?{report.overall(isomme).p_front_passenger}HEAD??????ACZA"
+                            ],
+                            [
+                                f"?{report.overall(isomme).p_front_passenger}HEAD??????ACRA"
+                            ],
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
             ),
             HICPage(
                 self,
@@ -1780,14 +1890,16 @@ class EuroNCAP_Frontal_50kmh(Report[Overall]):
                     name="Front Passenger HIC15",
                     title="Front Passenger HIC15",
                     timespan=15,
-                ).with_position(
-                    lambda report, isomme: report.overall(
-                        isomme
-                    ).p_front_passenger
-                ).with_criterion(
-                    lambda report, isomme: report.overall(
-                        isomme
-                    ).criterion_front_passenger.criterion_head.criterion_hic_15
+                )
+                .with_position(
+                    lambda report, isomme: report.overall(isomme).p_front_passenger
+                )
+                .with_criterion(
+                    lambda report, isomme: (
+                        report.overall(
+                            isomme
+                        ).criterion_front_passenger.criterion_head.criterion_hic_15
+                    )
                 ),
             ),
             ChannelPlotPage(
@@ -1798,14 +1910,22 @@ class EuroNCAP_Frontal_50kmh(Report[Overall]):
                     title="Front Passenger Neck Load",
                     nrows=2,
                     ncols=2,
-                ).with_channels(lambda report: {
-                    isomme: [
-                        [f"?{report.overall(isomme).p_front_passenger}NECKUP00??MOYB"],
-                        [f"?{report.overall(isomme).p_front_passenger}NECKUP00??FOZA"],
-                        [f"?{report.overall(isomme).p_front_passenger}NECKUP00??FOXA"],
-                    ]
-                    for isomme in report.isomme_list
-                }),
+                ).with_channels(
+                    lambda report: {
+                        isomme: [
+                            [
+                                f"?{report.overall(isomme).p_front_passenger}NECKUP00??MOYB"
+                            ],
+                            [
+                                f"?{report.overall(isomme).p_front_passenger}NECKUP00??FOZA"
+                            ],
+                            [
+                                f"?{report.overall(isomme).p_front_passenger}NECKUP00??FOXA"
+                            ],
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
             ),
             ChannelPlotPage(
                 self,
@@ -1816,15 +1936,25 @@ class EuroNCAP_Frontal_50kmh(Report[Overall]):
                     nrows=2,
                     ncols=2,
                     sharey=True,
-                ).with_channels(lambda report: {
-                    isomme: [
-                        [f"?{report.overall(isomme).p_front_passenger}NIJCIPCF??00YB"],
-                        [f"?{report.overall(isomme).p_front_passenger}NIJCIPCE??00YB"],
-                        [f"?{report.overall(isomme).p_front_passenger}NIJCIPTF??00YB"],
-                        [f"?{report.overall(isomme).p_front_passenger}NIJCIPTE??00YB"],
-                    ]
-                    for isomme in report.isomme_list
-                }),
+                ).with_channels(
+                    lambda report: {
+                        isomme: [
+                            [
+                                f"?{report.overall(isomme).p_front_passenger}NIJCIPCF??00YB"
+                            ],
+                            [
+                                f"?{report.overall(isomme).p_front_passenger}NIJCIPCE??00YB"
+                            ],
+                            [
+                                f"?{report.overall(isomme).p_front_passenger}NIJCIPTF??00YB"
+                            ],
+                            [
+                                f"?{report.overall(isomme).p_front_passenger}NIJCIPTE??00YB"
+                            ],
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
             ),
             ChannelPlotPage(
                 self,
@@ -1855,13 +1985,19 @@ class EuroNCAP_Frontal_50kmh(Report[Overall]):
                     nrows=1,
                     ncols=2,
                     sharey=True,
-                ).with_channels(lambda report: {
-                    isomme: [
-                        [f"?{report.overall(isomme).p_front_passenger}FEMRLE00??FOZB"],
-                        [f"?{report.overall(isomme).p_front_passenger}FEMRRI00??FOZB"],
-                    ]
-                    for isomme in report.isomme_list
-                }),
+                ).with_channels(
+                    lambda report: {
+                        isomme: [
+                            [
+                                f"?{report.overall(isomme).p_front_passenger}FEMRLE00??FOZB"
+                            ],
+                            [
+                                f"?{report.overall(isomme).p_front_passenger}FEMRRI00??FOZB"
+                            ],
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
             ),
             CriterionValuesChartPage(
                 self,
@@ -1869,21 +2005,43 @@ class EuroNCAP_Frontal_50kmh(Report[Overall]):
                     self,
                     name="Rear Passenger Result Values Chart",
                     title="Rear Passenger Result",
-                ).with_criteria(lambda report: {
-                    isomme: [
-                        report.overall(isomme).criterion_rear_passenger.criterion_head.criterion_hic_15,
-                        report.overall(isomme).criterion_rear_passenger.criterion_head.criterion_head_a3ms,
-                        report.overall(isomme).criterion_rear_passenger.criterion_neck.criterion_my_extension,
-                        report.overall(isomme).criterion_rear_passenger.criterion_neck.criterion_fz_tension,
-                        report.overall(isomme).criterion_rear_passenger.criterion_neck.criterion_fx_shear,
-                        report.overall(isomme).criterion_rear_passenger.criterion_chest.criterion_shoulder_belt_load,
-                        report.overall(isomme).criterion_rear_passenger.criterion_chest.criterion_chest_deflection,
-                        report.overall(isomme).criterion_rear_passenger.criterion_chest.criterion_chest_vc,
-                        report.overall(isomme).criterion_rear_passenger.criterion_femur.criterion_femur_axial_force.criterion_femur_axial_force_left,
-                        report.overall(isomme).criterion_rear_passenger.criterion_femur.criterion_femur_axial_force.criterion_femur_axial_force_right,
-                    ]
-                    for isomme in report.isomme_list
-                }),
+                ).with_criteria(
+                    lambda report: {
+                        isomme: [
+                            report.overall(
+                                isomme
+                            ).criterion_rear_passenger.criterion_head.criterion_hic_15,
+                            report.overall(
+                                isomme
+                            ).criterion_rear_passenger.criterion_head.criterion_head_a3ms,
+                            report.overall(
+                                isomme
+                            ).criterion_rear_passenger.criterion_neck.criterion_my_extension,
+                            report.overall(
+                                isomme
+                            ).criterion_rear_passenger.criterion_neck.criterion_fz_tension,
+                            report.overall(
+                                isomme
+                            ).criterion_rear_passenger.criterion_neck.criterion_fx_shear,
+                            report.overall(
+                                isomme
+                            ).criterion_rear_passenger.criterion_chest.criterion_shoulder_belt_load,
+                            report.overall(
+                                isomme
+                            ).criterion_rear_passenger.criterion_chest.criterion_chest_deflection,
+                            report.overall(
+                                isomme
+                            ).criterion_rear_passenger.criterion_chest.criterion_chest_vc,
+                            report.overall(
+                                isomme
+                            ).criterion_rear_passenger.criterion_femur.criterion_femur_axial_force.criterion_femur_axial_force_left,
+                            report.overall(
+                                isomme
+                            ).criterion_rear_passenger.criterion_femur.criterion_femur_axial_force.criterion_femur_axial_force_right,
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
             ),
             CriterionTablePage(
                 self,
@@ -1892,10 +2050,18 @@ class EuroNCAP_Frontal_50kmh(Report[Overall]):
                 spec=rating_table_spec_for(self).with_criteria(
                     lambda report: {
                         isomme: [
-                            report.overall(isomme).criterion_rear_passenger.criterion_head,
-                            report.overall(isomme).criterion_rear_passenger.criterion_neck,
-                            report.overall(isomme).criterion_rear_passenger.criterion_chest,
-                            report.overall(isomme).criterion_rear_passenger.criterion_femur,
+                            report.overall(
+                                isomme
+                            ).criterion_rear_passenger.criterion_head,
+                            report.overall(
+                                isomme
+                            ).criterion_rear_passenger.criterion_neck,
+                            report.overall(
+                                isomme
+                            ).criterion_rear_passenger.criterion_chest,
+                            report.overall(
+                                isomme
+                            ).criterion_rear_passenger.criterion_femur,
                             report.overall(isomme).criterion_rear_passenger,
                         ]
                         for isomme in report.isomme_list
@@ -1909,16 +2075,36 @@ class EuroNCAP_Frontal_50kmh(Report[Overall]):
                 spec=values_table_spec_for(self).with_criteria(
                     lambda report: {
                         isomme: [
-                            report.overall(isomme).criterion_rear_passenger.criterion_head.criterion_hic_15,
-                            report.overall(isomme).criterion_rear_passenger.criterion_head.criterion_head_a3ms,
-                            report.overall(isomme).criterion_rear_passenger.criterion_neck.criterion_my_extension,
-                            report.overall(isomme).criterion_rear_passenger.criterion_neck.criterion_fz_tension,
-                            report.overall(isomme).criterion_rear_passenger.criterion_neck.criterion_fx_shear,
-                            report.overall(isomme).criterion_rear_passenger.criterion_chest.criterion_shoulder_belt_load,
-                            report.overall(isomme).criterion_rear_passenger.criterion_chest.criterion_chest_deflection,
-                            report.overall(isomme).criterion_rear_passenger.criterion_chest.criterion_chest_vc,
-                            report.overall(isomme).criterion_rear_passenger.criterion_femur.criterion_femur_axial_force.criterion_femur_axial_force_left,
-                            report.overall(isomme).criterion_rear_passenger.criterion_femur.criterion_femur_axial_force.criterion_femur_axial_force_right,
+                            report.overall(
+                                isomme
+                            ).criterion_rear_passenger.criterion_head.criterion_hic_15,
+                            report.overall(
+                                isomme
+                            ).criterion_rear_passenger.criterion_head.criterion_head_a3ms,
+                            report.overall(
+                                isomme
+                            ).criterion_rear_passenger.criterion_neck.criterion_my_extension,
+                            report.overall(
+                                isomme
+                            ).criterion_rear_passenger.criterion_neck.criterion_fz_tension,
+                            report.overall(
+                                isomme
+                            ).criterion_rear_passenger.criterion_neck.criterion_fx_shear,
+                            report.overall(
+                                isomme
+                            ).criterion_rear_passenger.criterion_chest.criterion_shoulder_belt_load,
+                            report.overall(
+                                isomme
+                            ).criterion_rear_passenger.criterion_chest.criterion_chest_deflection,
+                            report.overall(
+                                isomme
+                            ).criterion_rear_passenger.criterion_chest.criterion_chest_vc,
+                            report.overall(
+                                isomme
+                            ).criterion_rear_passenger.criterion_femur.criterion_femur_axial_force.criterion_femur_axial_force_left,
+                            report.overall(
+                                isomme
+                            ).criterion_rear_passenger.criterion_femur.criterion_femur_axial_force.criterion_femur_axial_force_right,
                         ]
                         for isomme in report.isomme_list
                     }
@@ -1932,17 +2118,31 @@ class EuroNCAP_Frontal_50kmh(Report[Overall]):
                     title="Rear Passenger Belt",
                     nrows=3,
                     ncols=2,
-                ).with_channels(lambda report: {
-                    isomme: [
-                        [f"?{report.overall(isomme).p_rear_passenger}SEBE000[30]B1FO[X0]D"],
-                        [f"?{report.overall(isomme).p_rear_passenger}SEBE000[30]B2FO[X0]D"],
-                        [f"?{report.overall(isomme).p_rear_passenger}SEBE000[30]B3FO[X0]D"],
-                        [f"?{report.overall(isomme).p_rear_passenger}SEBE000[30]B4FO[X0]D"],
-                        [f"?{report.overall(isomme).p_rear_passenger}SEBE000[30]B5FO[X0]D"],
-                        [f"?{report.overall(isomme).p_rear_passenger}SEBE000[30]B6FO[X0]D"],
-                    ]
-                    for isomme in report.isomme_list
-                }),
+                ).with_channels(
+                    lambda report: {
+                        isomme: [
+                            [
+                                f"?{report.overall(isomme).p_rear_passenger}SEBE000[30]B1FO[X0]D"
+                            ],
+                            [
+                                f"?{report.overall(isomme).p_rear_passenger}SEBE000[30]B2FO[X0]D"
+                            ],
+                            [
+                                f"?{report.overall(isomme).p_rear_passenger}SEBE000[30]B3FO[X0]D"
+                            ],
+                            [
+                                f"?{report.overall(isomme).p_rear_passenger}SEBE000[30]B4FO[X0]D"
+                            ],
+                            [
+                                f"?{report.overall(isomme).p_rear_passenger}SEBE000[30]B5FO[X0]D"
+                            ],
+                            [
+                                f"?{report.overall(isomme).p_rear_passenger}SEBE000[30]B6FO[X0]D"
+                            ],
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
             ),
             ChannelPlotPage(
                 self,
@@ -1953,15 +2153,25 @@ class EuroNCAP_Frontal_50kmh(Report[Overall]):
                     nrows=2,
                     ncols=2,
                     sharey=True,
-                ).with_channels(lambda report: {
-                    isomme: [
-                        [f"?{report.overall(isomme).p_rear_passenger}HEAD??????ACXA"],
-                        [f"?{report.overall(isomme).p_rear_passenger}HEAD??????ACYA"],
-                        [f"?{report.overall(isomme).p_rear_passenger}HEAD??????ACZA"],
-                        [f"?{report.overall(isomme).p_rear_passenger}HEAD??????ACRA"],
-                    ]
-                    for isomme in report.isomme_list
-                }),
+                ).with_channels(
+                    lambda report: {
+                        isomme: [
+                            [
+                                f"?{report.overall(isomme).p_rear_passenger}HEAD??????ACXA"
+                            ],
+                            [
+                                f"?{report.overall(isomme).p_rear_passenger}HEAD??????ACYA"
+                            ],
+                            [
+                                f"?{report.overall(isomme).p_rear_passenger}HEAD??????ACZA"
+                            ],
+                            [
+                                f"?{report.overall(isomme).p_rear_passenger}HEAD??????ACRA"
+                            ],
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
             ),
             HICPage(
                 self,
@@ -1970,12 +2180,16 @@ class EuroNCAP_Frontal_50kmh(Report[Overall]):
                     name="Rear Passenger HIC15",
                     title="Rear Passenger HIC15",
                     timespan=15,
-                ).with_position(
+                )
+                .with_position(
                     lambda report, isomme: report.overall(isomme).p_rear_passenger
-                ).with_criterion(
-                    lambda report, isomme: report.overall(
-                        isomme
-                    ).criterion_rear_passenger.criterion_head.criterion_hic_15
+                )
+                .with_criterion(
+                    lambda report, isomme: (
+                        report.overall(
+                            isomme
+                        ).criterion_rear_passenger.criterion_head.criterion_hic_15
+                    )
                 ),
             ),
             ChannelPlotPage(
@@ -1986,14 +2200,22 @@ class EuroNCAP_Frontal_50kmh(Report[Overall]):
                     title="Rear Passenger Neck Load",
                     nrows=2,
                     ncols=2,
-                ).with_channels(lambda report: {
-                    isomme: [
-                        [f"?{report.overall(isomme).p_rear_passenger}NECKUP00??MOYB"],
-                        [f"?{report.overall(isomme).p_rear_passenger}NECKUP00??FOZA"],
-                        [f"?{report.overall(isomme).p_rear_passenger}NECKUP00??FOXA"],
-                    ]
-                    for isomme in report.isomme_list
-                }),
+                ).with_channels(
+                    lambda report: {
+                        isomme: [
+                            [
+                                f"?{report.overall(isomme).p_rear_passenger}NECKUP00??MOYB"
+                            ],
+                            [
+                                f"?{report.overall(isomme).p_rear_passenger}NECKUP00??FOZA"
+                            ],
+                            [
+                                f"?{report.overall(isomme).p_rear_passenger}NECKUP00??FOXA"
+                            ],
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
             ),
             ChannelPlotPage(
                 self,
@@ -2003,12 +2225,16 @@ class EuroNCAP_Frontal_50kmh(Report[Overall]):
                     title="Rear Passenger Chest Deflection",
                     nrows=1,
                     ncols=1,
-                ).with_channels(lambda report: {
-                    isomme: [
-                        [f"?{report.overall(isomme).p_rear_passenger}CHST000???DSXC"]
-                    ]
-                    for isomme in report.isomme_list
-                }),
+                ).with_channels(
+                    lambda report: {
+                        isomme: [
+                            [
+                                f"?{report.overall(isomme).p_rear_passenger}CHST000???DSXC"
+                            ]
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
             ),
             ChannelPlotPage(
                 self,
@@ -2019,13 +2245,19 @@ class EuroNCAP_Frontal_50kmh(Report[Overall]):
                     nrows=1,
                     ncols=2,
                     sharey=True,
-                ).with_channels(lambda report: {
-                    isomme: [
-                        [f"?{report.overall(isomme).p_rear_passenger}FEMRLE00??FOZB"],
-                        [f"?{report.overall(isomme).p_rear_passenger}FEMRRI00??FOZB"],
-                    ]
-                    for isomme in report.isomme_list
-                }),
+                ).with_channels(
+                    lambda report: {
+                        isomme: [
+                            [
+                                f"?{report.overall(isomme).p_rear_passenger}FEMRLE00??FOZB"
+                            ],
+                            [
+                                f"?{report.overall(isomme).p_rear_passenger}FEMRRI00??FOZB"
+                            ],
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
             ),
             OLCPage(self),
         )

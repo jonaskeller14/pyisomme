@@ -30,10 +30,7 @@ _SIDE_HEAD_ACCELERATION = ChannelPlotSpec[SideReport](
     name="Head Acceleration",
     title="Head Acceleration",
     channels=lambda report: {
-        isomme: [
-            [f"?{report.overall(isomme).p}HEAD??????AC{axis}A"]
-            for axis in "XYZR"
-        ]
+        isomme: [[f"?{report.overall(isomme).p}HEAD??????AC{axis}A"] for axis in "XYZR"]
         for isomme in report.isomme_list
     },
     nrows=2,

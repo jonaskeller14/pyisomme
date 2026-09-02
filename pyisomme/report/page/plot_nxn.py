@@ -26,7 +26,9 @@ class Page_Plot_nxn(Page_Figure):
     limits: LimitSet | dict[Isomme, LimitSet] | None = None
 
     def __init__(
-        self, report: Report[Any], limits: LimitSet | dict[Isomme, LimitSet] | None = None
+        self,
+        report: Report[Any],
+        limits: LimitSet | dict[Isomme, LimitSet] | None = None,
     ) -> None:
         super().__init__(report)
         if self.title is None:

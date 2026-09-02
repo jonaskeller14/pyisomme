@@ -607,52 +607,97 @@ class UN_Frontal_56kmh_ODB_R94(Report[Overall]):
             ReportStatusPage(self, spec=report_status_spec_for(self)),
             ManualInputsPage(self, spec=manual_inputs_spec_for(self)),
             CriterionTablePage(
-                self, name="Rating", title="Rating",
-                spec=rating_table_spec_for(self).with_criteria(lambda report: {
-                    isomme: [
-                        report.overall(isomme).criterion_driver,
-                        report.overall(isomme).criterion_passenger,
-                        report.overall(isomme),
-                    ]
-                    for isomme in report.isomme_list
-                }),
+                self,
+                name="Rating",
+                title="Rating",
+                spec=rating_table_spec_for(self).with_criteria(
+                    lambda report: {
+                        isomme: [
+                            report.overall(isomme).criterion_driver,
+                            report.overall(isomme).criterion_passenger,
+                            report.overall(isomme),
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
             ),
-            CriterionValuesChartPage(self, spec=criterion_values_chart_spec_for(
-                self, name="Driver Result Values Chart", title="Driver Result"
-            ).with_criteria(lambda report: {
-                isomme: [
-                        report.overall(isomme).criterion_driver.criterion_hpc36,
-                        report.overall(isomme).criterion_driver.criterion_head_a3ms,
-                        report.overall(isomme).criterion_driver.criterion_neck_fz_tension,
-                        report.overall(isomme).criterion_driver.criterion_neck_fx_shear,
-                        report.overall(isomme).criterion_driver.criterion_neck_my_extension,
-                        report.overall(isomme).criterion_driver.criterion_chest_deflection,
-                        report.overall(isomme).criterion_driver.criterion_chest_vc,
-                        report.overall(isomme).criterion_driver.criterion_femur_compression,
-                        report.overall(isomme).criterion_driver.criterion_tibia_compression,
-                        report.overall(isomme).criterion_driver.criterion_tibia_index,
-                        report.overall(isomme).criterion_driver.criterion_knee_slider_compression,
-                ]
-                for isomme in report.isomme_list
-            })),
+            CriterionValuesChartPage(
+                self,
+                spec=criterion_values_chart_spec_for(
+                    self, name="Driver Result Values Chart", title="Driver Result"
+                ).with_criteria(
+                    lambda report: {
+                        isomme: [
+                            report.overall(isomme).criterion_driver.criterion_hpc36,
+                            report.overall(isomme).criterion_driver.criterion_head_a3ms,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_neck_fz_tension,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_neck_fx_shear,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_neck_my_extension,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_chest_deflection,
+                            report.overall(isomme).criterion_driver.criterion_chest_vc,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_femur_compression,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_tibia_compression,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_tibia_index,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_knee_slider_compression,
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
+            ),
             CriterionTablePage(
-                self, name="Driver Values Table", title="Driver Values",
-                spec=values_table_spec_for(self).with_criteria(lambda report: {
-                    isomme: [
-                        report.overall(isomme).criterion_driver.criterion_hpc36,
-                        report.overall(isomme).criterion_driver.criterion_head_a3ms,
-                        report.overall(isomme).criterion_driver.criterion_neck_fz_tension,
-                        report.overall(isomme).criterion_driver.criterion_neck_fx_shear,
-                        report.overall(isomme).criterion_driver.criterion_neck_my_extension,
-                        report.overall(isomme).criterion_driver.criterion_chest_deflection,
-                        report.overall(isomme).criterion_driver.criterion_chest_vc,
-                        report.overall(isomme).criterion_driver.criterion_femur_compression,
-                        report.overall(isomme).criterion_driver.criterion_tibia_compression,
-                        report.overall(isomme).criterion_driver.criterion_tibia_index,
-                        report.overall(isomme).criterion_driver.criterion_knee_slider_compression,
-                    ]
-                    for isomme in report.isomme_list
-                }),
+                self,
+                name="Driver Values Table",
+                title="Driver Values",
+                spec=values_table_spec_for(self).with_criteria(
+                    lambda report: {
+                        isomme: [
+                            report.overall(isomme).criterion_driver.criterion_hpc36,
+                            report.overall(isomme).criterion_driver.criterion_head_a3ms,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_neck_fz_tension,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_neck_fx_shear,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_neck_my_extension,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_chest_deflection,
+                            report.overall(isomme).criterion_driver.criterion_chest_vc,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_femur_compression,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_tibia_compression,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_tibia_index,
+                            report.overall(
+                                isomme
+                            ).criterion_driver.criterion_knee_slider_compression,
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
             ),
             ChannelPlotPage(self, spec=driver_head_acceleration_spec_for(self)),
             HICPage(
@@ -662,27 +707,32 @@ class UN_Frontal_56kmh_ODB_R94(Report[Overall]):
                     name="Driver HPC36",
                     title="Driver HPC36",
                     timespan=36,
-                ).with_position(
-                    lambda report, isomme: report.overall(isomme).p_driver
-                ).with_criterion(
-                    lambda report, isomme: report.overall(
-                        isomme
-                    ).criterion_driver.criterion_hpc36
+                )
+                .with_position(lambda report, isomme: report.overall(isomme).p_driver)
+                .with_criterion(
+                    lambda report, isomme: (
+                        report.overall(isomme).criterion_driver.criterion_hpc36
+                    )
                 ),
             ),
             ChannelPlotPage(self, spec=driver_neck_load_spec_for(self)),
             ChannelPlotPage(
                 self,
                 spec=channel_plot_spec_for(
-                    self, name="Driver Chest Deflection", title="Driver Chest Deflection",
-                    nrows=1, ncols=2,
-                ).with_channels(lambda report: {
-                    isomme: [
-                        [f"?{report.overall(isomme).p_driver}CHST000???DSXC"],
-                        [f"?{report.overall(isomme).p_driver}VCCR000???VEXC"],
-                    ]
-                    for isomme in report.isomme_list
-                }),
+                    self,
+                    name="Driver Chest Deflection",
+                    title="Driver Chest Deflection",
+                    nrows=1,
+                    ncols=2,
+                ).with_channels(
+                    lambda report: {
+                        isomme: [
+                            [f"?{report.overall(isomme).p_driver}CHST000???DSXC"],
+                            [f"?{report.overall(isomme).p_driver}VCCR000???VEXC"],
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
             ),
             ChannelPlotPage(self, spec=driver_femur_axial_force_spec_for(self)),
             ChannelPlotPage(
@@ -694,13 +744,15 @@ class UN_Frontal_56kmh_ODB_R94(Report[Overall]):
                     nrows=1,
                     ncols=2,
                     sharey=True,
-                ).with_channels(lambda report: {
-                    isomme: [
-                        [f"?{report.overall(isomme).p_driver}KNSLLE00??DSXC"],
-                        [f"?{report.overall(isomme).p_driver}KNSLRI00??DSXC"],
-                    ]
-                    for isomme in report.isomme_list
-                }),
+                ).with_channels(
+                    lambda report: {
+                        isomme: [
+                            [f"?{report.overall(isomme).p_driver}KNSLLE00??DSXC"],
+                            [f"?{report.overall(isomme).p_driver}KNSLRI00??DSXC"],
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
             ),
             ChannelPlotPage(
                 self,
@@ -711,15 +763,17 @@ class UN_Frontal_56kmh_ODB_R94(Report[Overall]):
                     nrows=2,
                     ncols=2,
                     sharey=True,
-                ).with_channels(lambda report: {
-                    isomme: [
-                        [f"?{report.overall(isomme).p_driver}TIBILEUP??FOZB"],
-                        [f"?{report.overall(isomme).p_driver}TIBIRIUP??FOZB"],
-                        [f"?{report.overall(isomme).p_driver}TIBILELO??FOZB"],
-                        [f"?{report.overall(isomme).p_driver}TIBIRILO??FOZB"],
-                    ]
-                    for isomme in report.isomme_list
-                }),
+                ).with_channels(
+                    lambda report: {
+                        isomme: [
+                            [f"?{report.overall(isomme).p_driver}TIBILEUP??FOZB"],
+                            [f"?{report.overall(isomme).p_driver}TIBIRIUP??FOZB"],
+                            [f"?{report.overall(isomme).p_driver}TIBILELO??FOZB"],
+                            [f"?{report.overall(isomme).p_driver}TIBIRILO??FOZB"],
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
             ),
             ChannelPlotPage(
                 self,
@@ -730,67 +784,124 @@ class UN_Frontal_56kmh_ODB_R94(Report[Overall]):
                     nrows=2,
                     ncols=2,
                     sharey=True,
-                ).with_channels(lambda report: {
-                    isomme: [
-                        [f"?{report.overall(isomme).p_driver}TIINLU00??000B"],
-                        [f"?{report.overall(isomme).p_driver}TIINRU00??000B"],
-                        [f"?{report.overall(isomme).p_driver}TIINLL00??000B"],
-                        [f"?{report.overall(isomme).p_driver}TIINRL00??000B"],
-                    ]
-                    for isomme in report.isomme_list
-                }),
+                ).with_channels(
+                    lambda report: {
+                        isomme: [
+                            [f"?{report.overall(isomme).p_driver}TIINLU00??000B"],
+                            [f"?{report.overall(isomme).p_driver}TIINRU00??000B"],
+                            [f"?{report.overall(isomme).p_driver}TIINLL00??000B"],
+                            [f"?{report.overall(isomme).p_driver}TIINRL00??000B"],
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
             ),
-            CriterionValuesChartPage(self, spec=criterion_values_chart_spec_for(
-                self, name="Passenger Result Values Chart", title="Passenger Result"
-            ).with_criteria(lambda report: {
-                isomme: [
-                        report.overall(isomme).criterion_passenger.criterion_hpc36,
-                        report.overall(isomme).criterion_passenger.criterion_head_a3ms,
-                        report.overall(isomme).criterion_passenger.criterion_neck_fz_tension,
-                        report.overall(isomme).criterion_passenger.criterion_neck_fx_shear,
-                        report.overall(isomme).criterion_passenger.criterion_neck_my_extension,
-                        report.overall(isomme).criterion_passenger.criterion_chest_deflection,
-                        report.overall(isomme).criterion_passenger.criterion_chest_vc,
-                        report.overall(isomme).criterion_passenger.criterion_femur_compression,
-                        report.overall(isomme).criterion_passenger.criterion_tibia_compression,
-                        report.overall(isomme).criterion_passenger.criterion_tibia_index,
-                        report.overall(isomme).criterion_passenger.criterion_knee_slider_compression,
-                ]
-                for isomme in report.isomme_list
-            })),
+            CriterionValuesChartPage(
+                self,
+                spec=criterion_values_chart_spec_for(
+                    self, name="Passenger Result Values Chart", title="Passenger Result"
+                ).with_criteria(
+                    lambda report: {
+                        isomme: [
+                            report.overall(isomme).criterion_passenger.criterion_hpc36,
+                            report.overall(
+                                isomme
+                            ).criterion_passenger.criterion_head_a3ms,
+                            report.overall(
+                                isomme
+                            ).criterion_passenger.criterion_neck_fz_tension,
+                            report.overall(
+                                isomme
+                            ).criterion_passenger.criterion_neck_fx_shear,
+                            report.overall(
+                                isomme
+                            ).criterion_passenger.criterion_neck_my_extension,
+                            report.overall(
+                                isomme
+                            ).criterion_passenger.criterion_chest_deflection,
+                            report.overall(
+                                isomme
+                            ).criterion_passenger.criterion_chest_vc,
+                            report.overall(
+                                isomme
+                            ).criterion_passenger.criterion_femur_compression,
+                            report.overall(
+                                isomme
+                            ).criterion_passenger.criterion_tibia_compression,
+                            report.overall(
+                                isomme
+                            ).criterion_passenger.criterion_tibia_index,
+                            report.overall(
+                                isomme
+                            ).criterion_passenger.criterion_knee_slider_compression,
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
+            ),
             CriterionTablePage(
-                self, name="Passenger Values Table", title="Passenger Values",
-                spec=values_table_spec_for(self).with_criteria(lambda report: {
-                    isomme: [
-                        report.overall(isomme).criterion_passenger.criterion_hpc36,
-                        report.overall(isomme).criterion_passenger.criterion_head_a3ms,
-                        report.overall(isomme).criterion_passenger.criterion_neck_fz_tension,
-                        report.overall(isomme).criterion_passenger.criterion_neck_fx_shear,
-                        report.overall(isomme).criterion_passenger.criterion_neck_my_extension,
-                        report.overall(isomme).criterion_passenger.criterion_chest_deflection,
-                        report.overall(isomme).criterion_passenger.criterion_chest_vc,
-                        report.overall(isomme).criterion_passenger.criterion_femur_compression,
-                        report.overall(isomme).criterion_passenger.criterion_tibia_compression,
-                        report.overall(isomme).criterion_passenger.criterion_tibia_index,
-                        report.overall(isomme).criterion_passenger.criterion_knee_slider_compression,
-                    ]
-                    for isomme in report.isomme_list
-                }),
+                self,
+                name="Passenger Values Table",
+                title="Passenger Values",
+                spec=values_table_spec_for(self).with_criteria(
+                    lambda report: {
+                        isomme: [
+                            report.overall(isomme).criterion_passenger.criterion_hpc36,
+                            report.overall(
+                                isomme
+                            ).criterion_passenger.criterion_head_a3ms,
+                            report.overall(
+                                isomme
+                            ).criterion_passenger.criterion_neck_fz_tension,
+                            report.overall(
+                                isomme
+                            ).criterion_passenger.criterion_neck_fx_shear,
+                            report.overall(
+                                isomme
+                            ).criterion_passenger.criterion_neck_my_extension,
+                            report.overall(
+                                isomme
+                            ).criterion_passenger.criterion_chest_deflection,
+                            report.overall(
+                                isomme
+                            ).criterion_passenger.criterion_chest_vc,
+                            report.overall(
+                                isomme
+                            ).criterion_passenger.criterion_femur_compression,
+                            report.overall(
+                                isomme
+                            ).criterion_passenger.criterion_tibia_compression,
+                            report.overall(
+                                isomme
+                            ).criterion_passenger.criterion_tibia_index,
+                            report.overall(
+                                isomme
+                            ).criterion_passenger.criterion_knee_slider_compression,
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
             ),
             ChannelPlotPage(
                 self,
                 spec=channel_plot_spec_for(
-                    self, name="Passenger Head Acceleration", title="Passenger Head Acceleration",
-                    nrows=2, ncols=2, sharey=True,
-                ).with_channels(lambda report: {
-                    isomme: [
-                        [f"?{report.overall(isomme).p_passenger}HEAD??????ACXA"],
-                        [f"?{report.overall(isomme).p_passenger}HEAD??????ACYA"],
-                        [f"?{report.overall(isomme).p_passenger}HEAD??????ACZA"],
-                        [f"?{report.overall(isomme).p_passenger}HEAD??????ACRA"],
-                    ]
-                    for isomme in report.isomme_list
-                }),
+                    self,
+                    name="Passenger Head Acceleration",
+                    title="Passenger Head Acceleration",
+                    nrows=2,
+                    ncols=2,
+                    sharey=True,
+                ).with_channels(
+                    lambda report: {
+                        isomme: [
+                            [f"?{report.overall(isomme).p_passenger}HEAD??????ACXA"],
+                            [f"?{report.overall(isomme).p_passenger}HEAD??????ACYA"],
+                            [f"?{report.overall(isomme).p_passenger}HEAD??????ACZA"],
+                            [f"?{report.overall(isomme).p_passenger}HEAD??????ACRA"],
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
             ),
             HICPage(
                 self,
@@ -799,53 +910,71 @@ class UN_Frontal_56kmh_ODB_R94(Report[Overall]):
                     name="Passenger HPC36",
                     title="Passenger HPC36",
                     timespan=36,
-                ).with_position(
+                )
+                .with_position(
                     lambda report, isomme: report.overall(isomme).p_passenger
-                ).with_criterion(
-                    lambda report, isomme: report.overall(
-                        isomme
-                    ).criterion_passenger.criterion_hpc36
+                )
+                .with_criterion(
+                    lambda report, isomme: (
+                        report.overall(isomme).criterion_passenger.criterion_hpc36
+                    )
                 ),
             ),
             ChannelPlotPage(
                 self,
                 spec=channel_plot_spec_for(
-                    self, name="Passenger Neck Load", title="Passenger Neck Load",
-                    nrows=2, ncols=2,
-                ).with_channels(lambda report: {
-                    isomme: [
-                        [f"?{report.overall(isomme).p_passenger}NECKUP00??MOYB"],
-                        [f"?{report.overall(isomme).p_passenger}NECKUP00??FOZA"],
-                        [f"?{report.overall(isomme).p_passenger}NECKUP00??FOXA"],
-                    ]
-                    for isomme in report.isomme_list
-                }),
+                    self,
+                    name="Passenger Neck Load",
+                    title="Passenger Neck Load",
+                    nrows=2,
+                    ncols=2,
+                ).with_channels(
+                    lambda report: {
+                        isomme: [
+                            [f"?{report.overall(isomme).p_passenger}NECKUP00??MOYB"],
+                            [f"?{report.overall(isomme).p_passenger}NECKUP00??FOZA"],
+                            [f"?{report.overall(isomme).p_passenger}NECKUP00??FOXA"],
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
             ),
             ChannelPlotPage(
                 self,
                 spec=channel_plot_spec_for(
-                    self, name="Passenger Chest Deflection", title="Passenger Chest Deflection",
-                    nrows=1, ncols=2,
-                ).with_channels(lambda report: {
-                    isomme: [
-                        [f"?{report.overall(isomme).p_passenger}CHST000???DSXC"],
-                        [f"?{report.overall(isomme).p_passenger}VCCR000???VEXC"],
-                    ]
-                    for isomme in report.isomme_list
-                }),
+                    self,
+                    name="Passenger Chest Deflection",
+                    title="Passenger Chest Deflection",
+                    nrows=1,
+                    ncols=2,
+                ).with_channels(
+                    lambda report: {
+                        isomme: [
+                            [f"?{report.overall(isomme).p_passenger}CHST000???DSXC"],
+                            [f"?{report.overall(isomme).p_passenger}VCCR000???VEXC"],
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
             ),
             ChannelPlotPage(
                 self,
                 spec=channel_plot_spec_for(
-                    self, name="Passenger Femur Axial Force", title="Passenger Femur Axial Force",
-                    nrows=1, ncols=2, sharey=True,
-                ).with_channels(lambda report: {
-                    isomme: [
-                        [f"?{report.overall(isomme).p_passenger}FEMRLE00??FOZB"],
-                        [f"?{report.overall(isomme).p_passenger}FEMRRI00??FOZB"],
-                    ]
-                    for isomme in report.isomme_list
-                }),
+                    self,
+                    name="Passenger Femur Axial Force",
+                    title="Passenger Femur Axial Force",
+                    nrows=1,
+                    ncols=2,
+                    sharey=True,
+                ).with_channels(
+                    lambda report: {
+                        isomme: [
+                            [f"?{report.overall(isomme).p_passenger}FEMRLE00??FOZB"],
+                            [f"?{report.overall(isomme).p_passenger}FEMRRI00??FOZB"],
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
             ),
             ChannelPlotPage(
                 self,
@@ -856,13 +985,15 @@ class UN_Frontal_56kmh_ODB_R94(Report[Overall]):
                     nrows=1,
                     ncols=2,
                     sharey=True,
-                ).with_channels(lambda report: {
-                    isomme: [
-                        [f"?{report.overall(isomme).p_passenger}KNSLLE00??DSXC"],
-                        [f"?{report.overall(isomme).p_passenger}KNSLRI00??DSXC"],
-                    ]
-                    for isomme in report.isomme_list
-                }),
+                ).with_channels(
+                    lambda report: {
+                        isomme: [
+                            [f"?{report.overall(isomme).p_passenger}KNSLLE00??DSXC"],
+                            [f"?{report.overall(isomme).p_passenger}KNSLRI00??DSXC"],
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
             ),
             ChannelPlotPage(
                 self,
@@ -873,15 +1004,17 @@ class UN_Frontal_56kmh_ODB_R94(Report[Overall]):
                     nrows=2,
                     ncols=2,
                     sharey=True,
-                ).with_channels(lambda report: {
-                    isomme: [
-                        [f"?{report.overall(isomme).p_passenger}TIBILEUP??FOZB"],
-                        [f"?{report.overall(isomme).p_passenger}TIBIRIUP??FOZB"],
-                        [f"?{report.overall(isomme).p_passenger}TIBILELO??FOZB"],
-                        [f"?{report.overall(isomme).p_passenger}TIBIRILO??FOZB"],
-                    ]
-                    for isomme in report.isomme_list
-                }),
+                ).with_channels(
+                    lambda report: {
+                        isomme: [
+                            [f"?{report.overall(isomme).p_passenger}TIBILEUP??FOZB"],
+                            [f"?{report.overall(isomme).p_passenger}TIBIRIUP??FOZB"],
+                            [f"?{report.overall(isomme).p_passenger}TIBILELO??FOZB"],
+                            [f"?{report.overall(isomme).p_passenger}TIBIRILO??FOZB"],
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
             ),
             ChannelPlotPage(
                 self,
@@ -892,15 +1025,17 @@ class UN_Frontal_56kmh_ODB_R94(Report[Overall]):
                     nrows=2,
                     ncols=2,
                     sharey=True,
-                ).with_channels(lambda report: {
-                    isomme: [
-                        [f"?{report.overall(isomme).p_passenger}TIINLU00??000B"],
-                        [f"?{report.overall(isomme).p_passenger}TIINRU00??000B"],
-                        [f"?{report.overall(isomme).p_passenger}TIINLL00??000B"],
-                        [f"?{report.overall(isomme).p_passenger}TIINRL00??000B"],
-                    ]
-                    for isomme in report.isomme_list
-                }),
+                ).with_channels(
+                    lambda report: {
+                        isomme: [
+                            [f"?{report.overall(isomme).p_passenger}TIINLU00??000B"],
+                            [f"?{report.overall(isomme).p_passenger}TIINRU00??000B"],
+                            [f"?{report.overall(isomme).p_passenger}TIINLL00??000B"],
+                            [f"?{report.overall(isomme).p_passenger}TIINRL00??000B"],
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
             ),
         )
         self._selected_pages = list(self._available_pages)

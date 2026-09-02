@@ -23,6 +23,6 @@ class Page_Cover(Page[BaseReport]):
     @override
     def construct_pptx(self, presentation: Presentation) -> None:
         title_slide_layout = presentation.slide_layouts[0]
-        slide = presentation.slides.add_slide(title_slide_layout) # pyright: ignore[reportAttributeAccessIssue]
+        slide = presentation.slides.add_slide(title_slide_layout)  # pyright: ignore[reportAttributeAccessIssue]
         slide.shapes.title.text = self.title
         slide.placeholders[1].text = self.subtitle

@@ -59,6 +59,7 @@ class CriterionValuesTablePage(CriterionTablePage):
             footer=self.footer,
         )
 
+
 __all__ = [
     "CriterionValuesTablePage",
     "values_table_spec_for",

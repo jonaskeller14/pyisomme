@@ -100,12 +100,8 @@ def plot_line_table(
                 row_labels[table_index],
                 col_labels[table_index],
                 None if cell_colors is None else cell_colors[table_index],
-                None
-                if row_labels_colors is None
-                else row_labels_colors[table_index],
-                None
-                if col_labels_colors is None
-                else col_labels_colors[table_index],
+                None if row_labels_colors is None else row_labels_colors[table_index],
+                None if col_labels_colors is None else col_labels_colors[table_index],
                 col_labels_fontweight,
             ),
             row=index // ncols + 1,

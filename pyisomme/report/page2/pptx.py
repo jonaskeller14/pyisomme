@@ -39,13 +39,16 @@ def add_content_slide(
     presentation: Presentation, *, title: str, footer: str | None
 ) -> ContentSlide:
     """Create the legacy content layout including its title and footer."""
-    slide = presentation.slides.add_slide(presentation.slide_layouts[1]) # pyright: ignore[reportAttributeAccessIssue]
+    slide = presentation.slides.add_slide(presentation.slide_layouts[1])  # pyright: ignore[reportAttributeAccessIssue]
     slide.shapes.title.text = title
 
     slide_width = presentation.slide_width
     slide_height = presentation.slide_height
     text_box = slide.shapes.add_textbox(
-        0, Inches(slide_height / Inches(1) - 0.3), slide_width, Inches(0.3) # pyright: ignore[reportOptionalOperand]
+        0,
+        Inches(slide_height / Inches(1) - 0.3),
+        slide_width,
+        Inches(0.3),  # pyright: ignore[reportOptionalOperand]
     )
     text_frame = text_box.text_frame
     text_frame.margin_top = Inches(0.05)
@@ -70,6 +73,6 @@ def add_figure(content_slide: ContentSlide, figure: go.Figure) -> None:
 
     image = figure.to_image(format="png", scale=2)
 
-    content_slide.slide.shapes.add_picture( # pyright: ignore[reportAttributeAccessIssue]
+    content_slide.slide.shapes.add_picture(  # pyright: ignore[reportAttributeAccessIssue]
         io.BytesIO(image), left=left, top=top, height=height
     )

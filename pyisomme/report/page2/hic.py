@@ -32,13 +32,11 @@ def _criterion_cell_color(criterion: Criterion) -> Any:
     return (*rgb, 0.2)
 
 
-def _position_required(_: S_contra, __: Isomme) -> str: # pyright: ignore[reportInvalidTypeVarUse]
+def _position_required(_: S_contra, __: Isomme) -> str:  # pyright: ignore[reportInvalidTypeVarUse]
     raise RuntimeError("HICSpec requires a position via with_position().")
 
 
-def _criterion_required(
-    _: S_contra, __: Isomme
-) -> Criterion: # pyright: ignore[reportInvalidTypeVarUse]
+def _criterion_required(_: S_contra, __: Isomme) -> Criterion:  # pyright: ignore[reportInvalidTypeVarUse]
     raise RuntimeError("HICSpec requires a criterion via with_criterion().")
 
 
@@ -145,10 +143,12 @@ class HICPage(FigurePage[R], Generic[R]):
                 channels=channels,
                 cell_texts=[rows],
                 row_labels=[[isomme.test_number for isomme in isommes]],
-                row_labels_colors=[[
-                    DEFAULT_CONFIG.colors[index % len(DEFAULT_CONFIG.colors)]
-                    for index in range(len(isommes))
-                ]],
+                row_labels_colors=[
+                    [
+                        DEFAULT_CONFIG.colors[index % len(DEFAULT_CONFIG.colors)]
+                        for index in range(len(isommes))
+                    ]
+                ],
                 col_labels=[[hic_name, "Start [ms]", "End [ms]"]],
                 cell_colors=[cell_colors],
                 nrows=1,
@@ -158,7 +158,7 @@ class HICPage(FigurePage[R], Generic[R]):
                 limits=cast(Any, current_report).limits,
                 figsize=figsize,
             )
-            x_range = figure.layout.xaxis.range or (0.0, 1.0) # pyright: ignore[reportAttributeAccessIssue]
+            x_range = figure.layout.xaxis.range or (0.0, 1.0)  # pyright: ignore[reportAttributeAccessIssue]
             finite_hic = [hic for _, hic, _, _ in hic_data if np.isfinite(hic)]
             hic_max = max(finite_hic, default=1.0)
             figure.update_layout(

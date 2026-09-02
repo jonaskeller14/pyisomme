@@ -563,52 +563,90 @@ class EuroNCAP_Side_Pole(Report[Overall]):
                 self,
                 spec=criterion_values_chart_spec_for(
                     self, name="Values Chart", title="Values"
-                ).with_criteria(lambda report: {
-                    isomme: [
-                        report.criterion_overall[isomme].criterion_head.criterion_hic_15,
-                        report.criterion_overall[isomme].criterion_head.criterion_head_acceleration,
-                        report.criterion_overall[isomme].criterion_chest.criterion_chest_lateral_compression,
-                        report.criterion_overall[isomme].criterion_chest.criterion_chest_lateral_vc,
-                        report.criterion_overall[isomme].criterion_chest.criterion_shoulder_lateral_force,
-                        report.criterion_overall[isomme].criterion_abdomen.criterion_abdomen_lateral_compression,
-                        report.criterion_overall[isomme].criterion_abdomen.criterion_abdomen_lateral_vc,
-                        report.criterion_overall[isomme].criterion_pelvis.criterion_pubic_symphysis_force,
-                    ]
-                    for isomme in report.isomme_list
-                }),
+                ).with_criteria(
+                    lambda report: {
+                        isomme: [
+                            report.criterion_overall[
+                                isomme
+                            ].criterion_head.criterion_hic_15,
+                            report.criterion_overall[
+                                isomme
+                            ].criterion_head.criterion_head_acceleration,
+                            report.criterion_overall[
+                                isomme
+                            ].criterion_chest.criterion_chest_lateral_compression,
+                            report.criterion_overall[
+                                isomme
+                            ].criterion_chest.criterion_chest_lateral_vc,
+                            report.criterion_overall[
+                                isomme
+                            ].criterion_chest.criterion_shoulder_lateral_force,
+                            report.criterion_overall[
+                                isomme
+                            ].criterion_abdomen.criterion_abdomen_lateral_compression,
+                            report.criterion_overall[
+                                isomme
+                            ].criterion_abdomen.criterion_abdomen_lateral_vc,
+                            report.criterion_overall[
+                                isomme
+                            ].criterion_pelvis.criterion_pubic_symphysis_force,
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
             ),
             CriterionTablePage(
                 self,
                 name="Rating Table",
                 title="Rating",
-                spec=rating_table_spec_for(self).with_criteria(lambda report: {
-                    isomme: [
-                        report.criterion_overall[isomme].criterion_head,
-                        report.criterion_overall[isomme].criterion_chest,
-                        report.criterion_overall[isomme].criterion_abdomen,
-                        report.criterion_overall[isomme].criterion_pelvis,
-                        report.criterion_overall[isomme],
-                    ]
-                    for isomme in report.isomme_list
-                }),
+                spec=rating_table_spec_for(self).with_criteria(
+                    lambda report: {
+                        isomme: [
+                            report.criterion_overall[isomme].criterion_head,
+                            report.criterion_overall[isomme].criterion_chest,
+                            report.criterion_overall[isomme].criterion_abdomen,
+                            report.criterion_overall[isomme].criterion_pelvis,
+                            report.criterion_overall[isomme],
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
             ),
             CriterionTablePage(
                 self,
                 name="Values Table",
                 title="Values",
-                spec=values_table_spec_for(self).with_criteria(lambda report: {
-                    isomme: [
-                        report.criterion_overall[isomme].criterion_head.criterion_hic_15,
-                        report.criterion_overall[isomme].criterion_head.criterion_head_acceleration,
-                        report.criterion_overall[isomme].criterion_chest.criterion_chest_lateral_compression,
-                        report.criterion_overall[isomme].criterion_chest.criterion_chest_lateral_vc,
-                        report.criterion_overall[isomme].criterion_chest.criterion_shoulder_lateral_force,
-                        report.criterion_overall[isomme].criterion_abdomen.criterion_abdomen_lateral_compression,
-                        report.criterion_overall[isomme].criterion_abdomen.criterion_abdomen_lateral_vc,
-                        report.criterion_overall[isomme].criterion_pelvis.criterion_pubic_symphysis_force,
-                    ]
-                    for isomme in report.isomme_list
-                }),
+                spec=values_table_spec_for(self).with_criteria(
+                    lambda report: {
+                        isomme: [
+                            report.criterion_overall[
+                                isomme
+                            ].criterion_head.criterion_hic_15,
+                            report.criterion_overall[
+                                isomme
+                            ].criterion_head.criterion_head_acceleration,
+                            report.criterion_overall[
+                                isomme
+                            ].criterion_chest.criterion_chest_lateral_compression,
+                            report.criterion_overall[
+                                isomme
+                            ].criterion_chest.criterion_chest_lateral_vc,
+                            report.criterion_overall[
+                                isomme
+                            ].criterion_chest.criterion_shoulder_lateral_force,
+                            report.criterion_overall[
+                                isomme
+                            ].criterion_abdomen.criterion_abdomen_lateral_compression,
+                            report.criterion_overall[
+                                isomme
+                            ].criterion_abdomen.criterion_abdomen_lateral_vc,
+                            report.criterion_overall[
+                                isomme
+                            ].criterion_pelvis.criterion_pubic_symphysis_force,
+                        ]
+                        for isomme in report.isomme_list
+                    }
+                ),
             ),
             ChannelPlotPage(self, spec=side_head_acceleration_spec_for(self)),
             HICPage(
@@ -618,12 +656,14 @@ class EuroNCAP_Side_Pole(Report[Overall]):
                     name="HIC15",
                     title="HIC15",
                     timespan=15,
-                ).with_position(
+                )
+                .with_position(
                     lambda report, isomme: report.criterion_overall[isomme].p
-                ).with_criterion(
-                    lambda report, isomme: report.criterion_overall[
-                        isomme
-                    ].criterion_head.criterion_hic_15
+                )
+                .with_criterion(
+                    lambda report, isomme: (
+                        report.criterion_overall[isomme].criterion_head.criterion_hic_15
+                    )
                 ),
             ),
             ChannelPlotPage(self, spec=side_shoulder_lateral_force_spec_for(self)),
