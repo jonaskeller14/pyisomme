@@ -69,6 +69,11 @@ jobs:
                       frame_number += 1
           PYTHON
 
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes ffmpeg
+
       - name: Create animated report preview
         run: |
           ffmpeg -y \
