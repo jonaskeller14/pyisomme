@@ -133,12 +133,12 @@ pyisomme report EuroNCAP_Frontal_MPDB data/nhtsa/09203 --crop 0 0.2 \
 
 ## Example Report
 
-Animated preview of a Euro NCAP PowerPoint report generated with pyisomme (using synthetic data):
+Animated preview of Euro NCAP frontal 50 km/h and IIHS frontal small overlap PDF reports generated with pyisomme (using synthetic data):
 
 [View the generated HTML and PDF reports](https://jonaskeller14.github.io/pyisomme/index.html)
 
 <p align="center">
-  <img src="docs/EuroNCAP_Frontal_50kmh.gif" alt="Animated preview of a Euro NCAP PowerPoint report" width="600" height="450">
+  <img src="https://jonaskeller14.github.io/pyisomme/report-preview.gif" alt="Animated preview of Euro NCAP frontal 50 km/h and IIHS frontal small overlap PDF reports" width="600">
 </p>
 
 ## Limitations

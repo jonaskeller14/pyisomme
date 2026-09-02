@@ -44,6 +44,41 @@ jobs:
       - name: Generate HTML and PDF reports
         run: uv run pytest tests/report/test_report_html.py tests/report/test_report_pdf.py --html --pdf
 
+      - name: Render report preview frames
+        shell: bash
+        run: |
+          uv run --with PyMuPDF python - <<'PYTHON'
+          from pathlib import Path
+
+          import fitz
+
+
+          pdf_paths = (
+              Path("out/EuroNCAP_Frontal_50kmh.pdf"),
+              Path("out/IIHS_Frontal_Small_Overlap.pdf"),
+          )
+          output_dir = Path("out/report-preview-frames")
+          output_dir.mkdir(exist_ok=True)
+
+          frame_number = 1
+          for pdf_path in pdf_paths:
+              with fitz.open(pdf_path) as pdf:
+                  for page in pdf:
+                      pixmap = page.get_pixmap(dpi=150, alpha=False)
+                      pixmap.save(output_dir / f"frame-{frame_number:03d}.png")
+                      frame_number += 1
+          PYTHON
+
+      - name: Create animated report preview
+        run: |
+          ffmpeg -y \
+            -framerate 1 \
+            -i out/report-preview-frames/frame-%03d.png \
+            -filter_complex "scale=960:-2:flags=lanczos,split[frames][palette_input];[palette_input]palettegen=max_colors=128:stats_mode=diff[palette];[frames][palette]paletteuse=dither=bayer:bayer_scale=3:diff_mode=rectangle" \
+            -loop 0 \
+            out/report-preview.gif
+          rm -rf out/report-preview-frames
+
       - name: Create report index
         shell: bash
         run: |
