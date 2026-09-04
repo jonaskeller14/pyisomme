@@ -1,5 +1,8 @@
+from __future__ import annotations
+
+import re
 from functools import lru_cache
-from typing import Any, Union
+from typing import Any
 
 import astropy.units as u
 import numpy.typing as npt
@@ -27,6 +30,15 @@ def _parse_unit_string(unit_input: str) -> Any:
     return u.Unit(unit_input)
 
 
+def _sanitize_unit_string(unit_input: str) -> str:
+    """Translate ISO-MME unit spellings to their Astropy equivalents."""
+    unit_input = unit_input.replace("°C", "deg_C").replace("°", "deg")
+    if unit_input.strip() == "-":
+        return "1"
+    # ISO-MME spells candela with an uppercase C in luminance units.
+    return re.sub(r"(?<![A-Za-z])Cd(?![A-Za-z])", "cd", unit_input)
+
+
 class Unit:
     _astropy_unit: Any
 
@@ -45,9 +57,7 @@ class Unit:
 
         # 2. Sanitize string inputs
         if isinstance(unit_input, str):
-            unit_input = unit_input.replace("°C", "deg_C").replace("°", "deg")
-            if unit_input.strip() == "-":
-                unit_input = "1"
+            unit_input = _sanitize_unit_string(unit_input)
 
         # 3. Check for Quantity FIRST (before UnitBase, because Constants inherit from both!)
         if isinstance(unit_input, u.Quantity):
@@ -65,9 +75,9 @@ class Unit:
     def to(
         self,
         other: Any,
-        value: Union[float, npt.ArrayLike] = 1.0,
+        value: float | npt.ArrayLike = 1.0,
         equivalencies: Any = None,
-    ) -> Union[float, npt.NDArray[Any]]:
+    ) -> float | npt.NDArray[Any]:
         """
         Return the value(s) converted from this unit to `other` unit.
 
