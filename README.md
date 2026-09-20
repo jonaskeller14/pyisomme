@@ -12,11 +12,25 @@
 pip install pyisomme
 ```
 
+PDF report export is optional. Install the PDF extra and its Chromium browser
+binary once after installing or updating pyisomme:
+
+```bash
+pip install "pyisomme[pdf]"
+python -m playwright install chromium
+```
+
 ## Features
 - Read/write ISO-MME (compressed/uncompressed)
 - Modify Channel and calculate Injury Risk Values (HIC, a3ms, DAMAGE, OLC, BrIC, NIJ, ...)
+- Calculate dummy head trajectories from head centre-of-gravity acceleration and rotational-velocity measurements
 - Plot Curves and compare multiple ISO-MMEs
-- Create PowerPoint Reports (Euro-NCAP, UN-R137, UN-R94)
+- Create PowerPoint, HTML, and PDF reports:
+  - Curve Correlation
+  - Euro NCAP: Frontal 50 km/h, Frontal MPDB, Side Barrier, Side Pole, and Side FarSide
+  - FMVSS: 208 and 214
+  - IIHS: Frontal Small Overlap, Frontal Moderate Overlap, and Side Impact
+  - UN: Frontal 50 km/h R137, Frontal 56 km/h ODB R94, Side Pole R135, and Side Barrier R95
 - Display Limit bars in plots
 - Compare performance of left-hand-drive vehicle with right-hand-drive vehicle
 - Command-line tools for listing, merging, editing, converting, plotting, and reporting ISO-MME data
@@ -92,10 +106,15 @@ Plot a calculated resultant head acceleration with filter class A / 1000 Hz:
 pyisomme plot ./iso_1/v1.mme --codes '24HEAD??????ACRA' --xlim 0 100 --calculate
 ```
 
-Create a report using only data from 0 to 200 ms:
+Create HTML, PDF, and PowerPoint reports in one run using only data from 0 to
+200 ms. Repeat `-o`/`--output` for every desired format; the format is inferred
+from the output file extension.
 
 ```bash
-pyisomme report EuroNCAP_Frontal_MPDB report.pptx data/nhtsa/09203 --crop 0 0.2
+pyisomme report EuroNCAP_Frontal_MPDB data/nhtsa/09203 --crop 0 0.2 \
+  -o out/report.html \
+  -o out/report.pdf \
+  -o out/report.pptx
 ```
 
 ## Python Examples
@@ -114,10 +133,12 @@ pyisomme report EuroNCAP_Frontal_MPDB report.pptx data/nhtsa/09203 --crop 0 0.2
 
 ## Example Report
 
-Animated preview of a Euro NCAP PowerPoint report generated with pyisomme (using synthetic data):
+Animated preview of Euro NCAP frontal 50 km/h and IIHS frontal small overlap PDF reports generated with pyisomme (using synthetic data):
+
+[View the generated HTML and PDF reports](https://jonaskeller14.github.io/pyisomme/index.html)
 
 <p align="center">
-  <img src="docs/EuroNCAP_Frontal_50kmh.gif" alt="Animated preview of a Euro NCAP PowerPoint report" width="600" height="450">
+  <img src="https://jonaskeller14.github.io/pyisomme/report-preview.gif" alt="Animated preview of Euro NCAP frontal 50 km/h and IIHS frontal small overlap PDF reports" width="600">
 </p>
 
 ## Limitations

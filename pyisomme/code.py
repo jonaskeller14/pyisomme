@@ -176,6 +176,10 @@ class Code(str):
     def filter_class(self) -> str:
         return self[15]
 
+    def is_filterable(self) -> bool:
+        """Whether this code requests a standard filter class that can be derived."""
+        return self.filter_class in {"A", "B", "C", "D"}
+
     @property
     def components(self) -> tuple[str, ...]:
         """

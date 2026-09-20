@@ -1,6 +1,11 @@
+from __future__ import annotations
+
+import re
+from functools import lru_cache
 from typing import Any
 
 import astropy.units as u
+import numpy.typing as npt
 from astropy.constants import (
     g0 as ASTROPY_G0,  # pyright: ignore[reportAttributeAccessIssue]
 )
@@ -17,6 +22,21 @@ u.add_enabled_units([g0_unit])
 
 # Export g0 to keep compatibility with existing imports
 g0 = g0_unit
+
+
+@lru_cache(maxsize=256)
+def _parse_unit_string(unit_input: str) -> Any:
+    """Parse and reuse Astropy units for repeated string representations."""
+    return u.Unit(unit_input)
+
+
+def _sanitize_unit_string(unit_input: str) -> str:
+    """Translate ISO-MME unit spellings to their Astropy equivalents."""
+    unit_input = unit_input.replace("°C", "deg_C").replace("°", "deg")
+    if unit_input.strip() == "-":
+        return "1"
+    # ISO-MME spells candela with an uppercase C in luminance units.
+    return re.sub(r"(?<![A-Za-z])Cd(?![A-Za-z])", "cd", unit_input)
 
 
 class Unit:
@@ -37,9 +57,7 @@ class Unit:
 
         # 2. Sanitize string inputs
         if isinstance(unit_input, str):
-            unit_input = unit_input.replace("°C", "deg_C").replace("°", "deg")
-            if unit_input.strip() == "-":
-                unit_input = "1"
+            unit_input = _sanitize_unit_string(unit_input)
 
         # 3. Check for Quantity FIRST (before UnitBase, because Constants inherit from both!)
         if isinstance(unit_input, u.Quantity):
@@ -48,9 +66,18 @@ class Unit:
             self._astropy_unit = unit_input
         else:
             # Handles strings, ints, floats natively via Astropy
-            self._astropy_unit = u.Unit(unit_input)
+            self._astropy_unit = (
+                _parse_unit_string(unit_input)
+                if isinstance(unit_input, str)
+                else u.Unit(unit_input)
+            )
 
-    def to(self, other, value=1.0, equivalencies=None):
+    def to(
+        self,
+        other: Any,
+        value: float | npt.ArrayLike = 1.0,
+        equivalencies: Any = None,
+    ) -> float | npt.NDArray[Any]:
         """
         Return the value(s) converted from this unit to `other` unit.
 
@@ -71,6 +98,11 @@ class Unit:
             target = Unit(other)._astropy_unit
 
         return self._astropy_unit.to(target, value=value, equivalencies=equivalencies)  # pyright: ignore[reportCallIssue]
+
+    def is_equivalent(self, other, equivalencies=None) -> bool:
+        """Return whether this unit can be converted to ``other``."""
+        target = other._astropy_unit if isinstance(other, Unit) else other
+        return self._astropy_unit.is_equivalent(target, equivalencies=equivalencies)
 
     # Automatically delegate all standard Astropy Unit attributes & methods.
     def __getattr__(self, name):
@@ -98,6 +130,9 @@ class Unit:
             other = Unit(other)
         other_raw = other._astropy_unit if isinstance(other, Unit) else other
         return Unit(self._astropy_unit / other_raw)
+
+    def __pow__(self, power):
+        return Unit(self._astropy_unit**power)
 
     def __rmul__(self, other):
         return Unit(Unit(other)._astropy_unit * self._astropy_unit)

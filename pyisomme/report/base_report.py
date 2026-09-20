@@ -1,9 +1,15 @@
 from __future__ import annotations
 
+import asyncio
 import logging
+import re
+import sys
+import tempfile
 import time
 from abc import ABC, abstractmethod
+from concurrent.futures import ThreadPoolExecutor
 from fnmatch import fnmatch
+from html import escape
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -130,9 +136,7 @@ class BaseReport(ABC):
                 tqdm(self.selected_pages, desc="Construct Pages")
             ):
                 logger.info(f"{page_number}:{page.name}")
-                # TODO(step-11): resolve page data in construct() and remove this re-initialisation.
-                page.__init__(page.report)
-                page.construct(presentation)
+                page.construct_pptx(presentation)
 
         attempts = 10
         for attempt in range(1, attempts + 1):
@@ -150,6 +154,246 @@ class BaseReport(ABC):
                 )
                 time.sleep(5)
         logger.info(f"pptx successfully exported: {path}")
+
+    def _render_html_document(self) -> str:
+        """Render all selected pages into one complete HTML document."""
+        stylesheet_path = Path(__file__).with_name("page2") / "style.css"
+        stylesheet = stylesheet_path.read_text(encoding="utf-8")
+
+        page_fragments: list[str] = []
+        with logging_redirect_tqdm():
+            for page_number, page in enumerate(
+                tqdm(self.selected_pages, desc="Render Pages")
+            ):
+                logger.info("%d:%s", page_number, page.name)
+                page_fragments.append(page.render_html())
+
+        return "\n".join(
+            (
+                "<!DOCTYPE html>",
+                '<html lang="en">',
+                "<head>",
+                '  <meta charset="utf-8">',
+                '  <meta name="viewport" content="width=device-width, initial-scale=1">',
+                f'  <meta name="pyisomme-page-count" content="{len(self.selected_pages)}">',
+                f"  <title>{escape(self.title)}</title>",
+                '  <script src="https://cdn.plot.ly/plotly-3.1.0.min.js" charset="utf-8"></script>',
+                "  <style>",
+                stylesheet,
+                "  </style>",
+                "  <script>",
+                "    (() => {",
+                "      const media = window.matchMedia('screen and (max-width: 1154px)');",
+                "      const updatePageScale = () => {",
+                "        for (const page of document.querySelectorAll('.page')) {",
+                "          page.style.removeProperty('--screen-page-scale');",
+                "          page.style.removeProperty('--screen-page-margin');",
+                "          if (!media.matches) continue;",
+                "          const scale = Math.min(1, (window.innerWidth - 32) / page.offsetWidth);",
+                "          page.style.setProperty('--screen-page-scale', String(scale));",
+                "          page.style.setProperty(",
+                "            '--screen-page-margin',",
+                "            `${page.offsetHeight * (scale - 1) + 24}px`,",
+                "          );",
+                "        }",
+                "      };",
+                "      window.addEventListener('resize', updatePageScale);",
+                "      window.addEventListener('load', updatePageScale);",
+                "      updatePageScale();",
+                "    })();",
+                "  </script>",
+                "</head>",
+                "<body>",
+                *page_fragments,
+                "</body>",
+                "</html>",
+            )
+        )
+
+    def export_html(self, path: str | Path) -> None:
+        """Export the selected pages as one UTF-8 HTML document."""
+        output_path = Path(path)
+        output_path.write_text(self._render_html_document(), encoding="utf-8")
+        logger.info("html successfully exported: %s", output_path)
+
+    def export(
+        self,
+        *paths: str | Path,
+        template: str | Path | None = None,
+    ) -> None:
+        """Export one report to independently located HTML, PDF, and PPTX files.
+
+        The requested format is inferred from each path's extension. When both HTML
+        and PDF are requested, their shared HTML document is rendered only once.
+        """
+        if not paths:
+            raise ValueError("at least one report output path is required")
+
+        output_paths: dict[str, Path] = {}
+        supported_suffixes = {".html", ".pdf", ".pptx"}
+        for path in paths:
+            output_path = Path(path)
+            suffix = output_path.suffix.lower()
+            if suffix not in supported_suffixes:
+                formats = ", ".join(sorted(supported_suffixes))
+                raise ValueError(
+                    f"unsupported report output extension {suffix or '(none)'!r}; "
+                    f"expected one of: {formats}"
+                )
+            if suffix in output_paths:
+                raise ValueError(f"multiple {suffix} output paths were provided")
+            output_paths[suffix] = output_path
+
+        if template is not None and ".pptx" not in output_paths:
+            raise ValueError("template requires a .pptx output path")
+
+        html_path = output_paths.get(".html")
+        pdf_path = output_paths.get(".pdf")
+        if html_path is not None or pdf_path is not None:
+            html_document = self._render_html_document()
+            if html_path is not None:
+                html_path.write_text(html_document, encoding="utf-8")
+                logger.info("html successfully exported: %s", html_path)
+
+            if pdf_path is not None:
+                if html_path is not None:
+                    self._export_pdf_from_html(html_path.resolve(), pdf_path.resolve())
+                else:
+                    with tempfile.TemporaryDirectory(
+                        prefix="pyisomme-report-"
+                    ) as directory:
+                        temporary_html_path = Path(directory) / "report.html"
+                        temporary_html_path.write_text(html_document, encoding="utf-8")
+                        self._export_pdf_from_html(
+                            temporary_html_path, pdf_path.resolve()
+                        )
+
+        pptx_path = output_paths.get(".pptx")
+        if pptx_path is not None:
+            self.export_pptx(pptx_path, template=template)
+
+    @staticmethod
+    async def _export_pdf_async(html_path: Path, output_path: Path) -> None:
+        from playwright.async_api import async_playwright
+
+        async with async_playwright() as playwright:
+            browser = await playwright.chromium.launch()
+            try:
+                page = await browser.new_page()
+                await page.emulate_media(media="print")
+                await page.goto(html_path.as_uri(), wait_until="networkidle")
+                await page.evaluate("document.fonts ? document.fonts.ready : undefined")
+                if await page.locator(".plotly-graph-div").count():
+                    await page.wait_for_function(
+                        """() => Array.from(
+                            document.querySelectorAll('.plotly-graph-div')
+                        ).every(
+                            element => element.dataset.pyisommeRendered === 'true'
+                        )"""
+                    )
+                await page.evaluate(
+                    """() => {
+                        const pages = document.querySelectorAll('.page');
+                        if (pages.length) pages[pages.length - 1].classList.add('last-page');
+                    }"""
+                )
+                page_count_metadata = await page.locator(
+                    'meta[name="pyisomme-page-count"]'
+                ).get_attribute("content")
+                expected_page_count = (
+                    int(page_count_metadata)
+                    if page_count_metadata is not None
+                    else max(1, await page.locator(".page").count())
+                )
+                attempts = 5
+                for attempt in range(1, attempts + 1):
+                    await page.evaluate(
+                        """async () => {
+                            const nextFrame = () => new Promise(
+                                resolve => requestAnimationFrame(resolve)
+                            );
+                            for (const reportPage of document.querySelectorAll('.page')) {
+                                reportPage.scrollIntoView();
+                                await nextFrame();
+                                await nextFrame();
+                            }
+                            window.scrollTo(0, 0);
+                            await nextFrame();
+                            await nextFrame();
+                        }"""
+                    )
+                    pdf = await page.pdf(
+                        prefer_css_page_size=True,
+                        print_background=True,
+                    )
+                    page_count = len(re.findall(rb"/Type\s*/Page\b", pdf))
+                    if page_count == expected_page_count:
+                        output_path.parent.mkdir(parents=True, exist_ok=True)
+                        output_path.write_bytes(pdf)
+                        break
+                    logger.warning(
+                        "PDF render attempt %d/%d produced %d/%d pages; retrying",
+                        attempt,
+                        attempts,
+                        page_count,
+                        expected_page_count,
+                    )
+                else:
+                    raise RuntimeError(
+                        f"PDF export produced {page_count}/{expected_page_count} pages "
+                        f"after {attempts} attempts"
+                    )
+            finally:
+                await browser.close()
+
+    @classmethod
+    def _run_pdf_export(cls, html_path: Path, output_path: Path) -> None:
+        if sys.platform == "win32":
+            from asyncio.windows_events import ProactorEventLoop
+
+            loop = ProactorEventLoop()
+        else:
+            loop = asyncio.new_event_loop()
+
+        try:
+            loop.run_until_complete(cls._export_pdf_async(html_path, output_path))
+        finally:
+            loop.close()
+
+    def _export_pdf_from_html(self, html_path: Path, output_path: Path) -> None:
+        """Export an existing HTML document to PDF."""
+        try:
+            from playwright.async_api import Error as PlaywrightError
+        except ImportError as exc:
+            raise RuntimeError(
+                "PDF export requires the optional Playwright dependency. Install it "
+                "with `pip install 'pyisomme[pdf]'`, then run "
+                "`python -m playwright install chromium`."
+            ) from exc
+
+        try:
+            try:
+                asyncio.get_running_loop()
+            except RuntimeError:
+                self._run_pdf_export(html_path, output_path)
+            else:
+                with ThreadPoolExecutor(max_workers=1) as executor:
+                    executor.submit(
+                        self._run_pdf_export, html_path, output_path
+                    ).result()
+        except PlaywrightError as exc:
+            if "playwright install" in str(exc).lower():
+                raise RuntimeError(
+                    "Playwright Chromium is not installed. Run "
+                    "`python -m playwright install chromium` and retry."
+                ) from exc
+            raise
+
+        logger.info("pdf successfully exported: %s", output_path)
+
+    def export_pdf(self, path: str | Path) -> None:
+        """Render the selected pages to PDF, including from an async notebook."""
+        self.export(path)
 
     def __repr__(self) -> str:
         return f"{type(self).__name__}(title={self.title!r}, name={self.name!r})"

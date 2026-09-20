@@ -19,11 +19,15 @@ class Limit:
     color: str = "black"
     linestyle: str = "-"
     name: str | None = None
-    rating: float = np.nan
+    rating: float | None = None
     lower: bool | None = None
     upper: bool | None = None
     x_unit: str | Unit | int | None = "s"
     y_unit: str | Unit | int | None = "1"
+
+    def __post_init__(self) -> None:
+        if self.rating is not None and np.isnan(self.rating):
+            raise ValueError("Limit.rating must be a number, infinity, or None.")
 
     def get_data(self, x, x_unit, y_unit) -> float | np.ndarray:
         # Convert x

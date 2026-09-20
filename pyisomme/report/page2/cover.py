@@ -1,0 +1,36 @@
+from __future__ import annotations
+
+from pptx.presentation import Presentation
+from typing_extensions import override
+
+from pyisomme.report.base_report import BaseReport
+from pyisomme.report.page.page import Page
+from pyisomme.report.page2.html import environment
+
+
+class CoverPage(Page[BaseReport]):
+    name = "Cover"
+    title: str
+    subtitle: str
+
+    def __init__(self, report: BaseReport) -> None:
+        super().__init__(report)
+        self.title = report.title
+
+        labels = " | ".join(report.coverage_labels)
+        self.subtitle = f"{report.name}\n{labels}" if labels else report.name
+
+    @override
+    def render_html(self) -> str:
+        template = environment().get_template("cover.html")
+        return template.render(title=self.title, subtitle=self.subtitle)
+
+    @override
+    def construct_pptx(self, presentation: Presentation) -> None:
+        title_slide_layout = presentation.slide_layouts[0]
+        slide = presentation.slides.add_slide(title_slide_layout)  # pyright: ignore[reportAttributeAccessIssue]
+        slide.shapes.title.text = self.title
+        slide.placeholders[1].text = self.subtitle
+
+
+__all__ = ["CoverPage"]

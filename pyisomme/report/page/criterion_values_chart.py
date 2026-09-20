@@ -8,7 +8,7 @@ from matplotlib.figure import Figure
 from typing_extensions import override
 
 from pyisomme.isomme import Isomme
-from pyisomme.limits import limit_list_sort
+from pyisomme.limit_set import limit_list_sort
 from pyisomme.report.criterion import Criterion
 from pyisomme.report.page.figure import Page_Figure
 
@@ -63,8 +63,12 @@ class Page_Criterion_Values_Chart(Page_Figure):
                         abs((l1.func(x_limit1) - l2.func(x_limit2)) / l1.func(x_limit1))
                         < 1e-6
                         for l1, l2 in zip(
-                            limit_list_sort(c1.limits.limit_list),
-                            limit_list_sort(c2.limits.limit_list),
+                            limit_list_sort(
+                                list(c1.limits.limits), x=x_limit1, x_unit="s"
+                            ),
+                            limit_list_sort(
+                                list(c2.limits.limits), x=x_limit2, x_unit="s"
+                            ),
                         )
                     ]
                 ):
@@ -76,7 +80,7 @@ class Page_Criterion_Values_Chart(Page_Figure):
 
         for criteria in self.criteria.values():
             for idx_col, criterion in enumerate(criteria):
-                if not criterion.limits.limit_list:
+                if not criterion.limits.limits:
                     continue
 
                 x_limit = limit_x(criterion)
@@ -85,7 +89,7 @@ class Page_Criterion_Values_Chart(Page_Figure):
                         abs(limit.func(x_limit))
                         if not np.isinf(abs(limit.func(x_limit)))
                         else np.nan
-                        for limit in criterion.limits.limit_list
+                        for limit in criterion.limits.limits
                     ]
                 )
                 if not np.isnan(col_factor_limit):
@@ -96,7 +100,12 @@ class Page_Criterion_Values_Chart(Page_Figure):
         # Plot Bars
         for idx_isomme, criteria in enumerate(self.criteria.values()):
             for idx_col, criterion in enumerate(criteria):
-                limits = limit_list_sort(criterion.limits.limit_list, sym=True)
+                limits = limit_list_sort(
+                    list(criterion.limits.limits),
+                    x=x_limit,
+                    x_unit="s",
+                    sym=True,
+                )
 
                 x_limit = limit_x(criterion)
                 limit_values = [

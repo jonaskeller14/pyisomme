@@ -26,8 +26,8 @@ class Page_Figure(Page_Content, ABC):
     """
 
     @override
-    def construct(self, presentation: Presentation) -> None:
-        super().construct(presentation)
+    def construct_pptx(self, presentation: Presentation) -> None:
+        super().construct_pptx(presentation)
         slide = presentation.slides[-1]
 
         placeholder = slide.placeholders[1]

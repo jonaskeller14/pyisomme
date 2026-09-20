@@ -30,7 +30,7 @@
         "result": {
           "name": "HIC 15",
           "value": 50.888666775034224,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -39,7 +39,7 @@
         "result": {
           "name": "Chest a3ms",
           "value": 5.0985810648896415,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -48,7 +48,7 @@
         "result": {
           "name": "Chest Deflection",
           "value": -15.01854048833854,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -57,7 +57,7 @@
         "result": {
           "name": "Nij",
           "value": 0.09363854240013876,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -66,7 +66,7 @@
         "result": {
           "name": "Neck Tension Force",
           "value": 599.9999975763357,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -75,7 +75,7 @@
         "result": {
           "name": "Neck Compression Force",
           "value": -0.004493558497780574,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -92,7 +92,7 @@
           "result": {
             "name": "Left Femur Axial Force",
             "value": -580.2403763849248,
-            "rating": true,
+            "rating": 1.0,
             "color": "green",
             "status": "OK"
           }
@@ -101,7 +101,7 @@
           "result": {
             "name": "Right Femur Axial Force",
             "value": -580.2403763849248,
-            "rating": true,
+            "rating": 1.0,
             "color": "green",
             "status": "OK"
           }
@@ -129,7 +129,7 @@
         "result": {
           "name": "HIC 15",
           "value": 50.888666775034224,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -138,7 +138,7 @@
         "result": {
           "name": "Chest a3ms",
           "value": 5.0985810648896415,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -147,7 +147,7 @@
         "result": {
           "name": "Chest Deflection",
           "value": -15.01854048833854,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -156,7 +156,7 @@
         "result": {
           "name": "Nij",
           "value": 0.09363854240013876,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -165,7 +165,7 @@
         "result": {
           "name": "Neck Tension Force",
           "value": 599.9999975763357,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -174,7 +174,7 @@
         "result": {
           "name": "Neck Compression Force",
           "value": -0.004493558497780574,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -191,7 +191,7 @@
           "result": {
             "name": "Left Femur Axial Force",
             "value": -580.2403763849248,
-            "rating": true,
+            "rating": 1.0,
             "color": "green",
             "status": "OK"
           }
@@ -200,7 +200,7 @@
           "result": {
             "name": "Right Femur Axial Force",
             "value": -580.2403763849248,
-            "rating": true,
+            "rating": 1.0,
             "color": "green",
             "status": "OK"
           }
@@ -239,7 +239,7 @@
         "result": {
           "name": "HIC 15",
           "value": 1626.4821456847578,
-          "rating": false,
+          "rating": 0.0,
           "color": "red",
           "status": "OK"
         }
@@ -248,7 +248,7 @@
         "result": {
           "name": "Chest a3ms",
           "value": 20.394324259558566,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -257,7 +257,7 @@
         "result": {
           "name": "Chest Deflection",
           "value": -60.07416195335416,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -266,7 +266,7 @@
         "result": {
           "name": "Nij",
           "value": 0.37455416960055504,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -275,7 +275,7 @@
         "result": {
           "name": "Neck Tension Force",
           "value": 2399.9999903053426,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -284,7 +284,7 @@
         "result": {
           "name": "Neck Compression Force",
           "value": -0.017974233991122295,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -301,7 +301,7 @@
           "result": {
             "name": "Left Femur Axial Force",
             "value": -2320.9615055396994,
-            "rating": true,
+            "rating": 1.0,
             "color": "green",
             "status": "OK"
           }
@@ -310,7 +310,7 @@
           "result": {
             "name": "Right Femur Axial Force",
             "value": -2320.9615055396994,
-            "rating": true,
+            "rating": 1.0,
             "color": "green",
             "status": "OK"
           }
@@ -338,7 +338,7 @@
         "result": {
           "name": "HIC 15",
           "value": 1626.4821456847578,
-          "rating": false,
+          "rating": 0.0,
           "color": "red",
           "status": "OK"
         }
@@ -347,7 +347,7 @@
         "result": {
           "name": "Chest a3ms",
           "value": 20.394324259558566,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -356,7 +356,7 @@
         "result": {
           "name": "Chest Deflection",
           "value": -60.07416195335416,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -365,7 +365,7 @@
         "result": {
           "name": "Nij",
           "value": 0.37455416960055504,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -374,7 +374,7 @@
         "result": {
           "name": "Neck Tension Force",
           "value": 2399.9999903053426,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -383,7 +383,7 @@
         "result": {
           "name": "Neck Compression Force",
           "value": -0.017974233991122295,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -400,7 +400,7 @@
           "result": {
             "name": "Left Femur Axial Force",
             "value": -2320.9615055396994,
-            "rating": true,
+            "rating": 1.0,
             "color": "green",
             "status": "OK"
           }
@@ -409,7 +409,7 @@
           "result": {
             "name": "Right Femur Axial Force",
             "value": -2320.9615055396994,
-            "rating": true,
+            "rating": 1.0,
             "color": "green",
             "status": "OK"
           }
@@ -448,7 +448,7 @@
         "result": {
           "name": "HIC 15",
           "value": 90670.19457026344,
-          "rating": false,
+          "rating": 0.0,
           "color": "red",
           "status": "OK"
         }
@@ -457,7 +457,7 @@
         "result": {
           "name": "Chest a3ms",
           "value": 101.97162129779284,
-          "rating": false,
+          "rating": 0.0,
           "color": "red",
           "status": "OK"
         }
@@ -466,7 +466,7 @@
         "result": {
           "name": "Chest Deflection",
           "value": -300.3708097667705,
-          "rating": false,
+          "rating": 0.0,
           "color": "red",
           "status": "OK"
         }
@@ -475,7 +475,7 @@
         "result": {
           "name": "Nij",
           "value": 1.8727708480027754,
-          "rating": false,
+          "rating": 0.0,
           "color": "red",
           "status": "OK"
         }
@@ -484,7 +484,7 @@
         "result": {
           "name": "Neck Tension Force",
           "value": 11999.999951526712,
-          "rating": false,
+          "rating": 0.0,
           "color": "red",
           "status": "OK"
         }
@@ -493,7 +493,7 @@
         "result": {
           "name": "Neck Compression Force",
           "value": -0.08987116995561133,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -510,7 +510,7 @@
           "result": {
             "name": "Left Femur Axial Force",
             "value": -11604.807527698496,
-            "rating": false,
+            "rating": 0.0,
             "color": "red",
             "status": "OK"
           }
@@ -519,7 +519,7 @@
           "result": {
             "name": "Right Femur Axial Force",
             "value": -11604.807527698496,
-            "rating": false,
+            "rating": 0.0,
             "color": "red",
             "status": "OK"
           }
@@ -547,7 +547,7 @@
         "result": {
           "name": "HIC 15",
           "value": 90670.19457026344,
-          "rating": false,
+          "rating": 0.0,
           "color": "red",
           "status": "OK"
         }
@@ -556,7 +556,7 @@
         "result": {
           "name": "Chest a3ms",
           "value": 101.97162129779284,
-          "rating": false,
+          "rating": 0.0,
           "color": "red",
           "status": "OK"
         }
@@ -565,7 +565,7 @@
         "result": {
           "name": "Chest Deflection",
           "value": -300.3708097667705,
-          "rating": false,
+          "rating": 0.0,
           "color": "red",
           "status": "OK"
         }
@@ -574,7 +574,7 @@
         "result": {
           "name": "Nij",
           "value": 1.8727708480027754,
-          "rating": false,
+          "rating": 0.0,
           "color": "red",
           "status": "OK"
         }
@@ -583,7 +583,7 @@
         "result": {
           "name": "Neck Tension Force",
           "value": 11999.999951526712,
-          "rating": false,
+          "rating": 0.0,
           "color": "red",
           "status": "OK"
         }
@@ -592,7 +592,7 @@
         "result": {
           "name": "Neck Compression Force",
           "value": -0.08987116995561133,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -609,7 +609,7 @@
           "result": {
             "name": "Left Femur Axial Force",
             "value": -11604.807527698496,
-            "rating": false,
+            "rating": 0.0,
             "color": "red",
             "status": "OK"
           }
@@ -618,7 +618,7 @@
           "result": {
             "name": "Right Femur Axial Force",
             "value": -11604.807527698496,
-            "rating": false,
+            "rating": 0.0,
             "color": "red",
             "status": "OK"
           }

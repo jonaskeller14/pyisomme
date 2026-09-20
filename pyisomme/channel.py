@@ -5,10 +5,12 @@ import logging
 import re
 import warnings
 from fnmatch import fnmatch
+from numbers import Real
 from typing import Literal
 
 import numpy as np
 import pandas as pd
+from astropy.units import UnitConversionError
 from matplotlib import pyplot as plt
 from scipy import interpolate as scipy_interpolate
 from scipy.integrate import cumulative_trapezoid
@@ -40,9 +42,39 @@ class Channel:
         info: InfoInput | None = None,
     ):
         self.set_code(code)
+        self._validate_data(data)
         self.data = data
         self.set_unit(unit)
         self.info = Info(info) if info is not None else Info()
+
+    @staticmethod
+    def _validate_data(data: pd.DataFrame) -> None:
+        """Ensure that ``data`` represents one well-defined sampled signal.
+
+        A Channel stores time in its DataFrame index and exactly one numeric
+        value series in its sole column.  Enforcing this at construction keeps
+        interpolation, numerical operations, unit conversion, and serialization
+        consistent.
+        """
+        if not isinstance(data, pd.DataFrame):
+            raise TypeError("Channel data must be a pandas DataFrame")
+        if data.empty:
+            raise ValueError("Channel data must contain at least one sample")
+        if data.shape[1] != 1:
+            raise ValueError("Channel data must contain exactly one value column")
+        if not pd.api.types.is_numeric_dtype(data.iloc[:, 0]):
+            raise TypeError("Channel values must be numeric")
+        if not all(
+            isinstance(time, Real) and not isinstance(time, (bool, np.bool_))
+            for time in data.index
+        ):
+            raise TypeError("Channel time index must be numeric")
+        if data.index.hasnans:
+            raise ValueError("Channel time index must not contain missing values")
+        if not data.index.is_monotonic_increasing or not data.index.is_unique:
+            raise ValueError(
+                "Channel time index must be strictly increasing and unique"
+            )
 
     def __str__(self):
         return self.code
@@ -108,7 +140,9 @@ class Channel:
                 f"{self}. Not possible to convert units when current unit is None."
             )
 
-        self.data.iloc[:, :] = self.unit.to(other=new_unit, value=self.data.to_numpy())  # pyright: ignore[reportArgumentType]
+        self.data.iloc[:, 0] = self.unit.to(
+            other=new_unit, value=self.data.iloc[:, 0].to_numpy()
+        )
         self.unit = Unit(new_unit)
         return self
 
@@ -192,7 +226,14 @@ class Channel:
             # Variables used
             samples = self.get_data()
             number_of_samples = len(samples)
-            sample_rate = self.info.get("Sampling interval")
+            if number_of_samples < 4:
+                raise ValueError(
+                    "ISO-6487 filtering requires at least 4 samples; "
+                    f"received {number_of_samples}."
+                )
+            sample_rate = self.info.get(
+                "Sampling interval"
+            )  # Sampling interval in seconds
             if isinstance(sample_rate, bool) or not isinstance(
                 sample_rate, (int, float)
             ):
@@ -201,7 +242,7 @@ class Channel:
                     f"Sampling interval not found in channel info. Set sampling interval to mean diff: {sample_rate}."
                 )
 
-            number_of_add_points = 0.01 * sample_rate
+            number_of_add_points = 0.01 / sample_rate
             number_of_add_points = int(
                 min([max([number_of_add_points, 100]), number_of_samples - 1])
             )
@@ -504,7 +545,7 @@ class Channel:
         return self + offset
 
     def write(self, xxx_path):
-        with open(xxx_path, "w") as xxx_file:
+        with open(xxx_path, "w", encoding="utf-8") as xxx_file:
             self.info.update(
                 {
                     "Channel code": self.code,
@@ -582,7 +623,7 @@ class Channel:
         return self
 
     def auto_offset_y(self, t: float = 0) -> Channel:
-        return self.offset_y(offset=self.get_value(t=t))
+        return self.offset_y(offset=-self.get_value(t=t))
 
     def offset_x(self, offset: float) -> Channel:
         self.data = pd.DataFrame(self.data.values, index=self.data.index + offset)
@@ -597,32 +638,23 @@ class Channel:
         if not isinstance(other, Channel):
             return False
 
-        # # Check code identity (optional, if code is part of channel equality)
-        # if getattr(self, "code", None) != getattr(other, "code", None):
-        #     return False
+        if self.code != other.code:
+            return False
 
-        # Unit compatibility check
         if self.unit.physical_type != other.unit.physical_type:
             return False
 
-        # Index / timestamp alignment check
         if not self.data.index.equals(other.data.index):
             return False
 
-        # Compare values with floating-point tolerance using unit conversion
-        try:
-            val_self = self.get_data()
-            val_other = other.get_data(unit=self.unit)
-            return bool(
-                np.allclose(val_self, val_other, rtol=1e-5, atol=1e-8, equal_nan=True)
-            )
-        except Exception:
-            return False
+        val_self = self.get_data()
+        val_other = other.get_data(unit=self.unit)
+        return np.allclose(val_self, val_other, rtol=1e-5, atol=1e-8, equal_nan=True)
 
     def __ne__(self, other) -> bool:
         return not self.__eq__(other)
 
-    def __neg__(self):
+    def __neg__(self) -> Channel:
         return Channel(
             self.code,
             -self.data,
@@ -633,29 +665,19 @@ class Channel:
     def __add__(self, other) -> Channel:
         if isinstance(other, Channel):
             t = time_intersect(self, other)
-            if self.unit.physical_type == other.unit.physical_type:
-                return Channel(
-                    code=self.code,
-                    data=pd.DataFrame(
-                        self.get_data(t) + other.get_data(t, unit=self.unit), index=t
-                    ),
-                    unit=self.unit,
-                    info=self.info
-                    + [("Calculation History", f"{self.code} + {other.code}")],
+            if not self.unit.is_equivalent(other.unit):
+                raise UnitConversionError(
+                    f"Cannot add channels with incompatible units: {self.unit} and {other.unit}"
                 )
-            else:
-                logger.warning(
-                    f"Adding channels with non compatible physical units: {self.unit} and {other.unit}"
-                )
-                return Channel(
-                    code=self.code,
-                    data=pd.DataFrame(
-                        self.get_data(t=t) + other.get_data(t=t), index=t
-                    ),
-                    unit=self.unit,
-                    info=self.info
-                    + [("Calculation History", f"{self.code} + {other.code}")],
-                )
+            return Channel(
+                code=self.code,
+                data=pd.DataFrame(
+                    self.get_data(t) + other.get_data(t, unit=self.unit), index=t
+                ),
+                unit=self.unit,
+                info=self.info
+                + [("Calculation History", f"{self.code} + {other.code}")],
+            )
         elif isinstance(other, (int, float)):
             return Channel(
                 code=self.code,
@@ -671,29 +693,19 @@ class Channel:
     def __sub__(self, other) -> Channel:
         if isinstance(other, Channel):
             t = time_intersect(self, other)
-            if self.unit.physical_type == other.unit.physical_type:
-                return Channel(
-                    code=self.code,
-                    data=pd.DataFrame(
-                        self.get_data(t) - other.get_data(t, unit=self.unit), index=t
-                    ),
-                    unit=self.unit,
-                    info=self.info
-                    + [("Calculation History", f"{self.code} - {other.code}")],
+            if not self.unit.is_equivalent(other.unit):
+                raise UnitConversionError(
+                    f"Cannot subtract channels with incompatible units: {self.unit} and {other.unit}"
                 )
-            else:
-                logger.warning(
-                    f"Subtracting channels with non compatible physical units: {self.unit} and {other.unit}"
-                )
-                return Channel(
-                    code=self.code,
-                    data=pd.DataFrame(
-                        self.get_data(t=t) - other.get_data(t=t), index=t
-                    ),
-                    unit=self.unit,
-                    info=self.info
-                    + [("Calculation History", f"{self.code} - {other.code}")],
-                )
+            return Channel(
+                code=self.code,
+                data=pd.DataFrame(
+                    self.get_data(t) - other.get_data(t, unit=self.unit), index=t
+                ),
+                unit=self.unit,
+                info=self.info
+                + [("Calculation History", f"{self.code} - {other.code}")],
+            )
         elif isinstance(other, (int, float)):
             return Channel(
                 code=self.code,
@@ -780,7 +792,7 @@ class Channel:
         return Channel(
             code=self.code,
             data=calculated_data,
-            unit=self.unit,
+            unit=self.unit**power,
             info=self.info + [("Calculation History", history_str)],
         )
 
@@ -803,6 +815,7 @@ def create_sample(
     noise: float = 0.0,
     noise_per: float = 0.0,
     seed: int | None = 0,
+    phase_offset: float = 0.0,
 ) -> Channel:
     """Create a deterministic sample channel for examples and tests.
 
@@ -821,6 +834,7 @@ def create_sample(
     :param unit: Channel unit.
     :param frequency: Frequency in Hz. A sine defaults to one cycle over the
         time range; a pulse has no modulation unless a frequency is supplied.
+    :param phase_offset: Phase offset in radians for sine samples.
     :param noise: Standard deviation of additive Gaussian noise.
     :param noise_per: Standard deviation of additive Gaussian noise given as percentage from y-range
     :param seed: Random seed used for noise. The default is reproducible.
@@ -852,7 +866,7 @@ def create_sample(
         value_array = np.linspace(baseline, peak, sample_count)
     elif mode == "sin":
         sine_frequency = 1 / duration if frequency is None else frequency
-        phase = 2 * np.pi * sine_frequency * (time_array - t_start)
+        phase = 2 * np.pi * sine_frequency * (time_array - t_start) + phase_offset
         value_array = (peak - baseline) / 2 * np.sin(phase) + sum(y_range) / 2
     elif mode == "pulse":
         # A raised-cosine pulse occupies the middle 40 % of the sample. It is

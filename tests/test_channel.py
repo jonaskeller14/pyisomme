@@ -23,13 +23,52 @@ logging.basicConfig(
 
 class TestChannel:
     def test_init(self):
-        Channel(code="11HEAD0000H3ACXP", data=pd.DataFrame([]))
+        data = pd.DataFrame([0.0])
+        Channel(code="11HEAD0000H3ACXP", data=data)
         # < 16 chars
-        Channel(code="11HEAD0000H3", data=pd.DataFrame([]))
+        Channel(code="11HEAD0000H3", data=data)
         # > 16 chars
-        Channel(code="11HEAD0000H3ACXP123", data=pd.DataFrame([]))
+        Channel(code="11HEAD0000H3ACXP123", data=data)
         # invalid chars
-        Channel(code="TOTAL_ENERGY", data=pd.DataFrame([]))
+        Channel(code="TOTAL_ENERGY", data=data)
+
+    @pytest.mark.parametrize(
+        ("data", "error", "message"),
+        [
+            (pd.DataFrame(), ValueError, "at least one sample"),
+            (pd.DataFrame({"a": [1.0], "b": [2.0]}), ValueError, "one value column"),
+            (
+                pd.DataFrame({"sample": ["invalid"]}),
+                TypeError,
+                "values must be numeric",
+            ),
+            (
+                pd.DataFrame({"sample": [1.0]}, index=["invalid"]),
+                TypeError,
+                "time index must be numeric",
+            ),
+            (
+                pd.DataFrame({"sample": [1.0, 2.0]}, index=[0.1, 0.0]),
+                ValueError,
+                "strictly increasing",
+            ),
+            (
+                pd.DataFrame({"sample": [1.0, 2.0]}, index=[0.0, 0.0]),
+                ValueError,
+                "strictly increasing",
+            ),
+        ],
+    )
+    def test_init_rejects_invalid_signal_data(self, data, error, message):
+        with pytest.raises(error, match=message):
+            Channel(code="11HEAD0000H3ACXP", data=data)
+
+    def test_init_accepts_numeric_object_time_index(self):
+        data = pd.DataFrame({"sample": [1.0]}, index=pd.Index([0.0], dtype=object))
+
+        channel = Channel(code="11HEAD0000H3ACXP", data=data)
+
+        assert channel.data is data
 
     def test_create_sample_pulse_has_baseline_peak_and_frequency_content(self):
         channel = create_sample(
@@ -61,6 +100,15 @@ class TestChannel:
         np.testing.assert_array_equal(first.get_data(), repeated.get_data())
         assert not np.array_equal(first.get_data(), different.get_data())
 
+    def test_create_sample_sine_phase_offset(self):
+        channel = create_sample(
+            t_range=(0.0, 1.0, 101),
+            y_range=(2.0, 10.0),
+            phase_offset=np.pi / 2,
+        )
+
+        assert channel.get_data()[0] == pytest.approx(10.0)
+
     def test_create_sample_rejects_invalid_signal_parameters(self):
         with pytest.raises(ValueError, match="at least two samples"):
             create_sample(t_range=(0.0, 1.0, 1))
@@ -74,7 +122,7 @@ class TestChannel:
     def test_get_info(self):
         channel = Channel(
             code="11HEAD0000H3ACXP",
-            data=pd.DataFrame([]),
+            data=pd.DataFrame([0.0]),
             info=[("Time of first sample", -0.030399999)],
         )
         assert channel.get_info("Time of first sample") == channel.get_info(
@@ -90,6 +138,12 @@ class TestChannel:
 
         assert c_1 == c_2
 
+    def test_eq_requires_same_code(self):
+        c_1 = Channel(code="11HEAD0000H3ACXA", data=pd.DataFrame([1]), unit="m")
+        c_2 = Channel(code="11HEAD0000H3ACYA", data=pd.DataFrame([1000]), unit="mm")
+
+        assert c_1 != c_2
+
     def test_ne(self):
         c_1 = Channel(code="????????????????", data=pd.DataFrame([1]), unit="m")
         c_2 = Channel(code="????????????????", data=pd.DataFrame([1]), unit="mm")
@@ -103,12 +157,34 @@ class TestChannel:
         assert (c_1 + c_2).get_data(unit="m") == 2
         assert (c_1 + 1).get_data(unit="m") == 2
 
+    def test_add_rejects_incompatible_units(self):
+        distance = Channel(code="????????????????", data=pd.DataFrame([1]), unit="m")
+        duration = Channel(code="????????????????", data=pd.DataFrame([1]), unit="s")
+
+        with pytest.raises(u.UnitConversionError, match="Cannot add"):
+            distance + duration  # pyright: ignore[reportUnusedExpression]
+
     def test_sub(self):
         c_1 = Channel(code="????????????????", data=pd.DataFrame([1]), unit="m")
         c_2 = Channel(code="????????????????", data=pd.DataFrame([1000]), unit="mm")
 
         assert (c_1 - c_2).get_data(unit="m") == 0
         assert (c_1 - 1).get_data(unit="m") == 0
+
+    def test_sub_rejects_incompatible_units(self):
+        distance = Channel(code="????????????????", data=pd.DataFrame([1]), unit="m")
+        duration = Channel(code="????????????????", data=pd.DataFrame([1]), unit="s")
+
+        with pytest.raises(u.UnitConversionError, match="Cannot subtract"):
+            distance - duration  # pyright: ignore[reportUnusedExpression]
+
+    def test_power_updates_unit(self):
+        distance = Channel(code="????????????????", data=pd.DataFrame([3]), unit="m")
+
+        squared = distance**2
+
+        assert squared.unit == Unit("m2")
+        assert squared.get_data() == 9
 
     def test_calculation_history_add_mul(self):
         c_1 = Channel(code="11HEAD0000H3ACXA", data=pd.DataFrame([1]), unit="m")
@@ -195,11 +271,136 @@ class TestChannel:
             copy.deepcopy(source).cfc("B", method=method)
             assert list(source.info) == before, method
 
+    @pytest.mark.parametrize("number_of_samples", [1, 2, 3])
+    def test_cfc_iso_rejects_records_too_short_for_initialization(
+        self, number_of_samples
+    ):
+        channel = Channel(
+            code="11HEAD0000H3ACX0",
+            data=pd.DataFrame(
+                {"sample": np.arange(number_of_samples, dtype=float)},
+                index=np.arange(number_of_samples, dtype=float) * 0.001,
+            ),
+            unit="m/s^2",
+            info=[("Sampling interval", 0.001)],
+        )
+
+        with pytest.raises(
+            ValueError,
+            match=rf"requires at least 4 samples; received {number_of_samples}",
+        ):
+            channel.cfc("D")
+
+    @pytest.mark.parametrize(
+        ("sample_interval", "expected"),
+        [
+            (
+                0.0002,
+                [
+                    1.48321254e-07,
+                    2.61816363e-05,
+                    -6.38119165e-04,
+                    3.96220503e-04,
+                    1.47244270e-01,
+                    8.52995200e-01,
+                    9.99207300e-01,
+                    8.52995200e-01,
+                    1.47244270e-01,
+                    3.96220503e-04,
+                    -6.38119165e-04,
+                    2.61816363e-05,
+                    1.48321254e-07,
+                ],
+            ),
+            (
+                0.00005,
+                [
+                    -4.60034070e-04,
+                    -2.54617907e-02,
+                    6.65788200e-02,
+                    7.16604800e-02,
+                    2.56477200e-01,
+                    7.68644900e-01,
+                    8.68268300e-01,
+                    7.68634200e-01,
+                    2.56447084e-01,
+                    7.16584849e-02,
+                    6.65793724e-02,
+                    -2.51078839e-02,
+                    8.19262430e-05,
+                ],
+            ),
+        ],
+    )
+    def test_cfc_iso_matches_reference_vectors_at_multiple_sampling_rates(
+        self, sample_interval, expected
+    ):
+        time = np.arange(401) * sample_interval
+        samples = np.zeros(401)
+        samples[100:301] = np.sin(np.linspace(0, np.pi, 201)) ** 2
+        channel = Channel(
+            code="11HEAD0000H3ACX0",
+            data=pd.DataFrame({"sample": samples}, index=time),
+            unit="m/s^2",
+            info=[("Sampling interval", sample_interval)],
+        )
+
+        filtered = channel.cfc("D").get_data()
+
+        np.testing.assert_allclose(
+            filtered[[0, 50, 99, 100, 125, 175, 200, 225, 275, 300, 301, 350, 400]],
+            expected,
+            rtol=2e-7,
+            atol=1e-9,
+        )
+
     def test_get_value_is_float_get_data_is_ndarray(self):
         source = create_sample(code="11HEAD0000H3ACXP", mode="sin")
         assert isinstance(source.get_value(t=0.0), float)
         assert isinstance(source.get_data(t=0.0), np.ndarray)
         assert isinstance(source.get_data(), np.ndarray)
+
+    def test_scale_and_offset_methods_transform_the_expected_axis(self):
+        channel = Channel(
+            code="11HEAD0000H3ACXP",
+            data=pd.DataFrame({"sample": [5.0, 6.0]}, index=[0.0, 0.1]),
+            unit="m/s^2",
+        )
+
+        assert channel.scale_y(2.0) is channel
+        np.testing.assert_array_equal(channel.get_data(), [10.0, 12.0])
+        np.testing.assert_array_equal(channel.data.index, [0.0, 0.1])
+
+        assert channel.offset_y(-3.0) is channel
+        np.testing.assert_array_equal(channel.get_data(), [7.0, 9.0])
+
+        assert channel.scale_x(2.0) is channel
+        np.testing.assert_array_equal(channel.data.index, [0.0, 0.2])
+
+        assert channel.offset_x(-0.1) is channel
+        np.testing.assert_array_equal(channel.data.index, [-0.1, 0.1])
+
+    def test_auto_offset_y_zeros_value_at_requested_time(self):
+        channel = Channel(
+            code="11HEAD0000H3ACXP",
+            data=pd.DataFrame({"sample": [5.0, 6.0]}, index=[0.0, 0.1]),
+            unit="m/s^2",
+        )
+
+        assert channel.auto_offset_y(t=0.0) is channel
+        np.testing.assert_array_equal(channel.get_data(), [0.0, 1.0])
+        assert channel.get_value(t=0.0) == 0.0
+
+    def test_crop_limits_channel_to_requested_time_range(self):
+        channel = Channel(
+            code="11HEAD0000H3ACXP",
+            data=pd.DataFrame({"sample": [1.0, 2.0, 3.0]}, index=[0.0, 0.1, 0.2]),
+            unit="m/s^2",
+        )
+
+        assert channel.crop(x_min=0.1, x_max=0.2) is channel
+        np.testing.assert_array_equal(channel.data.index, [0.1, 0.2])
+        np.testing.assert_array_equal(channel.get_data(), [2.0, 3.0])
 
     def test_getitem_index_types(self):
         c0 = create_sample(code="11HEAD0000H3ACXP", mode="sin")

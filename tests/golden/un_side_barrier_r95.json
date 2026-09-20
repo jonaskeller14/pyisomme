@@ -20,8 +20,8 @@
       "criterion_hpc36": {
         "result": {
           "name": "Head Performance Criterion (HPC 36)",
-          "value": 125.0,
-          "rating": true,
+          "value": 88.24467965634085,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -30,7 +30,7 @@
         "result": {
           "name": "Chest Lateral Deflection",
           "value": -15.0,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -39,7 +39,7 @@
         "result": {
           "name": "Chest Lateral VC",
           "value": -0.25,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -57,7 +57,7 @@
         "result": {
           "name": "Abdomen Peak Force",
           "value": 0.0,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -85,8 +85,8 @@
       "criterion_hpc36": {
         "result": {
           "name": "Head Performance Criterion (HPC 36)",
-          "value": 250.0,
-          "rating": true,
+          "value": 499.18729110906554,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -95,7 +95,7 @@
         "result": {
           "name": "Chest Lateral Deflection",
           "value": -30.0,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -104,7 +104,7 @@
         "result": {
           "name": "Chest Lateral VC",
           "value": -0.5,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -122,7 +122,7 @@
         "result": {
           "name": "Abdomen Peak Force",
           "value": 0.0,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -150,9 +150,9 @@
       "criterion_hpc36": {
         "result": {
           "name": "Head Performance Criterion (HPC 36)",
-          "value": 500.0,
-          "rating": false,
-          "color": "green",
+          "value": 2823.829749002907,
+          "rating": 0.0,
+          "color": "red",
           "status": "OK"
         }
       },
@@ -160,7 +160,7 @@
         "result": {
           "name": "Chest Lateral Deflection",
           "value": -60.0,
-          "rating": false,
+          "rating": 0.0,
           "color": "red",
           "status": "OK"
         }
@@ -169,7 +169,7 @@
         "result": {
           "name": "Chest Lateral VC",
           "value": -1.0,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }
@@ -187,7 +187,7 @@
         "result": {
           "name": "Abdomen Peak Force",
           "value": 0.0,
-          "rating": true,
+          "rating": 1.0,
           "color": "green",
           "status": "OK"
         }

@@ -12,6 +12,15 @@ from pyisomme.utils import debug_logging
 logger = logging.getLogger("pyisomme.calculate")
 
 
+def _time_info_value(value: object) -> float | None:
+    """Validate a dataframe index value before storing it as time metadata."""
+    if value is None:
+        return None
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise TypeError(f"Expected a numeric time value, got {value!r}.")
+    return float(value)
+
+
 @debug_logging(logger)
 def calculate_hic(channel: Channel, max_delta_t: float) -> Channel:
     """
@@ -84,9 +93,9 @@ def calculate_hic(channel: Channel, max_delta_t: float) -> Channel:
             ("Data source", "calculation"),
             ("Name of the channel", f"HIC VALUE {max_delta_t * 1e3:.0f}"),
             ("Number of samples", 1),
-            (".Start time", res_t1),
-            (".End time", res_t2),
-            (".Analysis start time", channel.data.index[0]),
-            (".Analysis end time", channel.data.index[-1]),
+            (".Start time", _time_info_value(res_t1)),
+            (".End time", _time_info_value(res_t2)),
+            (".Analysis start time", _time_info_value(channel.data.index[0])),
+            (".Analysis end time", _time_info_value(channel.data.index[-1])),
         ],
     )

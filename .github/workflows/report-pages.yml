@@ -1,0 +1,129 @@
+name: Generate and publish report pages
+
+on:
+  # Temporary trigger for testing; remove after the first successful run.
+  push:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Generate HTML and PDF reports
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Install project dependencies
+        run: uv sync --group dev
+
+      - name: Install Playwright Chromium
+        run: uv run playwright install --with-deps chromium
+
+      - name: Generate HTML and PDF reports
+        run: uv run pytest tests/report/test_report_html.py tests/report/test_report_pdf.py --html --pdf
+
+      - name: Render report preview frames
+        shell: bash
+        run: |
+          uv run --with PyMuPDF python - <<'PYTHON'
+          from pathlib import Path
+
+          import fitz
+
+
+          pdf_paths = (
+              Path("out/EuroNCAP_Frontal_50kmh.pdf"),
+              Path("out/IIHS_Frontal_Small_Overlap.pdf"),
+          )
+          output_dir = Path("out/report-preview-frames")
+          output_dir.mkdir(exist_ok=True)
+
+          frame_number = 1
+          for pdf_path in pdf_paths:
+              with fitz.open(pdf_path) as pdf:
+                  for page in pdf:
+                      pixmap = page.get_pixmap(dpi=150, alpha=False)
+                      pixmap.save(output_dir / f"frame-{frame_number:03d}.png")
+                      frame_number += 1
+          PYTHON
+
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes ffmpeg
+
+      - name: Create animated report preview
+        run: |
+          ffmpeg -y \
+            -framerate 1 \
+            -i out/report-preview-frames/frame-%03d.png \
+            -filter_complex "scale=960:-2:flags=lanczos,split[frames][palette_input];[palette_input]palettegen=max_colors=128:stats_mode=diff[palette];[frames][palette]paletteuse=dither=bayer:bayer_scale=3:diff_mode=rectangle" \
+            -loop 0 \
+            out/report-preview.gif
+          rm -rf out/report-preview-frames
+
+      - name: Create report index
+        shell: bash
+        run: |
+          {
+            echo '<!doctype html>'
+            echo '<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Example Reports</title>'
+            echo '<style>body{font-family:system-ui,sans-serif;line-height:1.5;max-width:50rem;margin:3rem auto;padding:0 1rem;color:#24292f}h1{margin-bottom:.1rem}h2{margin-top:2rem}p.subtitle{margin-top:0;color:#57606a;font-size:1.2rem}a{color:#0969da}</style></head><body>'
+            echo '<h1>Example Reports</h1>'
+            echo '<p class="subtitle">pyisomme</p>'
+            echo '<p>These reports are built from synthetic data for demonstration purposes.</p>'
+            echo '<h2>HTML interactive report:</h2><ul>'
+            for file in out/*.html out/*.pdf; do
+              [ -f "$file" ] || continue
+              name="${file#out/}"
+              [ "$name" = "index.html" ] && continue
+              [[ "$name" == *.html ]] || continue
+              printf '<li><a href="%s">%s</a></li>\n' "$name" "$name"
+            done
+            echo '</ul><h2>PDF static reports:</h2><ul>'
+            for file in out/*.pdf; do
+              [ -f "$file" ] || continue
+              name="${file#out/}"
+              printf '<li><a href="%s">%s</a></li>\n' "$name" "$name"
+            done
+            echo '</ul></body></html>'
+          } > out/index.html
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: out
+
+  deploy:
+    name: Deploy reports to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

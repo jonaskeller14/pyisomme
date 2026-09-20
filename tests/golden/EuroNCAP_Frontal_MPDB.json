@@ -36,7 +36,7 @@
           "criterion_hic_15": {
             "result": {
               "name": "HIC 15",
-              "value": 125.0,
+              "value": 51.019076669460425,
               "rating": 4.0,
               "color": "green",
               "status": "OK"
@@ -45,7 +45,7 @@
           "criterion_head_a3ms": {
             "result": {
               "name": "Head a3ms",
-              "value": 2.5492905324448207,
+              "value": 26.5565156112135,
               "rating": 4.0,
               "color": "green",
               "status": "OK"
@@ -199,8 +199,8 @@
         "criterion_abdomen": {
           "result": {
             "name": "Abdomen",
-            "value": 4,
-            "rating": 4,
+            "value": 4.0,
+            "rating": 4.0,
             "color": null,
             "status": "OK"
           },
@@ -208,7 +208,7 @@
             "result": {
               "name": "Abdomen Compression",
               "value": -15.0,
-              "rating": 4,
+              "rating": 4.0,
               "color": "green",
               "status": "OK"
             }
@@ -396,7 +396,7 @@
           "criterion_hic_15": {
             "result": {
               "name": "HIC 15",
-              "value": 125.0,
+              "value": 51.019076669460425,
               "rating": 4.0,
               "color": "green",
               "status": "OK"
@@ -405,7 +405,7 @@
           "criterion_head_a3ms": {
             "result": {
               "name": "Head a3ms",
-              "value": 2.5492905324448207,
+              "value": 26.5565156112135,
               "rating": 4.0,
               "color": "green",
               "status": "OK"
@@ -650,7 +650,7 @@
           "criterion_hic_15": {
             "result": {
               "name": "HIC 15",
-              "value": 250.0,
+              "value": 288.6074806628148,
               "rating": 4.0,
               "color": "green",
               "status": "OK"
@@ -659,7 +659,7 @@
           "criterion_head_a3ms": {
             "result": {
               "name": "Head a3ms",
-              "value": 5.0985810648896415,
+              "value": 53.113031222427,
               "rating": 4.0,
               "color": "green",
               "status": "OK"
@@ -813,8 +813,8 @@
         "criterion_abdomen": {
           "result": {
             "name": "Abdomen",
-            "value": 4,
-            "rating": 4,
+            "value": 4.0,
+            "rating": 4.0,
             "color": null,
             "status": "OK"
           },
@@ -822,7 +822,7 @@
             "result": {
               "name": "Abdomen Compression",
               "value": -30.0,
-              "rating": 4,
+              "rating": 4.0,
               "color": "green",
               "status": "OK"
             }
@@ -1010,7 +1010,7 @@
           "criterion_hic_15": {
             "result": {
               "name": "HIC 15",
-              "value": 250.0,
+              "value": 288.6074806628148,
               "rating": 4.0,
               "color": "green",
               "status": "OK"
@@ -1019,7 +1019,7 @@
           "criterion_head_a3ms": {
             "result": {
               "name": "Head a3ms",
-              "value": 5.0985810648896415,
+              "value": 53.113031222427,
               "rating": 4.0,
               "color": "green",
               "status": "OK"
@@ -1264,7 +1264,7 @@
           "criterion_hic_15": {
             "result": {
               "name": "HIC 15",
-              "value": 500.0,
+              "value": 1632.6104534227336,
               "rating": "-inf",
               "color": "gray",
               "status": "OK"
@@ -1273,9 +1273,9 @@
           "criterion_head_a3ms": {
             "result": {
               "name": "Head a3ms",
-              "value": 10.197162129779283,
-              "rating": 4.0,
-              "color": "green",
+              "value": 106.226062444854,
+              "rating": "-inf",
+              "color": "gray",
               "status": "OK"
             }
           },
@@ -1427,8 +1427,8 @@
         "criterion_abdomen": {
           "result": {
             "name": "Abdomen",
-            "value": 4,
-            "rating": 4,
+            "value": 4.0,
+            "rating": 4.0,
             "color": null,
             "status": "OK"
           },
@@ -1436,7 +1436,7 @@
             "result": {
               "name": "Abdomen Compression",
               "value": -60.0,
-              "rating": 4,
+              "rating": 4.0,
               "color": "green",
               "status": "OK"
             }
@@ -1472,8 +1472,8 @@
         "criterion_femur": {
           "result": {
             "name": "Femur",
-            "value": 3.78754988028731,
-            "rating": 3.78754988028731,
+            "value": 3.7875498802873104,
+            "rating": 3.7875498802873104,
             "color": null,
             "status": "OK"
           },
@@ -1481,7 +1481,7 @@
             "result": {
               "name": "Femur Compression",
               "value": -4.0,
-              "rating": 3.78754988028731,
+              "rating": 3.7875498802873104,
               "color": "yellow",
               "status": "OK"
             }
@@ -1624,7 +1624,7 @@
           "criterion_hic_15": {
             "result": {
               "name": "HIC 15",
-              "value": 500.0,
+              "value": 1632.6104534227336,
               "rating": "-inf",
               "color": "gray",
               "status": "OK"
@@ -1633,9 +1633,9 @@
           "criterion_head_a3ms": {
             "result": {
               "name": "Head a3ms",
-              "value": 10.197162129779283,
-              "rating": 4.0,
-              "color": "green",
+              "value": 106.226062444854,
+              "rating": "-inf",
+              "color": "gray",
               "status": "OK"
             }
           },
@@ -1752,7 +1752,7 @@
           "result": {
             "name": "Femur Compression",
             "value": -4.0,
-            "rating": 3.78754988028731,
+            "rating": 3.7875498802873104,
             "color": "yellow",
             "status": "OK"
           }

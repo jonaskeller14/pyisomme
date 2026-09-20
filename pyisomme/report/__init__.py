@@ -11,7 +11,7 @@ from pyisomme.report.euro_ncap import (
     EuroNCAP_Side_FarSide,
     EuroNCAP_Side_Pole,
 )
-from pyisomme.report.fmvss import FMVSS_208
+from pyisomme.report.fmvss import FMVSS_208, FMVSS_214
 from pyisomme.report.iihs import (
     IIHS_Frontal_Moderate_Overlap,
     IIHS_Frontal_Small_Overlap,
@@ -34,6 +34,7 @@ REPORTS: list[type[Report[Any]]] = [
     EuroNCAP_Side_Pole,
     EuroNCAP_Side_FarSide,
     FMVSS_208,
+    FMVSS_214,
     IIHS_Frontal_Small_Overlap,
     IIHS_Frontal_Moderate_Overlap,
     IIHS_Side_Impact,

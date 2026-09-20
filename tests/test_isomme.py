@@ -1,10 +1,11 @@
 from pathlib import Path
+from threading import Barrier, Lock, get_ident
 
 import numpy as np
 import pandas as pd
 import pytest
 
-from pyisomme import Channel, Isomme, Unit, g0
+from pyisomme import Channel, Isomme, Unit, g0, read
 
 
 class TestIsomme:
@@ -16,6 +17,18 @@ class TestIsomme:
 
         i2 = Isomme(test_number="999", test_info=[], channels=[], channel_info=[])
         assert i2.test_number == "999"
+
+    def test_equality_and_hash_use_identity(self):
+        first = Isomme(test_number="same")
+        second = Isomme(test_number="same")
+        by_isomme = {first: "first", second: "second"}
+
+        first.test_number = "renamed"
+
+        assert first == first
+        assert first != second
+        assert by_isomme[first] == "first"
+        assert by_isomme[second] == "second"
 
     @pytest.mark.parametrize(
         "path",
@@ -32,6 +45,29 @@ class TestIsomme:
         assert [str(channel.code) for channel in isomme.channels] == [
             "11HEADCG0000ACXP"
         ]
+
+    def test_read_uses_multiple_worker_threads(self, tmp_path, monkeypatch):
+        paths = [tmp_path / "first.mme", tmp_path / "second.mme"]
+        for path in paths:
+            path.touch()
+
+        barrier = Barrier(2)
+        thread_ids = set()
+        thread_ids_lock = Lock()
+
+        def fake_read(self, path, *channel_code_patterns):
+            with thread_ids_lock:
+                thread_ids.add(get_ident())
+            barrier.wait(timeout=10)
+            self.test_number = Path(path).stem
+            return self
+
+        monkeypatch.setattr(Isomme, "read", fake_read)
+
+        isommes = read(*paths, merge=False, max_workers=2)
+
+        assert [isomme.test_number for isomme in isommes] == ["first", "second"]
+        assert len(thread_ids) == 2
 
     @pytest.mark.parametrize(
         "name",
@@ -58,6 +94,105 @@ class TestIsomme:
             "11HEAD000000ACXP"
         ]
 
+    def test_write_handles_unicode_metadata(self, tmp_path):
+        isomme = Isomme(
+            test_number="synthetic",
+            test_info=[("Comments", "unreadable source character: \ufffd")],
+        )
+
+        isomme.write(tmp_path / "synthetic.mme")
+
+        assert "\ufffd" in (tmp_path / "synthetic.mme").read_text(encoding="utf-8")
+        assert Isomme().read(tmp_path / "synthetic.mme").test_info == isomme.test_info
+
+    def test_write_uses_lowercase_chn_suffix(self, tmp_path):
+        isomme = Isomme(
+            test_number="synthetic",
+            channels=[Channel("11HEAD000000ACXP", pd.DataFrame([1.0]), "g")],
+        )
+
+        isomme.write(tmp_path / "synthetic.mme")
+
+        assert "synthetic.chn" in {
+            channel_file.name for channel_file in (tmp_path / "Channel").iterdir()
+        }
+
+    def test_write_uses_multiple_worker_threads(self, tmp_path, monkeypatch):
+        isomme = Isomme(
+            test_number="synthetic",
+            channels=[
+                Channel("11HEAD000000ACXP", pd.DataFrame([1.0, 2.0]), "g"),
+                Channel("13CHST000000DSXP", pd.DataFrame([3.0, 4.0]), "m"),
+            ],
+        )
+        barrier = Barrier(2)
+        thread_ids = set()
+        thread_ids_lock = Lock()
+        original_write = Channel.write
+
+        def synchronized_write(self, path):
+            with thread_ids_lock:
+                thread_ids.add(get_ident())
+            barrier.wait(timeout=10)
+            return original_write(self, path)
+
+        monkeypatch.setattr(Channel, "write", synchronized_write)
+
+        isomme.write(tmp_path / "synthetic.mme", max_workers=2)
+
+        assert len(thread_ids) == 2
+
+    @pytest.mark.parametrize("name", ["results.zip", "results.tar", "results.tar.gz"])
+    def test_archive_write_preserves_sibling_directory(self, tmp_path, name):
+        isomme = Isomme(test_number="synthetic")
+        path = tmp_path / name
+        sibling_directory = tmp_path / "results"
+        sibling_directory.mkdir()
+        sentinel = sibling_directory / "keep.txt"
+        sentinel.write_text("unrelated user data")
+        path.write_text("previous archive")
+
+        isomme.write(path)
+
+        assert sentinel.read_text() == "unrelated user data"
+        assert path.is_file()
+        assert path.read_bytes() != b"previous archive"
+
+    @pytest.mark.parametrize("name", ["synthetic.mme", "folder"])
+    def test_write_preserves_existing_output_when_export_fails(
+        self, tmp_path, name, monkeypatch
+    ):
+        isomme = Isomme(
+            test_number="synthetic",
+            channels=[Channel("11HEAD000000ACXP", pd.DataFrame([1.0]), "g")],
+        )
+        path = tmp_path / name
+        output_file = path if path.suffix else path / "synthetic.mme"
+        output_file.parent.mkdir(parents=True, exist_ok=True)
+        output_file.write_text("previous output")
+
+        def fail_write(*args, **kwargs):
+            raise RuntimeError("export failed")
+
+        monkeypatch.setattr(Channel, "write", fail_write)
+
+        with pytest.raises(RuntimeError, match="export failed"):
+            isomme.write(path)
+
+        assert output_file.read_text() == "previous output"
+
+    def test_write_is_the_only_public_writer(self):
+        isomme = Isomme()
+
+        for method_name in (
+            "write_mme",
+            "write_folder",
+            "write_zip",
+            "write_tar",
+            "write_tar_gz",
+        ):
+            assert not hasattr(isomme, method_name)
+
     def test_write_normalizes_standard_gravity_unit_to_g(self, tmp_path):
         isomme = Isomme(
             test_number="synthetic",
@@ -78,6 +213,39 @@ class TestIsomme:
 
         written = Isomme().read(tmp_path / "synthetic.mme")
         assert written.channels[0].unit == Unit(g0)
+
+    @pytest.mark.parametrize("name", ["synthetic.mme", "synthetic.zip", "folder"])
+    def test_round_trips_container_without_channel_directory(self, tmp_path, name):
+        isomme = Isomme(test_number="synthetic", text_txt="no measured channels\n")
+
+        isomme.write(tmp_path / name)
+        written = Isomme().read(tmp_path / name)
+
+        assert written.channel_info is None
+        assert written.channels == []
+        assert written.text_txt == "no measured channels\n"
+        if name == "synthetic.mme":
+            assert not (tmp_path / "Channel").exists()
+
+    @pytest.mark.parametrize("name", ["synthetic.mme", "synthetic.zip", "folder"])
+    def test_round_trips_companion_files(self, tmp_path, name):
+        isomme = Isomme(
+            test_number="synthetic",
+            text_txt="test notes\r\n",
+            movie_txt="movie notes\n",
+            movie_mii=[("Number of movies", 1), ("Comments", "unvalidated")],
+            photo_pho={"Number of photos": 1},
+            static_sd1={"Number of measurements": 1},
+        )
+
+        isomme.write(tmp_path / name)
+        written = Isomme().read(tmp_path / name)
+
+        assert written.text_txt == isomme.text_txt
+        assert written.movie_txt == isomme.movie_txt
+        assert written.movie_mii == isomme.movie_mii
+        assert written.photo_pho == isomme.photo_pho
+        assert written.static_sd1 == isomme.static_sd1
 
     def test_get_test_info(self):
         isomme = Isomme(test_info=[("Laboratory test ref. number", "98/7707")])
@@ -100,23 +268,23 @@ class TestIsomme:
     def test_extend(self):
         isomme_1 = Isomme(
             channels=[
-                Channel(code="11HEAD0000H3ACXA", data=pd.DataFrame([])),
-                Channel(code="11HEAD0000H3ACYA", data=pd.DataFrame([])),
+                Channel(code="11HEAD0000H3ACXA", data=pd.DataFrame([0.0])),
+                Channel(code="11HEAD0000H3ACYA", data=pd.DataFrame([0.0])),
             ]
         )
         isomme_2 = Isomme(
             channels=[
-                Channel(code="11HEAD0000H3ACZA", data=pd.DataFrame([])),
+                Channel(code="11HEAD0000H3ACZA", data=pd.DataFrame([0.0])),
             ]
         )
         isomme_1.extend(isomme_2)
         assert len(isomme_1.channels) == 3
-        channel = Channel(code="13HEAD0000H3ACXA", data=pd.DataFrame([]))
+        channel = Channel(code="13HEAD0000H3ACXA", data=pd.DataFrame([0.0]))
         isomme_1.extend(channel)
         assert len(isomme_1.channels) == 4
         channel_list = [
-            Channel(code="13HEAD0000H3ACYA", data=pd.DataFrame([])),
-            Channel(code="13HEAD0000H3ACZA", data=pd.DataFrame([])),
+            Channel(code="13HEAD0000H3ACYA", data=pd.DataFrame([0.0])),
+            Channel(code="13HEAD0000H3ACZA", data=pd.DataFrame([0.0])),
         ]
         isomme_1.extend(channel_list)
         assert len(isomme_1.channels) == 6
@@ -138,6 +306,18 @@ class TestIsomme:
         assert len(isomme.channels) == 3 and "11HEAD0000H3ACX0" in [
             c.code for c in isomme.channels
         ]
+
+    def test_delete_duplicates_keeps_unfiltered_equal_signal(self):
+        isomme = Isomme(
+            channels=[
+                Channel(code="11HEAD0000H3ACXA", data=pd.DataFrame([1.0])),
+                Channel(code="11HEAD0000H3ACX0", data=pd.DataFrame([1.0])),
+            ]
+        )
+
+        isomme.delete_duplicates(filter_class_duplicates=True)
+
+        assert [channel.code for channel in isomme.channels] == ["11HEAD0000H3ACX0"]
 
     def test_get_channel_calculates_resultant(self):
         time = [0.0, 0.01, 0.02]
@@ -235,3 +415,47 @@ class TestIsomme:
         assert filtered is not None
         assert filtered.code.filter_class == "A"
         assert filtered.code == "11HEAD0000H3ACXA"
+
+    def test_get_channel_does_not_use_more_heavily_filtered_channel(self):
+        isomme = Isomme(
+            channels=[
+                Channel(
+                    code="11HEAD0000H3ACXB",
+                    data=pd.DataFrame([0.0, 1.0, 2.0], index=[0.0, 0.01, 0.02]),
+                    unit="g",
+                ),
+            ]
+        )
+
+        # A class B signal cannot be used to create the less-filtered class A signal.
+        assert isomme.get_channel("11HEAD0000H3ACXA") is None
+
+    def test_get_channels_does_not_filter_non_filterable_code(self):
+        source = Channel(
+            code="11HEAD0000H3ACXA",
+            data=pd.DataFrame([0.0, 1.0, 2.0], index=[0.0, 0.01, 0.02]),
+            unit="g",
+        )
+        isomme = Isomme(channels=[source])
+
+        assert isomme.get_channels("11HEAD0000H3ACXX") == []
+
+    def test_get_channels_honors_filter_policy(self):
+        source = Channel(
+            code="11HEAD0000H3ACX0",
+            data=pd.DataFrame([0.0, 1.0, 2.0], index=[0.0, 0.01, 0.02]),
+            unit="g",
+        )
+        isomme = Isomme(channels=[source])
+
+        assert isomme.get_channels("11HEAD0000H3ACXA", filter=False) == []
+
+    def test_get_channels_deduplicates_overlapping_patterns(self):
+        channel = Channel(
+            code="11HEAD0000H3ACXA",
+            data=pd.DataFrame([0.0, 1.0, 2.0], index=[0.0, 0.01, 0.02]),
+            unit="g",
+        )
+        isomme = Isomme(channels=[channel])
+
+        assert isomme.get_channels("11HEAD0000H3ACXA", "11HEAD????H3ACXA") == [channel]

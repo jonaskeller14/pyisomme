@@ -9,6 +9,7 @@ from astropy.constants import g0 as ASTROPY_G0_CONSTANT  # type: ignore
 
 from pyisomme import Unit, g0
 from pyisomme.channel import Channel
+from pyisomme.unit import _parse_unit_string
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
@@ -45,6 +46,7 @@ class TestStringSanitizationAndEdgeCases:
             ("°/s", "deg / s"),
             ("-", "1"),
             ("Nm", "N m"),
+            ("Cd/(m*m)", "cd / m2"),
             ("dimensionless", "1"),
         ],
     )
@@ -61,6 +63,16 @@ class TestStringSanitizationAndEdgeCases:
         unit_obj = Unit(" - ")
         assert unit_obj._astropy_unit == u.Unit("1")
 
+    def test_repeated_sanitized_strings_use_cache(self):
+        _parse_unit_string.cache_clear()
+
+        Unit("°/s")
+        Unit("deg/s")
+
+        cache_info = _parse_unit_string.cache_info()
+        assert cache_info.misses == 1
+        assert cache_info.hits == 1
+
     def test_legacy(self):
         Unit("Nm")
         assert Unit("Nm") == Unit("N*m")
@@ -72,6 +84,59 @@ class TestStringSanitizationAndEdgeCases:
         assert Unit("°/s2") == Unit("deg/s^2")
         assert Unit("°/s") == Unit("deg/s")
         assert Unit(Unit("m")) == Unit("m")
+
+    @pytest.mark.parametrize(
+        "unit_string, expected_unit",
+        [
+            ("m", u.m),
+            ("s", u.s),
+            ("kg", u.kg),
+            ("A", u.A),
+            ("K", u.K),
+            ("cd", u.cd),
+            ("rad", u.rad),
+            ("sr", u.sr),
+            ("Hz", u.Hz),
+            ("N", u.N),
+            ("Pa", u.Pa),
+            ("J", u.J),
+            ("W", u.W),
+            ("C", u.C),
+            ("V", u.V),
+            ("F", u.F),
+            ("lm", u.lm),
+            ("lx", u.lx),
+            ("m/s", u.m / u.s),
+            ("m/(s*s)", u.m / u.s**2),
+            ("rad/s", u.rad / u.s),
+            ("rad/(s*s)", u.rad / u.s**2),
+            ("m/(s*s*s)", u.m / u.s**3),
+            ("Nm", u.N * u.m),
+            ("kg*m/s", u.kg * u.m / u.s),
+            ("V/A", u.V / u.A),
+            ("m*m", u.m**2),
+            ("m*m*m", u.m**3),
+            ("m*m*m/s", u.m**3 / u.s),
+            ("kg/s", u.kg / u.s),
+            ("Cd/(m*m)", u.cd / u.m**2),
+            ("1", u.dimensionless_unscaled),
+            ("%", u.percent),
+            ("mm", u.mm),
+            ("µm", u.um),
+            ("ms", u.ms),
+            ("µs", u.us),
+            ("pixel", u.pixel),
+            ("L", u.L),
+            ("°", u.deg),
+            ("°/s", u.deg / u.s),
+            ("°/(s*s)", u.deg / u.s**2),
+            ("dB", u.dB),
+            ("°C", u.deg_C),
+            ("g", u.g),  # Channel init will parse "g" with dimension AC as g0
+        ],
+    )
+    def test_iso_mme_units(self, unit_string, expected_unit):
+        assert Unit(unit_string) == Unit(expected_unit)
 
     def test_channel_unit(self):
         channel = Channel(

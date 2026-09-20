@@ -89,9 +89,9 @@ def validate_report(report: Report[Any]) -> list[Issue]:
         owned = {
             id(limit)
             for _, criterion in overall.walk()
-            for limit in criterion.limits.limit_list
+            for limit in criterion.limits.limits
         }
-        for limit in report.limits[isomme].limit_list:
+        for limit in report.limits[isomme].limits:
             if id(limit) not in owned:
                 issues.append(
                     Issue(

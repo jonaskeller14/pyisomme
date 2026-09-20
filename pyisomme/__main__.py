@@ -52,7 +52,7 @@ def main(argv: list[str] | None = None) -> None:
     elif options.command == "convert":
         execute_convert_command(parser=parser, options=options)
     elif options.command == "report":
-        execute_report_command(options=options)
+        execute_report_command(parser=parser, options=options)
     elif options.command == "plot":
         execute_plot_command(parser=parser, options=options)
 

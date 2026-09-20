@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import FrozenInstanceError, dataclass, replace
 
+import numpy as np
 import pytest
 
 from pyisomme.limit import Limit
@@ -15,6 +16,14 @@ class TestLimit:
         assert limit.code_patterns is code_patterns
         with pytest.raises(FrozenInstanceError):
             limit.color = "green"  # type: ignore[misc]
+
+    def test_rating_uses_none_for_unrated_and_rejects_nan(self) -> None:
+        assert Limit((), func=lambda x: x).rating is None
+        assert Limit((), func=lambda x: x, rating=np.inf).rating == np.inf
+        assert Limit((), func=lambda x: x, rating=-np.inf).rating == -np.inf
+
+        with pytest.raises(ValueError, match="Limit.rating"):
+            Limit((), func=lambda x: x, rating=np.nan)
 
     def test_equality_and_hash_use_identity(self) -> None:
         def func(x: float) -> float:

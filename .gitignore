@@ -12,6 +12,7 @@ data/nhtsa/*/*
 tests/out
 tests/out_*
 out/
+out_*/
 docs/isomme_write/
 
 # IDE

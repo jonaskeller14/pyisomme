@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.figure import Figure
 
-from pyisomme.limits import Limits
+from pyisomme.limit_set import LimitSet
 from pyisomme.plotting.plot import Plot
 from pyisomme.plotting.plot_line import Plot_Line
 from pyisomme.plotting.plot_table import Plot_Table
@@ -34,7 +34,7 @@ class Plot_Line_Table(Plot_Line, Plot_Table):
         ylim: tuple[float, float] | None = None,
         sharex: bool = True,
         sharey: bool = False,
-        limits: Limits | dict[Isomme, Limits] | None = None,
+        limits: LimitSet | dict[Isomme, LimitSet] | None = None,
         cell_colors: list[np.ndarray | list[list]] | None = None,
         col_labels_colors: list[np.ndarray | list] | None = None,
         col_labels_fontweight: str | None = None,
@@ -69,7 +69,7 @@ class Plot_Line_Table(Plot_Line, Plot_Table):
 
         if isinstance(limits, dict):
             self.limits = limits
-        elif isinstance(limits, Limits):
+        elif isinstance(limits, LimitSet):
             self.limits = {isomme: limits for isomme in self.isomme_list}
 
         # Table

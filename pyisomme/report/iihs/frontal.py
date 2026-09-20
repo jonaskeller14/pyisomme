@@ -13,7 +13,7 @@ import pandas as pd
 from pyisomme.calculate import calculate_femur_impulse
 from pyisomme.channel import Channel
 from pyisomme.limit import Limit
-from pyisomme.limits import Limits
+from pyisomme.limit_set import LimitSet
 from pyisomme.report.criterion import Criterion, Role, sub
 from pyisomme.report.criterion_result import CriterionResult
 from pyisomme.report.iihs.limits import (
@@ -57,8 +57,9 @@ class Criterion_HIC_15(Criterion):
     def calculation(self) -> CriterionResult:
         channel = self.require_channel(self.ctx.code("?{p}HICR0015??00RX"))
         value = float(channel.get_data()[0])
-        rating = self.limits.get_limit_min_rating(channel, interpolate=False)
-        color = self.limits.get_limit_min_color(channel)
+        evaluation = self.limits.evaluate(channel)
+        rating = evaluation.get_limit_min_rating(interpolate=False)
+        color = evaluation.get_limit_min_color()
         return CriterionResult(
             channel=channel,
             value=value,
@@ -85,8 +86,9 @@ class Criterion_Nij(Criterion):
     def calculation(self) -> CriterionResult:
         channel = self.require_channel(self.ctx.code("?{p}NIJCIP00??00YB"))
         value = float(np.max(channel.get_data()))
-        rating = self.limits.get_limit_min_rating(channel, interpolate=False)
-        color = self.limits.get_limit_min_color(channel)
+        evaluation = self.limits.evaluate(channel)
+        rating = evaluation.get_limit_min_rating(interpolate=False)
+        color = evaluation.get_limit_min_color()
         return CriterionResult(
             channel=channel,
             value=value,
@@ -115,8 +117,9 @@ class Criterion_Neck_Tension(Criterion):
             self.ctx.code("?{p}NECKUP00??FOZB")
         ).convert_unit("kN")
         value = float(np.max(channel.get_data()))
-        rating = self.limits.get_limit_min_rating(channel, interpolate=False)
-        color = self.limits.get_limit_min_color(channel)
+        evaluation = self.limits.evaluate(channel)
+        rating = evaluation.get_limit_min_rating(interpolate=False)
+        color = evaluation.get_limit_min_color()
         return CriterionResult(
             channel=channel,
             value=value,
@@ -142,8 +145,9 @@ class Criterion_Neck_Compression(Criterion):
             self.ctx.code("?{p}NECKUP00??FOZB")
         ).convert_unit("kN")
         value = float(np.min(channel.get_data()))
-        rating = self.limits.get_limit_min_rating(channel, interpolate=False)
-        color = self.limits.get_limit_min_color(channel)
+        evaluation = self.limits.evaluate(channel)
+        rating = evaluation.get_limit_min_rating(interpolate=False)
+        color = evaluation.get_limit_min_color()
         return CriterionResult(
             channel=channel,
             value=value,
@@ -170,9 +174,10 @@ class Criterion_Neck_Tension_Corridor(Criterion):
         channel = self.require_channel(
             self.ctx.code("?{p}NECKUP00??FOZB")
         ).convert_unit("kN")
-        value = self.limits.get_limit_min_y(channel)
-        rating = self.limits.get_limit_min_rating(channel, interpolate=False)
-        color = self.limits.get_limit_min_color(channel)
+        evaluation = self.limits.evaluate(channel)
+        value = evaluation.get_limit_min_y()
+        rating = evaluation.get_limit_min_rating(interpolate=False)
+        color = evaluation.get_limit_min_color()
         return CriterionResult(
             channel=channel,
             value=value,
@@ -199,9 +204,10 @@ class Criterion_Neck_Compression_Corridor(Criterion):
         channel = self.require_channel(
             self.ctx.code("?{p}NECKUP00??FOZB")
         ).convert_unit("kN")
-        value = self.limits.get_limit_min_y(channel)
-        rating = self.limits.get_limit_min_rating(channel, interpolate=False)
-        color = self.limits.get_limit_min_color(channel)
+        evaluation = self.limits.evaluate(channel)
+        value = evaluation.get_limit_min_y()
+        rating = evaluation.get_limit_min_rating(interpolate=False)
+        color = evaluation.get_limit_min_color()
         return CriterionResult(
             channel=channel,
             value=value,
@@ -234,11 +240,11 @@ class Criterion_Neck_Shear_Corridor(Criterion):
             self.ctx.code("?{p}NECKUP00??FOXB")
         ).convert_unit("kN")
         value = self.limits.get_limit_min_y(channel)
-        positive = Limits(
-            limit_list=[limit for limit in self.limits.limit_list if limit.func(0) > 0]
+        positive = LimitSet(
+            limits=tuple(limit for limit in self.limits.limits if limit.func(0) > 0)
         )
-        negative = Limits(
-            limit_list=[limit for limit in self.limits.limit_list if limit.func(0) < 0]
+        negative = LimitSet(
+            limits=tuple(limit for limit in self.limits.limits if limit.func(0) < 0)
         )
         positive_rating = positive.get_limit_min_rating(channel, interpolate=False)
         negative_rating = negative.get_limit_min_rating(channel, interpolate=False)
@@ -322,8 +328,9 @@ class Criterion_Thoracic_Spine_Acceleration(Criterion):
             self.ctx.code("?{p}CHST003C??ACRX")
         ).convert_unit(Unit(g0))
         value = float(channel.get_data()[0])
-        rating = self.limits.get_limit_min_rating(channel, interpolate=False)
-        color = self.limits.get_limit_min_color(channel)
+        evaluation = self.limits.evaluate(channel)
+        rating = evaluation.get_limit_min_rating(interpolate=False)
+        color = evaluation.get_limit_min_color()
         return CriterionResult(
             channel=channel,
             value=value,
@@ -349,8 +356,9 @@ class Criterion_Sternum_Deflection(Criterion):
             self.ctx.code("?{p}CHST0000??DSXC")
         ).convert_unit("mm")
         value = float(np.min(channel.get_data()))
-        rating = self.limits.get_limit_min_rating(channel, interpolate=False)
-        color = self.limits.get_limit_min_color(channel)
+        evaluation = self.limits.evaluate(channel)
+        rating = evaluation.get_limit_min_rating(interpolate=False)
+        color = evaluation.get_limit_min_color()
         return CriterionResult(
             channel=channel,
             value=value,
@@ -376,8 +384,9 @@ class Criterion_Sternum_Deflection_Rate(Criterion):
             self.ctx.code("?{p}CHST0000??VEXC")
         ).convert_unit("m/s")
         value = float(np.min(channel.get_data()))
-        rating = self.limits.get_limit_min_rating(channel, interpolate=False)
-        color = self.limits.get_limit_min_color(channel)
+        evaluation = self.limits.evaluate(channel)
+        rating = evaluation.get_limit_min_rating(interpolate=False)
+        color = evaluation.get_limit_min_color()
         return CriterionResult(
             channel=channel,
             value=value,
@@ -409,8 +418,9 @@ class Criterion_Chest_VC(Criterion):
             raw_channel.code, pd.DataFrame(np.abs(raw_channel.data)), "m/s"
         )
         value = float(np.max(channel.get_data()))
-        rating = self.limits.get_limit_min_rating(channel, interpolate=False)
-        color = self.limits.get_limit_min_color(channel)
+        evaluation = self.limits.evaluate(channel)
+        rating = evaluation.get_limit_min_rating(interpolate=False)
+        color = evaluation.get_limit_min_color()
         return CriterionResult(
             channel=channel,
             value=value,
@@ -516,8 +526,9 @@ class Criterion_Tibia_Femur_Displacement(Criterion):
             self.ctx.code("?{p}KNSL0000??DSXC")
         ).convert_unit("mm")
         value = abs(float(np.min(channel.get_data())))
-        rating = self.limits.get_limit_min_rating(channel, interpolate=False)
-        color = self.limits.get_limit_min_color(channel)
+        evaluation = self.limits.evaluate(channel)
+        rating = evaluation.get_limit_min_rating(interpolate=False)
+        color = evaluation.get_limit_min_color()
         return CriterionResult(
             channel=channel,
             value=value,
@@ -544,8 +555,9 @@ class Criterion_Tibia_Index(Criterion):
     def calculation(self) -> CriterionResult:
         channel = self.require_channel(self.ctx.code("?{p}TIIN00TO??000B"))
         value = float(np.max(channel.get_data()))
-        rating = self.limits.get_limit_min_rating(channel, interpolate=False)
-        color = self.limits.get_limit_min_color(channel)
+        evaluation = self.limits.evaluate(channel)
+        rating = evaluation.get_limit_min_rating(interpolate=False)
+        color = evaluation.get_limit_min_color()
         return CriterionResult(
             channel=channel,
             value=value,
@@ -571,8 +583,9 @@ class Criterion_Tibia_Axial_Force(Criterion):
             self.ctx.code("?{p}TIBI00LO??FOZB")
         ).convert_unit("kN")
         value = abs(float(np.min(channel.get_data())))
-        rating = self.limits.get_limit_min_rating(channel, interpolate=False)
-        color = self.limits.get_limit_min_color(channel)
+        evaluation = self.limits.evaluate(channel)
+        rating = evaluation.get_limit_min_rating(interpolate=False)
+        color = evaluation.get_limit_min_color()
         return CriterionResult(
             channel=channel,
             value=value,
@@ -602,8 +615,9 @@ class Criterion_Foot_Acceleration(Criterion):
             filter=False,
         ).convert_unit(Unit(g0))
         value = float(np.max(np.abs(channel.get_data())))
-        rating = self.limits.get_limit_min_rating(channel, interpolate=False)
-        color = self.limits.get_limit_min_color(channel)
+        evaluation = self.limits.evaluate(channel)
+        rating = evaluation.get_limit_min_rating(interpolate=False)
+        color = evaluation.get_limit_min_color()
         return CriterionResult(
             channel=channel,
             value=value,

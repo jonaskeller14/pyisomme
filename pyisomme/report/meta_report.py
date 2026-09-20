@@ -7,7 +7,8 @@ from typing import Any
 import numpy as np
 
 from pyisomme.report.base_report import BaseReport
-from pyisomme.report.page import Page, Page_Cover
+from pyisomme.report.page import Page
+from pyisomme.report.page2.cover import CoverPage
 from pyisomme.report.report import Report
 from pyisomme.report.report_protocol import ReportProtocol
 from pyisomme.report.validate import Issue
@@ -41,7 +42,7 @@ class MetaReport(BaseReport):
         self.ratings: dict[str, float] = {}
 
         own_pages: tuple[Page[Any], ...] = (
-            (Page_Cover(self),) if include_cover else ()
+            (CoverPage(self),) if include_cover else ()
         ) + tuple(pages)
         child_pages = tuple(
             page for report in self._reports.values() for page in report.available_pages

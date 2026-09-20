@@ -853,7 +853,7 @@ class TestLimits:
         report.overall(v1).p_driver = "2"
         report.calculate()
         assert [
-            limit.code_patterns for limit in report.overall(v1).driver.limits.limit_list
+            limit.code_patterns for limit in report.overall(v1).driver.limits.limits
         ] == [("?2HEAD??00??ACRA",)]
 
     def test_recalculating_does_not_duplicate_limits(self) -> None:
@@ -866,8 +866,8 @@ class TestLimits:
 
         report, (v1,) = report_of(Overall)
         report.calculate().calculate()
-        assert len(report.overall(v1).limits.limit_list) == 1
-        assert len(report.limits[v1].limit_list) == 1
+        assert len(report.overall(v1).limits.limits) == 1
+        assert len(report.limits[v1].limits) == 1
 
     def test_limits_reach_the_report_level_list(self) -> None:
         class Overall(Criterion):
@@ -879,7 +879,7 @@ class TestLimits:
 
         report, (v1,) = report_of(Overall)
         report.calculate()
-        assert len(report.limits[v1].limit_list) == 2
+        assert len(report.limits[v1].limits) == 2
 
     def test_a_criterion_without_the_hook_keeps_its_hand_built_limits(self) -> None:
         """Coexistence: the 13 unmigrated reports build their rows in ``__init__``."""
@@ -894,5 +894,5 @@ class TestLimits:
 
         report, (v1,) = report_of(Overall)
         report.calculate()
-        assert len(report.overall(v1).limits.limit_list) == 1
-        assert len(report.limits[v1].limit_list) == 1
+        assert len(report.overall(v1).limits.limits) == 1
+        assert len(report.limits[v1].limits) == 1

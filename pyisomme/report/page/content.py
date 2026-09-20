@@ -14,7 +14,7 @@ from pptx.presentation import Presentation
 from pptx.util import Inches
 from typing_extensions import override
 
-from pyisomme.report.page.base import Page
+from pyisomme.report.page.page import Page
 
 
 def _current_user() -> str:
@@ -39,7 +39,7 @@ class Page_Content(Page[Any], ABC):
         return f"{datetime.now().strftime('%d.%m.%Y')} | {_current_user()}"
 
     @override
-    def construct(self, presentation: Presentation) -> None:
+    def construct_pptx(self, presentation: Presentation) -> None:
         title_slide_layout = presentation.slide_layouts[1]
         slide = presentation.slides.add_slide(title_slide_layout)
         slide.shapes.title.text = self.title

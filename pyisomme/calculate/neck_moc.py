@@ -8,6 +8,7 @@ import pandas as pd
 
 from pyisomme.channel import Channel
 from pyisomme.errors import UnsupportedCalculationError
+from pyisomme.unit import Unit
 from pyisomme.utils import debug_logging
 
 logger = logging.getLogger("pyisomme.calculate")
@@ -43,7 +44,7 @@ def calculate_neck_MOCx(
     channel_Mx = channel_Mx.convert_unit("N*m")
     channel_Fy = channel_Fy.convert_unit("N")
 
-    channel = channel_Mx + channel_Fy * d
+    channel = channel_Mx + channel_Fy * d * Unit("m")
     channel.set_code(main_location="TMON")
     channel.set_unit("N*m")
     channel.info.update(
@@ -105,7 +106,7 @@ def calculate_neck_MOCy(
     channel_My = channel_My.convert_unit("N*m")
     channel_Fx = channel_Fx.convert_unit("N")
 
-    channel = channel_My - channel_Fx * d
+    channel = channel_My - channel_Fx * d * Unit("m")
     channel.set_code(main_location="TMON")
     channel.set_unit("N*m")
     channel.info.update(

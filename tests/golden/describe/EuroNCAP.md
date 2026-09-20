@@ -10,8 +10,8 @@
 | protocol | 9.3 |
 | protocols | 9.3 |
 | overall criterion | `Overall` |
-| available_pages | Page_Cover, Page_Rating_Table, Page_Driver_Result_Values_Chart, Page_Driver_Rating_Table, Page_Driver_Values_Table, Page_Driver_Belt, Page_Driver_Head_Acceleration, Page_Driver_HIC15, Page_Driver_Neck_Load, Page_Driver_Neck_NIJ, Page_Driver_Chest_Deflection, Page_Driver_Femur_Axial_Force, Page_Front_Passenger_Result_Values_Chart, Page_Front_Passenger_Rating_Table, Page_Front_Passenger_Values_Table, Page_Front_Passenger_Belt, Page_Front_Passenger_Head_Acceleration, Page_Front_Passenger_HIC15, Page_Front_Passenger_Neck_Load, Page_Front_Passenger_Neck_NIJ, Page_Front_Passenger_Chest_Deflection, Page_Front_Passenger_Femur_Axial_Force, Page_Rear_Passenger_Result_Values_Chart, Page_Rear_Passenger_Rating_Table, Page_Rear_Passenger_Values_Table, Page_Rear_Passenger_Belt, Page_Rear_Passenger_Head_Acceleration, Page_Rear_Passenger_HIC15, Page_Rear_Passenger_Neck_Load, Page_Rear_Passenger_Chest_Deflection, Page_Rear_Passenger_Femur_Axial_Force, Page_OLC |
-| selected_pages | Page_Cover, Page_Rating_Table, Page_Driver_Result_Values_Chart, Page_Driver_Rating_Table, Page_Driver_Values_Table, Page_Driver_Belt, Page_Driver_Head_Acceleration, Page_Driver_HIC15, Page_Driver_Neck_Load, Page_Driver_Neck_NIJ, Page_Driver_Chest_Deflection, Page_Driver_Femur_Axial_Force, Page_Front_Passenger_Result_Values_Chart, Page_Front_Passenger_Rating_Table, Page_Front_Passenger_Values_Table, Page_Front_Passenger_Belt, Page_Front_Passenger_Head_Acceleration, Page_Front_Passenger_HIC15, Page_Front_Passenger_Neck_Load, Page_Front_Passenger_Neck_NIJ, Page_Front_Passenger_Chest_Deflection, Page_Front_Passenger_Femur_Axial_Force, Page_Rear_Passenger_Result_Values_Chart, Page_Rear_Passenger_Rating_Table, Page_Rear_Passenger_Values_Table, Page_Rear_Passenger_Belt, Page_Rear_Passenger_Head_Acceleration, Page_Rear_Passenger_HIC15, Page_Rear_Passenger_Neck_Load, Page_Rear_Passenger_Chest_Deflection, Page_Rear_Passenger_Femur_Axial_Force, Page_OLC |
+| available_pages | Cover, Report Status, Manual Inputs, Rating, Driver Result Values Chart, Driver Rating Table, Driver Values Table, Driver Belt, Driver Head Acceleration, Driver HIC15, Driver Neck Load, Driver Neck NIJ, Driver Chest Deflection, Driver Femur Axial Force, Front Passenger Result Values Chart, Front Passenger Rating Table, Front Passenger Values Table, Front Passenger Belt, Front Passenger Head Acceleration, Front Passenger HIC15, Front Passenger Neck Load, Front Passenger Neck NIJ, Front Passenger Chest Deflection, Front Passenger Femur Axial Force, Rear Passenger Result Values Chart, Rear Passenger Result Table, Rear Passenger Values Table, Rear Passenger Belt, Rear Passenger Head Acceleration, Rear Passenger HIC15, Rear Passenger Neck Load, Rear Passenger Chest Deflection, Rear Passenger Femur Axial Force, OLC |
+| selected_pages | Cover, Report Status, Manual Inputs, Rating, Driver Result Values Chart, Driver Rating Table, Driver Values Table, Driver Belt, Driver Head Acceleration, Driver HIC15, Driver Neck Load, Driver Neck NIJ, Driver Chest Deflection, Driver Femur Axial Force, Front Passenger Result Values Chart, Front Passenger Rating Table, Front Passenger Values Table, Front Passenger Belt, Front Passenger Head Acceleration, Front Passenger HIC15, Front Passenger Neck Load, Front Passenger Neck NIJ, Front Passenger Chest Deflection, Front Passenger Femur Axial Force, Rear Passenger Result Values Chart, Rear Passenger Result Table, Rear Passenger Values Table, Rear Passenger Belt, Rear Passenger Head Acceleration, Rear Passenger HIC15, Rear Passenger Neck Load, Rear Passenger Chest Deflection, Rear Passenger Femur Axial Force, OLC |
 
 ## `Overall` — Overall
 
@@ -844,8 +844,8 @@ Manual inputs:
 | protocol | 9.3 |
 | protocols | 9.3 |
 | overall criterion | `Overall` |
-| available_pages | Page_Cover, Page_Rating_Table, Page_Driver_Result_Values_Chart, Page_Driver_Rating_Table, Page_Driver_Values_Table, Page_Driver_Belt, Page_Driver_Head_Acceleration, Page_Driver_Head_Damage, Page_Driver_Neck_Load, Page_Driver_Chest_Compression, Page_Driver_Abdomen_Compression, Page_Driver_Femur_Axial_Force, Page_Driver_Knee_Slider_Compression, Page_Driver_Tibia_Compression, Page_Driver_Tibia_Index, Page_Passenger_Result_Values_Chart, Page_Passenger_Rating_Table, Page_Passenger_Values_Table, Page_Passenger_Belt, Page_Passenger_Head_Acceleration, Page_Passenger_Neck_Load, Page_Passenger_Chest_Deflection, Page_Passenger_Femur_Axial_Force, Page_Passenger_Knee_Slider_Compression, Page_Passenger_Tibia_Compression, Page_Passenger_Tibia_Index, Page_OLC, Page_OLC_Trolley |
-| selected_pages | Page_Cover, Page_Rating_Table, Page_Driver_Result_Values_Chart, Page_Driver_Rating_Table, Page_Driver_Values_Table, Page_Driver_Belt, Page_Driver_Head_Acceleration, Page_Driver_Head_Damage, Page_Driver_Neck_Load, Page_Driver_Chest_Compression, Page_Driver_Abdomen_Compression, Page_Driver_Femur_Axial_Force, Page_Driver_Knee_Slider_Compression, Page_Driver_Tibia_Compression, Page_Driver_Tibia_Index, Page_Passenger_Result_Values_Chart, Page_Passenger_Rating_Table, Page_Passenger_Values_Table, Page_Passenger_Belt, Page_Passenger_Head_Acceleration, Page_Passenger_Neck_Load, Page_Passenger_Chest_Deflection, Page_Passenger_Femur_Axial_Force, Page_Passenger_Knee_Slider_Compression, Page_Passenger_Tibia_Compression, Page_Passenger_Tibia_Index, Page_OLC, Page_OLC_Trolley |
+| available_pages | Cover, Report Status, Manual Inputs, Rating, Driver Result Values Chart, Driver Rating Table, Driver Values Table, Driver Belt, Driver Head Acceleration, Driver HIC15, Driver Head DAMAGE, Driver Neck Load, Driver Chest Compression, Driver Abdomen Compression, Driver Femur Axial Force, Driver Knee Slider Compression, Driver Tibia Compression, Driver Tibia Index, Passenger Result Values Chart, Passenger Rating Table, Passenger Values Table, Passenger Belt, Passenger Head Acceleration, Passenger HIC15, Passenger Neck Load, Passenger Chest Deflection, Passenger Femur Axial Force, Passenger Knee Slider Compression, Passenger Tibia Compression, Passenger Tibia Index, OLC, OLC Trolley |
+| selected_pages | Cover, Report Status, Manual Inputs, Rating, Driver Result Values Chart, Driver Rating Table, Driver Values Table, Driver Belt, Driver Head Acceleration, Driver HIC15, Driver Head DAMAGE, Driver Neck Load, Driver Chest Compression, Driver Abdomen Compression, Driver Femur Axial Force, Driver Knee Slider Compression, Driver Tibia Compression, Driver Tibia Index, Passenger Result Values Chart, Passenger Rating Table, Passenger Values Table, Passenger Belt, Passenger Head Acceleration, Passenger HIC15, Passenger Neck Load, Passenger Chest Deflection, Passenger Femur Axial Force, Passenger Knee Slider Compression, Passenger Tibia Compression, Passenger Tibia Index, OLC, OLC Trolley |
 
 ## `Overall` — Overall
 
@@ -1642,8 +1642,8 @@ Limits for `M?MBAR0OLC??VEX?`:
 | protocol | 9.3 |
 | protocols | 9.3 |
 | overall criterion | `Overall` |
-| available_pages | Page_Cover, Page_Values_Chart, Page_Rating_Table, Page_Values_Table, Page_Head_Acceleration, Page_Shoulder_Lateral_Force, Page_Chest_Lateral_Compression, Page_Chest_Lateral_VC, Page_Abdomen_Lateral_Compression, Page_Abdomen_Lateral_VC, Page_Pubic_Symphysis_Force |
-| selected_pages | Page_Cover, Page_Values_Chart, Page_Rating_Table, Page_Values_Table, Page_Head_Acceleration, Page_Shoulder_Lateral_Force, Page_Chest_Lateral_Compression, Page_Chest_Lateral_VC, Page_Abdomen_Lateral_Compression, Page_Abdomen_Lateral_VC, Page_Pubic_Symphysis_Force |
+| available_pages | Cover, Report Status, Manual Inputs, Values Chart, Rating Table, Values Table, Head Acceleration, HIC15, Shoulder Lateral Force, Chest Lateral Compression, Chest Lateral VC, Abdomen Lateral Compression, Abdomen Lateral VC, Pubic Symphysis Force |
+| selected_pages | Cover, Report Status, Manual Inputs, Values Chart, Rating Table, Values Table, Head Acceleration, HIC15, Shoulder Lateral Force, Chest Lateral Compression, Chest Lateral VC, Abdomen Lateral Compression, Abdomen Lateral VC, Pubic Symphysis Force |
 
 ## `Overall` — Overall
 
@@ -1868,8 +1868,8 @@ Manual inputs:
 | protocol | 9.3 |
 | protocols | 9.3 |
 | overall criterion | `Overall` |
-| available_pages | Page_Cover, Page_Values_Chart, Page_Rating_Table, Page_Values_Table, Page_Head_Acceleration, Page_Shoulder_Lateral_Force, Page_Chest_Lateral_Compression, Page_Chest_Lateral_VC, Page_Abdomen_Lateral_Compression, Page_Abdomen_Lateral_VC, Page_Pubic_Symphysis_Force |
-| selected_pages | Page_Cover, Page_Values_Chart, Page_Rating_Table, Page_Values_Table, Page_Head_Acceleration, Page_Shoulder_Lateral_Force, Page_Chest_Lateral_Compression, Page_Chest_Lateral_VC, Page_Abdomen_Lateral_Compression, Page_Abdomen_Lateral_VC, Page_Pubic_Symphysis_Force |
+| available_pages | Cover, Report Status, Manual Inputs, Values Chart, Rating Table, Values Table, Head Acceleration, HIC15, Shoulder Lateral Force, Chest Lateral Compression, Chest Lateral VC, Abdomen Lateral Compression, Abdomen Lateral VC, Pubic Symphysis Force |
+| selected_pages | Cover, Report Status, Manual Inputs, Values Chart, Rating Table, Values Table, Head Acceleration, HIC15, Shoulder Lateral Force, Chest Lateral Compression, Chest Lateral VC, Abdomen Lateral Compression, Abdomen Lateral VC, Pubic Symphysis Force |
 
 ## `Overall` — Overall
 
@@ -2074,11 +2074,11 @@ Manual inputs:
 | property | value |
 | --- | --- |
 | name | Euro NCAP \| Far Side Occupant Protection Sled Test |
-| protocol | 2.4 |
-| protocols | 2.4 |
+| protocol | 2.5 |
+| protocols | 2.4, 2.5 |
 | overall criterion | `Overall` |
-| available_pages | Page_Cover, Page_Values_Chart, Page_Rating_Table, Page_Values_Table, Page_Head_Acceleration, Page_Upper_Neck, Page_Lower_Neck, Page_Chest_Lateral_Compression, Page_Abdomen_Lateral_Compression, Page_Lumbar_Force, Page_Pubic_Symphysis_Force |
-| selected_pages | Page_Cover, Page_Values_Chart, Page_Rating_Table, Page_Values_Table, Page_Head_Acceleration, Page_Upper_Neck, Page_Lower_Neck, Page_Chest_Lateral_Compression, Page_Abdomen_Lateral_Compression, Page_Lumbar_Force, Page_Pubic_Symphysis_Force |
+| available_pages | Cover, Report Status, Manual Inputs, Values Chart, Rating Table, Values Table, Head Acceleration, HIC15, Head DAMAGE, Upper Neck, Lower Neck, Chest Lateral Compression, Abdomen Lateral Compression, Lumbar Load, Pubic Symphysis Force |
+| selected_pages | Cover, Report Status, Manual Inputs, Values Chart, Rating Table, Values Table, Head Acceleration, HIC15, Head DAMAGE, Upper Neck, Lower Neck, Chest Lateral Compression, Abdomen Lateral Compression, Lumbar Load, Pubic Symphysis Force |
 
 ## `Overall` — Overall
 
@@ -2096,19 +2096,33 @@ Manual inputs:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Head_Excursion` | — | — | — |
+| `Criterion_Head_Excursion` | §7.2 | — | — |
+
+Manual inputs:
+
+| input | type | default | unit | source | doc |
+| --- | --- | --- | --- | --- | --- |
+| excursion_zone | str | 'green' | — | high-speed video | Peak head-excursion zone: capping, red, orange, yellow, or green. |
+| far_side_countermeasure | bool | False | — | test report | Is a far-side countermeasure fitted? This selects the applicable §7.2 head-excursion score-cap table. |
+| red_line_more_than_125_mm_outboard | bool | False | — | test set-up measurement | For a red-zone excursion with a countermeasure, is the red line more than 125 mm outboard of the orange line? |
 
 ## `criterion_head` — Head
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Head` | — | — | — |
+| `Criterion_Head` | §7.3.1 | — | — |
+
+Manual inputs:
+
+| input | type | default | unit | source | doc |
+| --- | --- | --- | --- | --- | --- |
+| hard_contact | bool | True | — | high-speed video | Was hard head contact observed? A resultant 3 ms acceleration above 80 g forces this to True regardless. |
 
 ## `criterion_head/criterion_hic_15` — HIC 15
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_HIC_15` | — | 4 (from limits) | — |
+| `Criterion_HIC_15` | §7.3.1 (inherited) | 4 (from limits) | — |
 
 Limits for `?1HICR0015??00RX`, `?1HICRCG15??00RX`:
 
@@ -2125,7 +2139,7 @@ Limits for `?1HICR0015??00RX`, `?1HICRCG15??00RX`:
 
 | class | source | max rating | aggregation |
 | --- | --- | --- | --- |
-| `Criterion_Head_a3ms` | — | 4 (from limits) | — |
+| `Criterion_Head_a3ms` | §7.3.1 (inherited) | 4 (from limits) | — |
 
 Limits for `?1HEAD003C??ACR?`, `?1HEADCG3C??ACR?`:
 
@@ -2137,6 +2151,12 @@ Limits for `?1HEAD003C??ACR?`, `?1HEADCG3C??ACR?`:
 | Weak | 77.333 | 1.329 | brown | lower | g0 | - |
 | Poor | 80 | 0 | red | — | g0 | - |
 | Capping | 80 | -inf | gray | lower | g0 | - |
+
+## `criterion_head/criterion_damage` — Head DAMAGE (monitoring)
+
+| class | source | max rating | aggregation |
+| --- | --- | --- | --- |
+| `Criterion_DAMAGE` | §7.3.1.1 | — | — |
 
 ## `criterion_neck` — Neck
 
@@ -2351,3 +2371,18 @@ Limits for `?1LUSP0000??MOX?`:
 | -4 pt. Modifier | -120 | -4 | red | upper | Nm | - |
 | 0 pt. Modifier | 120 | 0 | green | upper | Nm | - |
 | -4 pt. Modifier | 120 | -4 | red | lower | Nm | - |
+
+## `criterion_occupant_to_occupant_protection` — Modifier for Occupant-to-Occupant Protection
+
+| class | source | max rating | aggregation |
+| --- | --- | --- | --- |
+| `Criterion_Occupant_to_Occupant_Protection` | §7.4.2 | — | — |
+
+Manual inputs:
+
+| input | type | default | unit | source | doc |
+| --- | --- | --- | --- | --- | --- |
+| countermeasure_asymmetric | bool | False | — | dual-occupancy assessment | The occupant-interaction countermeasure lacks equivalent protection for impacts on both sides. −1 final point. |
+| dual_occupancy_head_interaction | bool | False | — | dual-occupancy high-speed video | Either dummy head contacted the adjacent occupant, or the head lower performance limits were exceeded. −1 final point. |
+| excursion_countermeasure_lacks_interaction_protection | bool | False | — | dual-occupancy assessment | A far-side countermeasure limits excursion but does not provide meaningful occupant-to-occupant head protection. −1 final point. |
+| protection_zone_not_met | bool | False | — | dual-occupancy assessment | The required occupant-interaction protection zone was not demonstrated. −1 final point. |

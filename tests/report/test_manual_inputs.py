@@ -239,7 +239,7 @@ class TestPositionSyncF15:
         report_50kmh.calculate()
 
         patterns = (
-            overall.criterion_driver.criterion_head.criterion_hic_15.limits.limit_list[
+            overall.criterion_driver.criterion_head.criterion_hic_15.limits.limits[
                 0
             ].code_patterns
         )
@@ -262,12 +262,12 @@ class TestPositionSyncF15:
         assert overall.criterion_driver.steering_wheel_airbag_exists is False
 
     def test_rebuild_does_not_leave_stale_report_limits(self, report_50kmh, v1) -> None:
-        before = len(report_50kmh.limits[v1].limit_list)
+        before = len(report_50kmh.limits[v1].limits)
 
         report_50kmh.overall(v1).p_driver = "3"
         report_50kmh.calculate()
 
-        assert len(report_50kmh.limits[v1].limit_list) == before
+        assert len(report_50kmh.limits[v1].limits) == before
 
     def test_unchanged_position_rebuilds_nothing(self, report_50kmh, v1) -> None:
         driver = report_50kmh.overall(v1).criterion_driver

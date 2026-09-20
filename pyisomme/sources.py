@@ -3,6 +3,7 @@ from __future__ import annotations
 import tarfile
 import zipfile
 from abc import ABC, abstractmethod
+from functools import cached_property
 from pathlib import Path
 from typing import Literal
 
@@ -58,14 +59,15 @@ class ArchiveSource(ABC):
     Read-only, flat namespace of member files backing an ISO-MME container.
 
     Abstracts the three storage backends (filesystem folder, zip, tar) behind a common
-    ``names()`` / ``read_bytes()`` pair so the reader logic exists once. Member names are
+    ``names`` / ``read_bytes()`` pair so the reader logic exists once. Member names are
     matched with :func:`fnmatch.filter`, which normalizes case and path separators, so the
     forward-slash names of archives and the OS-native names of folders behave the same.
     """
 
+    @property
     @abstractmethod
-    def names(self) -> list[str]:
-        """Return every member file name (archive-relative, using ``/`` separators)."""
+    def names(self) -> tuple[str, ...]:
+        """Return the cached member-name snapshot, using ``/`` separators."""
 
     @abstractmethod
     def read_bytes(self, name: str) -> bytes:
@@ -91,12 +93,13 @@ class FolderSource(ArchiveSource):
     def __init__(self, root: str | Path):
         self.root = Path(root)
 
-    def names(self) -> list[str]:
-        return [
+    @cached_property
+    def names(self) -> tuple[str, ...]:
+        return tuple(
             p.relative_to(self.root).as_posix()
             for p in self.root.rglob("*")
             if p.is_file()
-        ]
+        )
 
     def read_bytes(self, name: str) -> bytes:
         return (self.root / name).read_bytes()
@@ -108,8 +111,9 @@ class ZipSource(ArchiveSource):
     def __init__(self, zip_path: str | Path):
         self.archive = zipfile.ZipFile(zip_path, "r")
 
-    def names(self) -> list[str]:
-        return self.archive.namelist()
+    @cached_property
+    def names(self) -> tuple[str, ...]:
+        return tuple(self.archive.namelist())
 
     def read_bytes(self, name: str) -> bytes:
         with self.archive.open(name, "r") as member:
@@ -132,8 +136,9 @@ class TarSource(ArchiveSource):
             member.name.removeprefix("./"): member for member in self.tar.getmembers()
         }
 
-    def names(self) -> list[str]:
-        return list(self.members)
+    @cached_property
+    def names(self) -> tuple[str, ...]:
+        return tuple(self.members)
 
     def read_bytes(self, name: str) -> bytes:
         member = self.tar.extractfile(self.members[name])

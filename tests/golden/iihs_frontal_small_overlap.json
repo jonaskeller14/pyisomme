@@ -28,8 +28,8 @@
         "criterion_hic_15": {
           "result": {
             "name": "HIC 15",
-            "value": 125.0,
-            "rating": 0,
+            "value": 46.1454528505502,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -37,8 +37,8 @@
         "criterion_nij": {
           "result": {
             "name": "Nij",
-            "value": 0.25,
-            "rating": 0,
+            "value": 0.1544315159805859,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -46,8 +46,8 @@
         "criterion_neck_tension": {
           "result": {
             "name": "Neck axial tension",
-            "value": 0.5,
-            "rating": 0,
+            "value": 0.504318140341175,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -55,8 +55,8 @@
         "criterion_neck_compression": {
           "result": {
             "name": "Neck compression",
-            "value": -0.5,
-            "rating": 0,
+            "value": -0.4587393029734947,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -64,8 +64,8 @@
         "criterion_tension_corridor": {
           "result": {
             "name": "Neck tension duration corridor",
-            "value": 0.5,
-            "rating": 0,
+            "value": 0.5041160131392161,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -73,8 +73,8 @@
         "criterion_compression_corridor": {
           "result": {
             "name": "Neck compression duration corridor",
-            "value": -0.5,
-            "rating": 0,
+            "value": -0.4587393029734947,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -82,8 +82,8 @@
         "criterion_shear_corridor": {
           "result": {
             "name": "Neck shear duration corridor",
-            "value": 0.5,
-            "rating": 0,
+            "value": 0.4569999999076567,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -100,8 +100,8 @@
         "criterion_acceleration": {
           "result": {
             "name": "Thoracic spine acceleration (3 ms)",
-            "value": 2.5492905324448207,
-            "rating": 0,
+            "value": 4.6372748742346594,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -109,8 +109,8 @@
         "criterion_deflection": {
           "result": {
             "name": "Sternum deflection",
-            "value": -15.0,
-            "rating": 0,
+            "value": -13.999999767322267,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -118,8 +118,8 @@
         "criterion_deflection_rate": {
           "result": {
             "name": "Sternum deflection rate",
-            "value": -0.25,
-            "rating": 0,
+            "value": -0.22999999612203767,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -127,8 +127,8 @@
         "criterion_vc": {
           "result": {
             "name": "Viscous criterion",
-            "value": 0.25,
-            "rating": 0,
+            "value": 0.23999999309722822,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -145,7 +145,7 @@
         "criterion_left": {
           "result": {
             "name": "Left knee-thigh-hip injury risk",
-            "value": 1.0,
+            "value": 0.9199999999016593,
             "rating": 0.0,
             "color": "green",
             "status": "OK"
@@ -154,7 +154,7 @@
         "criterion_right": {
           "result": {
             "name": "Right knee-thigh-hip injury risk",
-            "value": 1.0,
+            "value": 1.0574999998863033,
             "rating": 0.0,
             "color": "green",
             "status": "OK"
@@ -172,8 +172,8 @@
         "criterion_tibia_femur_displacement": {
           "result": {
             "name": "Tibia-femur displacement",
-            "value": 5.0,
-            "rating": 0,
+            "value": 5.49999990692892,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -181,8 +181,8 @@
         "criterion_tibia_index": {
           "result": {
             "name": "Tibia index",
-            "value": 0.25,
-            "rating": 0,
+            "value": 0.23499999997725024,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -190,8 +190,8 @@
         "criterion_tibia_axial_force": {
           "result": {
             "name": "Tibia axial force",
-            "value": 1.0,
-            "rating": 0,
+            "value": 0.9649999998998496,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -199,8 +199,8 @@
         "criterion_foot_acceleration": {
           "result": {
             "name": "Foot acceleration",
-            "value": 5.0985810648896415,
-            "rating": 0,
+            "value": 5.353510117580529,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -255,8 +255,8 @@
         "criterion_hic_15": {
           "result": {
             "name": "HIC 15",
-            "value": 250.0,
-            "rating": 0,
+            "value": 260.7313302468998,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -264,8 +264,8 @@
         "criterion_nij": {
           "result": {
             "name": "Nij",
-            "value": 0.5,
-            "rating": 0,
+            "value": 0.3143894839572515,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -273,8 +273,8 @@
         "criterion_neck_tension": {
           "result": {
             "name": "Neck axial tension",
-            "value": 1.0,
-            "rating": 0,
+            "value": 1.012077793487145,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -282,8 +282,8 @@
         "criterion_neck_compression": {
           "result": {
             "name": "Neck compression",
-            "value": -1.0,
-            "rating": 0,
+            "value": -0.9111832461194238,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -291,8 +291,8 @@
         "criterion_tension_corridor": {
           "result": {
             "name": "Neck tension duration corridor",
-            "value": 1.0,
-            "rating": 0,
+            "value": 1.012077793487145,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -300,8 +300,8 @@
         "criterion_compression_corridor": {
           "result": {
             "name": "Neck compression duration corridor",
-            "value": -1.0,
-            "rating": 0,
+            "value": -0.9111832461194238,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -309,8 +309,8 @@
         "criterion_shear_corridor": {
           "result": {
             "name": "Neck shear duration corridor",
-            "value": 1.0,
-            "rating": 0,
+            "value": 0.9139999998153134,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -327,8 +327,8 @@
         "criterion_acceleration": {
           "result": {
             "name": "Thoracic spine acceleration (3 ms)",
-            "value": 5.0985810648896415,
-            "rating": 0,
+            "value": 9.274549748469319,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -336,8 +336,8 @@
         "criterion_deflection": {
           "result": {
             "name": "Sternum deflection",
-            "value": -30.0,
-            "rating": 0,
+            "value": -27.999999534644534,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -345,8 +345,8 @@
         "criterion_deflection_rate": {
           "result": {
             "name": "Sternum deflection rate",
-            "value": -0.5,
-            "rating": 0,
+            "value": -0.45999999224407534,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -354,8 +354,8 @@
         "criterion_vc": {
           "result": {
             "name": "Viscous criterion",
-            "value": 0.5,
-            "rating": 0,
+            "value": 0.47999998619445644,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -372,7 +372,7 @@
         "criterion_left": {
           "result": {
             "name": "Left knee-thigh-hip injury risk",
-            "value": 2.0,
+            "value": 1.8399999998033185,
             "rating": 0.0,
             "color": "green",
             "status": "OK"
@@ -381,7 +381,7 @@
         "criterion_right": {
           "result": {
             "name": "Right knee-thigh-hip injury risk",
-            "value": 2.0,
+            "value": 2.1149999997726066,
             "rating": 0.0,
             "color": "green",
             "status": "OK"
@@ -399,8 +399,8 @@
         "criterion_tibia_femur_displacement": {
           "result": {
             "name": "Tibia-femur displacement",
-            "value": 10.0,
-            "rating": 0,
+            "value": 10.99999981385784,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -408,8 +408,8 @@
         "criterion_tibia_index": {
           "result": {
             "name": "Tibia index",
-            "value": 0.5,
-            "rating": 0,
+            "value": 0.4699999999545005,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -417,8 +417,8 @@
         "criterion_tibia_axial_force": {
           "result": {
             "name": "Tibia axial force",
-            "value": 2.0,
-            "rating": 0,
+            "value": 1.9299999997996993,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -426,8 +426,8 @@
         "criterion_foot_acceleration": {
           "result": {
             "name": "Foot acceleration",
-            "value": 10.197162129779283,
-            "rating": 0,
+            "value": 10.707020235161059,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -457,8 +457,8 @@
     "Overall": {
       "result": {
         "name": "Overall",
-        "value": 34.0,
-        "rating": -34.0,
+        "value": 26.0,
+        "rating": -26.0,
         "color": "red",
         "status": "OK"
       }
@@ -466,8 +466,8 @@
     "criterion_driver": {
       "result": {
         "name": "Driver",
-        "value": 34.0,
-        "rating": -34.0,
+        "value": 26.0,
+        "rating": -26.0,
         "color": null,
         "status": "OK"
       },
@@ -482,8 +482,8 @@
         "criterion_hic_15": {
           "result": {
             "name": "HIC 15",
-            "value": 500.0,
-            "rating": -20,
+            "value": 1470.9494824367123,
+            "rating": -20.0,
             "color": "red",
             "status": "OK"
           }
@@ -491,17 +491,17 @@
         "criterion_nij": {
           "result": {
             "name": "Nij",
-            "value": 1.0,
-            "rating": -10,
-            "color": "yellow",
+            "value": 0.6258168174386871,
+            "rating": 0.0,
+            "color": "green",
             "status": "OK"
           }
         },
         "criterion_neck_tension": {
           "result": {
             "name": "Neck axial tension",
-            "value": 2.0,
-            "rating": 0,
+            "value": 2.024871018932394,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -509,8 +509,8 @@
         "criterion_neck_compression": {
           "result": {
             "name": "Neck compression",
-            "value": -2.0,
-            "rating": 0,
+            "value": -1.8262986131879817,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -518,8 +518,8 @@
         "criterion_tension_corridor": {
           "result": {
             "name": "Neck tension duration corridor",
-            "value": 2.0,
-            "rating": -2,
+            "value": 2.021230658370066,
+            "rating": -2.0,
             "color": "yellow",
             "status": "OK"
           }
@@ -527,8 +527,8 @@
         "criterion_compression_corridor": {
           "result": {
             "name": "Neck compression duration corridor",
-            "value": -2.0,
-            "rating": -2,
+            "value": -1.8262986131879817,
+            "rating": -2.0,
             "color": "yellow",
             "status": "OK"
           }
@@ -536,8 +536,8 @@
         "criterion_shear_corridor": {
           "result": {
             "name": "Neck shear duration corridor",
-            "value": 2.0,
-            "rating": -2,
+            "value": 1.8279999996306269,
+            "rating": -2.0,
             "color": "yellow",
             "status": "OK"
           }
@@ -546,16 +546,16 @@
       "criterion_chest": {
         "result": {
           "name": "Chest",
-          "value": -10.0,
-          "rating": -10.0,
-          "color": "orange",
+          "value": -2.0,
+          "rating": -2.0,
+          "color": "yellow",
           "status": "OK"
         },
         "criterion_acceleration": {
           "result": {
             "name": "Thoracic spine acceleration (3 ms)",
-            "value": 10.197162129779283,
-            "rating": 0,
+            "value": 18.549099496938638,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -563,17 +563,17 @@
         "criterion_deflection": {
           "result": {
             "name": "Sternum deflection",
-            "value": -60.0,
-            "rating": -2,
-            "color": "orange",
+            "value": -55.99999906928907,
+            "rating": -2.0,
+            "color": "yellow",
             "status": "OK"
           }
         },
         "criterion_deflection_rate": {
           "result": {
             "name": "Sternum deflection rate",
-            "value": -1.0,
-            "rating": 0,
+            "value": -0.9199999844881507,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -581,8 +581,8 @@
         "criterion_vc": {
           "result": {
             "name": "Viscous criterion",
-            "value": 1.0,
-            "rating": -10,
+            "value": 0.9599999723889129,
+            "rating": -2.0,
             "color": "yellow",
             "status": "OK"
           }
@@ -599,7 +599,7 @@
         "criterion_left": {
           "result": {
             "name": "Left knee-thigh-hip injury risk",
-            "value": 4.0,
+            "value": 3.679999999606637,
             "rating": 0.0,
             "color": "green",
             "status": "OK"
@@ -608,7 +608,7 @@
         "criterion_right": {
           "result": {
             "name": "Right knee-thigh-hip injury risk",
-            "value": 4.0,
+            "value": 4.229999999545213,
             "rating": 0.0,
             "color": "green",
             "status": "OK"
@@ -626,8 +626,8 @@
         "criterion_tibia_femur_displacement": {
           "result": {
             "name": "Tibia-femur displacement",
-            "value": 20.0,
-            "rating": -4,
+            "value": 21.99999962771568,
+            "rating": -4.0,
             "color": "red",
             "status": "OK"
           }
@@ -635,8 +635,8 @@
         "criterion_tibia_index": {
           "result": {
             "name": "Tibia index",
-            "value": 1.0,
-            "rating": -2,
+            "value": 0.939999999909001,
+            "rating": -1.0,
             "color": "yellow",
             "status": "OK"
           }
@@ -644,8 +644,8 @@
         "criterion_tibia_axial_force": {
           "result": {
             "name": "Tibia axial force",
-            "value": 4.0,
-            "rating": 0,
+            "value": 3.8599999995993985,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }
@@ -653,8 +653,8 @@
         "criterion_foot_acceleration": {
           "result": {
             "name": "Foot acceleration",
-            "value": 20.394324259558566,
-            "rating": 0,
+            "value": 21.414040470322117,
+            "rating": 0.0,
             "color": "green",
             "status": "OK"
           }

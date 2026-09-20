@@ -1,9 +1,23 @@
 from __future__ import annotations
 
 import argparse
+from pathlib import Path
 
 from pyisomme.isomme import Isomme
 from pyisomme.report import REPORTS
+
+OUTPUT_SUFFIXES = {".html", ".pdf", ".pptx"}
+
+
+def _output_path(value: str) -> Path:
+    path = Path(value)
+    if path.suffix.lower() not in OUTPUT_SUFFIXES:
+        formats = ", ".join(sorted(OUTPUT_SUFFIXES))
+        raise argparse.ArgumentTypeError(
+            f"unsupported report output extension {path.suffix or '(none)'!r}; "
+            f"expected one of: {formats}"
+        )
+    return path
 
 
 def add_parser_report(
@@ -11,8 +25,13 @@ def add_parser_report(
 ) -> None:
     report_parser = command_parsers.add_parser(
         "report",
-        help="Create a Report",
-        epilog="Example:\n  pyisomme report EuroNCAP_Frontal report.pptx test.mme",
+        help="Calculate and export a report",
+        epilog=(
+            "Examples:\n"
+            "  pyisomme report EuroNCAP_Frontal_MPDB test.mme -o report.pptx\n"
+            "  pyisomme report EuroNCAP_Frontal_MPDB test.mme "
+            "-o report.html -o report.pdf -o report.pptx"
+        ),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     report_parser.add_argument(
@@ -20,13 +39,24 @@ def add_parser_report(
         choices=[report.__name__ for report in REPORTS],
         help="Report name",
     )
-    report_parser.add_argument("report_path", help="Report Path (.pptx)")
     report_parser.add_argument(
         "input_paths",
         nargs="+",
         help="ISO-MME Path (.mme/folder/.zip/.tar/.tar.gz/...)",
     )
-    report_parser.add_argument("--template", help="Path to Template (.pptx)")
+    report_parser.add_argument(
+        "-o",
+        "--output",
+        dest="output_paths",
+        action="append",
+        required=True,
+        type=_output_path,
+        metavar="PATH",
+        help="Output path; repeat for .html, .pdf, and/or .pptx",
+    )
+    report_parser.add_argument(
+        "--template", type=Path, help="PowerPoint template used for the .pptx output"
+    )
     report_parser.add_argument(
         "--crop",
         nargs=2,
@@ -36,7 +66,15 @@ def add_parser_report(
     )
 
 
-def execute_report_command(options: argparse.Namespace) -> None:
+def execute_report_command(
+    parser: argparse.ArgumentParser, options: argparse.Namespace
+) -> None:
+    suffixes = [path.suffix.lower() for path in options.output_paths]
+    if len(suffixes) != len(set(suffixes)):
+        parser.error("report accepts at most one output path per format")
+    if options.template is not None and ".pptx" not in suffixes:
+        parser.error("--template requires a .pptx output")
+
     isomme_list = [Isomme().read(input_path) for input_path in options.input_paths]
     if options.crop:
         for isomme in isomme_list:
@@ -45,4 +83,4 @@ def execute_report_command(options: argparse.Namespace) -> None:
         isomme_list
     )
     report.calculate()
-    report.export_pptx(options.report_path, template=options.template)
+    report.export(*options.output_paths, template=options.template)
